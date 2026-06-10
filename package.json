@@ -13,6 +13,7 @@
     "diagnose:sources": "npx ts-node scripts/diagnose-sources.ts",
     "generate:image:canary": "npx ts-node src/generators/minimax-image-canary.ts",
     "digest:telegram": "npx ts-node src/reports/telegram-daily-digest.ts",
+    "digest:telegram:check": "npx ts-node scripts/check-telegram-digest.ts",
     "type-check": "npx tsc --noEmit",
     "test-adapter": "npx ts-node scripts/test-adapter.ts"
   },

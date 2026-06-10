@@ -38,8 +38,8 @@ interface Signal {
 
 interface ContentPack {
   pack_id: string;
-  source_type?: string;
-  score?: number;
+  source_types?: string[];
+  final_score?: number;
   recommended_assets?: string[];
   title?: string;
 }
@@ -114,7 +114,7 @@ function getContentPackStats() {
       seenTitles.add(t);
       uniquePacks.push(m);
     }
-    uniquePacks.sort((a, b) => (b.score || 0) - (a.score || 0));
+    uniquePacks.sort((a, b) => (b.final_score || 0) - (a.final_score || 0));
 
     return { packCount, hasImage, hasMusic, hasVideo, topPacks: uniquePacks.slice(0, 5) };
   } catch (e) {
@@ -185,8 +185,8 @@ function buildRecommendedQueue(topPacks: ContentPack[], genAssets: { count: numb
 
     queue.push({
       title: pack.title || packDir,
-      source_type: pack.source_type || 'unknown',
-      score: pack.score || 0,
+      source_type: (pack.source_types || []).join(',') || 'unknown',
+      score: pack.final_score || 0,
       recommended_type: type,
       reason,
       pack_dir: packDir,
@@ -202,8 +202,10 @@ function generateDigest() {
   const genAssets = getGeneratedAssets();
   const queue = buildRecommendedQueue(packStats.topPacks, genAssets);
 
-  const now = new Date().toISOString();
-  const today = now.split('T')[0];
+  // System is Asia/Shanghai (UTC+8) — use local date methods directly
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const nowStr = now.toISOString();
   const galleryUrl = 'https://conanxin.github.io/creative-quota-assets/gallery/';
   const latestImageUrl = genAssets.latestImage
     ? `https://conanxin.github.io/creative-quota-assets/images/2026/06/${genAssets.latestImage}`
@@ -222,7 +224,7 @@ function generateDigest() {
 
   const queueLines = queue.length > 0
     ? queue.map((q, i) =>
-        `${i + 1}. ${q.title}\n   ${q.source_type} | Score: ${q.score.toFixed(3)}\n   Generate ${q.recommended_type} — ${q.reason}`
+        `${i + 1}. ${q.title}\n   ${q.source_type} | Score: ${q.score > 0 ? q.score.toFixed(3) : 'N/A'}\n   Generate ${q.recommended_type} — ${q.reason}`
       ).join('\n\n')
     : 'None — all high-priority packs have generated assets';
 
@@ -278,7 +280,7 @@ function generateDigest() {
 
   const mdReport = [
     '# Creative Quota Daily Digest',
-    `**Generated:** ${now}`,
+    `**Generated:** ${nowStr}`,
     '**STATUS:** PASS',
     '',
     '## 今日输入',
@@ -302,7 +304,7 @@ function generateDigest() {
     '',
     '## Recommended Generation Queue',
     ...(queue.length > 0
-      ? queue.map((q, i) => `${i + 1}. **${q.title}** — ${q.source_type} (${q.score.toFixed(3)})\n   Generate: ${q.recommended_type} — ${q.reason}`)
+      ? queue.map((q, i) => `${i + 1}. **${q.title}** — ${q.source_type} (${q.score > 0 ? q.score.toFixed(3) : 'N/A'})\n   Generate: ${q.recommended_type} — ${q.reason}`)
       : ['None — all high-priority packs have generated assets']),
     '',
     '## 素材库状态',

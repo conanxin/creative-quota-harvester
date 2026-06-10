@@ -13,10 +13,11 @@
 | 0.7.0 | 2026-06-11 | Phase 3A | ✅ COMPLETE — First MiniMax image canary, 1 real image generated |
 | 0.8.0 | 2026-06-11 | Phase 3B | ✅ COMPLETE — Telegram daily digest pipeline |
 | 0.8.1 | 2026-06-11 | Phase 3B-1 | ✅ COMPLETE — Daily digest quality patch (dedup + structured counting) |
+| 0.8.2 | 2026-06-11 | Phase 3B-2 | ✅ COMPLETE — Telegram digest delivery contract patch |
 | 0.9.1 | TBD | Phase 3A Full | ⬜ Planned — Batch image generation for all content packs |
-| 0.9.2 | TBD | Phase 4A | ⬜ Planned — Manual Daily Digest Runbook |
-| 0.9.3 | TBD | Phase 4B | ⬜ Planned — Scheduled automation (external cron/systemd) |
-| 0.9.0 | TBD | Phase 4 | ⬜ Planned — Scheduled automation |
+| 0.9.2 | TBD | Phase 3C | ⬜ Planned — MiniMax quota guard |
+| 0.9.3 | TBD | Phase 4A | ⬜ Planned — Manual Daily Digest Runbook |
+| 0.9.4 | TBD | Phase 4B | ⬜ Planned — Scheduled automation (external cron/systemd) |
 
 ---
 
@@ -202,6 +203,26 @@
 - Harvester: `https://github.com/conanxin/creative-quota-harvester`
 - Assets: `https://github.com/conanxin/creative-quota-assets`
 - Assets Gallery: `https://conanxin.github.io/creative-quota-assets/gallery/`
+
+---
+
+## Phase 3B-2 — Telegram Digest Delivery Contract Patch ✅
+
+**Status:** Complete (2026-06-11)
+**Command:** `npm run digest:telegram && npm run digest:telegram:check`
+
+**Problem solved:** Final Telegram message was being truncated because OpenClaw was sending additional phase report text alongside the digest.
+
+**Improvements:**
+- [x] `scripts/check-telegram-digest.ts` — 8-contract validation checks
+- [x] `npm run digest:telegram:check` — automated contract validation
+- [x] `reports/telegram-delivery-contract.md` — delivery contract documentation
+- [x] Fixed date (Asia/Shanghai timezone)
+- [x] Fixed source_types (array) and final_score reading from manifest.json
+- [x] Canonical file: `reports/telegram-digest.txt` (no rename needed)
+
+**Telegram delivery rule:** Only send `reports/telegram-digest.txt` content as the Telegram message body.
+
 
 ---
 

@@ -28,7 +28,9 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | Phase 3A | ✅ Complete | MiniMax image canary (1 image generated) |
 | Phase 3B | ✅ Complete | Telegram daily digest pipeline |
 | Phase 3B-1 | ✅ Complete | Daily digest quality patch (dedup + structured counting) |
+| Phase 3B-2 | ✅ Complete | Telegram digest delivery contract patch |
 | Phase 3A Full | ⬜ Planned | Batch image generation for all content packs |
+| Phase 3C | ⬜ Planned | MiniMax quota guard |
 | Phase 4A | ⬜ Planned | Manual Daily Digest Runbook |
 | Phase 4B | ⬜ Planned | Scheduled automation (external cron/systemd) |
 

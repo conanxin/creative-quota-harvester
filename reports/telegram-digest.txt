@@ -1,4 +1,4 @@
-Creative Quota Daily Digest — 2026-06-10
+Creative Quota Daily Digest — 2026-06-11
 STATUS: PASS
 
 今日输入
@@ -23,16 +23,16 @@ Top 5 Signals (deduplicated, by score)
    Score: 0.629 | dev-community | Medium
 
 Recommended Generation Queue
-1. Flaws in the LLM Automation Narrative
-   unknown | Score: 0.000
+1. SamurAIGPT/Generative-Media-Skills
+   code | Score: 0.703
    Generate image — High score + image prompt available
 
-2. River AI
-   unknown | Score: 0.000
+2. Flaws in the LLM Automation Narrative
+   academic | Score: 0.662
    Generate image — High score + image prompt available
 
-3. stabilityai/stable-video-diffusion-img2vid-xt
-   unknown | Score: 0.000
+3. The Penitence of Saint Jerome
+   culture-art | Score: 0.600
    Generate image — High score + image prompt available
 
 素材库状态

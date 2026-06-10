@@ -1,5 +1,5 @@
 # Creative Quota Daily Digest
-**Generated:** 2026-06-10T23:25:33.475Z
+**Generated:** 2026-06-10T23:52:21.373Z
 **STATUS:** PASS
 
 ## 今日输入
@@ -34,11 +34,11 @@
    URL: https://github.com/get-foyer/foyer
 
 ## Recommended Generation Queue
-1. **Flaws in the LLM Automation Narrative** — unknown (0.000)
+1. **SamurAIGPT/Generative-Media-Skills** — code (0.703)
    Generate: image — High score + image prompt available
-2. **River AI** — unknown (0.000)
+2. **Flaws in the LLM Automation Narrative** — academic (0.662)
    Generate: image — High score + image prompt available
-3. **stabilityai/stable-video-diffusion-img2vid-xt** — unknown (0.000)
+3. **The Penitence of Saint Jerome** — culture-art (0.600)
    Generate: image — High score + image prompt available
 
 ## 素材库状态
