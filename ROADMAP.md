@@ -10,8 +10,9 @@
 | 0.4.0 | 2026-06-10 | Phase 2A | ✅ COMPLETE — Creative Brief Engine, Content Packs |
 | 0.5.0 | 2026-06-11 | Phase 2B | ✅ COMPLETE — Asset gallery polish, validation, open source prep |
 | 0.6.0 | 2026-06-11 | Phase 2C | ✅ COMPLETE — GitHub publish, Pages, README polish |
-| 0.7.0 | TBD | Phase 3A | ⬜ Planned — MiniMax quota-aware generation |
+| 0.7.0 | 2026-06-11 | Phase 3A | ✅ COMPLETE — First MiniMax image canary, 1 real image generated |
 | 0.8.0 | TBD | Phase 3B | ⬜ Planned — Telegram daily report |
+| 0.9.1 | TBD | Phase 3A Full | ⬜ Planned — Batch image generation for all content packs |
 | 0.9.0 | TBD | Phase 4 | ⬜ Planned — Scheduled automation |
 
 ---
@@ -127,25 +128,32 @@
 
 ---
 
-## Phase 3A — MiniMax Quota-Aware Generation ⬜
+## Phase 3A — MiniMax Quota-Aware Generation ✅
 
-**Goal:** Generate real images from `image-prompt.md` in content packs.
+**Status:** Complete (2026-06-11) — Canary passed, 1 image generated
+**Command:** `npm run generate:image:canary`
 
 **Scope:**
-- [ ] Add `MINIMAX_API_KEY` to `.env`
-- [ ] MiniMax image generation integration
-- [ ] Generate images for each content pack
-- [ ] Store in `creative-quota-assets/images/`
-- [ ] Update `asset-plan.json` with actual file paths
-- [ ] Quota tracking (MiniMax token budget)
-- [ ] Generation retry with exponential backoff
+- [x] MiniMax Token Plan CLI setup (Phase 3A-0)
+- [x] mmx CLI configured with Token Plan key (region: cn)
+- [x] First real image generated via `mmx image generate`
+- [x] Image saved to `creative-quota-assets/images/2026/06/`
+- [x] `metadata/generated-assets.json` created
+- [x] `metadata/asset-index.json` updated
+- [x] `gallery/assets.json` updated
+- [x] GitHub Pages gallery verified (HTTP 200)
+- [x] Generator script: `src/generators/minimax-image-canary.ts`
 
-**Constraints:**
-- ⚠️ Requires MiniMax API key in `.env`
-- ❌ No auto-publish to GitHub
-- ❌ No cron/systemd
+**Generated:**
+- `cqa-2026-06-11-canary-001_001.jpg` (325KB) — "Flaws in the LLM Automation Narrative"
+- Gallery: `https://conanxin.github.io/creative-quota-assets/gallery/`
 
-**Exit Criteria:** Content packs contain real generated `.jpg` files.
+**Next (Phase 3A Full):**
+- Batch generate images for all content packs with `image-prompt.md`
+- Update all `asset-plan.json` with generated file paths
+- Quota guard (check before each batch)
+
+**Or skip to Phase 3B:** Telegram daily digest (no MiniMax needed)
 
 ---
 
