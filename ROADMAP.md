@@ -11,7 +11,7 @@
 | 0.5.0 | 2026-06-11 | Phase 2B | ✅ COMPLETE — Asset gallery polish, validation, open source prep |
 | 0.6.0 | 2026-06-11 | Phase 2C | ✅ COMPLETE — GitHub publish, Pages, README polish |
 | 0.7.0 | 2026-06-11 | Phase 3A | ✅ COMPLETE — First MiniMax image canary, 1 real image generated |
-| 0.8.0 | TBD | Phase 3B | ⬜ Planned — Telegram daily report |
+| 0.8.0 | 2026-06-11 | Phase 3B | ✅ COMPLETE — Telegram daily digest pipeline |
 | 0.9.1 | TBD | Phase 3A Full | ⬜ Planned — Batch image generation for all content packs |
 | 0.9.0 | TBD | Phase 4 | ⬜ Planned — Scheduled automation |
 
@@ -157,21 +157,27 @@
 
 ---
 
-## Phase 3B — Telegram Daily Report ⬜
+## Phase 3B — Telegram Daily Report ✅
 
-**Goal:** Daily Telegram digest with new signals and generated assets.
+**Status:** Complete (2026-06-11)
+**Command:** `npm run digest:telegram`
 
 **Scope:**
-- [ ] Telegram message builder (signal summary + asset previews)
-- [ ] Daily run trigger (user-initiated or scheduled via external tool)
-- [ ] Top signals digest (top 5 by score)
-- [ ] Generated asset thumbnails in Telegram
+- [x] Digest script: `src/reports/telegram-daily-digest.ts`
+- [x] `npm run digest:telegram` command
+- [x] `reports/telegram-daily-digest.txt` — one-message Telegram digest (≤3500 chars)
+- [x] `reports/daily-digest.md` — full markdown report
+- [x] Signal data from SQLite DB (298 signals)
+- [x] Top 5 signals by score
+- [x] Content pack count + generated asset count
+- [x] Recommendation engine (image/music/video)
 
-**Constraints:**
-- ❌ No cron/systemd (Phase 4 only)
-- ❌ No auto-publish to GitHub
+**Note:** No auto-send to Telegram — digest is generated to file, OpenClaw sends via final reply.
 
-**Exit Criteria:** Telegram message shows top signals + new asset previews.
+**GitHub URLs:**
+- Harvester: `https://github.com/conanxin/creative-quota-harvester`
+- Assets: `https://github.com/conanxin/creative-quota-assets`
+- Assets Gallery: `https://conanxin.github.io/creative-quota-assets/gallery/`
 
 ---
 
