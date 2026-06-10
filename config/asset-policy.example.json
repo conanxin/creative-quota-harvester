@@ -1,0 +1,93 @@
+{
+  "_comment": "Asset generation policy. Copy to asset-policy.json.",
+  "version": "0.1.0",
+  "quota": {
+    "dailyTokenLimit": 5000000,
+    "weeklyTokenLimit": 30000000,
+    "alertThresholdPercent": 10,
+    "pauseThresholdPercent": 5
+  },
+  "assetTypes": {
+    "image": {
+      "enabled": true,
+      "priority": 1,
+      "estimatedTokensPerUnit": 50000,
+      "maxPerBrief": 3,
+      "dimensions": {
+        "default": { "width": 1024, "height": 1024 },
+        "alternative": [
+          { "width": 1536, "height": 1024 },
+          { "width": 1024, "height": 1536 },
+          { "width": 1792, "height": 1024 },
+          { "width": 1024, "height": 1792 }
+        ]
+      },
+      "model": "minimax/image-01",
+      "aspectRatio": "1:1"
+    },
+    "music": {
+      "enabled": true,
+      "priority": 2,
+      "estimatedTokensPerUnit": 100000,
+      "maxPerBrief": 1,
+      "durationSeconds": {
+        "default": 30,
+        "min": 10,
+        "max": 120
+      },
+      "model": "minimax/music-gen"
+    },
+    "video": {
+      "enabled": true,
+      "priority": 3,
+      "estimatedTokensPerUnit": 200000,
+      "maxPerBrief": 1,
+      "durationSeconds": {
+        "default": 6,
+        "min": 3,
+        "max": 15
+      },
+      "model": "minimax/video-01"
+    },
+    "prompt-text": {
+      "enabled": true,
+      "priority": 4,
+      "estimatedTokensPerUnit": 5000,
+      "maxPerBrief": 5
+    }
+  },
+  "generation": {
+    "maxConcurrentJobs": 2,
+    "retryCount": 3,
+    "retryDelayMs": 5000,
+    "timeoutMs": 120000
+  },
+  "filters": {
+    "minBriefScore": 0.5,
+    "maxAssetsPerDay": 50,
+    "minSignalScoreForAsset": 0.35
+  },
+  "assetRepo": {
+    "path": "../creative-quota-assets",
+    "metadataDir": "metadata",
+    "contentPacksDir": "content-packs",
+    "imagesDir": "images",
+    "musicDir": "music",
+    "videosDir": "videos",
+    "promptsDir": "prompts"
+  },
+  "briefTemplates": {
+    "image": {
+      "systemPrompt": "You are a creative director for AI image generation. Based on the signal context, write a detailed prompt for MiniMax image generation.",
+      "outputFormat": "prompt: string\nstyle: string\nsubject: string\nmood: string\ncomposition: string"
+    },
+    "music": {
+      "systemPrompt": "You are a composer for AI music generation. Based on the signal context, write a prompt for music generation.",
+      "outputFormat": "prompt: string\ngenre: string\ntempo: string\ninstruments: string[]\nmood: string"
+    },
+    "video": {
+      "systemPrompt": "You are a director for AI video generation. Based on the signal context, write a prompt for video generation.",
+      "outputFormat": "prompt: string\nscene: string\ncamera: string\nduration: string"
+    }
+  }
+}

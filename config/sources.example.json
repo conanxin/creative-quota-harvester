@@ -1,0 +1,169 @@
+{
+  "_comment": "Source adapter configuration. Copy to sources.json and fill in real values. secrets go in .env, not here.",
+  "version": "0.1.0",
+  "sources": [
+    {
+      "sourceType": "academic",
+      "sourceName": "arXiv AI",
+      "adapter": "arxiv-ai.ts",
+      "enabled": true,
+      "config": {
+        "categories": ["cs.AI", "cs.LG", "cs.CV", "cs.CL"],
+        "maxResults": 50,
+        "sortBy": "submittedDate"
+      }
+    },
+    {
+      "sourceType": "code",
+      "sourceName": "GitHub Open Source Radar",
+      "adapter": "github-open-source-radar.ts",
+      "enabled": true,
+      "config": {
+        "queries": [
+          { "query": "topic:ai-agent stars:>300", "priority": 1 },
+          { "query": "topic:mcp stars:>100", "priority": 1 },
+          { "query": "topic:llm stars:>500", "priority": 2 },
+          { "query": "topic:generative-ai stars:>500", "priority": 2 },
+          { "query": "\"coding agent\" stars:>100", "priority": 2 },
+          { "query": "topic:text-to-image stars:>100", "priority": 3 },
+          { "query": "topic:text-to-video stars:>100", "priority": 3 },
+          { "query": "\"music generation\" stars:>50", "priority": 3 },
+          { "query": "topic:local-llm stars:>200", "priority": 3 },
+          { "query": "topic:rag stars:>100", "priority": 3 },
+          { "query": "topic:knowledge-management stars:>50", "priority": 3 },
+          { "query": "topic:personal-automation stars:>50", "priority": 3 }
+        ],
+        "notUser": "conanxin",
+        "minStars": 50,
+        "minPushedDate": "2026-05-01",
+        "maxPerQuery": 30,
+        "cacheTTLMs": 21600000
+      }
+    },
+    {
+      "sourceType": "dev-community",
+      "sourceName": "Hacker News",
+      "adapter": "hackernews.ts",
+      "enabled": true,
+      "config": {
+        "topStoryCount": 30,
+        "cacheTTLMs": 3600000
+      }
+    },
+    {
+      "sourceType": "ai-ecosystem",
+      "sourceName": "Hugging Face Hub",
+      "adapter": "huggingface-hub.ts",
+      "enabled": true,
+      "config": {
+        "modelFilters": ["text-to-image", "llm", "agent", "image-to-text"],
+        "datasetFilters": ["rag"],
+        "maxPerFilter": 30,
+        "cacheTTLMs": 21600000
+      }
+    },
+    {
+      "sourceType": "news",
+      "sourceName": "GDELT",
+      "adapter": "gdelt.ts",
+      "enabled": true,
+      "config": {
+        "query": "ai OR \"artificial intelligence\" OR \"machine learning\"",
+        "mode": "artlist",
+        "maxRecords": 100,
+        "sort": "DateDesc",
+        "cacheTTLMs": 3600000
+      }
+    },
+    {
+      "sourceType": "news",
+      "sourceName": "RSS Feeds",
+      "adapter": "rss.ts",
+      "enabled": false,
+      "config": {
+        "feeds": [
+          { "url": "https://example.com/feed.xml", "name": "Example", "tags": ["tech"] }
+        ]
+      }
+    },
+    {
+      "sourceType": "context",
+      "sourceName": "Open-Meteo",
+      "adapter": "open-meteo.ts",
+      "enabled": true,
+      "config": {
+        "latitude": 39.9,
+        "longitude": 116.4,
+        "dailyParams": ["weather_code", "temperature_2m_max", "temperature_2m_min", "precipitation_sum"],
+        "cacheTTLMs": 86400000
+      }
+    },
+    {
+      "sourceType": "context",
+      "sourceName": "Date Context",
+      "adapter": "date-context.ts",
+      "enabled": true,
+      "config": {}
+    },
+    {
+      "sourceType": "context",
+      "sourceName": "Holidays",
+      "adapter": "holidays.ts",
+      "enabled": true,
+      "config": {
+        "countries": ["CN", "US", "GB", "JP"]
+      }
+    },
+    {
+      "sourceType": "context",
+      "sourceName": "Solar Terms",
+      "adapter": "solar-terms.ts",
+      "enabled": true,
+      "config": {
+        "region": "CN"
+      }
+    },
+    {
+      "sourceType": "culture-art",
+      "sourceName": "The Met Collection",
+      "adapter": "met-collection.ts",
+      "enabled": true,
+      "config": {
+        "searchQueries": ["artificial intelligence", "robot", "digital art", "technology"],
+        "hasImages": true,
+        "cacheTTLMs": 604800000
+      }
+    },
+    {
+      "sourceType": "culture-art",
+      "sourceName": "Art Institute of Chicago",
+      "adapter": "artic-api.ts",
+      "enabled": true,
+      "config": {
+        "searchQueries": ["technology", "digital", "ai", "robot"],
+        "cacheTTLMs": 604800000
+      }
+    },
+    {
+      "sourceType": "culture-art",
+      "sourceName": "Smithsonian",
+      "adapter": "smithsonian.ts",
+      "enabled": true,
+      "config": {
+        "apiKey": "${SMITHSONIAN_API_KEY}",
+        "searchQueries": ["technology", "digital", "robot"],
+        "cacheTTLMs": 604800000
+      }
+    },
+    {
+      "sourceType": "culture-art",
+      "sourceName": "Wikimedia",
+      "adapter": "wikimedia.ts",
+      "enabled": true,
+      "config": {
+        "wikiQueries": ["artificial intelligence art", "robot artwork", "digital art history"],
+        "cacheTTLMs": 604800000
+      }
+    }
+  ]
+}

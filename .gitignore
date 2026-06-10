@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Environment (never commit secrets)
+.env
+.env.*
+.env.local
+.env.production
+
+# SQLite signal database
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# Logs and temp files
+logs/
+tmp/
+*.log
+*.tmp
+*.temp
+
+# macOS
+.DS_Store
+*.DS_Store
+
+# Build artifacts
+dist/
+build/
+*.js.map
+
+# TypeScript incremental (optional)
+tsconfig.tsbuildinfo
+
+# Coverage
+coverage/
+.nyc_output/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

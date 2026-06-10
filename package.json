@@ -1,0 +1,41 @@
+{
+  "name": "creative-quota-harvester",
+  "version": "0.1.0",
+  "description": "Transform real-world signals into reusable AI generation assets",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "run-once": "npx ts-node scripts/run-once.ts",
+    "collect": "npx ts-node scripts/collect.ts",
+    "report": "npx ts-node scripts/collect.ts",
+    "briefs": "npx ts-node scripts/generate-briefs.ts",
+    "validate:assets": "npx ts-node scripts/validate-assets.ts",
+    "diagnose:sources": "npx ts-node scripts/diagnose-sources.ts",
+    "type-check": "npx tsc --noEmit",
+    "test-adapter": "npx ts-node scripts/test-adapter.ts"
+  },
+  "keywords": [
+    "ai",
+    "creative",
+    "asset-generation",
+    "llm",
+    "minimax",
+    "creative-brief",
+    "github-radar"
+  ],
+  "author": "Xin Conan",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "axios": "^1.17.0",
+    "better-sqlite3": "^12.10.0",
+    "fast-xml-parser": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

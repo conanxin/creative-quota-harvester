@@ -1,0 +1,56 @@
+{
+  "_comment": "Signal scoring configuration. Copy to scoring.json.",
+  "version": "0.1.0",
+  "weights": {
+    "relevance": 0.4,
+    "timeliness": 0.3,
+    "creativePotential": 0.3
+  },
+  "relevance": {
+    "keywords": [
+      "ai", "artificial intelligence", "llm", "large language model",
+      "agent", "multi-agent", "mcp", "model context protocol",
+      "generative", "text-to-image", "text-to-video", "music generation",
+      "coding agent", "automation", "rag", "local llm",
+      "knowledge management", "creative tools", "tts", "voice"
+    ],
+    "boostPerKeyword": 0.1,
+    "maxBoost": 0.5
+  },
+  "timeliness": {
+    "halfLifeDays": 7,
+    "minScore": 0.1
+  },
+  "creativePotential": {
+    "indicators": {
+      "hasDescription": 0.15,
+      "hasImage": 0.15,
+      "hasCode": 0.1,
+      "isTrending": 0.1,
+      "hasMultimedia": 0.1
+    },
+    "sourceBoosts": {
+      "academic": 0.1,
+      "code": 0.05,
+      "culture-art": 0.15
+    }
+  },
+  "filters": {
+    "minScore": 0.3,
+    "maxSignalsPerRun": 50,
+    "minSignalsForBrief": 1
+  },
+  "sourceOverrides": {
+    "github-radar": {
+      "starThresholds": {
+        "P1": 300,
+        "P2": 500,
+        "P3": 100,
+        "P4": 50
+      }
+    },
+    "arxiv": {
+      "recencyBoostDays": 30
+    }
+  }
+}
