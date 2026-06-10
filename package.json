@@ -11,6 +11,7 @@
     "briefs": "npx ts-node scripts/generate-briefs.ts",
     "validate:assets": "npx ts-node scripts/validate-assets.ts",
     "diagnose:sources": "npx ts-node scripts/diagnose-sources.ts",
+    "generate:image:canary": "npx ts-node src/generators/minimax-image-canary.ts",
     "type-check": "npx tsc --noEmit",
     "test-adapter": "npx ts-node scripts/test-adapter.ts"
   },
