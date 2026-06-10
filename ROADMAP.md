@@ -12,7 +12,10 @@
 | 0.6.0 | 2026-06-11 | Phase 2C | ✅ COMPLETE — GitHub publish, Pages, README polish |
 | 0.7.0 | 2026-06-11 | Phase 3A | ✅ COMPLETE — First MiniMax image canary, 1 real image generated |
 | 0.8.0 | 2026-06-11 | Phase 3B | ✅ COMPLETE — Telegram daily digest pipeline |
+| 0.8.1 | 2026-06-11 | Phase 3B-1 | ✅ COMPLETE — Daily digest quality patch (dedup + structured counting) |
 | 0.9.1 | TBD | Phase 3A Full | ⬜ Planned — Batch image generation for all content packs |
+| 0.9.2 | TBD | Phase 4A | ⬜ Planned — Manual Daily Digest Runbook |
+| 0.9.3 | TBD | Phase 4B | ⬜ Planned — Scheduled automation (external cron/systemd) |
 | 0.9.0 | TBD | Phase 4 | ⬜ Planned — Scheduled automation |
 
 ---
@@ -181,7 +184,40 @@
 
 ---
 
-## Phase 4 — Scheduled Automation ⬜
+## Phase 3B-1 — Daily Digest Quality Patch ✅
+
+**Status:** Complete (2026-06-11)
+**Command:** `npm run digest:telegram`
+
+**Problem solved:** Top 5 Signals had duplicates (SamurAIGPT ×2, EvoLinkAI ×2).
+
+**Improvements:**
+- [x] Signal deduplication by URL + normalized title (no more duplicates)
+- [x] Structured content pack counting from manifest.json (not markdown regex)
+- [x] Recommended Generation Queue (packs without generated images, max 3)
+- [x] Generated assets breakdown by type (image/music/video)
+- [x] Inline quality validation (char count, dup check)
+
+**GitHub URLs:**
+- Harvester: `https://github.com/conanxin/creative-quota-harvester`
+- Assets: `https://github.com/conanxin/creative-quota-assets`
+- Assets Gallery: `https://conanxin.github.io/creative-quota-assets/gallery/`
+
+---
+
+## Phase 4A — Manual Daily Digest Runbook ⬜
+
+**Goal:** Document how to run the digest manually each day.
+
+**Scope:**
+- [ ] Step-by-step runbook for `npm run digest:telegram`
+- [ ] How to check quota before batch image generation
+- [ ] How to read the digest output
+- [ ] Troubleshooting common issues
+
+---
+
+## Phase 4B — Scheduled Automation ⬜
 
 **Goal:** Production-ready scheduled pipeline.
 

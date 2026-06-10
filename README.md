@@ -25,9 +25,12 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 |-------|--------|-------------|
 | Phase 0A–2B | ✅ Complete | Signal collection through asset gallery |
 | **Phase 2C** | **✅ Complete** | **GitHub open source publish** |
-| Phase 3A | ⬜ Planned | MiniMax quota-aware generation |
-| Phase 3B | ⬜ Planned | Telegram daily digest |
-| Phase 4 | ⬜ Planned | Scheduled automation |
+| Phase 3A | ✅ Complete | MiniMax image canary (1 image generated) |
+| Phase 3B | ✅ Complete | Telegram daily digest pipeline |
+| Phase 3B-1 | ✅ Complete | Daily digest quality patch (dedup + structured counting) |
+| Phase 3A Full | ⬜ Planned | Batch image generation for all content packs |
+| Phase 4A | ⬜ Planned | Manual Daily Digest Runbook |
+| Phase 4B | ⬜ Planned | Scheduled automation (external cron/systemd) |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

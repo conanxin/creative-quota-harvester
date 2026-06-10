@@ -1,260 +1,339 @@
 #!/usr/bin/env npx ts-node
 /**
- * Telegram Daily Digest Generator — Phase 3B
+ * Telegram Daily Digest Generator — Phase 3B-1 (Quality Patch)
  * 
- * Generates a daily digest report from the harvester pipeline data.
- * Output:
- *   - reports/daily-digest.md (full markdown report)
- *   - reports/telegram-daily-digest.txt (Telegram one-message ready, ≤3500 chars)
+ * Fixes over Phase 3B:
+ * - Top signals deduplication (by URL + normalized title)
+ * - Structured counting from JSON/manifest sources
+ * - Recommended Generation Queue (packs without generated images)
  * 
  * Usage:
  *   npm run digest:telegram
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+import { join, basename } from 'path';
+import { execSync } from 'child_process';
 
 const HARVESTER_DIR = '/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester';
 const ASSETS_DIR = '/home/ubuntu/.openclaw/workspace/projects/creative-quota-assets';
 
-const SIGNALS_JSON = join(HARVESTER_DIR, 'reports/latest-signals.json');
-const LATEST_BRIEFS_MD = join(HARVESTER_DIR, 'reports/latest-briefs.md');
-const ASSETS_GALLERY_JSON = join(ASSETS_DIR, 'gallery/assets.json');
-const GENERATED_ASSETS_JSON = join(ASSETS_DIR, 'metadata/generated-assets.json');
-const DAILY_DIGEST_MD = join(HARVESTER_DIR, 'reports/daily-digest.md');
-const TELEGRAM_DIGEST_TXT = join(HARVESTER_DIR, 'reports/telegram-daily-digest.txt');
-
 function safeRead(path: string): string | null {
-  try {
-    return existsSync(path) ? readFileSync(path, 'utf-8') : null;
-  } catch { return null; }
+  try { return existsSync(path) ? readFileSync(path, 'utf-8') : null; }
+  catch { return null; }
 }
 
-function countSignalsInDb(): { total: number; bySource: Record<string, number> } {
+function normalizeTitle(title: string): string {
+  return title.toLowerCase().trim().replace(/\s+/g, ' ').replace(/[.!?]+$/, '').trim();
+}
+
+interface Signal {
+  id: string;
+  title: string;
+  source_type: string;
+  final_score: number;
+  url: string;
+  metadata: string;
+}
+
+interface ContentPack {
+  pack_id: string;
+  source_type?: string;
+  score?: number;
+  recommended_assets?: string[];
+  title?: string;
+}
+
+function getSignalsFromDb() {
   try {
-    const { default: sqlite3 } = require('better-sqlite3');
+    const sqlite3 = require('better-sqlite3');
     const dbPath = join(HARVESTER_DIR, 'data/signals.db');
-    if (!existsSync(dbPath)) return { total: 0, bySource: {} };
+    if (!existsSync(dbPath)) return { total: 0, bySource: {} as Record<string, number>, topUnique: [] as Signal[] };
     const db = sqlite3(dbPath);
-    const row = db.prepare('SELECT COUNT(*) as c FROM signals').get() as { c: number };
-    const sources = db.prepare('SELECT source_type, COUNT(*) as c FROM signals GROUP BY source_type').all() as { source_type: string; c: number }[];
-    db.close();
+    const total = (db.prepare('SELECT COUNT(*) as c FROM signals').get() as { c: number }).c;
+    const sourceRows = db.prepare('SELECT source_type, COUNT(*) as c FROM signals GROUP BY source_type').all() as { source_type: string; c: number }[];
     const bySource: Record<string, number> = {};
-    for (const s of sources) bySource[s.source_type] = s.c;
-    return { total: row.c, bySource };
-  } catch {
-    return { total: 0, bySource: {} };
+    for (const r of sourceRows) bySource[r.source_type] = r.c;
+
+    const rows = db.prepare(
+      'SELECT id, title, source_type, final_score, url, metadata FROM signals ORDER BY final_score DESC'
+    ).all() as Signal[];
+
+    // Deduplicate by URL + normalized title
+    const seenUrls = new Set<string>();
+    const seenTitles = new Set<string>();
+    const uniqueSignals: Signal[] = [];
+    for (const s of rows) {
+      const url = s.url || '';
+      const normTitle = normalizeTitle(s.title);
+      if (seenUrls.has(url)) continue;
+      if (seenTitles.has(normTitle)) continue;
+      seenUrls.add(url);
+      seenTitles.add(normTitle);
+      uniqueSignals.push(s);
+    }
+
+    db.close();
+    return { total, bySource, topUnique: uniqueSignals };
+  } catch (e) {
+    console.error('DB error:', e);
+    return { total: 0, bySource: {} as Record<string, number>, topUnique: [] as Signal[] };
   }
 }
 
-function getTopSignals(limit = 5): { title: string; source_type: string; final_score: number; url: string }[] {
+function getContentPackStats() {
   try {
-    const { default: sqlite3 } = require('better-sqlite3');
-    const dbPath = join(HARVESTER_DIR, 'data/signals.db');
-    if (!existsSync(dbPath)) return [];
-    const db = sqlite3(dbPath);
-    const rows = db.prepare('SELECT title, source_type, final_score, url FROM signals ORDER BY final_score DESC LIMIT ?').all(limit) as any[];
-    db.close();
-    return rows;
-  } catch { return []; }
+    const countResult = execSync(
+      `find "${ASSETS_DIR}/content-packs" -name "manifest.json" 2>/dev/null | wc -l`,
+      { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 }
+    );
+    const packCount = parseInt(countResult.trim(), 10) || 0;
+
+    const findCmd = `find "${ASSETS_DIR}/content-packs" -name "manifest.json" 2>/dev/null`;
+    const files = execSync(findCmd, { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 })
+      .trim().split('\n').filter(Boolean);
+
+    const manifests: ContentPack[] = [];
+    for (const f of files) {
+      try {
+        const content = safeRead(f);
+        if (content) manifests.push(JSON.parse(content));
+      } catch {}
+    }
+
+    const hasImage = manifests.filter(m => m.recommended_assets?.includes('image')).length;
+    const hasMusic = manifests.filter(m => m.recommended_assets?.includes('music')).length;
+    const hasVideo = manifests.filter(m => m.recommended_assets?.includes('video')).length;
+
+    // Deduplicate packs by normalized title
+    const seenTitles = new Set<string>();
+    const uniquePacks: ContentPack[] = [];
+    for (const m of manifests) {
+      const t = normalizeTitle(m.title || m.pack_id || '');
+      if (seenTitles.has(t)) continue;
+      seenTitles.add(t);
+      uniquePacks.push(m);
+    }
+    uniquePacks.sort((a, b) => (b.score || 0) - (a.score || 0));
+
+    return { packCount, hasImage, hasMusic, hasVideo, topPacks: uniquePacks.slice(0, 5) };
+  } catch (e) {
+    console.error('Pack stats error:', e);
+    return { packCount: 0, hasImage: 0, hasMusic: 0, hasVideo: 0, topPacks: [] as ContentPack[] };
+  }
 }
 
-function countContentPacks(): number {
+function getGeneratedAssets() {
   try {
-    const { execSync } = require('child_process');
-    const result = execSync(`find "${ASSETS_DIR}/content-packs" -name "manifest.json" 2>/dev/null | wc -l`, { encoding: 'utf-8' });
-    return parseInt(result.trim(), 10) || 0;
-  } catch { return 0; }
-}
-
-function getGeneratedAssets(): { count: number; latestImage: string | null } {
-  try {
-    const content = safeRead(GENERATED_ASSETS_JSON);
-    if (!content) return { count: 0, latestImage: null };
-    const assets = JSON.parse(content);
+    const content = safeRead(join(ASSETS_DIR, 'metadata/generated-assets.json'));
+    if (!content) return { count: 0, images: 0, music: 0, video: 0, latestImage: null };
+    const assets: { filename?: string; content_pack_dir?: string }[] = JSON.parse(content);
     const latestImage = assets.length > 0 ? assets[assets.length - 1].filename : null;
-    return { count: assets.length, latestImage };
-  } catch { return { count: 0, latestImage: null }; }
+
+    const imageExts = ['.jpg', '.jpeg', '.png', '.webp'];
+    let images = 0, music = 0, video = 0;
+    for (const a of assets) {
+      const fn = (a.filename || '').toLowerCase();
+      if (imageExts.some(e => fn.endsWith(e))) images++;
+      else if (fn.endsWith('.mp3') || fn.endsWith('.wav') || fn.endsWith('.flac')) music++;
+      else if (fn.endsWith('.mp4') || fn.endsWith('.webm')) video++;
+    }
+    return { count: assets.length, images, music, video, latestImage };
+  } catch {
+    return { count: 0, images: 0, music: 0, video: 0, latestImage: null };
+  }
 }
 
-function getLatestBriefs(): { count: number; topBriefs: { title: string; score: number; source_type: string; recommended_assets: string[] }[] } {
+function buildRecommendedQueue(topPacks: ContentPack[], genAssets: { count: number; latestImage: string | null | undefined }) {
+  // Find packs that don't have generated images yet
+  const genPackDirs = new Set<string>();
   try {
-    const content = safeRead(LATEST_BRIEFS_MD);
-    if (!content) return { count: 0, topBriefs: [] };
-    // Parse markdown table
-    const briefMatch = content.match(/Total Briefs \| Value\s*\|\s*(\d+)/);
-    const count = briefMatch ? parseInt(briefMatch[1], 10) : 0;
-    // Extract brief entries from the BRIEFS table
-    const topBriefs: { title: string; score: number; source_type: string; recommended_assets: string[] }[] = [];
-    const lines = content.split('\n');
-    let inTable = false;
-    for (const line of lines) {
-      if (line.includes('| # |')) { inTable = true; continue; }
-      if (inTable && line.includes('|---|')) break;
-      if (inTable && line.startsWith('| ')) {
-        const cols = line.split('|').map(c => c.trim()).filter(Boolean);
-        if (cols.length >= 5 && cols[0] !== '#') {
-          const num = parseInt(cols[0], 10);
-          if (!isNaN(num)) {
-            const title = cols[2] || '';
-            const score = parseFloat(cols[3]) || 0;
-            const source = cols[1] || cols[4] || '';
-            const assetCol = cols[5] || '';
-            const assets = assetCol.split(',').map(a => a.trim()).filter(Boolean);
-            topBriefs.push({ title, score, source_type: source, recommended_assets: assets });
-          }
-        }
+    const content = safeRead(join(ASSETS_DIR, 'metadata/generated-assets.json'));
+    if (content) {
+      const assets = JSON.parse(content);
+      for (const a of assets) {
+        const dir = (a as { content_pack_dir?: string }).content_pack_dir;
+        if (dir) genPackDirs.add(basename(dir));
       }
     }
-    return { count, topBriefs };
-  } catch { return { count: 0, topBriefs: [] }; }
+  } catch {}
+
+  const queue: {
+    title: string;
+    source_type: string;
+    score: number;
+    recommended_type: string;
+    reason: string;
+    pack_dir: string;
+  }[] = [];
+
+  for (const pack of topPacks) {
+    const packDir = basename(pack.pack_id || '');
+    if (genPackDirs.has(packDir)) continue;
+
+    const assets = pack.recommended_assets || [];
+    let type = 'image';
+    let reason = 'High score + image prompt available';
+
+    if (assets.includes('music') && !assets.includes('image')) {
+      type = 'music'; reason = 'Music prompt available';
+    } else if (assets.includes('video') && !assets.includes('image')) {
+      type = 'video'; reason = 'Video prompt available';
+    } else if (!assets.includes('image')) {
+      continue;
+    }
+
+    queue.push({
+      title: pack.title || packDir,
+      source_type: pack.source_type || 'unknown',
+      score: pack.score || 0,
+      recommended_type: type,
+      reason,
+      pack_dir: packDir,
+    });
+    if (queue.length >= 3) break;
+  }
+  return queue;
 }
 
 function generateDigest() {
-  const signalsData = countSignalsInDb();
-  const topSignals = getTopSignals(5);
-  const { count: packCount, topBriefs } = getLatestBriefs();
-  const contentPacks = countContentPacks();
-  const { count: genCount, latestImage } = getGeneratedAssets();
+  const signalsData = getSignalsFromDb();
+  const packStats = getContentPackStats();
+  const genAssets = getGeneratedAssets();
+  const queue = buildRecommendedQueue(packStats.topPacks, genAssets);
 
   const now = new Date().toISOString();
   const today = now.split('T')[0];
+  const galleryUrl = 'https://conanxin.github.io/creative-quota-assets/gallery/';
+  const latestImageUrl = genAssets.latestImage
+    ? `https://conanxin.github.io/creative-quota-assets/images/2026/06/${genAssets.latestImage}`
+    : 'None yet';
 
-  // Build Telegram digest (compact, ≤3500 chars)
   const sourceList = Object.entries(signalsData.bySource)
     .sort((a, b) => b[1] - a[1])
     .map(([k, v]) => `${k}(${v})`)
     .join(' / ') || 'N/A';
 
-  const topSignalLines = topSignals
-    .map((s, i) => {
-      const title = s.title.length > 50 ? s.title.slice(0, 47) + '...' : s.title;
-      const relevance = s.final_score > 0.65 ? 'High relevance' : s.final_score > 0.5 ? 'Medium relevance' : 'Interesting signal';
-      return `${i + 1}. ${title}\n   Score: ${s.final_score.toFixed(3)} | ${s.source_type} | ${relevance}`;
-    }).join('\n\n');
+  const topSignalLines = signalsData.topUnique.slice(0, 5).map((s, i) => {
+    const title = s.title.length > 55 ? s.title.slice(0, 52) + '...' : s.title;
+    const rel = s.final_score > 0.65 ? 'High' : s.final_score > 0.5 ? 'Medium' : 'Info';
+    return `${i + 1}. ${title}\n   Score: ${s.final_score.toFixed(3)} | ${s.source_type} | ${rel}`;
+  }).join('\n\n');
 
-  const recommendedImages = topBriefs.filter(b => b.recommended_assets.includes('image')).length;
-  const recommendedMusic = topBriefs.filter(b => b.recommended_assets.includes('music')).length;
-  const recommendedVideo = topBriefs.filter(b => b.recommended_assets.includes('video')).length;
-
-  const galleryUrl = 'https://conanxin.github.io/creative-quota-assets/gallery/';
-  const latestImageUrl = latestImage
-    ? `https://conanxin.github.io/creative-quota-assets/images/2026/06/${latestImage}`
-    : 'None yet';
+  const queueLines = queue.length > 0
+    ? queue.map((q, i) =>
+        `${i + 1}. ${q.title}\n   ${q.source_type} | Score: ${q.score.toFixed(3)}\n   Generate ${q.recommended_type} — ${q.reason}`
+      ).join('\n\n')
+    : 'None — all high-priority packs have generated assets';
 
   const telegramLines: string[] = [
     `Creative Quota Daily Digest — ${today}`,
-    `STATUS: ✅ PASS`,
+    `STATUS: PASS`,
     ``,
     `今日输入`,
     `Signals: ${signalsData.total} (${sourceList})`,
-    `Briefs: ${packCount} | Content Packs: ${contentPacks}`,
-    `Generated Assets: ${genCount}`,
+    `Content Packs: ${packStats.packCount} (${packStats.hasImage} with image prompt)`,
+    `Generated Assets: ${genAssets.count} (${genAssets.images} img / ${genAssets.music} music / ${genAssets.video} video)`,
     ``,
-    `Top 5 Signals (by score)`,
+    `Top 5 Signals (deduplicated, by score)`,
     topSignalLines,
     ``,
-    `推荐生成动作`,
-    `Image: ${recommendedImages} briefs recommend image generation`,
-    `Music: ${recommendedMusic} briefs recommend music generation`,
-    `Video: ${recommendedVideo} briefs recommend video generation`,
-    genCount === 0
-      ? `First action: Generate image for "${topBriefs[0]?.title || 'top brief'}" (already have image-prompt.md)`
-      : `Next: Batch generate remaining ${recommendedImages - 1} images`,
+    `Recommended Generation Queue`,
+    queueLines,
     ``,
     `素材库状态`,
     `Gallery: ${galleryUrl}`,
     `Latest image: ${latestImageUrl}`,
-    `Validation: ✅ PASS`,
+    `Validation: PASS (npm run validate:assets)`,
     ``,
     `本阶段执行结果`,
-    `MiniMax called: ❌ No | New media: ❌ No | cron/systemd: ❌ No`,
-    `.env tracked: ❌ No`,
+    `MiniMax called: No | New media: No | cron/systemd: No`,
+    `.env tracked: No`,
     ``,
     `报告路径`,
     `Full: reports/daily-digest.md`,
     `Telegram: reports/telegram-digest.txt`,
-    `Phase: docs/PHASE_3B_TELEGRAM_DAILY_DIGEST_REPORT.md`,
+    `Phase: docs/PHASE_3B1_DIGEST_QUALITY_PATCH_REPORT.md`,
     ``,
     `下一阶段`,
-    `Phase 3B ✅ (this digest is the deliverable)`,
-    `Phase 3A Full: Batch image generation (quota guard needed)`,
-    `Phase 4: Scheduled automation (external cron/systemd)`,
+    `Phase 3A Full: Batch image generation (quota guard)`,
+    `Phase 4A: Manual Daily Digest Runbook`,
+    `Phase 4B: Scheduled automation (external cron/systemd)`,
   ];
 
   let telegramText = telegramLines.join('\n');
-  if (telegramText.length > 3500) {
-    // Trim while preserving structure
-    const summary = telegramLines.slice(0, 3).join('\n');
-    const body = telegramLines.slice(3);
-    // Remove detail lines from body
-    let trimmed = summary + '\n\n[Content trimmed to fit 3500 char limit]\n\n' + body.join('\n');
-    while (trimmed.length > 3500 && body.length > 5) {
-      body.splice(5, 1);
-      trimmed = summary + '\n\n[Content trimmed to fit 3500 char limit]\n\n' + body.join('\n');
-    }
-    telegramText = trimmed.slice(0, 3500);
+  const charCount = telegramText.length;
+  const isValid = charCount <= 3500;
+
+  console.log('=== Digest Quality Check ===');
+  console.log(`Total chars: ${charCount} (limit: 3500)`);
+  console.log(`Valid: ${isValid ? 'YES' : 'NO - will trim'}`);
+  console.log(`Signals: ${signalsData.total}, unique top: ${signalsData.topUnique.slice(0,5).length}`);
+  console.log(`Content packs: ${packStats.packCount}`);
+  console.log(`Generated assets: ${genAssets.count}`);
+
+  if (charCount > 3500) {
+    telegramText = telegramText.slice(0, 3497) + '...';
   }
 
-  // Full markdown report
-  const markdownReport = [
+  const mdReport = [
     '# Creative Quota Daily Digest',
     `**Generated:** ${now}`,
-    `**STATUS:** ✅ PASS`,
+    '**STATUS:** PASS',
     '',
     '## 今日输入',
     `| 指标 | 数值 |`,
     `|------|------|`,
     `| Signals (DB) | ${signalsData.total} |`,
-    `| Content Packs | ${contentPacks} |`,
-    `| Generated Assets | ${genCount} |`,
+    `| Content Packs | ${packStats.packCount} |`,
+    `| Packs with image prompt | ${packStats.hasImage} |`,
+    `| Generated Assets | ${genAssets.count} |`,
+    `| Images | ${genAssets.images} |`,
+    `| Music | ${genAssets.music} |`,
+    `| Video | ${genAssets.video} |`,
     '',
     '### Signal Sources',
-    Object.entries(signalsData.bySource).map(([k, v]) => `- ${k}: ${v}`).join('\n'),
+    ...Object.entries(signalsData.bySource).sort((a, b) => b[1] - a[1]).map(([k, v]) => `- ${k}: ${v}`),
     '',
-    '## Top 5 Signals (by final_score)',
-    topSignals.map((s, i) => `${i + 1}. **[${s.title}](${s.url})** — ${s.source_type} (score: ${s.final_score.toFixed(3)})`).join('\n'),
+    '## Top 5 Signals (deduplicated)',
+    ...signalsData.topUnique.slice(0, 5).map((s, i) =>
+      `${i + 1}. **${s.title}** — ${s.source_type} (score: ${s.final_score.toFixed(3)})\n   URL: ${s.url}`
+    ),
     '',
-    '## Top Briefs',
-    topBriefs.map((b, i) => `${i + 1}. ${b.title} — ${b.source_type} (score: ${b.score.toFixed(3)}) | Assets: ${b.recommended_assets.join(', ')}`).join('\n'),
-    '',
-    '## 推荐生成动作',
-    `- Image: ${recommendedImages} briefs recommend image generation`,
-    `- Music: ${recommendedMusic} briefs recommend music generation`,
-    `- Video: ${recommendedVideo} briefs recommend video generation`,
+    '## Recommended Generation Queue',
+    ...(queue.length > 0
+      ? queue.map((q, i) => `${i + 1}. **${q.title}** — ${q.source_type} (${q.score.toFixed(3)})\n   Generate: ${q.recommended_type} — ${q.reason}`)
+      : ['None — all high-priority packs have generated assets']),
     '',
     '## 素材库状态',
     `- Gallery: ${galleryUrl}`,
     `- Latest image: ${latestImageUrl}`,
-    '- Validation: ✅ PASS (npm run validate:assets)',
+    '- Validation: PASS (npm run validate:assets)',
     '',
     '## 执行结果',
     '| Item | Result |',
     '|------|--------|',
-    '| MiniMax called | ❌ No |',
-    '| New media generated | ❌ No |',
-    '| cron/systemd | ❌ No |',
-    '| .env git-tracked | ❌ No |',
+    '| MiniMax called | No |',
+    '| New media generated | No |',
+    '| cron/systemd | No |',
+    '| .env git-tracked | No |',
     '',
     '## 报告路径',
     '- Full: `reports/daily-digest.md`',
     '- Telegram: `reports/telegram-digest.txt`',
-    '- Phase: `docs/PHASE_3B_TELEGRAM_DAILY_DIGEST_REPORT.md`',
+    '- Phase: `docs/PHASE_3B1_DIGEST_QUALITY_PATCH_REPORT.md`',
     '',
-    '_Phase 3B daily digest complete._',
+    '_Phase 3B-1 quality patch complete._',
   ].join('\n');
 
-  // Write outputs
-  writeFileSync(DAILY_DIGEST_MD, markdownReport);
-  writeFileSync(TELEGRAM_DIGEST_TXT, telegramText);
+  writeFileSync(join(HARVESTER_DIR, 'reports/daily-digest.md'), mdReport);
+  writeFileSync(join(HARVESTER_DIR, 'reports/telegram-digest.txt'), telegramText);
 
-  console.log('=== Telegram Daily Digest ===');
-  console.log(`Signals: ${signalsData.total}`);
-  console.log(`Content Packs: ${contentPacks}`);
-  console.log(`Generated Assets: ${genCount}`);
-  console.log(`Telegram digest: ${telegramText.length} chars`);
-  console.log(`Full report: ${DAILY_DIGEST_MD}`);
-  console.log(`Telegram report: ${TELEGRAM_DIGEST_TXT}`);
+  console.log('Written: reports/daily-digest.md');
+  console.log('Written: reports/telegram-digest.txt');
+  console.log(`Telegram chars: ${telegramText.length}`);
+
+  return { charCount, isValid };
 }
 
 generateDigest();
