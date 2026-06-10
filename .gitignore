@@ -3,9 +3,10 @@ node_modules/
 
 # Environment (never commit secrets)
 .env
-.env.*
 .env.local
 .env.production
+# Exception: .env.example is a template and is safe to commit
+!.env.example
 
 # SQLite signal database
 data/*.db
