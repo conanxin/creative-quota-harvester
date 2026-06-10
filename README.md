@@ -1,42 +1,69 @@
 # Creative Quota Harvester
 
-**Transform real-world signals into reusable AI generation素材.**
+**AI-powered signal collection and creative brief pipeline.**
 
-> 不是随机消耗模型额度，而是基于真实信号生成 Creative Brief、Prompt、Content Pack，并在后续阶段根据 MiniMax Token Plan 剩余额度自动生成图片、音乐、视频等素材。
+> Transforms real-world signals from 7+ sources into reusable Creative Briefs and Content Packs — ready for image, video, music, and webpage generation.
+
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/conanxin/creative-quota-harvester/blob/main/LICENSE)
+[![Phase 2C](https://img.shields.io/badge/Phase-2C-blue.svg)](https://github.com/conanxin/creative-quota-harvester/blob/main/ROADMAP.md)
+
+## What It Does
+
+```
+Signal Collection → Scoring → Creative Brief → Content Pack → Asset Generation (Phase 3A)
+```
+
+1. **Collects signals** from 7+ sources (arXiv, HuggingFace, GitHub, HN, GDELT, Smithsonian, RSS)
+2. **Scores on 5 dimensions** — freshness, relevance, visual potential, social reach, creative angle
+3. **Generates creative briefs** — template-based, no LLM call required
+4. **Exports content packs** — self-contained bundles with prompts, facts, and asset plans
+5. **(Phase 3A) Generates assets** — images, music, video via MiniMax API quota
 
 ## Project Status
 
-**Phase 0A** — Project Initialization & Information Source Pipeline Design  
-Status: `IN_PROGRESS` | Dry-run with mock data
+| Phase | Status | Description |
+|-------|--------|-------------|
+| Phase 0A–2B | ✅ Complete | Signal collection through asset gallery |
+| **Phase 2C** | **✅ Complete** | **GitHub open source publish** |
+| Phase 3A | ⬜ Planned | MiniMax quota-aware generation |
+| Phase 3B | ⬜ Planned | Telegram daily digest |
+| Phase 4 | ⬜ Planned | Scheduled automation |
+
+See [ROADMAP.md](./ROADMAP.md) for full phase history.
 
 ## Two-Repository Architecture
 
 | Repository | Purpose |
 |------------|---------|
-| `creative-quota-harvester` | Main program: source adapters, signal pipeline, quota scheduler, dashboard, Telegram report |
-| `creative-quota-assets` | Open asset library: generated prompts, briefs, metadata, content-packs, gallery |
+| `creative-quota-harvester` | Main program: source adapters, signal pipeline, brief engine |
+| `creative-quota-assets` | Open asset library: content packs, gallery, generated media |
 
-See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) for full design rationale.
-
-## Quick Start (Phase 0A Dry-Run)
+## Quick Start
 
 ```bash
 cd creative-quota-harvester
 npm install
-npx ts-node scripts/run-once.ts
+npm run collect      # Collect signals from all sources
+npm run briefs      # Generate briefs + content packs
+npm run validate:assets  # Validate asset repo
 ```
 
-## Information Sources (Phase 0A)
+## Information Sources
 
-- **Academic:** arXiv AI papers
-- **Code:** GitHub Open Source Radar (external repos only, NOT conanxin/*)
-- **Dev Community:** Hacker News
-- **AI Ecosystem:** Hugging Face Hub
-- **News:** GDELT + RSS
-- **Context:** Open-Meteo, Date/Holidays/Solar Terms
-- **Culture & Art:** The Met Collection, Art Institute of Chicago, Smithsonian Open Access, Wikimedia
+| Source | Type | Status |
+|--------|------|--------|
+| arXiv AI | Academic | ✅ Working |
+| GitHub Open Source Radar | Code | ✅ Working |
+| Hacker News | Dev Community | ✅ Working |
+| Hugging Face Hub | AI Ecosystem | ✅ Working (curl fallback) |
+| The Met Collection | Culture/Art | ✅ Working |
+| GDELT | News | ⚠️ Rate-limited (graceful degradation) |
+| Smithsonian | Culture/Art | ✅ Working |
+| RSS | News | ✅ Working |
 
-See [docs/SOURCE_ADAPTERS.md](./docs/SOURCE_ADAPTERS.md) for adapter specifications.
+**Explicitly excluded:** All `conanxin/*` repositories — external repos only.
+
+See [docs/SOURCE_ADAPTERS.md](./docs/SOURCE_ADAPTERS.md) for full adapter specs.
 
 ## Core Data Model
 
@@ -46,21 +73,24 @@ SourceRecord → SignalRecord → CreativeBrief → AssetPlan → GenerationJob 
 
 See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md#data-model) for entity definitions.
 
-## GitHub Open Source Radar
+## Documentation
 
-**Scope:** Discovers interesting, trending, emerging, and fast-growing external open source projects on GitHub.
+| Doc | Purpose |
+|-----|---------|
+| [ROADMAP.md](./ROADMAP.md) | Full phase history and version log |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | System design and data model |
+| [docs/SOURCE_ADAPTERS.md](./docs/SOURCE_ADAPTERS.md) | Source adapter specifications |
+| [docs/PHASE_1R_SOURCE_RELIABILITY_REPORT.md](./docs/PHASE_1R_SOURCE_RELIABILITY_REPORT.md) | Source reliability and fallback chains |
+| [docs/PHASE_2A_CREATIVE_BRIEF_ENGINE_REPORT.md](./docs/PHASE_2A_CREATIVE_BRIEF_ENGINE_REPORT.md) | Brief engine documentation |
+| [docs/TELEGRAM_FINAL_REPLY_CONTRACT.md](./docs/TELEGRAM_FINAL_REPLY_CONTRACT.md) | Telegram output specification |
 
-**Explicitly EXCLUDED:** All `conanxin/*` repositories — this is an external project radar, not a personal repo watcher.
+## GitHub Repos
 
-**Target topics:** AI Agent, Coding Agent, LLM Tools, MCP, Generative AI, Text-to-Image, Text-to-Video, Music Generation, TTS, Creative Tools, Personal Automation, RAG, Local LLM, Knowledge Management
-
-**Design:** Uses GitHub REST Search API with topic/keyword/stars/pushed filters. Low-frequency calls, cached results, rate limit tracking. No web scraping of GitHub Trending as primary source.
-
-See [docs/SOURCE_ADAPTERS.md](./docs/SOURCE_ADAPTERS.md#github-open-source-radar) for full specification.
-
-## Project Roadmap
-
-See [ROADMAP.md](./ROADMAP.md).
+| Repo | URL |
+|------|-----|
+| `creative-quota-harvester` | https://github.com/conanxin/creative-quota-harvester |
+| `creative-quota-assets` | https://github.com/conanxin/creative-quota-assets |
+| Assets Gallery (GitHub Pages) | https://conanxin.github.io/creative-quota-assets/gallery/ |
 
 ## License
 

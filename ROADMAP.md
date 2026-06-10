@@ -9,7 +9,7 @@
 | 0.3.0 | 2026-06-10 | Phase 1R | ✅ COMPLETE — Source reliability, fallback chains |
 | 0.4.0 | 2026-06-10 | Phase 2A | ✅ COMPLETE — Creative Brief Engine, Content Packs |
 | 0.5.0 | 2026-06-11 | Phase 2B | ✅ COMPLETE — Asset gallery polish, validation, open source prep |
-| 0.6.0 | TBD | Phase 2C | ⬜ NEXT — GitHub open source publish prep |
+| 0.6.0 | 2026-06-11 | Phase 2C | ✅ COMPLETE — GitHub publish, Pages, README polish |
 | 0.7.0 | TBD | Phase 3A | ⬜ Planned — MiniMax quota-aware generation |
 | 0.8.0 | TBD | Phase 3B | ⬜ Planned — Telegram daily report |
 | 0.9.0 | TBD | Phase 4 | ⬜ Planned — Scheduled automation |
@@ -100,24 +100,30 @@
 
 ---
 
-## Phase 2C — GitHub Open Source Publish Prep ⬜
+## Phase 2C — GitHub Open Source Publish Prep ✅
 
-**Goal:** Prepare both repos for public GitHub release.
+**Status:** Complete (2026-06-11)
+
+**Sub-phases:**
+- [x] Phase 2C-0: Asset Repo Path Recovery
+- [x] Phase 2C-1: Open Source Safety Check + Local Git Readiness
+- [x] Phase 2C-2: Create GitHub Repos and Push
+- [x] Phase 2C-3: Public Repo Polish
 
 **Scope:**
-- [ ] Add `.gitignore` to both repos (exclude `node_modules/`, `data/`, `.env`)
-- [ ] Review `data/` signals before publishing
-- [ ] Review `reports/` for any internal content
-- [ ] Manually confirm `gh repo create` commands (manual execution only, no auto)
-- [ ] Configure GitHub Pages for `creative-quota-assets` gallery
-- [ ] First public commit to both repos
+- [x] Safety check: no secrets, no conanxin/* data
+- [x] `.gitignore` for both repos
+- [x] Independent `git init` for both repos
+- [x] Local commits (Phase 2C-1)
+- [x] `gh repo create` for both repos (Phase 2C-2)
+- [x] GitHub Pages enabled for `creative-quota-assets`
+- [x] Root `index.html` → redirects to `gallery/`
+- [x] README and ROADMAP updated and pushed
 
-**Constraints:**
-- ❌ No `gh repo create` auto-execution
-- ❌ No API key exposure
-- ❌ No conanxin/* data in public commits
-
-**Exit Criteria:** Both repos are public on GitHub with correct license files.
+**GitHub URLs:**
+- Harvester: `https://github.com/conanxin/creative-quota-harvester`
+- Assets: `https://github.com/conanxin/creative-quota-assets`
+- Assets Gallery: `https://conanxin.github.io/creative-quota-assets/gallery/`
 
 ---
 
