@@ -1,0 +1,35 @@
+Phase 4E-1 Daily Archive Date & UX Polish -- 2026-06-11
+STATUS: PASS
+
+WHAT CHANGED
+Phase 4E problem: All 3 images attributed to 2026-06-10 (grouped by Content Pack date).
+But all 3 images have generated_at=2026-06-11.
+
+Phase 4E-1 fix: build-daily-archive.ts complete rewrite
+- Content Packs → grouped by pack.created_at
+- Generated Images → grouped by generated_at (or filename parse)
+- daily/index.html: Added date attribution legend
+- Daily detail pages: Show "（当日创建）" vs "（当日生成）"
+- Images display source Content Pack name
+
+DATE ATTRIBUTION CORRECTED
+2026-06-11: 10 Content Packs + 3 生成图片 ✅ (correct)
+2026-06-10: 15 Content Packs + 0 图片 (correct)
+
+Images归到 2026-06-11:
+- cqa-2026-06-11-canary-001_001.jpg (generated_at: 2026-06-11)
+- cqa-2026-06-11-gen-002_001.jpg (generated_at: 2026-06-11)
+- cqa-2026-06-11-gen-003_001.jpg (generated_at: 2026-06-11)
+
+README.md: Updated with date attribution explanation
+
+VALIDATION: 12/12 PASS
+npm run validate:daily-archive: ALL PASS
+
+MINIMAX CALL: No | NEW MEDIA: No
+
+NEXT PHASE
+Phase 4B-2: First Scheduled Run Validation (after tomorrow 07:30)
+Phase 3D: Controlled Image Batch with Guard
+
+Phase 4E-1 complete. Daily archive date attribution corrected.

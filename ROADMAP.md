@@ -22,6 +22,7 @@
 | 0.10.0 | 2026-06-11 | Phase 4C | ✅ COMPLETE — Public gallery Chinese UI refresh (light theme, Chinese-first) |
 | 0.11.0 | 2026-06-11 | Phase 4D | ✅ COMPLETE — Content pack detail enrichment (detail.json + content-summary.zh.md, 25 packs) |
 | 0.12.0 | 2026-06-11 | Phase 4E | ✅ COMPLETE — Daily calendar archive (calendar-index.json + daily pages, 2 days) |
+| 0.12.1 | 2026-06-11 | Phase 4E-1 | ✅ COMPLETE — Daily archive date attribution fix (images归到 generated_at date) |
 
 ---
 
@@ -329,7 +330,15 @@ tail -n 120 logs/daily-scheduled.log
 - [x] `gallery/index.html` — added daily archive link
 - [x] `README.md` — updated with daily archive section
 
-**Archived days:** 2 (2026-06-10: 15 packs + 3 images, 2026-06-11: 10 packs)
+**Archived days:** 2
+- 2026-06-11: 10 Content Packs + 3 generated images (correct attribution)
+- 2026-06-10: 15 Content Packs
+
+**Phase 4E-1 Date Attribution Fix:**
+- Images now correctly归到 `generated_at` date (2026-06-11)
+- Content Packs grouped by pack creation date
+- daily/index.html has date attribution legend
+- Daily detail pages show two sections with clear labels
 
 ---
 
@@ -341,7 +350,6 @@ tail -n 120 logs/daily-scheduled.log
 | Phase | Description | Trigger |
 |-------|-------------|--------|
 | **Phase 4B-2** | First Scheduled Run Validation | After tomorrow 07:30 |
-| **Phase 4B-1 follow-up** | Telegram auto-send hook after digest | Manual |
 | **Phase 3D** | Controlled Image Batch with Guard | Dad confirms |
 | **Phase 5A** | Harvester Read-only Dashboard | Optional |
 
