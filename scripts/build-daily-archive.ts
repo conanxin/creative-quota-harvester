@@ -159,7 +159,7 @@ function buildCalendarIndex(days: Record<string, DayData>) {
       source_types: sourceTypes,
       source_labels_zh: sourceTypes.map(t => stLabels[t] || t),
       top_titles: topTitles.filter(Boolean),
-      detail_url: `daily/${year}/${month}/${date}/`,
+      detail_url: `/creative-quota-assets/daily/${year}/${month}/${date}/`,
     };
   });
 
@@ -198,7 +198,7 @@ function buildCalendarHtml() {
       </div>
       ${stLabelsZh.length > 0 ? `<div class="day-sources">${stLabelsZh.join(' · ')}</div>` : ''}
       <div class="day-note">${day.images.length > 0 && day.packs.length === 0 ? '📅 图片生成日' : ''}</div>
-      <a class="day-link" href="daily/${year}/${month}/${day.date}/">查看当日内容 →</a>
+      <a class="day-link" href="/creative-quota-assets/daily/${year}/${month}/${day.date}/">查看当日内容 →</a>
     </div>`;
   }).join('');
 
@@ -251,7 +251,7 @@ function buildCalendarHtml() {
         <div class="legend-item"><div class="legend-dot img"></div>生成图片日期（实际图片生成日期）</div>
       </div>
       <div class="nav-links">
-        <a href="../gallery/">← 返回 Gallery</a>
+        <a href="/creative-quota-assets/gallery/">← 返回 Gallery</a>
         <a href="https://github.com/conanxin/creative-quota-assets">GitHub</a>
       </div>
     </header>
@@ -289,9 +289,9 @@ function buildDayDetailPage(day: DayData) {
 
   const packCards = day.packs.sort((a, b) => (b.score || 0) - (a.score || 0)).map(pack => {
     const relPath = pack.detail_path
-      ? pack.detail_path.replace('content-packs/', '').replace(/[^/]+\/$/, '')
+           ? pack.detail_path.replace('content-packs/', '').replace(/\/[^/]+\/?$/, '/')
       : '';
-    const hrefPrefix = relPath ? `../../../../../${relPath}` : '';
+    const hrefPrefix = relPath ? `../../../../${relPath}` : '';
     const useChips = pack.recommended_assets.map(u =>
       `<span class="use-chip">${useLabels[u] || u}</span>`
     ).join('');
@@ -380,8 +380,8 @@ function buildDayDetailPage(day: DayData) {
     <header>
       <h1><span>📅</span> ${day.date} 创意档案</h1>
       <div class="nav-links">
-        <a href="../../">← 返回日历</a>
-        <a href="../../gallery/">← Gallery</a>
+        <a href="../../../">← 返回日历</a>
+        <a href="/creative-quota-assets/gallery/">← Gallery</a>
       </div>
     </header>
     <div class="stats-bar">

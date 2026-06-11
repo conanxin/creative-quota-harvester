@@ -28,6 +28,24 @@ ROOT CAUSE ANALYSIS
 
 Daily link 404: href="daily/" resolved to /gallery/daily/ not /creative-quota-assets/daily/
 
+LOCAL PREVIEW (python3 -m http.server 8766)
+Status: All paths return HTTP 200
+/gallery/:200 ✅
+/daily/: 200 ✅
+/gallery/assets.json: 200 ✅
+/metadata/content-pack-index.json: 200 ✅
+/metadata/generated-assets.json: 200 ✅
+gallery/index.html contains: AI 创意素材库, /creative-quota-assets/daily/ ✅
+
+PUBLIC URL CHECK (GitHub Pages)
+Status: All paths return HTTP 200 (no cache delay)
+https://conanxin.github.io/creative-quota-assets/gallery/: 200 ✅
+https://conanxin.github.io/creative-quota-assets/daily/: 200 ✅
+https://conanxin.github.io/creative-quota-assets/gallery/assets.json: 200 ✅
+https://conanxin.github.io/creative-quota-assets/metadata/content-pack-index.json: 200 ✅
+https://conanxin.github.io/creative-quota-assets/daily/2026/06/2026-06-11/: 200 ✅
+https://conanxin.github.io/creative-quota-assets/daily/2026/06/2026-06-10/: 200 ✅
+
 VALIDATION RESULTS
 gallery/index.html: ✅ exists
 No href="daily/": ✅ (fixed to /creative-quota-assets/daily/)
@@ -44,7 +62,9 @@ No API key leaks: ✅
 
 npm run validate:public-gallery: 17/17 PASS
 
-GITHUB PUSH: pending
+GITHUB PUSH
+creative-quota-assets: b0ac3bf ✅
+creative-quota-harvester: bc9aa72 ✅
 
 MINIMAX CALL: No | NEW MEDIA: No
 

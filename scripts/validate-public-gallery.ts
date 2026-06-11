@@ -123,8 +123,9 @@ function main() {
       const cal = JSON.parse(readFileSync(calPath, 'utf8'));
       let dayPagesOk = 0;
       for (const day of cal.days || []) {
-        const detailUrl = day.detail_url || '';
-        const dayDir = join(ASSETS, 'daily', detailUrl.replace(/^daily\//, '').replace(/\/$/, ''));
+             const detailUrl = day.detail_url || '';
+        const raw = detailUrl.replace(/^\//, '').replace(/\/$/, '').replace(/^creative-quota-assets\//, '');
+        const dayDir = join(ASSETS, raw);
         if (existsSync(join(dayDir, 'index.html'))) dayPagesOk++;
       }
       checks.push(check(dayPagesOk === cal.days.length, 'All daily day pages exist', `${dayPagesOk}/${cal.days.length}`));
