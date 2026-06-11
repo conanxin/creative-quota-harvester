@@ -1,0 +1,41 @@
+Phase 4B-0 Scheduled Automation Dry Run -- 2026-06-11
+STATUS: PASS
+
+WHAT CHANGED
+- scripts/daily-scheduled.sh -- bash wrapper for scheduled digest
+- systemd/creative-quota-digest.service -- systemd oneshot unit
+- systemd/creative-quota-digest.timer -- timer template (07:30 CST daily, NOT installed)
+- docs/SCHEDULED_DAILY_DIGEST_RUNBOOK.md -- install instructions + usage
+
+DRY RUN RESULT
+bash scripts/daily-scheduled.sh: SUCCESS
+npm run digest:telegram: PASS
+npm run digest:telegram:check: PASS (8/8 checks)
+
+DIGEST OUTPUTS
+Signals: 298 | Content Packs: 25 | Generated Assets: 3
+Digest chars: 1666 (limit: 3500)
+
+TIMER STATUS
+systemd timer: NOT INSTALLED (Phase 4B-0 templates only)
+Timer install command: docs/SCHEDULED_DAILY_DIGEST_RUNBOOK.md
+
+MiniMax called: No | New media: No | cron/systemd: No
+
+HOW TO ENABLE TIMER (Phase 4B-1)
+mkdir -p ~/.config/systemd/user/
+cp systemd/creative-quota-digest.service ~/.config/systemd/user/
+cp systemd/creative-quota-digest.timer ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now creative-quota-digest.timer
+
+NEXT STEPS
+Phase 4B-1: Enable systemd timer (requires user confirmation)
+Phase 3D: Controlled Image Batch with Guard
+
+Reports
+Phase 4B-0 Report: docs/PHASE_4B0_SCHEDULED_AUTOMATION_DRY_RUN_REPORT.md
+Scheduler Dry Run: reports/scheduler-dry-run.md
+Runbook: docs/SCHEDULED_DAILY_DIGEST_RUNBOOK.md
+
+Phase 4B-0 complete. Templates ready for Phase 4B-1 enablement.

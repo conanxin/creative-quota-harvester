@@ -1,0 +1,17 @@
+[Unit]
+Description=Creative Quota Harvester — Daily Digest Timer (Phase 4B-0)
+# Fires at 07:30 CST (23:30 UTC) every day
+# Does NOT call MiniMax. Does NOT generate media.
+# Only runs the digest pipeline.
+
+[Timer]
+# Run at 07:30 CST (UTC+8) every day
+# UTC equivalent: 23:30 previous day
+OnCalendar=*-*-* 07:30:00
+# If the machine was off at the scheduled time, run once at next boot
+Persistent=true
+# Run immediately after systemd starts (good for development/testing)
+#AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

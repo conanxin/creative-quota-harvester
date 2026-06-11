@@ -3,7 +3,7 @@ STATUS: PASS
 
 今日输入
 Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11))
-Content Packs: 20 (20 with image prompt)
+Content Packs: 25 (25 with image prompt)
 Generated Assets: 3 (3 img / 0 music / 0 video)
 
 Top 5 Signals (deduplicated, by score)

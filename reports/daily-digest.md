@@ -1,13 +1,13 @@
 # Creative Quota Daily Digest
-**Generated:** 2026-06-11T01:10:51.514Z
+**Generated:** 2026-06-11T01:22:40.202Z
 **STATUS:** PASS
 
 ## 今日输入
 | 指标 | 数值 |
 |------|------|
 | Signals (DB) | 298 |
-| Content Packs | 20 |
-| Packs with image prompt | 20 |
+| Content Packs | 25 |
+| Packs with image prompt | 25 |
 | Generated Assets | 3 |
 | Images | 3 |
 | Music | 0 |

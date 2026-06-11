@@ -1,0 +1,18 @@
+[Unit]
+Description=Creative Quota Harvester — Daily Digest (Phase 4B-0)
+# Runs daily-manual.ts → collect → briefs → digest → check
+# Does NOT call MiniMax. Does NOT generate media.
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/.openclaw/workspace/projects/creative-quota-harvester
+ExecStart=/bin/bash scripts/daily-scheduled.sh
+# PATH must include node/npm/tsx
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
+# No API keys in this unit — secrets are in the project's .env which is gitignored
+# No MiniMax calls — this only runs digest pipeline
+StandardOutput=journal
+StandardError=journal
+
+# If the digest fails, do not restart the service repeatedly
+Restart=no
