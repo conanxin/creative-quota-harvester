@@ -23,7 +23,8 @@
     "enrich:content": "tsx scripts/enrich-content-packs.ts",
     "validate:enrichment": "tsx scripts/validate-content-enrichment.ts",
     "archive:daily": "tsx scripts/build-daily-archive.ts",
-    "validate:daily-archive": "tsx scripts/validate-daily-archive.ts"
+    "validate:daily-archive": "tsx scripts/validate-daily-archive.ts",
+    "validate:public-gallery": "tsx scripts/validate-public-gallery.ts"
   },
   "keywords": [
     "ai",

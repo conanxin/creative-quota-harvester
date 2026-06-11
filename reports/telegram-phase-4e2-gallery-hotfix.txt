@@ -1,0 +1,55 @@
+Phase 4E-2 Gallery Data Loading & Daily Link Hotfix -- 2026-06-11
+STATUS: PASS
+
+WHAT CHANGED
+gallery/index.html: Complete fix
+1. BASE path resolution: Added getBase() function
+   - GitHub Pages: /creative-quota-assets/
+   - Local dev: ../
+2. Fixed daily archive links:
+   - Before: href="daily/" (wrong: /gallery/daily/)
+   - After: href="/creative-quota-assets/daily/" (correct)
+3. Fixed metadata fetch path using BASE
+4. Fixed loadData return type: {assets, BASE}
+5. Updated bootstrap to destructure result correctly
+
+gallery/assets.json: Rebuilt from content-pack-index.json
+- Before: 16 assets, only 10 with content_pack_dir
+- After: 30 assets, 28 with content_pack_dir
+- Now includes all 25 content packs + 3 generated images + 2 prompt-text
+
+scripts/validate-public-gallery.ts: New validation script
+- 17/17 checks PASS
+
+ROOT CAUSE ANALYSIS
+"正在加载素材...": assets.json missing content_pack_dir for most items
+- Stats used packSet.size (based on content_pack_dir) which was 0
+- Image loading relied on fetch paths that didn't resolve on GitHub Pages
+
+Daily link 404: href="daily/" resolved to /gallery/daily/ not /creative-quota-assets/daily/
+
+VALIDATION RESULTS
+gallery/index.html: ✅ exists
+No href="daily/": ✅ (fixed to /creative-quota-assets/daily/)
+BASE path resolution: ✅
+assets.json valid: ✅ (30 items, 28 with content_pack_dir)
+content-pack-index.json: ✅ (25 packs)
+generated-assets.json: ✅ (3 images)
+daily/index.html: ✅
+calendar-index.json: ✅ (2 days)
+All daily day pages: ✅ (2/2)
+No "No Real Media Generated Yet": ✅
+No [truncated]: ✅
+No API key leaks: ✅
+
+npm run validate:public-gallery: 17/17 PASS
+
+GITHUB PUSH: pending
+
+MINIMAX CALL: No | NEW MEDIA: No
+
+NEXT PHASE
+Phase 4B-2: First Scheduled Run Validation (after tomorrow 07:30)
+Phase 3D: Controlled Image Batch with Guard
+
+Phase 4E-2 complete. Gallery data loading and daily link fixed.
