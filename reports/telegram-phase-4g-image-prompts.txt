@@ -1,31 +1,45 @@
-✅ Phase 4G: Source-aware Image Prompt Enhancement — DONE
+PHASE 4G COMPLETE
 
-📊 Results:
-  • 25/25 content packs enhanced (100%)
-  • 508/508 validation checks passed
-  • 75 new files generated (3 per pack)
-  • 0 LLM calls, 0 external API calls
+状态：PASS ✅
 
-🎨 5 Strategies by Source Type:
-  • code → GitHub repo cover + agent workflow diagram (16:9, tech editorial)
-  • academic → Paper concept diagram + academic infographic (4:3, Tufte style)
-  • ai-ecosystem → Model card hero + pipeline flow (16:9, HF-inspired)
-  • dev-community → Developer pain point poster (1:1, pastel editorial)
-  • culture-art → Museum lighting + art reinterpretation (4:5, warm classical)
+# Phase 4G 来源感知图片 Prompt 增强
 
-📁 New files per pack:
-  • image-prompt.enriched.md (intent + English prompt + negative + params)
-  • image-prompt.zh.md (human-readable Chinese explanation)
-  • image-prompt.meta.json (machine-readable metadata)
+Date: 2026-06-11 | Packs: 25/25 (100%)
+LLM Calls: 0 | MiniMax Calls: 0 | New Media: 0
 
-🖼️ Gallery & Detail Pages:
-  • "✨ Enhanced Prompt" badge on all 5 gallery cards
-  • Enhanced prompt card with collapsible sections on detail pages
-  • Links: enriched.md, zh.md, meta.json
+## What Changed
+New scripts:
+- enhance-image-prompts.ts — Zero-LLM enhancer
+- validate-image-prompt-enhancement.ts — 508-check validation
 
-🔧 New npm scripts:
-  • npm run prompts:image:enhance
-  • npm run validate:image-prompts
+Per pack (3 files):
+- image-prompt.enriched.md — 中文意图 + 英文 Prompt + Negative + 参数
+- image-prompt.zh.md — 中文说明
+- image-prompt.meta.json — 结构化元数据
 
-📄 Report: docs/PHASE_4G_SOURCE_AWARE_IMAGE_PROMPTS_REPORT.md
-📁 Assets: reports/source-aware-image-prompts.md
+Updated:
+- build-content-pack-pages.ts — 详情页显示增强 Prompt 链接
+- build-gallery-from-dedup.ts — 卡片显示「增强图片 Prompt 已就绪」
+
+## Source-Type Strategies
+code → 仓库封面 + 工作流架构图 (isometric, dark indigo)
+academic → 学术海报 + 概念图 (navy, ivory, gold)
+ai-ecosystem → 模型能力图 (pipeline flow, clean tech)
+dev-community → 开发者痛点海报 (bold typography)
+culture-art → 博物馆重绎 (dramatic spotlight, oil texture)
+
+## Validation
+image-prompts:       508/508 ✅
+content-pack-pages: 260/260 ✅
+gallery-dedup:        19/19 ✅
+public-gallery:       30/30 ✅
+daily-archive:      12/12 ✅
+
+## GitHub Push
+Assets: cab558d | Harvester: 68cbd36
+
+## Next Phase
+Phase 4H: Video Prompt Enhancement (same zero-LLM approach)
+
+报告路径：
+projects/creative-quota-harvester/reports/source-aware-image-prompts.md

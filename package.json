@@ -37,6 +37,7 @@
     "enrich:facts:force": "tsx scripts/enrich-facts-from-sources.ts --force",
     "validate:facts-enrichment": "tsx scripts/validate-facts-enrichment.ts",
     "prompts:image:enhance": "tsx scripts/enhance-image-prompts.ts",
+    "generate:controlled:images": "tsx scripts/generate-controlled-image-batch.ts",
     "validate:image-prompts": "tsx scripts/validate-image-prompt-enhancement.ts"
   },
   "keywords": [
