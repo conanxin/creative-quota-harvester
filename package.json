@@ -28,6 +28,7 @@
     "validate:daily-archive": "tsx scripts/validate-daily-archive.ts",
     "validate:public-gallery": "tsx scripts/validate-public-gallery.ts",
     "gallery:static": "tsx scripts/build-static-gallery.ts",
+    "validate:content-pack-pages": "tsx scripts/validate-content-pack-pages.ts",
     "validate:mobile-gallery": "tsx scripts/validate-mobile-gallery.ts"
   },
   "keywords": [
