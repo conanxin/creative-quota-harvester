@@ -15,6 +15,7 @@
     "generate:image:dry-run": "npx ts-node src/generators/minimax-image-canary.ts --dry-run",
     "generate:image:confirmed": "CQA_ALLOW_GENERATION=1 npx ts-node src/generators/minimax-image-canary.ts --confirm-spend",
     "guard:check": "npx ts-node scripts/check-generation-guard.ts",
+    "daily:manual": "npx ts-node scripts/daily-manual.ts",
     "digest:telegram": "npx ts-node src/reports/telegram-daily-digest.ts",
     "digest:telegram:check": "npx ts-node scripts/check-telegram-digest.ts",
     "type-check": "npx tsc --noEmit",

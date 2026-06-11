@@ -1,3 +1,12 @@
+Manual Daily Digest Run -- 2026-06-11
+STATUS: PASS
+
+Run Steps: collect (skipped, data fresh) | digest:telegram PASS | check PASS
+
+Signals: 298 (academic(40), ai-ecosystem(66), code(110), context(11), culture-art(28), dev-community(43))
+Content Packs: 20 | Generated Assets: 3
+
+--- Digest Content ---
 Creative Quota Daily Digest — 2026-06-11
 STATUS: PASS
 
@@ -53,3 +62,13 @@ Phase: docs/PHASE_3B1_DIGEST_QUALITY_PATCH_REPORT.md
 Phase 3A Full: Batch image generation (quota guard)
 Phase 4A: Manual Daily Digest Runbook
 Phase 4B: Scheduled automation (external cron/systemd)
+
+--- Next Steps ---
+Phase 4B: Scheduled automation (external cron/systemd)
+Phase 3D: Controlled Image Batch with Guard (use: npm run generate:image:confirmed)
+
+Runbook: docs/MANUAL_DAILY_DIGEST_RUNBOOK.md
+Phase 4A Report: docs/PHASE_4A_MANUAL_DAILY_DIGEST_REPORT.md
+Manual Run Report: reports/manual-daily-run.md
+
+Manual Daily Digest Run complete.

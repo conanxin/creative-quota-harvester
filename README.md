@@ -31,7 +31,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | Phase 3B-2 | ✅ Complete | Telegram digest delivery contract patch |
 | Phase 3A Full | ✅ Complete | Batch image generation (2 images generated) |
 | Phase 3C | ✅ Complete | MiniMax quota guard + explicit generation command |
-| Phase 4A | ⬜ Planned | Manual Daily Digest Runbook |
+| Phase 4A | ✅ Complete | Manual daily digest runbook |
 | Phase 4B | ⬜ Planned | Scheduled automation (external cron/systemd) |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
@@ -49,8 +49,10 @@ See [ROADMAP.md](./ROADMAP.md) for full phase history.
 cd creative-quota-harvester
 npm install
 npm run collect      # Collect signals from all sources
-npm run briefs      # Generate briefs + content packs
-npm run validate:assets  # Validate asset repo
+npm run briefs       # Generate briefs + content packs
+npm run digest:telegram     # Generate Telegram daily digest
+npm run digest:telegram:check  # Validate digest
+npm run daily:manual  # One-command daily run (collect → briefs → digest → check)
 ```
 
 ## Information Sources

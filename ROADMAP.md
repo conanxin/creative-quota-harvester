@@ -16,7 +16,7 @@
 | 0.8.2 | 2026-06-11 | Phase 3B-2 | ✅ COMPLETE — Telegram digest delivery contract patch |
 | 0.9.1 | 2026-06-11 | Phase 3A Full | ✅ COMPLETE — Batch image generation, 2 new images (184KB + 353KB) |
 | 0.9.2 | 2026-06-11 | Phase 3C | ✅ COMPLETE — MiniMax quota guard + explicit generation command |
-| 0.9.3 | TBD | Phase 4A | ⬜ Planned — Manual Daily Digest Runbook |
+| 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | TBD | Phase 4B | ⬜ Planned — Scheduled automation (external cron/systemd) |
 
 ---
@@ -227,15 +227,20 @@
 
 ---
 
-## Phase 4A — Manual Daily Digest Runbook ⬜
+## Phase 4A — Manual Daily Digest Runbook ✅
 
-**Goal:** Document how to run the digest manually each day.
+
+**Status:** Complete (2026-06-11)
+**Command:** `npm run daily:manual`
 
 **Scope:**
-- [ ] Step-by-step runbook for `npm run digest:telegram`
-- [ ] How to check quota before batch image generation
-- [ ] How to read the digest output
-- [ ] Troubleshooting common issues
+- [x] `scripts/daily-manual.ts` — one-command daily run (collect → briefs → digest → check)
+- [x] `npm run daily:manual` — manual daily digest command
+- [x] `docs/MANUAL_DAILY_DIGEST_RUNBOOK.md` — full runbook with step-by-step, troubleshooting, quick reference
+- [x] `reports/telegram-digest.txt` — single-message Telegram digest
+- [x] `reports/manual-daily-run.md` — manual run execution report
+
+**Note:** Phase 4B will add systemd timer / cron for automatic daily execution.
 
 ---
 
