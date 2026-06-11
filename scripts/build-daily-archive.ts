@@ -289,7 +289,7 @@ function buildDayDetailPage(day: DayData) {
 
   const packCards = day.packs.sort((a, b) => (b.score || 0) - (a.score || 0)).map(pack => {
     const relPath = pack.detail_path
-           ? pack.detail_path.replace('content-packs/', '').replace(/\/[^/]+\/?$/, '/')
+           ? pack.detail_path.replace(/\/[^/]+\/?$/, '/')
       : '';
     const hrefPrefix = relPath ? `../../../../${relPath}` : '';
     const useChips = pack.recommended_assets.map(u =>
