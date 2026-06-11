@@ -15,7 +15,7 @@
 | 0.8.1 | 2026-06-11 | Phase 3B-1 | ✅ COMPLETE — Daily digest quality patch (dedup + structured counting) |
 | 0.8.2 | 2026-06-11 | Phase 3B-2 | ✅ COMPLETE — Telegram digest delivery contract patch |
 | 0.9.1 | 2026-06-11 | Phase 3A Full | ✅ COMPLETE — Batch image generation, 2 new images (184KB + 353KB) |
-| 0.9.2 | TBD | Phase 3C | ⬜ Planned — MiniMax quota guard |
+| 0.9.2 | 2026-06-11 | Phase 3C | ✅ COMPLETE — MiniMax quota guard + explicit generation command |
 | 0.9.3 | TBD | Phase 4A | ⬜ Planned — Manual Daily Digest Runbook |
 | 0.9.4 | TBD | Phase 4B | ⬜ Planned — Scheduled automation (external cron/systemd) |
 

@@ -1,0 +1,83 @@
+Phase 3C MiniMax Quota Guard and Explicit Generation Command -- 2026-06-11
+STATUS: PASS
+
+=== WHAT_CHANGED ===
+
+New files:
+- src/generators/generation-guard.ts -- Two-layer guard (ambiguity blocking + policy enforcement)
+- src/generators/minimax-quota-guard.ts -- Quota check via mmx quota (blocks below 50%)
+- src/generators/minimax-image-canary.ts -- Updated with guard integration + dry-run mode
+- scripts/check-generation-guard.ts -- 12 test cases, all PASS
+- config/generation-policy.example.json -- Policy configuration template
+- docs/MINIMAX_QUOTA_GUARD_DESIGN.md -- Updated with Phase 3C implementation
+
+New npm scripts:
+- npm run guard:check -- Run generation guard test suite
+- npm run generate:image:dry-run -- Dry-run mode (no MiniMax call)
+- npm run generate:image:confirmed -- Real generation (requires CQA_ALLOW_GENERATION=1 + --confirm-spend)
+
+=== INCIDENT REVIEW ===
+
+What happened: User sent "continue" -> OpenClaw triggered Phase 3A Full -> 2 real MiniMax images generated.
+Root cause: No generation guard existed. Ambiguous commands were not blocked.
+Fix: Guard now blocks ambiguous commands + requires explicit confirm_spend for real generation.
+
+=== GUARD RULES ===
+
+Block ambiguous commands: "continue" / "continue" / "run next" / "go" / "execute" -> DENY
+Require explicit media_type: must be image / music / video
+Require confirm_spend: false -> DENY (unless dry-run)
+Image limit: max 2 per run (exceed = DENY)
+Music: disabled by default -> DENY
+Video: disabled by default -> DENY
+Dry-run: always allowed when other checks pass
+
+=== QUOTA GUARD RULES ===
+
+General interval < 50% -> BLOCK
+Quota read error -> BLOCK (fail-safe)
+Music/Video disabled by default (opt-in required)
+
+=== VERIFICATION RESULTS ===
+
+npm run guard:check: PASS (12/12)
+npm run generate:image:dry-run: PASS
+MiniMax called: No
+New media generated: No
+cron/systemd: No
+.env git-tracked: No
+
+Quota status (from dry-run): general 58% interval / 66% weekly (above threshold, ALLOW)
+
+=== DRY-RUN OUTPUT ===
+
+[Generation Guard] ALLOW_DRY_RUN: Dry-run allowed. media_type=image, max_count=1.
+[Quota Guard] SKIPPED (dry-run mode).
+MiniMax Quota Status: general 58% interval / 66% weekly | video 100% interval | Decision: ALLOW
+
+Selected pack: brief-brief-mq8c663q-4-stabilityai-stable-video-diffusion-img2vid-xt
+Source: ai-ecosystem
+Prompt: Futuristic depiction of machine learning landscape...
+
+[Dry-Run] Would generate: 1 image | Output: .../images/YYYY/MM/cqa-YYYY-MM-DD-canary-001_001.jpg
+Dry-run complete. No image generated.
+
+=== LIMITATIONS ===
+
+Quota check runs via mmx CLI (requires socks5 proxy unset). If mmx quota fails, guard blocks by default (fail-safe).
+
+=== REPORTS ===
+
+Phase 3C Report: docs/PHASE_3C_MINIMAX_QUOTA_GUARD_REPORT.md
+Quota Guard Design: docs/MINIMAX_QUOTA_GUARD_DESIGN.md
+Guard Check Script: scripts/check-generation-guard.ts
+
+=== NEXT PHASE OPTIONS ===
+
+Phase 3D: Controlled Image Batch with Guard -- use generate:image:confirmed with full guard
+Phase 4A: Manual Daily Digest Runbook
+Phase 4B: Scheduled automation (external cron/systemd)
+
+Decision: Dad decides.
+
+Phase 3C complete. Generation guard active.

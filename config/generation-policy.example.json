@@ -1,0 +1,12 @@
+{
+  "max_images_per_run": 2,
+  "max_music_per_run": 0,
+  "max_video_per_run": 0,
+  "min_general_remaining_percent": 50,
+  "min_weekly_remaining_percent": 50,
+  "require_explicit_confirm": true,
+  "block_ambiguous_continue": true,
+  "allow_music": false,
+  "allow_video": false,
+  "note": "Copy this file to generation-policy.local.json and customize. generation-policy.local.json is gitignored."
+}
