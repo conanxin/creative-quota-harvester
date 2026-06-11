@@ -155,4 +155,76 @@ systemctl --user list-timers | grep creative-quota-digest
 
 ---
 
-_Runbook v1.0 — Phase 4B-0 (dry run templates only)_
+## PHASE 4B-2: FIRST SCHEDULED RUN VALIDATION ✅
+
+**Date:** 2026-06-12  
+**Validation Status:** PASS
+
+### First Scheduled Run Result
+
+| Property | Value |
+|----------|-------|
+| Scheduled Run Time | Fri 2026-06-12 07:30:00 CST |
+| Actual Run Time | Fri 2026-06-12 07:30:01 CST |
+| Exit Status | 0/SUCCESS ✅ |
+| CPU Time | 3.392s |
+| Next Run | Sat 2026-06-13 07:30:00 CST |
+
+### Run History
+
+```
+Jun 11 09:29:24 — First enable-time run (SUCCESS, 2.887s)
+Jun 12 07:30:01 — First scheduled 07:30 run (SUCCESS, 3.392s)
+```
+
+Both runs exited 0 with no errors.
+
+### Digest Output Quality
+
+| Check | Result |
+|-------|--------|
+| reports/daily-digest.md | Updated (2.1K) ✅ |
+| reports/telegram-digest.txt | Updated (1.7K) ✅ |
+| telegram-digest:check | PASS ✅ |
+| Char count | 1666 ≤ 3500 ✅ |
+| No [truncated] | ✅ |
+| No large JSON | ✅ |
+
+### Safety Verification
+
+| Check | Result |
+|-------|--------|
+| MiniMax called | No ✅ |
+| New images generated | No ✅ |
+| Music generated | No ✅ |
+| Video generated | No ✅ |
+| .env tracked | No ✅ |
+| Timer modified | No ✅ |
+
+### How to Tell If Scheduled Run Succeeded
+
+1. Check timer: `systemctl --user status creative-quota-digest.timer` → look for "active (waiting)"
+2. Check service: `systemctl --user status creative-quota-digest.service` → look for "0/SUCCESS" and timestamp
+3. Check log: `tail -n 40 logs/daily-scheduled.log` → look for "Result: SUCCESS"
+4. Check digest: `npm run digest:telegram:check` → should PASS
+5. Check files: `ls -la reports/telegram-digest.txt` → should have recent timestamp
+
+### How to Troubleshoot Failure
+
+1. **Check systemd journal**: `journalctl --user -u creative-quota-digest.service -n 40`
+2. **Check wrapper log**: `tail -n 40 logs/daily-scheduled.log`
+3. **Common issues**:
+   - `node`/`npm` not found → check PATH in service unit
+   - Permission denied → check `daily-scheduled.sh` is executable
+   - `.env` missing → digest doesn't need it, but generation does
+   - Network timeout → digest logs warning, continues
+
+### Next Steps
+
+1. **Phase 4B-3**: Long-term monitoring (1 week run observation)
+2. **Phase 4B-4**: Telegram auto-send integration (if desired)
+3. **Phase 4H**: Video Prompt Enhancement
+
+---
+
+_Runbook v1.1 — Phase 4B-2 (first scheduled run validated)_

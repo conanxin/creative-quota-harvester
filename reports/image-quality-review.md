@@ -1,70 +1,103 @@
-# Image Quality Review Summary
+# Phase 3E Image Quality Review & Asset Scoring Report
 
-**Generated**: 2026-06-11 | **Phase**: 3E | **Total images**: 5
-
----
-
-## Quick Stats
-
-| Metric | Value |
-|--------|-------|
-| Average score | 96% |
-| Excellent images | 5/5 (100%) |
-| Source types covered | 5/5 |
-| Phase 4G prompts used | 5/5 |
-| Phase 4F facts used | 4/5 |
+**Status**: ✅ PASS  
+**Date**: 2026-06-12  
+**Images Reviewed**: 5/5 (100%)  
+**LLM Calls**: 0  
+**MiniMax Calls**: 0  
+**New Media Generated**: 0
 
 ---
 
-## Per-Image Scores
+## What Changed
 
-| Image | Type | Tech | Prompt | Source | Use | Div | Total |
-|-------|------|------|--------|--------|-----|-----|--------|
-| cqa-2026-06-11-canary-001_001.jpg | academic | 20 | 17 | 20 | 20 | 19 | **96** |
-| cqa-2026-06-11-gen-002_001.jpg | code | 18 | 20 | 20 | 20 | 19 | **97** |
-| cqa-2026-06-11-gen-003_001.jpg | culture-art | 18 | 20 | 20 | 19 | 19 | **96** |
-| cqa-2026-06-11-gen-004_001.jpg | dev-community | 18 | 20 | 20 | 19 | 20 | **97** |
-| cqa-2026-06-11-gen-005_001.jpg | ai-ecosystem | 18 | 17 | 20 | 20 | 19 | **94** |
+### New Scripts
+- `scripts/review-generated-images.ts` — Rule-based image quality reviewer
+- `scripts/validate-image-reviews.ts` — 147-check validation suite
+
+### Per Image Output
+- `.review.zh.md` — Full quality review markdown (5 files)
+- `generated-assets-review.json` — Structured review data
+- `asset-quality-scores.json` — Ranked scores & coverage gaps
+
+### Updated Gallery
+- Shows quality badge (⭐ 优秀 · 96/100)
+- Shows "质量评审" link
+- Shows recommended uses
+
+### Updated Detail Pages
+- Shows image review links
+- Shows quality labels
 
 ---
 
-## Quality Distribution
+## Review Method
 
-```
-⭐ excellent: 5  (100%)
-✅ good:      0
-⚠️ fair:      0
-❌ poor:      0
-```
+Rule-based scoring (NO LLM, NO visual model, NO API calls):
+
+| Dimension | Weight | Criteria |
+|-----------|--------|----------|
+| technical_validity | 20 pts | file exists, size ≥100KB, metadata complete, URL accessible |
+| prompt_alignment | 20 pts | enriched prompt used, source facts, recommended use, aspect ratio |
+| source_relevance | 20 pts | matches content pack, matches source_type, Phase 4F/4G used |
+| usability | 20 pts | gallery-ready, x-post-ready, clear purpose, cover potential |
+| diversity_and_coverage | 20 pts | new source type, low duplication, coverage improvement |
 
 ---
 
-## Source Type Coverage
+## Score Distribution
 
-| Source Type | Images | Status |
-|-------------|--------|--------|
-| academic | 1 | ✅ |
+| Image | Score | Label | Source Type |
+|-------|-------|-------|-------------|
+| SamurAIGPT (gen-002) | 97 | ⭐ 优秀 | code |
+| Flaws in LLM (canary-001) | 96 | ⭐ 优秀 | academic |
+| Saint Jerome (gen-003) | 96 | ⭐ 优秀 | culture-art |
+| River AI (gen-004) | 94 | ⭐ 优秀 | dev-community |
+| stabilityai (gen-005) | 95 | ⭐ 优秀 | ai-ecosystem |
+
+**Average**: 95.6/100  
+**All 5 rated ⭐ 优秀**
+
+---
+
+## Coverage
+
+| Source Type | Count | Status |
+|-------------|-------|--------|
 | code | 1 | ✅ |
+| academic | 1 | ✅ |
 | culture-art | 1 | ✅ |
 | dev-community | 1 | ✅ |
 | ai-ecosystem | 1 | ✅ |
 
----
-
-## Recommended Uses Summary
-
-| Image | Top Recommended Uses |
-|-------|---------------------|
-| canary-001 |学术海报封面, 论文摘要配图, 信息图 |
-| gen-002 | GitHub 仓库封面, 工具能力图, X 帖头图 |
-| gen-003 | 艺术品介绍配图, 风格致敬图, 文化话题封面 |
-| gen-004 | 社区讨论海报, 开发者痛点图, X 帖分享 |
-| gen-005 | HF 模型卡 hero, 能力对比图, 能力边界分析配图 |
+**All 5 source types covered!** No gaps.
 
 ---
 
-## Artifacts
+## Validation Results
 
-- `metadata/generated-assets-review.json` — Full review summary
-- `metadata/asset-quality-scores.json` — Score table
-- `images/.../*.review.zh.md` — Per-image review docs
+```
+validate:image-reviews       147/147 PASS ✅
+validate:content-pack-pages  260/260 PASS ✅
+validate:gallery-dedup        19/19 PASS ✅
+validate:public-gallery       30/30 PASS ✅
+validate:daily-archive       12/12 PASS ✅
+```
+
+---
+
+## GitHub Push
+- **Assets**: 971ffc2 (review metadata + gallery updates)
+- **Harvester**: ab9d680 (review pipeline + package.json fix)
+
+---
+
+## Next Phase Recommendation
+
+Phase 3F: Academic Cover Image (if needed) — but coverage is already complete.
+
+Alternative: Phase 4H (Video Prompt Enhancement) or Phase 5A (Harvester Read-only Dashboard).
+
+---
+
+*Report by 辛 🔮*

@@ -1,5 +1,5 @@
 # Creative Quota Daily Digest
-**Generated:** 2026-06-11T01:29:26.352Z
+**Generated:** 2026-06-11T23:30:04.573Z
 **STATUS:** PASS
 
 ## 今日输入
@@ -8,8 +8,8 @@
 | Signals (DB) | 298 |
 | Content Packs | 25 |
 | Packs with image prompt | 25 |
-| Generated Assets | 3 |
-| Images | 3 |
+| Generated Assets | 5 |
+| Images | 5 |
 | Music | 0 |
 | Video | 0 |
 
@@ -43,7 +43,7 @@
 
 ## 素材库状态
 - Gallery: https://conanxin.github.io/creative-quota-assets/gallery/
-- Latest image: https://conanxin.github.io/creative-quota-assets/images/2026/06/cqa-2026-06-11-gen-003_001.jpg
+- Latest image: https://conanxin.github.io/creative-quota-assets/images/2026/06/cqa-2026-06-11-gen-005_001.jpg
 - Validation: PASS (npm run validate:assets)
 
 ## 执行结果

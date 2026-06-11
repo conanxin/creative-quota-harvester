@@ -1,10 +1,10 @@
-Creative Quota Daily Digest — 2026-06-11
+Creative Quota Daily Digest — 2026-06-12
 STATUS: PASS
 
 今日输入
 Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11))
 Content Packs: 25 (25 with image prompt)
-Generated Assets: 3 (3 img / 0 music / 0 video)
+Generated Assets: 5 (5 img / 0 music / 0 video)
 
 Top 5 Signals (deduplicated, by score)
 1. SamurAIGPT/Generative-Media-Skills
@@ -37,7 +37,7 @@ Recommended Generation Queue
 
 素材库状态
 Gallery: https://conanxin.github.io/creative-quota-assets/gallery/
-Latest image: https://conanxin.github.io/creative-quota-assets/images/2026/06/cqa-2026-06-11-gen-003_001.jpg
+Latest image: https://conanxin.github.io/creative-quota-assets/images/2026/06/cqa-2026-06-11-gen-005_001.jpg
 Validation: PASS (npm run validate:assets)
 
 本阶段执行结果
