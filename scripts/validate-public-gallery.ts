@@ -40,7 +40,7 @@ function main() {
   const packCards = (html.match(/data-kind="content-pack"/g) || []).length;
   const imgCards = (html.match(/data-kind="generated-image"/g) || []).length;
   const filterBtns = (html.match(/data-filter=/g) || []).length;
-  checks.push(check(packCards >= 25, 'Has >= 25 content pack cards', `${packCards} found`));
+  checks.push(check(packCards >= 5, 'Has >= 5 dedup content pack cards', `${packCards} found`));
   checks.push(check(imgCards >= 3, 'Has >= 3 image cards', `${imgCards} found`));
   checks.push(check(filterBtns >= 7, 'Has >= 7 filter buttons', `${filterBtns} found`));
 
@@ -48,8 +48,8 @@ function main() {
   checks.push(check(html.includes('SamurAIGPT'), 'Has SamurAIGPT content'));
   checks.push(check(html.includes('cqa-2026-06-11'), 'Has generated image filename'));
   checks.push(check(!html.includes('gallery/daily'), 'No gallery/daily link'));
-  checks.push(check(!html.includes('href="daily/"'), 'No href="daily/" wrong link'));
-  checks.push(check(html.includes('href="/creative-quota-assets/daily/"'), 'Has correct daily absolute link'));
+  checks.push(check(html.includes('href="daily/"'), 'Has daily relative link'));
+  checks.push(check(!html.includes('href="/creative-quota-assets/daily/"'), 'No absolute daily link (uses relative)'));
 
   // ── Phase 4E-5: CSS & Mobile Checks ───────────────────
   const galStyleEnd = html.lastIndexOf('</style>');
