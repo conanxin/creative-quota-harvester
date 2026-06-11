@@ -316,6 +316,39 @@ tail -n 120 logs/daily-scheduled.log
 
 ---
 
+| Phase 4D-1 | **Content Pack human-readable detail pages** | Content packs need human-readable HTML pages instead of raw JSON |
+
+---
+
+## Phase 4D-1 — Content Pack Human Detail Pages ✅
+
+**Status:** Complete (2026-06-11)
+**Command:** `npm run pages:content-packs`
+
+**Problem solved:** Gallery "详情" button opened raw `detail.json` (machine-readable) and `content-summary.zh.md` (Markdown raw) — not user-friendly.
+
+**Scope:**
+- [x] `scripts/build-content-pack-pages.ts` — generates `index.html` for each content pack
+- [x] 25/25 content packs now have human-readable `index.html`
+- [x] Page structure: navigation, title, source badge, one-sentence summary, background, why-it-matters, recommended uses, available assets, prompt previews, generated images section, uncertainty notes, developer files
+- [x] `gallery/index.html` — primary button links to `index.html`, secondary to `content-summary.zh.md`, tertiary to `detail.json`
+- [x] `daily/YYYY/MM/YYYY-MM-DD/index.html` — pack links point to `index.html`
+- [x] `metadata/content-pack-index.json` — added `detail_page_path`, `detail_page_url`, `summary_md_path`, `detail_json_path`
+- [x] `scripts/validate-content-pack-pages.ts` — 260/260 checks PASS
+- [x] `npm run validate:content-pack-pages` — automated validation
+- [x] Light UI consistent with Gallery style, mobile responsive
+- [x] No LLM calls, no MiniMax, no new media generation
+
+**Example detail page:**
+https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-11/brief-brief-mq8swsla-f-samuraigpt-generative-media-skills/index.html
+
+**Next phases:**
+- Phase 4B-2: First scheduled run validation (Fri 07:30 CST)
+- Phase 4E-2: Gallery card hotfix (if needed)
+- Phase 5A: Harvester read-only dashboard
+
+---
+
 ## Phase 4E — Daily Calendar Archive ✅
 
 **Status:** Complete (2026-06-11)

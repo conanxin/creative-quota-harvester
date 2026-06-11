@@ -33,6 +33,9 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | Phase 3C | ✅ Complete | MiniMax quota guard + explicit generation command |
 | Phase 4A | ✅ Complete | Manual daily digest runbook |
 | Phase 4B-1 | ✅ Complete | Timer enabled, daily 07:30 CST, no MiniMax |
+| Phase 4C | ✅ Complete | Gallery UI refresh (mobile + sections) |
+| Phase 4D | ✅ Complete | Content pack detail enrichment (summary + facts) |
+| **Phase 4D-1** | **✅ Complete** | **Content Pack human-readable detail pages (index.html)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 
