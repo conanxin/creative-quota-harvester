@@ -320,6 +320,21 @@ tail -n 120 logs/daily-scheduled.log
 
 ---
 
+## Phase 4D-2 — Gallery Dedup & Rich Detail Content ✅
+
+**Status:** Complete (2026-06-11)
+
+**Scope:**
+- [x] Gallery dedup: 25 packs → 5 unique topics (20 duplicates collapsed)
+- [x] `metadata/gallery-dedup-index.json` — canonical keys and version tracking
+- [x] Enhanced detail pages with source-specific sections (code/academic/culture-art/ai-ecosystem/dev-community)
+- [x] Version history on detail pages (shows all related versions)
+- [x] Reads brief.md, facts.md, x-post.zh.md for richer content
+- [x] Updated `scripts/validate-public-gallery.ts` for dedup gallery (30 checks)
+- [x] `scripts/validate-gallery-dedup.ts` — 19 checks PASS
+
+---
+
 ## Phase 4D-1 — Content Pack Human Detail Pages ✅
 
 **Status:** Complete (2026-06-11)

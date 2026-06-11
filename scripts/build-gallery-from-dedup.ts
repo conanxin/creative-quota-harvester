@@ -113,7 +113,7 @@ function main() {
     // Phase 4G: detect enhanced prompt on the primary pack
     const primaryDir = item.primary_pack_dir;
     const hasEnhanced = existsSync(join(ASSETS, primaryDir, 'image-prompt.enriched.md'));
-    const enhancedBadge = hasEnhanced ? `<span class="enhanced-badge" title="Phase 4G: Source-aware Image Prompt Enhancement">✨ Enhanced Prompt</span>` : '';
+    const enhancedBadge = hasEnhanced ? `<span class="enhanced-badge" title="Phase 4G: 来源感知图片 Prompt 增强">✨ 增强图片 Prompt 已就绪</span>` : '';
 
     const detailUrl = `https://conanxin.github.io/creative-quota-assets/${item.detail_page_path}`;
     const summaryUrl = `https://conanxin.github.io/creative-quota-assets/${item.primary_pack_dir}/content-summary.zh.md`;
