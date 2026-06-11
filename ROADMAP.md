@@ -20,6 +20,7 @@
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |
 | 0.10.0 | 2026-06-11 | Phase 4C | ✅ COMPLETE — Public gallery Chinese UI refresh (light theme, Chinese-first) |
+| 0.11.0 | 2026-06-11 | Phase 4D | ✅ COMPLETE — Content pack detail enrichment (detail.json + content-summary.zh.md, 25 packs) |
 
 ---
 
@@ -292,6 +293,27 @@ tail -n 120 logs/daily-scheduled.log
 
 ---
 
+## Phase 4D — Content Pack Detail Enrichment ✅
+
+**Status:** Complete (2026-06-11)
+
+**Scope:**
+- [x] `scripts/enrich-content-packs.ts` — rule-based enrichment (no LLM)
+- [x]25/25 content packs: `detail.json` + `content-summary.zh.md`
+- [x] `scripts/validate-content-enrichment.ts` — 8/8 checks PASS
+- [x] `metadata/content-pack-index.json` — pack index
+- [x] `metadata/generated-image-descriptions.json` — 3 images with Chinese descriptions
+- [x] `gallery/index.html` — enhanced cards (一句话介绍 + 推荐用途 + 详情链接)
+- [x] `gallery/assets.json` — enriched with one_sentence_summary + recommended_uses
+
+**Gallery stats:**
+- Content Packs: 25
+- detail.json: 25/25
+- content-summary.zh.md: 25/25
+- assets.json enriched: 10/16 content packs
+
+---
+
 ## Future Considerations (Backlog)
 
 
@@ -302,7 +324,7 @@ tail -n 120 logs/daily-scheduled.log
 | **Phase 4B-2** | First Scheduled Run Validation | After tomorrow 07:30 |
 | **Phase 4B-1 follow-up** | Telegram auto-send hook after digest | Manual |
 | **Phase 3D** | Controlled Image Batch with Guard | Dad confirms |
-| **Phase 4D** | Telegram Auto-send Hook | Scheduled |
+| **Phase 4E** | Daily Calendar Archive | Scheduled |
 
 ### Long-term
 - [ ] Multi-provider support (OpenAI, Google, Stability AI as fallbacks)

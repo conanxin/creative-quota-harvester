@@ -1,0 +1,41 @@
+Phase 4D — Content Pack Detail Enrichment -- 2026-06-11
+STATUS: PASS
+
+WHAT CHANGED
+scripts/enrich-content-packs.ts: New enrichment script (rule-based, no LLM)
+- Reads manifest.json, brief.md, facts.md, signal.json
+- Generates detail.json + content-summary.zh.md for each pack
+
+scripts/validate-content-enrichment.ts: New validation script
+- 8/8 checks PASS
+
+metadata/content-pack-index.json: New index file (25 packs)
+metadata/generated-image-descriptions.json: New (3 images, Chinese descriptions)
+
+gallery/index.html: Enhanced UI
+- Cards now show: 一句话介绍 + 推荐用途 + 详情链接
+- Images show: 中文描述 + 来源 + 推荐用途 + 查看原图
+
+gallery/assets.json: Enriched with one_sentence_summary + recommended_uses
+
+CONTENT PACKS ENRICHED
+Total packs: 25
+detail.json: 25/25 ✅
+content-summary.zh.md: 25/25 ✅
+assets.json enriched: 10/16
+
+GENERATED IMAGE DESCRIPTIONS
+cqa-2026-06-11-canary-001_001.jpg: ✅
+cqa-2026-06-11-gen-002_001.jpg: ✅
+cqa-2026-06-11-gen-003_001.jpg: ✅
+
+VALIDATION: 8/8 PASS
+npm run validate:enrichment: ALL PASS
+
+MINIMAX CALL: No | NEW MEDIA: No
+
+NEXT PHASE
+Phase 4B-2: First Scheduled Run Validation (after tomorrow 07:30)
+Phase 3D: Controlled Image Batch with Guard
+
+Phase 4D complete. All 25 content packs enriched with Chinese detail.json and content-summary.zh.md.
