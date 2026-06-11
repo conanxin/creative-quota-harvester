@@ -6,7 +6,7 @@
  * Produces deduplicated cards with rich content.
  */
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
 
 const ASSETS = '/home/ubuntu/.openclaw/workspace/projects/creative-quota-assets';
@@ -110,6 +110,10 @@ function main() {
     const versionBadge = item.version_count > 1 ? `<span class="version-badge">${item.version_count} 个版本</span>` : '';
     const genImageCount = item.generated_images?.length || 0;
     const genImageBadge = genImageCount > 0 ? `<span class="gen-badge">🖼️ ${genImageCount}</span>` : '';
+    // Phase 4G: detect enhanced prompt on the primary pack
+    const primaryDir = item.primary_pack_dir;
+    const hasEnhanced = existsSync(join(ASSETS, primaryDir, 'image-prompt.enriched.md'));
+    const enhancedBadge = hasEnhanced ? `<span class="enhanced-badge" title="Phase 4G: Source-aware Image Prompt Enhancement">✨ Enhanced Prompt</span>` : '';
 
     const detailUrl = `https://conanxin.github.io/creative-quota-assets/${item.detail_page_path}`;
     const summaryUrl = `https://conanxin.github.io/creative-quota-assets/${item.primary_pack_dir}/content-summary.zh.md`;
@@ -122,6 +126,7 @@ function main() {
     <span class="card-type" style="color:${stColor};background:${stColor}15">${escapeHtml(stLabel)}</span>
     ${versionBadge}
     ${genImageBadge}
+    ${enhancedBadge}
     <h3 class="card-title">${escapeHtml(title)}</h3>
     <div class="card-score">评分: ${score.toFixed(3)}</div>
   </div>
@@ -324,6 +329,16 @@ function main() {
       margin-left: 0.5rem;
       display: inline-block;
     }
+    .enhanced-badge {
+      font-size: 0.65rem;
+      background: linear-gradient(135deg, #5b5bd6 0%, #ec4899 100%);
+      color: #fff;
+      padding: 0.15rem 0.5rem;
+      border-radius: 8px;
+      margin-left: 0.5rem;
+      display: inline-block;
+      font-weight: 600;
+    }
     .card-title { font-size: 1.1rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.3rem; }
     .card-score { font-size: 0.8rem; color: var(--text-muted); }
     .card-one-sentence {
@@ -436,6 +451,7 @@ function main() {
         <span>✅ 已接入真实信号源</span>
         <span>✅ 已生成 Content Packs</span>
         <span>✅ 已包含 MiniMax 图片素材</span>
+        <span>✨ Phase 4G 增强 Prompt</span>
       </div>
     </div>
     <div class="stats">

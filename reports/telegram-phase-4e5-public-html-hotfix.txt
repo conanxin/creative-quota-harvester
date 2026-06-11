@@ -1,0 +1,76 @@
+Phase 4E-5 Public HTML Source Truth Hotfix -- 2026-06-11
+STATUS: PASS
+
+PUBLIC BEFORE CHECK
+Gallery HTML: 1650 lines (pre-fix)
+- Had duplicate pre-rendered sections (2 copies, both hidden with display:none)
+- Had loading indicator inside grid div
+- Mobile CSS was outside style tag (after </html> in daily)
+- Daily links: correct absolute paths (already fixed in 4E-3)
+- Gallery links: correct absolute paths (already fixed in 4E-3)
+
+ROOT CAUSE
+1. Duplicate pre-rendered content: Phase 4E-3 injected content twice, creating 2 copies of #pre-rendered-packs
+2. Pre-rendered content hidden: display:none on both pre-rendered sections, so JS failure showed only loading
+3. Loading indicator in grid div: grid div had loading div inside it, showing 正在加载素材… even with pre-rendered content above
+4. Mobile CSS outside style tag: Phase 4E-4 used cat >> which appended CSS after </style> and </html>
+5. build-daily-archive.ts didn't embed mobile CSS: generated daily pages had no mobile CSS in templates
+
+WHAT CHANGED
+
+Static Gallery Fix:
+- Removed duplicate pre-rendered section (deleted 2nd copy, ~25KB)
+- Removed display:none from pre-rendered packs and gen-images
+- Removed loading indicator from grid div (grid now empty, JS populates it)
+- Updated JS bootstrap: on success, hides pre-rendered content and shows grid
+- Updated JS catch: on failure, keeps pre-rendered visible, hides loading
+- Loading indicator removed entirely from HTML (no longer needed)
+
+CSS Leak Fix:
+- Moved mobile CSS inside <style> tags for gallery/index.html
+- Moved mobile CSS inside <style> tags for daily/index.html
+- Moved mobile CSS inside <style> tags for daily detail pages
+- Updated build-daily-archive.ts: embeds mobile CSS before </style> in templates
+
+Daily Link Fix (already correct from 4E-3, verified):
+- daily/index.html: /creative-quota-assets/daily/2026/06/2026-06-11/ ✓
+- daily/index.html: /creative-quota-assets/daily/2026/06/2026-06-10/ ✓
+- daily detail back: /creative-quota-assets/daily/ ✓
+- daily detail gallery: /creative-quota-assets/gallery/ ✓
+
+Validation Enhanced:
+- validate-public-gallery.ts: added 4 new checks
+  - Gallery mobile CSS inside style tag
+  - Pre-rendered packs visible by default
+  - No duplicate pre-rendered sections
+  - Daily mobile CSS inside style tag
+
+LOCAL VALIDATION
+npm run validate:public-gallery: 21/21 PASS ✅
+npm run validate:mobile-gallery: 15/15 PASS ✅
+
+PUBLIC AFTER CHECK (GitHub Pages, commit 4dfd36f)
+Gallery HTML: 1296 lines (post-fix, -354 lines from dedup)
+SamurAIGPT: ✅ found at line 609
+cqa-2026-06-11-gen: ✅ found at lines 615, 625
+Flaws in the LLM: ✅ found at line 642
+No gallery/daily: ✅ not found
+No href=daily/: ✅ not found
+No loading indicator div: ✅ not found
+Mobile CSS inside style tag: ✅ (at 11132, </style> at 13790)
+Daily HTML: 102 lines
+No daily/daily: ✅ not found
+Date links correct: ✅ /creative-quota-assets/daily/2026/06/...
+Mobile CSS inside style tag: ✅ (at 2914, </style> at 3558)
+HTTP: gallery 200 ✅ daily 200 ✅ daily-06-11 200 ✅
+
+GITHUB PUSH
+assets: 4dfd36f ✅
+harvester: b8895d3 ✅
+
+MINIMAX CALL: No | NEW MEDIA: No
+
+NEXT PHASE
+Phase 4B-2: First Scheduled Run Validation (Fri 07:30 CST)
+
+Phase 4E-5 complete. Public HTML is the source of truth.

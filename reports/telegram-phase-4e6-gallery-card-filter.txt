@@ -1,0 +1,71 @@
+Phase 4E-6 Gallery Card Layout & Filter Interaction Hotfix -- 2026-06-11
+STATUS: PASS
+
+WHAT CHANGED
+Gallery/index.html completely rewritten (90% rewrite, 1297→565 lines net change)
+
+1. Unified Card Structure
+   - All cards use class="asset-card"
+   - Content packs: data-kind="content-pack", data-source-type
+   - Generated images: data-kind="generated-image", data-source-type="code"
+   - 25 content pack cards, 3 image cards
+
+2. Card CSS Layout
+   - asset-grid: repeat(auto-fill, minmax(280px, 1fr))
+   - image-grid: repeat(auto-fill, minmax(240px, 1fr))
+   - Cards: white bg, rounded corners, border, shadow on hover
+   - Card header: source type badge, title, score
+   - Card body: summary, tags, use chips
+   - Card actions: primary/secondary buttons
+   - Image cards: image frame + body
+
+3. Filter Interaction
+   - 7 filter buttons: all, code, academic, ai-ecosystem, dev-community, culture-art, context
+   - Each button has data-filter attribute
+   - JS: addEventListener on click, toggle .hidden class
+   - Empty state: 暂无匹配素材，请切换筛选条件
+   - Section visibility: hides empty sections
+
+4. Static Stats (no JS dependency)
+   - 25 Content Packs, 3 已生成图片, 5 信号来源, 06-11 08:19
+
+5. Removed
+   - All loading text (正在加载素材)
+   - Duplicate pre-rendered sections
+   - Pre-rendered packs with display:none
+   - Old JS fetch logic
+   - Broken nested card structure
+
+6. Mobile CSS (inside style tag)
+   - 1-column grids, sticky horizontal filters, compact stats
+
+VALIDATION
+npm run validate:public-gallery: 30/30 PASS ✅
+
+LOCAL PREVIEW
+gallery: 200 ✅ | daily: 200 ✅
+asset-card: ✅ | data-filter: ✅ | data-source-type: ✅
+SamurAIGPT: ✅ | cqa-2026-06-11: ✅ | Flaws in the LLM: ✅
+No loading text: ✅ | No bad links: ✅
+
+PUBLIC AFTER CHECK (GitHub Pages, commit 233f620)
+asset-card in CSS: ✅ line 63
+data-filter buttons: ✅ lines 135-141
+data-source-type on cards: ✅ lines 149, 161, 173
+data-kind="generated-image": ✅ lines 149, 161, 173
+Stats: 25, 3, 5: ✅ lines 127-129
+No loading text: ✅ not found
+No gallery/daily: ✅ not found
+Daily links: ✅ /creative-quota-assets/daily/2026/06/2026-06-11/
+HTTP: gallery 200 ✅ daily 200 ✅ daily-06-11 200 ✅
+
+GITHUB PUSH
+assets: 233f620 ✅
+harvester: 97e3b5f ✅
+
+MINIMAX CALL: No | NEW MEDIA: No
+
+NEXT PHASE
+Phase 4B-2: First Scheduled Run Validation (Fri 07:30 CST)
+
+Phase 4E-6 complete. Gallery card layout and filter interaction fixed.

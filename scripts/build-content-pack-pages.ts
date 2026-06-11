@@ -436,6 +436,12 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
   // Read richer source files
   const packDir = pack.pack_dir;
   const briefText = safeReadText(join(ASSETS, packDir, 'brief.md'), '');
+
+  // Phase 4G: detect enhanced prompt
+  const hasEnhancedPrompt = existsSync(join(ASSETS, packDir, 'image-prompt.enriched.md'));
+  const enhancedBadge = hasEnhancedPrompt
+    ? `<span class="enhanced-badge" title="Phase 4G: Source-aware Image Prompt Enhancement">✨ Enhanced Prompt</span>`
+    : '';
   const factsText = safeReadText(join(ASSETS, packDir, 'facts.md'), '');
   const xpostText = safeReadText(join(ASSETS, packDir, 'x-post.zh.md'), '');
   const summaryMdText = safeReadText(join(ASSETS, packDir, 'content-summary.zh.md'), '');
@@ -480,6 +486,34 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
         <h4>🎨 图片 Prompt</h4>
         <pre class="prompt-preview">${escapeHtml(truncate(imagePrompt, 600))}</pre>
         <a class="prompt-link" href="${baseUrl}/image-prompt.md" target="_blank">查看完整文件 →</a>
+      </div>
+    `);
+  }
+  // Phase 4G: enhanced image prompt
+  const enrichedPrompt = safeReadText(join(ASSETS, packDir, 'image-prompt.enriched.md'), '');
+  if (enrichedPrompt) {
+    // Extract just the English prompt block from the enriched file
+    const enMatch = enrichedPrompt.match(/```text\n([\s\S]+?)\n```/);
+    const enBlock = enMatch ? enMatch[1] : enrichedPrompt;
+    const negMatch = enrichedPrompt.match(/## Negative Prompt\s*\n+\n```text\n([\s\S]+?)\n```/);
+    const negBlock = negMatch ? negMatch[1] : '';
+    promptPreviews.push(`
+      <div class="prompt-card prompt-card--enhanced">
+        <h4>✨ Enhanced Image Prompt <span class="badge-enhanced">Phase 4G</span></h4>
+        <p class="prompt-subtitle">源感知增强版（基于 source-type 策略）</p>
+        <details open>
+          <summary>English Prompt</summary>
+          <pre class="prompt-preview">${escapeHtml(truncate(enBlock, 800))}</pre>
+        </details>
+        ${negBlock ? `<details>
+          <summary>Negative Prompt</summary>
+          <pre class="prompt-preview">${escapeHtml(negBlock)}</pre>
+        </details>` : ''}
+        <div class="prompt-links">
+          <a class="prompt-link" href="${baseUrl}/image-prompt.enriched.md" target="_blank">📄 完整增强版（含意图/参数） →</a>
+          <a class="prompt-link" href="${baseUrl}/image-prompt.zh.md" target="_blank">🇨🇳 中文解释 →</a>
+          <a class="prompt-link" href="${baseUrl}/image-prompt.meta.json" target="_blank">🔧 meta.json →</a>
+        </div>
       </div>
     `);
   }
@@ -602,6 +636,14 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
     }
     .asset-link:hover { background: rgba(91,91,214,0.15); }
     .prompt-card { background: var(--bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+    .prompt-card--enhanced { background: linear-gradient(135deg, #faf7ff 0%, #f0f4ff 100%); border-color: var(--accent); }
+    .prompt-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .badge-enhanced { font-size: 0.6rem; background: var(--accent); color: #fff; padding: 0.1rem 0.4rem; border-radius: 4px; margin-left: 0.4rem; font-weight: 700; letter-spacing: 0.05em; }
+    .enhanced-badge { display: inline-block; font-size: 0.65rem; background: linear-gradient(135deg, #5b5bd6 0%, #ec4899 100%); color: #fff; padding: 0.2rem 0.6rem; border-radius: 12px; margin-top: 0.3rem; font-weight: 600; }
+    .prompt-card--enhanced details { margin-bottom: 0.5rem; }
+    .prompt-card--enhanced summary { font-size: 0.8rem; font-weight: 600; color: var(--accent); cursor: pointer; padding: 0.2rem 0; }
+    .prompt-card--enhanced details[open] summary { margin-bottom: 0.3rem; }
+    .prompt-links { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
     .prompt-card h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; }
     .prompt-preview {
       font-size: 0.78rem; color: var(--text-muted); background: #fff; border: 1px solid var(--card-border);
@@ -637,6 +679,7 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
     <div class="header">
       <div class="source-badge">${stLabel}</div>
       <h1 class="title">${escapeHtml(title)}</h1>
+      ${enhancedBadge}
       <div class="meta">
         ${score ? `<span class="score">评分: ${score.toFixed(3)}</span>` : ''}
         ${date ? `<span class="date">📅 ${date}</span>` : ''}

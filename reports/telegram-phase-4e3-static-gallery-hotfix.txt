@@ -1,0 +1,96 @@
+Phase 4E-3 Static Gallery Render & Link Canonicalization Hotfix -- 2026-06-11
+STATUS: PASS
+
+WHAT CHANGED
+Phase 4E-3 root cause: Phase 4E-2 fix incomplete. Multiple path bugs in build-daily-archive.ts and static HTML generation.
+
+Bug 1: detail.json links broken
+- build-daily-archive.ts: relPath regex [^/]+/$ required trailing slash on detail.json (no trailing slash), resulting in relPath including filename
+- Then code appended detail.json AGAIN → detail.jsondetail.json concat bug
+- Fix: regex changed to /\/[^/]+\/?$/, '/' (strip filename, preserve trailing /)
+- Fix: hrefPrefix now preserves content-packs/ prefix
+
+Bug 2: detail.json href used wrong levels
+- hrefPrefix used ../../../../../ (4 levels) but relPath had content-packs/ stripped
+- Result:../../../../../2026/... (missing content-packs/) → 404
+- Fix: hrefPrefix = ../../../../ + relPath (4 levels), relPath preserves content-packs/
+
+Bug 3: daily/index.html date links relative
+- href="daily/2026/06/2026-06-11/" on page at /creative-quota-assets/daily/
+- Resolved to /creative-quota-assets/daily/daily/2026/... (double daily/)
+- Fix: absolute href="/creative-quota-assets/daily/2026/06/2026-06-11/"
+
+Bug 4: back-to-calendar link wrong levels
+- href="../../" from daily/2026/06/2026-06-11/ goes to daily/2026/ (wrong)
+- Fix: href="../../../" (3 levels) → /creative-quota-assets/daily/ ✓
+
+Bug 5: gallery back link wrong
+- href="../../gallery/" from daily/2026/06/2026-06-11/ goes to daily/2026/gallery/ (wrong)
+- Fix: absolute href="/creative-quota-assets/gallery/"
+
+Bug 6: Gallery pre-render missing
+- gallery/index.html showed "正在加载素材..." with no fallback content
+- JS fetch paths failed on GitHub Pages (CORS or path issues)
+- Fix: Pre-render 25 Content Packs + 3 Generated Images directly in HTML
+- Static content visible without JS execution
+- gallery/static.html added (fully standalone, no JS)
+
+Bug 7: PRE-RENDERED marker not injected
+- build-static-gallery.ts used wrong regex pattern
+- Fix: Direct Python injection into gallery/index.html
+
+scripts/build-static-gallery.ts: New script
+- Reads content-pack-index.json + generated-assets.json
+- Pre-renders pack cards + gen image cards in HTML
+- Outputs gallery/index.html (enhanced) + gallery/static.html (standalone)
+
+scripts/build-daily-archive.ts: Multiple fixes
+- relPath: preserve content-packs/ prefix, strip filename
+- hrefPrefix: 4 levels (../../../../), relPath includes content-packs/
+- detail_url: absolute /creative-quota-assets/daily/...
+- day-link href: absolute /creative-quota-assets/daily/...
+- gallery back link: absolute /creative-quota-assets/gallery/
+- back to calendar: ../../../ (3 levels)
+
+scripts/validate-public-gallery.ts: Fixed detail_url path parsing
+- Handles absolute /creative-quota-assets/daily/... URLs correctly
+
+LOCAL PREVIEW (python3 -m http.server 8766)
+All paths: HTTP 200
+/gallery/: 200 ✅ (content visible without JS)
+/daily/: 200 ✅
+/daily/2026/06/2026-06-11/: 200 ✅
+gallery/index.html contains: SamurAIGPT, Flaws in the LLM, cqa-2026-06-11-gen-002 ✅
+
+PUBLIC URL CHECK (GitHub Pages)
+All paths: HTTP 200
+https://conanxin.github.io/creative-quota-assets/gallery/: 200 ✅
+https://conanxin.github.io/creative-quota-assets/daily/: 200 ✅
+https://conanxin.github.io/creative-quota-assets/daily/2026/06/2026-06-11/: 200 ✅
+content-packs detail.json: 200 ✅
+
+VALIDATION
+npm run validate:public-gallery: 17/17 PASS
+
+GITHUB PUSH
+creative-quota-assets: ce4fece ✅
+creative-quota-harvester: cf04952 ✅
+
+FIXES SUMMARY
+gallery/index.html: Pre-rendered 25 packs + 3 images, BASE path, /creative-quota-assets/daily/ ✅
+daily/index.html: Absolute date links ✅
+daily detail pages: Correct content-packs paths (4 levels + content-packs/) ✅
+gallery back: /creative-quota-assets/gallery/ ✅
+back to calendar: ../../../ ✅
+
+npm run validate:public-gallery: 17/17 PASS
+
+GITHUB PUSH: assets ce4fece ✅ | harvester cf04952 ✅
+
+MINIMAX CALL: No | NEW MEDIA: No
+
+NEXT PHASE
+Phase 4B-2: First Scheduled Run Validation (Fri 07:30)
+Phase 3D: Controlled Image Batch with Guard
+
+Phase 4E-3 complete. Static gallery and canonical links fixed.

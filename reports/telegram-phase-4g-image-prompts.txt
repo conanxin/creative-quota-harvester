@@ -1,0 +1,31 @@
+✅ Phase 4G: Source-aware Image Prompt Enhancement — DONE
+
+📊 Results:
+  • 25/25 content packs enhanced (100%)
+  • 508/508 validation checks passed
+  • 75 new files generated (3 per pack)
+  • 0 LLM calls, 0 external API calls
+
+🎨 5 Strategies by Source Type:
+  • code → GitHub repo cover + agent workflow diagram (16:9, tech editorial)
+  • academic → Paper concept diagram + academic infographic (4:3, Tufte style)
+  • ai-ecosystem → Model card hero + pipeline flow (16:9, HF-inspired)
+  • dev-community → Developer pain point poster (1:1, pastel editorial)
+  • culture-art → Museum lighting + art reinterpretation (4:5, warm classical)
+
+📁 New files per pack:
+  • image-prompt.enriched.md (intent + English prompt + negative + params)
+  • image-prompt.zh.md (human-readable Chinese explanation)
+  • image-prompt.meta.json (machine-readable metadata)
+
+🖼️ Gallery & Detail Pages:
+  • "✨ Enhanced Prompt" badge on all 5 gallery cards
+  • Enhanced prompt card with collapsible sections on detail pages
+  • Links: enriched.md, zh.md, meta.json
+
+🔧 New npm scripts:
+  • npm run prompts:image:enhance
+  • npm run validate:image-prompts
+
+📄 Report: docs/PHASE_4G_SOURCE_AWARE_IMAGE_PROMPTS_REPORT.md
+📁 Assets: reports/source-aware-image-prompts.md
