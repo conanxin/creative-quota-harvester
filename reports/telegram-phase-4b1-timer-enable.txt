@@ -1,0 +1,35 @@
+Phase 4B-1 Enable Scheduled Daily Digest Timer -- 2026-06-11
+STATUS: PASS
+
+WHAT HAPPENED
+- Timer installed: ~/.config/systemd/user/creative-quota-digest.timer
+- Timer enabled: systemctl --user enable --now creative-quota-digest.timer
+- Service test run: SUCCESS (exit 0, CPU 2.887s)
+- Digest check: PASS (8/8 checks)
+
+TIMER STATUS
+Status: active (waiting)
+Next run: Fri 2026-06-12 07:30:00 CST (22h left)
+Schedule: 07:30 CST daily
+Persistent: Yes (fires at next boot if missed)
+
+SERVICE TEST RUN
+ExecStart: /bin/bash scripts/daily-scheduled.sh
+Exit code: 0/SUCCESS
+Digest chars: {len(digest_content)} (limit: 3500)
+
+MiniMax called: No | New media: No | cron: No
+
+HOW TO CHECK
+systemctl --user status creative-quota-digest.timer
+systemctl --user list-timers --all | grep creative-quota
+tail -n 120 logs/daily-scheduled.log
+
+HOW TO DISABLE
+systemctl --user disable --now creative-quota-digest.timer
+
+NEXT PHASE
+Phase 3D: Controlled Image Batch with Guard
+Phase 4B follow-up: Telegram auto-send after digest
+
+Phase 4B-1 complete. Daily digest timer enabled.

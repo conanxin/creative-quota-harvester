@@ -32,7 +32,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | Phase 3A Full | ✅ Complete | Batch image generation (2 images generated) |
 | Phase 3C | ✅ Complete | MiniMax quota guard + explicit generation command |
 | Phase 4A | ✅ Complete | Manual daily digest runbook |
-| Phase 4B-0 | ✅ Complete | Scheduled automation dry-run templates (timer not installed) |
+| Phase 4B-1 | ✅ Complete | Timer enabled, daily 07:30 CST, no MiniMax |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

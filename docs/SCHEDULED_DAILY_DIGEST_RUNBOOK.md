@@ -6,11 +6,23 @@
 
 ---
 
-## STATUS: PHASE 4B-0 — DRY RUN TEMPLATES ONLY
+## STATUS: PHASE 4B-1 — TIMER ENABLED ✅
 
-**The systemd timer is NOT yet enabled. Do NOT install it yet.**
+**The systemd timer IS enabled. Runs daily at 07:30 CST.**
 
 This runbook describes how to dry-run the scheduled digest and how to install the timer in Phase 4B-1.
+
+---
+
+## TIMER STATUS (Phase 4B-1)
+
+| Item | Status |
+|------|--------|
+| Timer installed | ✅ Yes |
+| Timer enabled | ✅ Yes |
+| Next run | Fri 2026-06-12 07:30:00 CST |
+| Runs at | 07:30 CST daily |
+| MiniMax called | ❌ No |
 
 ---
 

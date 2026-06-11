@@ -1,10 +1,14 @@
 Manual Daily Digest Run -- 2026-06-11
 STATUS: PASS
 
-Run Steps: collect (skipped, data fresh) | digest:telegram PASS | check PASS
+Run Steps: collect ✅ | briefs ✅ | digest ✅ | check PASS
 
-Signals: 298 (academic(40), ai-ecosystem(66), code(110), context(11), culture-art(28), dev-community(43))
-Content Packs: 20 | Generated Assets: 3
+Signals: 0 | Briefs: 0 | Content Packs: 25 | Generated Assets: 3
+
+Digest File: reports/telegram-digest.txt
+Digest Check: PASS
+
+MiniMax called: No | New media: No | cron/systemd: No
 
 --- Digest Content ---
 Creative Quota Daily Digest — 2026-06-11
@@ -12,7 +16,7 @@ STATUS: PASS
 
 今日输入
 Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11))
-Content Packs: 20 (20 with image prompt)
+Content Packs: 25 (25 with image prompt)
 Generated Assets: 3 (3 img / 0 music / 0 video)
 
 Top 5 Signals (deduplicated, by score)
