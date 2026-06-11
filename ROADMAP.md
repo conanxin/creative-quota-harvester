@@ -21,6 +21,7 @@
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |
 | 0.10.0 | 2026-06-11 | Phase 4C | ✅ COMPLETE — Public gallery Chinese UI refresh (light theme, Chinese-first) |
 | 0.11.0 | 2026-06-11 | Phase 4D | ✅ COMPLETE — Content pack detail enrichment (detail.json + content-summary.zh.md, 25 packs) |
+| 0.12.0 | 2026-06-11 | Phase 4E | ✅ COMPLETE — Daily calendar archive (calendar-index.json + daily pages, 2 days) |
 
 ---
 
@@ -314,6 +315,24 @@ tail -n 120 logs/daily-scheduled.log
 
 ---
 
+## Phase 4E — Daily Calendar Archive ✅
+
+**Status:** Complete (2026-06-11)
+
+**Scope:**
+- [x] `scripts/build-daily-archive.ts` — calendar builder (2 days archived)
+- [x] `scripts/validate-daily-archive.ts` — 12/12 checks PASS
+- [x] `daily/calendar-index.json` — calendar index
+- [x] `daily/index.html` — calendar view (中文)
+- [x] `daily/YYYY/MM/YYYY-MM-DD/index.html` — 2 day detail pages
+- [x] `daily/YYYY/MM/YYYY-MM-DD/daily-summary.json` — 2 day summaries
+- [x] `gallery/index.html` — added daily archive link
+- [x] `README.md` — updated with daily archive section
+
+**Archived days:** 2 (2026-06-10: 15 packs + 3 images, 2026-06-11: 10 packs)
+
+---
+
 ## Future Considerations (Backlog)
 
 
@@ -324,7 +343,7 @@ tail -n 120 logs/daily-scheduled.log
 | **Phase 4B-2** | First Scheduled Run Validation | After tomorrow 07:30 |
 | **Phase 4B-1 follow-up** | Telegram auto-send hook after digest | Manual |
 | **Phase 3D** | Controlled Image Batch with Guard | Dad confirms |
-| **Phase 4E** | Daily Calendar Archive | Scheduled |
+| **Phase 5A** | Harvester Read-only Dashboard | Optional |
 
 ### Long-term
 - [ ] Multi-provider support (OpenAI, Google, Stability AI as fallbacks)

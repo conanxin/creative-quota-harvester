@@ -1,0 +1,41 @@
+Phase 4E — Daily Calendar Archive -- 2026-06-11
+STATUS: PASS
+
+WHAT CHANGED
+scripts/build-daily-archive.ts: New archive builder
+- Reads content-pack-index.json + generated assets
+- Groups by date
+- Outputs: calendar-index.json + daily/index.html + daily/YYYY/MM/DD/
+
+scripts/validate-daily-archive.ts: New validation (12/12 PASS)
+- calendar-index.json valid
+- All day pages exist (2/2)
+- All daily-summary.json valid (2/2)
+- gallery links to daily archive ✅
+
+daily/index.html: Calendar view (Chinese)
+- Day cards: date, Content Pack count, image count, source types, top titles
+
+daily/YYYY/MM/YYYY-MM-DD/index.html: Day detail pages (2026-06-10 + 2026-06-11)
+- Stats bar, source type chips
+- Content pack cards with links to detail.json/content-summary.zh.md
+- Generated image cards with description_zh + 查看原图
+
+gallery/index.html: Added "📅 每日归档" link in badges + footer
+README.md: Updated with daily archive section
+
+DAILY ARCHIVE STATUS
+Total archived days: 2
+2026-06-11: 10 Content Packs, 0 images
+2026-06-10: 15 Content Packs, 3 images
+
+VALIDATION: 12/12 PASS
+npm run validate:daily-archive: ALL PASS
+
+MINIMAX CALL: No | NEW MEDIA: No
+
+NEXT PHASE
+Phase 4B-2: First Scheduled Run Validation (after tomorrow 07:30)
+Phase 3D: Controlled Image Batch with Guard
+
+Phase 4E complete. Daily calendar archive generated for 2 days.
