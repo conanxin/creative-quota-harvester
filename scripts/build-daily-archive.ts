@@ -239,6 +239,22 @@ function buildCalendarHtml() {
     footer { max-width: 1100px; margin: 3rem auto 0; text-align: center; border-top: 1px solid var(--card-border); padding-top: 1.5rem; color: var(--text-muted); font-size: 0.78rem; }
     footer a { color: var(--accent); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
+
+    /* ── Mobile Responsive (max-width: 720px) ───────────────────── */
+    @media (max-width: 720px) {
+      body { padding: 0.75rem; }
+      header { margin-bottom: 1.5rem; }
+      header h1 { font-size: 1.4rem; }
+      header p { font-size: 0.78rem; }
+      .date-legend { flex-direction: column; gap: 0.4rem; align-items: center; }
+      .day-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+      .day-card { padding: 0.9rem; }
+      .day-date { font-size: 1rem; }
+      .count-badge { font-size: 0.6rem; }
+      .day-sources { font-size: 0.68rem; }
+      .day-link { font-size: 0.75rem; }
+      .nav-links a { font-size: 0.78rem; }
+    }
   </style>
 </head>
 <body>
@@ -373,6 +389,23 @@ function buildDayDetailPage(day: DayData) {
     .note { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem; padding: 0.6rem; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; }
     footer { max-width: 1100px; margin: 3rem auto 0; text-align: center; border-top: 1px solid var(--card-border); padding-top: 1.5rem; color: var(--text-muted); font-size: 0.78rem; }
     footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── Mobile Responsive (max-width: 720px) ───────────────────── */
+    @media (max-width: 720px) {
+      body { padding: 0.75rem; }
+      header h1 { font-size: 1.4rem; }
+      .nav-links a { font-size: 0.78rem; }
+      .stats-bar { grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem; }
+      .stat-card { padding: 0.6rem 0.4rem; }
+      .stat-val { font-size: 1.2rem; }
+      .stat-lbl { font-size: 0.6rem; }
+      .pack-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+      .pack-card { padding: 0.85rem; }
+      .pack-title { font-size: 0.85rem; }
+      .img-grid { grid-template-columns: 1fr 1fr; }
+      .img-card img { height: 120px; }
+      .section h2 { font-size: 0.9rem; }
+    }
   </style>
 </head>
 <body>

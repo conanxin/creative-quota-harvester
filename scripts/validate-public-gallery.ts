@@ -128,7 +128,36 @@ function main() {
         const dayDir = join(ASSETS, raw);
         if (existsSync(join(dayDir, 'index.html'))) dayPagesOk++;
       }
-      checks.push(check(dayPagesOk === cal.days.length, 'All daily day pages exist', `${dayPagesOk}/${cal.days.length}`));
+      
+  // Check mobile CSS is inside style tag (not exposed in body)
+  const galHtml = readFileSync(join(ASSETS, 'gallery', 'index.html'), 'utf8');
+  const galStyleEnd = galHtml.lastIndexOf('</style>');
+  const galMobileStart = galHtml.indexOf('/* ── Mobile Responsive');
+  checks.push(check(
+    galMobileStart < 0 || galMobileStart < galStyleEnd,
+    'Gallery mobile CSS inside style tag',
+    galMobileStart > 0 && galMobileStart > galStyleEnd ? 'OUTSIDE' : 'inside'
+  ));
+
+  // Check pre-rendered content is visible (no display:none)
+  checks.push(check(
+    !galHtml.includes('id="pre-rendered-packs" style="display:none"'),
+    'Pre-rendered packs visible by default'
+  ));
+
+  // Check only 1 PRE-RENDERED-CONTENT (no duplicates)
+  const preCount = (galHtml.match(/<!-- PRE-RENDERED-CONTENT -->/g) || []).length;
+  checks.push(check(preCount <= 1, 'No duplicate pre-rendered sections', `${preCount} found`));
+
+  // Check daily HTML mobile CSS not exposed
+  const dailyHtml = readFileSync(join(ASSETS, 'daily', 'index.html'), 'utf8');
+  const dailyStyleEnd = dailyHtml.lastIndexOf('</style>');
+  const dailyMobileStart = dailyHtml.indexOf('/* ── Mobile Responsive');
+  checks.push(check(
+    dailyMobileStart < 0 || dailyMobileStart < dailyStyleEnd,
+    'Daily mobile CSS inside style tag'
+  ));
+  checks.push(check(dayPagesOk === cal.days.length, 'All daily day pages exist', `${dayPagesOk}/${cal.days.length}`));
     } catch {}
   }
 
