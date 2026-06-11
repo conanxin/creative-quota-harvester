@@ -36,6 +36,12 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | Phase 4C | ✅ Complete | Gallery UI refresh (mobile + sections) |
 | Phase 4D | ✅ Complete | Content pack detail enrichment (summary + facts) |
 | **Phase 4D-1** | **✅ Complete** | **Content Pack human-readable detail pages (index.html)** |
+| Phase 4D-2 | ✅ Complete | Gallery dedup (25 packs → 5 unique topics) |
+| Phase 4E | ✅ Complete | Daily calendar archive |
+| Phase 4F | ✅ Complete | Facts enrichment from public sources |
+| Phase 4G | ✅ Complete | Source-aware image prompt enhancement |
+| Phase 3D | ✅ Complete | Controlled image batch with guard |
+| **Phase 3E** | **✅ Complete** | **Image quality review & asset scoring (5 dims, 20pts each)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

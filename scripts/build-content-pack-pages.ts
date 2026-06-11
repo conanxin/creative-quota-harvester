@@ -72,6 +72,7 @@ interface PackData {
   detail_page_url?: string;
   summary_md_path?: string;
   detail_json_path?: string;
+  content_pack_slug?: string;
 }
 
 interface DedupItem {
@@ -541,7 +542,63 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
   // Generated images section
   let genImagesHtml = '';
   if (pack.has_generated_image) {
-    genImagesHtml = '<div class="info-box">📸 该 Content Pack 关联了已生成图片（图片展示功能开发中）</div>';
+    // Phase 3E: Read quality scores for images associated with this pack
+    const qualityTable = safeReadJson<{ rows: any[] }>(join(ASSETS, 'metadata', 'asset-quality-scores.json'), { rows: [] });
+    const QUALITY_LABELS_ZH: Record<string, string> = {
+      excellent: '⭐ 优秀',
+      good: '✅ 良好',
+      fair: '⚠️ 一般',
+      poor: '❌ 较差',
+    };
+    const QUALITY_COLORS: Record<string, string> = {
+      excellent: '#22c55e',
+      good: '#5b5bd6',
+      fair: '#f59e0b',
+      poor: '#ef4444',
+    };
+    const myImages = qualityTable.rows.filter((r: any) => {
+      // Match by content pack slug at the end of pack_dir
+      if (!r.filename) return false;
+      const packSlug = packDir.split('/').pop() || '';
+      const myImagesList: string[] = availableAssets.generated_images || [];
+      return packSlug && (
+        packSlug === r.content_pack_slug ||
+        packDir.endsWith(r.content_pack || '') ||
+        myImagesList.includes(r.filename)
+      );
+    });
+
+    if (myImages.length > 0) {
+      const imgCards = myImages.map((img: any) => {
+        const label = QUALITY_LABELS_ZH[img.quality_label] || img.quality_label;
+        const color = QUALITY_COLORS[img.quality_label] || '#5b5bd6';
+        // Look up the path from generated-assets.json
+        const genAssets = safeReadJson<any[]>(join(ASSETS, 'metadata', 'generated-assets.json'), []);
+        const ga = genAssets.find((a: any) => a.filename === img.filename);
+        const imgRelPath = ga?.path || `images/${img.filename}`;
+        const imgUrl = `https://conanxin.github.io/creative-quota-assets/${imgRelPath}`;
+        const dims = Object.entries(img.dimensions || {})
+          .map(([k, v]) => `<span class="dim-chip">${escapeHtml(k)}: ${v}/20</span>`).join('');
+        const uses = (img.recommended_uses || []).slice(0, 3).map((u: string) =>
+          `<span class="use-chip">${escapeHtml(u)}</span>`).join('');
+        return `
+      <div class="gen-image-card">
+        <div class="gen-image-header">
+          <span class="quality-badge" style="color:${color};background:${color}15">${label} · ${img.score}/100</span>
+          <span class="gen-image-meta">${escapeHtml(img.source_type)} · ${img.aspect_ratio} · ${img.file_size_kb}KB</span>
+        </div>
+        <div class="gen-image-dims">${dims}</div>
+        <div class="gen-image-uses">${uses}</div>
+        <div class="gen-image-actions">
+          <a class="btn-secondary" href="${imgUrl}" target="_blank">🖼️ 查看原图</a>
+          <a class="btn-secondary" href="${img.review_md_url}" target="_blank">📋 质量评审</a>
+        </div>
+      </div>`;
+      }).join('');
+      genImagesHtml = `<div class="gen-images-grid">${imgCards}</div>`;
+    } else {
+      genImagesHtml = '<div class="info-box">📸 该 Content Pack 关联了已生成图片（图片展示功能开发中）</div>';
+    }
   } else {
     genImagesHtml = '<div class="info-box">🎨 当前还没有生成图片，但 Prompt 已就绪。你可以使用上面的 Prompt 生成图片。</div>';
   }
@@ -665,6 +722,38 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
       .title { font-size: 1.4rem; }
       .section { padding: 1rem; }
       .asset-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    /* Phase 3E: Generated image quality card */
+    .gen-images-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+    .gen-image-card {
+      background: var(--bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .gen-image-header { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.5rem; }
+    .quality-badge {
+      font-size: 0.7rem; font-weight: 700;
+      padding: 0.2rem 0.6rem; border-radius: 4px;
+    }
+    .gen-image-meta { font-size: 0.7rem; color: var(--text-muted); }
+    .gen-image-dims {
+      display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.5rem;
+    }
+    .dim-chip {
+      font-size: 0.65rem;
+      background: var(--accent-dim);
+      color: var(--accent);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+    }
+    .gen-image-uses {
+      display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.5rem;
+    }
+    .gen-image-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .use-chip {
+      font-size: 0.65rem; background: var(--accent-dim); color: var(--accent);
+      padding: 0.15rem 0.4rem; border-radius: 4px;
     }
   </style>
 </head>

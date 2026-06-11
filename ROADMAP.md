@@ -16,6 +16,8 @@
 | 0.8.2 | 2026-06-11 | Phase 3B-2 | ✅ COMPLETE — Telegram digest delivery contract patch |
 | 0.9.1 | 2026-06-11 | Phase 3A Full | ✅ COMPLETE — Batch image generation, 2 new images (184KB + 353KB) |
 | 0.9.2 | 2026-06-11 | Phase 3C | ✅ COMPLETE — MiniMax quota guard + explicit generation command |
+| 0.9.3 | 2026-06-11 | Phase 3D | ✅ COMPLETE — Controlled image batch (River AI + stabilityai, 2 images) |
+| 0.13.0 | 2026-06-11 | Phase 3E | ✅ COMPLETE — Image quality review & asset scoring (5 dims, 20pts each, 5 images) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |
@@ -390,15 +392,53 @@ https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-1
 
 ---
 
-## Future Considerations (Backlog)
+## Phase 3E — Image Quality Review & Asset Scoring ✅
 
+**Status:** Complete (2026-06-11)
+**Command:** `npm run review:images && npm run validate:image-reviews`
+
+**Problem solved:** No systematic way to assess quality of generated images beyond file size checks.
+
+**Scope:**
+- [x] `scripts/review-generated-images.ts` — rule-based scoring (NO LLM, NO MiniMax, NO visual model)
+- [x] 5 dimensions × 20 pts each: technical_validity, prompt_alignment, source_relevance, usability, diversity_and_coverage
+- [x] `metadata/generated-assets-review.json` — review summary with quality distribution
+- [x] `metadata/asset-quality-scores.json` — flat table with scores, dimensions, recommended_uses
+- [x] Per-image `.review.zh.md` in image directory (same dir as image file)
+- [x] `scripts/validate-image-reviews.ts` — 147/147 checks PASS
+- [x] `build-content-pack-pages.ts` — shows quality badge, score, review link for generated images
+- [x] `build-gallery-from-dedup.ts` — shows quality_label, score, recommended uses on image cards
+- [x] `npm run review:images` + `npm run pages:content-packs` + `npm run gallery:from-dedup` + all validations PASS
+- [x] README updated (harvester + assets), ROADMAP updated
+
+**Review results:**
+- Total images: 5
+- Average score: 96%
+- Quality distribution: ⭐ excellent: 5, ✅ good: 0, ⚠️ fair: 0, ❌ poor: 0
+- Source type distribution: academic: 1, code: 1, culture-art: 1, dev-community: 1, ai-ecosystem: 1
+
+**Image scores:**
+| Image | Source Type | Score | Quality |
+|-------|-------------|-------|---------|
+| cqa-2026-06-11-canary-001_001.jpg | academic | 96/100 | ⭐ excellent |
+| cqa-2026-06-11-gen-002_001.jpg | code | 97/100 | ⭐ excellent |
+| cqa-2026-06-11-gen-003_001.jpg | culture-art | 96/100 | ⭐ excellent |
+| cqa-2026-06-11-gen-004_001.jpg | dev-community | 97/100 | ⭐ excellent |
+| cqa-2026-06-11-gen-005_001.jpg | ai-ecosystem | 94/100 | ⭐ excellent |
+
+**Next phases:**
+- Phase 4B-2: First scheduled run validation (Fri 07:30 CST)
+- Phase 5A: Harvester read-only dashboard
+
+---
+
+## Future Considerations (Backlog)
 
 ### Short-term (Next Phases)
 
 | Phase | Description | Trigger |
 |-------|-------------|--------|
 | **Phase 4B-2** | First Scheduled Run Validation | After tomorrow 07:30 |
-| **Phase 3D** | Controlled Image Batch with Guard | Dad confirms |
 | **Phase 5A** | Harvester Read-only Dashboard | Optional |
 
 ### Long-term

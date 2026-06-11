@@ -143,19 +143,51 @@ function main() {
   }).join('\n');
 
   // Generate image cards
+  // Phase 3E: Load quality scores for image cards
+  const qualityTable = safeReadJson<{ rows: any[] }>(join(ASSETS, 'metadata', 'asset-quality-scores.json'), { rows: [] });
+  const QUALITY_LABELS_ZH: Record<string, string> = {
+    excellent: '⭐ 优秀',
+    good: '✅ 良好',
+    fair: '⚠️ 一般',
+    poor: '❌ 较差',
+  };
+  const QUALITY_COLORS: Record<string, string> = {
+    excellent: '#22c55e',
+    good: '#5b5bd6',
+    fair: '#f59e0b',
+    poor: '#ef4444',
+  };
+
   const imageCards = genAssets.map((img: any) => {
     const title = img.title || img.filename || '';
     const date = (img.generated_at || '').slice(0, 10);
-    const url = img.url || '';
+    // Use the actual path from generated-assets.json; fall back to filename
+    const url = img.url || `https://conanxin.github.io/creative-quota-assets/${img.path || `images/${img.filename}`}`;
     const model = img.model || 'image-01';
-    return `      <article class="asset-card image-card" data-source-type="code" data-kind="generated-image">
+    // Look up quality score
+    const qs = qualityTable.rows.find((r: any) => r.filename === img.filename);
+    const qualityLabel = qs?.quality_label ? QUALITY_LABELS_ZH[qs.quality_label] : '未评分';
+    const qualityColor = qs?.quality_label ? QUALITY_COLORS[qs.quality_label] : '#6b7280';
+    const scoreText = qs ? `${qs.score}/100` : '';
+    const reviewUrl = qs?.review_md_url || '';
+    const usesHtml = qs?.recommended_uses?.slice(0, 2).map((u: string) =>
+      `<span class="use-chip">${escapeHtml(u)}</span>`).join('') || '';
+    const qualityBadge = qs
+      ? `<span class="quality-badge" style="color:${qualityColor};background:${qualityColor}15">${qualityLabel} · ${scoreText}</span>`
+      : '';
+    return `      <article class="asset-card image-card" data-source-type="${escapeHtml(img.source_type || 'code')}" data-kind="generated-image">
         <div class="image-frame">
           <img src="${escapeHtml(url)}" alt="${escapeHtml(title)}" loading="lazy">
         </div>
         <div class="image-body">
+          <div class="image-header-row">${qualityBadge}</div>
           <div class="image-desc">${escapeHtml(title)}</div>
-          <div class="image-meta">${escapeHtml(model)} · ${date}</div>
-          <a class="btn-secondary" href="${escapeHtml(url)}" target="_blank">查看原图</a>
+          <div class="image-meta">${escapeHtml(model)} · ${date} · ${escapeHtml(img.aspect_ratio || '')}</div>
+          <div class="image-uses">${usesHtml}</div>
+          <div class="image-actions">
+            <a class="btn-secondary" href="${escapeHtml(url)}" target="_blank">查看原图</a>
+            ${reviewUrl ? `<a class="btn-secondary" href="${escapeHtml(reviewUrl)}" target="_blank">📋 质量评审</a>` : ''}
+          </div>
         </div>
       </article>`;
   }).join('\n');
@@ -287,6 +319,14 @@ function main() {
       object-fit: cover;
     }
     .image-body { padding: 1rem; }
+    .image-header-row { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
+    .quality-badge {
+      font-size: 0.65rem; font-weight: 700;
+      padding: 0.15rem 0.5rem; border-radius: 4px;
+      display: inline-block;
+    }
+    .image-uses { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+    .image-actions { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-top: 0.5rem; }
     .image-desc { font-size: 0.85rem; font-weight: 500; margin-bottom: 0.3rem; }
     .image-meta { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem; }
     .asset-card {
