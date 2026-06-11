@@ -54,8 +54,13 @@ function main() {
       let dayPagesOk = 0, daySummariesOk = 0;
       for (const day of cal.days || []) {
         const detailUrl = day.detail_url || '';
-        // detail_url looks like "daily/YYYY/MM/YYYY-MM-DD/"
-        const dayDir = join(DAILY_DIR, detailUrl.replace(/^daily\//, '').replace(/\/$/, ''));
+        // detail_url may be "/creative-quota-assets/daily/YYYY/MM/YYYY-MM-DD/" or "daily/YYYY/MM/YYYY-MM-DD/"
+        // Normalize to local path
+        const normalized = detailUrl
+          .replace(/^\/?creative-quota-assets\//, '')
+          .replace(/^\/?daily\//, 'daily/')
+          .replace(/\/$/, '');
+        const dayDir = join(DAILY_DIR, normalized.replace(/^daily\//, ''));
         if (existsSync(join(dayDir, 'index.html'))) dayPagesOk++;
         if (existsSync(join(dayDir, 'daily-summary.json'))) {
           try {

@@ -83,11 +83,6 @@ interface DedupItem {
   versions: { pack_dir: string; title: string; date: string; score: number; source_type: string; detail_page_path: string }[];
 }
 
-function extractFirstParagraph(text: string): string {
-  const lines = text.split('\n').filter(l => l.trim() && !l.startsWith('#') && !l.startsWith('-'));
-  return lines[0]?.trim() || '';
-}
-
 function extractFacts(text: string): string[] {
   const facts: string[] = [];
   const lines = text.split('\n');
@@ -100,17 +95,173 @@ function extractFacts(text: string): string[] {
   return facts.slice(0, 5);
 }
 
-function generateSourceSpecificSection(st: string, brief: string, facts: string[], xpost: string, signal: any, source: any): string {
+// Template questions to filter out
+const TEMPLATE_QUESTIONS = [
+  /这个开源项目解决了什么开发痛点[？?]/,
+  /研究方法有什么独特之处[？?]/,
+  /这个模型\/数据集代表了哪类AI能力的新高度[？?]/,
+  /有哪些实操经验值得分享[？?]/,
+  /艺术品背后有什么文化故事[？?]/,
+  /Content Angle[：:]/,
+  /Target Audience[：:]/,
+  /领域动态[：:]/,
+];
+
+function containsTemplateQuestion(text: string): boolean {
+  if (!text) return false;
+  return TEMPLATE_QUESTIONS.some(q => q.test(text));
+}
+
+function cleanWhyItMatters(text: string): string {
+  if (!text) return '';
+  // If the text is mostly a template question, return empty so we can use a fallback
+  if (containsTemplateQuestion(text)) return '';
+  return text;
+}
+
+function extractMeaningfulContent(text: string): string {
+  if (!text) return '';
+  const lines = text.split('\n').filter(l => l.trim());
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('#')) continue;
+    if (trimmed.startsWith('---')) continue;
+    if (trimmed.startsWith('**ID:**')) continue;
+    if (trimmed.startsWith('**Score:**')) continue;
+    if (trimmed.startsWith('**Created:**')) continue;
+    if (trimmed.startsWith('**Title:**')) continue;
+    if (trimmed.startsWith('**来源类型：**')) continue;
+    if (trimmed.startsWith('**日期：**')) continue;
+    if (trimmed.startsWith('**评分：**')) continue;
+    if (containsTemplateQuestion(trimmed)) continue;
+    if (trimmed.length < 10) continue; // Skip very short lines
+    return trimmed;
+  }
+  return '';
+}
+
+function extractBriefSummary(text: string): string {
+  if (!text) return '';
+  const lines = text.split('\n');
+  let inSummary = false;
+  const summaryLines: string[] = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.match(/^#{1,3}\s*Summary/i)) { inSummary = true; continue; }
+    if (trimmed.match(/^#{1,3}\s*Why/i)) { inSummary = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*Content/i)) { inSummary = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*Target/i)) { inSummary = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*Recommended/i)) { inSummary = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*Tags/i)) { inSummary = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*Uncertainty/i)) { inSummary = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*Source/i)) { inSummary = false; continue; }
+    if (inSummary && trimmed && !trimmed.startsWith('#')) {
+      summaryLines.push(trimmed);
+    }
+  }
+  return summaryLines.join(' ').slice(0, 400);
+}
+
+function extractBriefBackground(text: string): string {
+  if (!text) return '';
+  const lines = text.split('\n');
+  let inBackground = false;
+  const bgLines: string[] = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.match(/^#{1,3}\s*Background/i)) { inBackground = true; continue; }
+    if (trimmed.match(/^#{1,3}\s*Why/i)) { inBackground = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*Content/i)) { inBackground = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*Summary/i)) { inBackground = false; continue; }
+    if (inBackground && trimmed && !trimmed.startsWith('#')) {
+      bgLines.push(trimmed);
+    }
+  }
+  return bgLines.join(' ').slice(0, 400);
+}
+
+function extractXPostContent(text: string): string {
+  if (!text) return '';
+  const lines = text.split('\n').filter(l => {
+    const t = l.trim();
+    if (!t) return false;
+    if (t.startsWith('#')) return false;
+    if (t.startsWith('📌')) return false;
+    if (containsTemplateQuestion(t)) return false;
+    return true;
+  });
+  return lines.slice(0, 3).join(' ').slice(0, 300);
+}
+
+function extractSummaryBackground(text: string): string {
+  if (!text) return '';
+  const lines = text.split('\n');
+  let inBackground = false;
+  const bgLines: string[] = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.match(/^#{1,3}\s*背景与来源/i)) { inBackground = true; continue; }
+    if (trimmed.match(/^#{1,3}\s*为什么值得关注/i)) { inBackground = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*可以怎么用/i)) { inBackground = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*已有素材/i)) { inBackground = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*不确定性/i)) { inBackground = false; continue; }
+    if (inBackground && trimmed && !trimmed.startsWith('#')) {
+      bgLines.push(trimmed);
+    }
+  }
+  return bgLines.join(' ').slice(0, 400);
+}
+
+function extractSummaryWhyMatters(text: string): string {
+  if (!text) return '';
+  const lines = text.split('\n');
+  let inWhy = false;
+  const whyLines: string[] = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.match(/^#{1,3}\s*为什么值得关注/i)) { inWhy = true; continue; }
+    if (trimmed.match(/^#{1,3}\s*可以怎么用/i)) { inWhy = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*已有素材/i)) { inWhy = false; continue; }
+    if (trimmed.match(/^#{1,3}\s*不确定性/i)) { inWhy = false; continue; }
+    if (inWhy && trimmed && !trimmed.startsWith('#')) {
+      if (containsTemplateQuestion(trimmed)) continue;
+      whyLines.push(trimmed);
+    }
+  }
+  return whyLines.join(' ').slice(0, 400);
+}
+
+function generateSourceSpecificSection(st: string, brief: string, facts: string[], xpost: string, signal: any, source: any, summaryMd: string, factsText: string): string {
   const sections: string[] = [];
 
+  // Use signal summary as primary content if available
+  const signalSummary = signal?.summary || '';
+  const briefSummary = extractBriefSummary(brief) || extractMeaningfulContent(brief);
+  const primarySummary = signalSummary || briefSummary || extractSummaryBackground(summaryMd) || '';
+
+  // Extract facts from facts.md, filtering out links-only entries
+  const meaningfulFacts = facts.filter(f => {
+    if (f.includes('github.com/') && f.length < 60) return false; // Skip bare links
+    if (containsTemplateQuestion(f)) return false;
+    return f.length > 10;
+  }).slice(0, 5);
+
+  const factsHtml = meaningfulFacts.length > 0
+    ? `<ul>${meaningfulFacts.map(f => `<li>${escapeHtml(truncate(f, 250))}</li>`).join('')}</ul>`
+    : '<p>现有信号不足，无法判断具体事实。可从上方已有素材中进一步挖掘。</p>';
+
+  // Clean xpost content
+  const cleanXpost = extractXPostContent(xpost) || extractSummaryWhyMatters(summaryMd) || '现有信号不足，无法判断具体受众。';
+
+  // GitHub / source URL
+  const sourceUrl = source?.source_urls?.[0] || '';
+  const sourceUrlHtml = sourceUrl ? `<p><a href="${escapeHtml(sourceUrl)}" target="_blank">${escapeHtml(sourceUrl)}</a></p>` : '';
+
   if (st === 'code') {
-    const factsHtml = facts.length > 0
-      ? `<ul>${facts.map(f => `<li>${escapeHtml(truncate(f, 200))}</li>`).join('')}</ul>`
-      : '<p>暂无详细事实数据。</p>';
     sections.push(`
     <div class="section">
       <div class="section-title">🚀 项目简介</div>
-      <div class="section-body">${brief ? escapeHtml(truncate(extractFirstParagraph(brief), 400)) : '<p>暂无项目简介。</p>'}</div>
+      <div class="section-body">${primarySummary ? escapeHtml(truncate(primarySummary, 400)) : '<p>现有信号不足，无法提供项目简介。</p>'}${sourceUrlHtml}</div>
     </div>
     <div class="section">
       <div class="section-title">💡 解决的问题</div>
@@ -118,24 +269,40 @@ function generateSourceSpecificSection(st: string, brief: string, facts: string[
     </div>
     <div class="section">
       <div class="section-title">👥 适合的用户</div>
-      <div class="section-body">${xpost ? escapeHtml(truncate(extractFirstParagraph(xpost), 300)) : '<p>开发者、技术创业者、开源爱好者。</p>'}</div>
+      <div class="section-body">${cleanXpost ? escapeHtml(truncate(cleanXpost, 300)) : '<p>现有信号不足，无法判断具体受众。</p>'}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">🔗 与 AI 内容生产的关系</div>
+      <div class="section-body"><p>该项目涉及 AI 生成媒体技能（图像、视频、音频），与 Creative Quota 的创意素材库高度相关。可作为生成工具链或内容灵感来源。</p></div>
+    </div>
+    <div class="section">
+      <div class="section-title">✨ 可生成内容建议</div>
+      <div class="section-body">
+        <ul>
+          <li>X 线程：介绍项目核心能力与使用场景</li>
+          <li>图片：生成项目概念图或工作流程图</li>
+          <li>网页：制作项目速览或集成指南</li>
+        </ul>
+      </div>
     </div>
     `);
   } else if (st === 'academic') {
-    const factsHtml = facts.length > 0
-      ? `<ul>${facts.map(f => `<li>${escapeHtml(truncate(f, 200))}</li>`).join('')}</ul>`
-      : '<p>暂无论文核心观点。</p>';
+    const paperAbstract = primarySummary;
     sections.push(`
     <div class="section">
-      <div class="section-title">📚 研究问题</div>
-      <div class="section-body">${brief ? escapeHtml(truncate(extractFirstParagraph(brief), 400)) : '<p>暂无研究问题描述。</p>'}</div>
+      <div class="section-title">📚 论文研究问题</div>
+      <div class="section-body">${paperAbstract ? escapeHtml(truncate(paperAbstract, 400)) : '<p>现有信号不足，无法提供论文摘要。</p>'}</div>
     </div>
     <div class="section">
       <div class="section-title">🔬 核心观点</div>
       <div class="section-body">${factsHtml}</div>
     </div>
     <div class="section">
-      <div class="section-title">🎯 可转化内容</div>
+      <div class="section-title">🎯 为什么值得关注</div>
+      <div class="section-body">${cleanXpost ? escapeHtml(truncate(cleanXpost, 300)) : '<p>学术论文反映了该领域的前沿研究方向，对 AI 内容生产系统的理论基础和局限性认知有参考价值。</p>'}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">📝 可以转化成哪些内容</div>
       <div class="section-body">
         <ul>
           <li>X 线程：提炼论文核心观点，制作通俗科普帖</li>
@@ -145,54 +312,104 @@ function generateSourceSpecificSection(st: string, brief: string, facts: string[
         </ul>
       </div>
     </div>
+    <div class="section">
+      <div class="section-title">⚠️ 信息不确定性</div>
+      <div class="section-body"><p>基于 arXiv 摘要和元数据，未获取论文全文。核心观点可能有偏差，建议阅读原文核实。</p></div>
+    </div>
     `);
   } else if (st === 'culture-art') {
+    const artworkDesc = primarySummary || briefSummary || '';
     sections.push(`
     <div class="section">
-      <div class="section-title">🎨 作品介绍</div>
-      <div class="section-body">${brief ? escapeHtml(truncate(extractFirstParagraph(brief), 400)) : '<p>暂无作品介绍。</p>'}</div>
+      <div class="section-title">🎨 作品 / 艺术品介绍</div>
+      <div class="section-body">${artworkDesc ? escapeHtml(truncate(artworkDesc, 400)) : '<p>现有信号不足，无法提供作品介绍。</p>'}</div>
     </div>
     <div class="section">
       <div class="section-title">👁️ 视觉元素</div>
-      <div class="section-body">${facts.length > 0 ? `<ul>${facts.map(f => `<li>${escapeHtml(truncate(f, 200))}</li>`).join('')}</ul>` : '<p>暂无视觉元素描述。</p>'}</div>
+      <div class="section-body">${factsHtml}</div>
     </div>
     <div class="section">
       <div class="section-title">🎭 风格特征</div>
-      <div class="section-body"><p>${signal?.style || signal?.period || '艺术风格信息待补充。'}</p></div>
+      <div class="section-body"><p>${signal?.style || signal?.period || signal?.medium || '现有信号不足，无法判断具体风格。可参考艺术品所属博物馆或时期的典型风格。'}</p></div>
+    </div>
+    <div class="section">
+      <div class="section-title">🎨 可转化成图片 Prompt 的角度</div>
+      <div class="section-body">
+        <ul>
+          <li>复刻或致敬该作品风格</li>
+          <li>提取作品中的色彩、构图元素</li>
+          <li>生成与该作品主题相关的现代演绎</li>
+        </ul>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">🖼️ 关联生成图片</div>
+      <div class="section-body"><p>如有该主题生成的图片，将在此处展示。也可使用上方 Prompt 生成。</p></div>
     </div>
     `);
   } else if (st === 'ai-ecosystem') {
+    const modelDesc = primarySummary || briefSummary || '';
     sections.push(`
     <div class="section">
-      <div class="section-title">🤖 模型能力</div>
-      <div class="section-body">${brief ? escapeHtml(truncate(extractFirstParagraph(brief), 400)) : '<p>暂无模型能力描述。</p>'}</div>
+      <div class="section-title">🤖 模型 / 项目能力</div>
+      <div class="section-body">${modelDesc ? escapeHtml(truncate(modelDesc, 400)) : '<p>现有信号不足，无法提供模型能力描述。</p>'}${sourceUrlHtml}</div>
     </div>
     <div class="section">
       <div class="section-title">📥 输入输出</div>
-      <div class="section-body">${facts.length > 0 ? `<ul>${facts.map(f => `<li>${escapeHtml(truncate(f, 200))}</li>`).join('')}</ul>` : '<p>暂无输入输出说明。</p>'}</div>
+      <div class="section-body">${factsHtml}</div>
     </div>
     <div class="section">
       <div class="section-title">🎯 适合场景</div>
-      <div class="section-body"><p>AI 内容生成、模型评测、创意素材库扩展。</p></div>
+      <div class="section-body"><p>AI 内容生成、模型评测、创意素材库扩展。具体场景取决于模型能力范围。</p></div>
+    </div>
+    <div class="section">
+      <div class="section-title">💎 对内容生成系统的价值</div>
+      <div class="section-body"><p>该模型可作为 Creative Quota 素材库的生成工具或参考基准，帮助评估同类模型的能力边界。</p></div>
+    </div>
+    <div class="section">
+      <div class="section-title">✨ 可生成素材建议</div>
+      <div class="section-body">
+        <ul>
+          <li>模型对比评测帖</li>
+          <li>使用该模型生成的示例图片</li>
+          <li>模型能力边界分析</li>
+        </ul>
+      </div>
     </div>
     `);
   } else if (st === 'dev-community') {
+    const communityDesc = primarySummary || briefSummary || '';
     sections.push(`
     <div class="section">
-      <div class="section-title">💬 社区讨论</div>
-      <div class="section-body">${brief ? escapeHtml(truncate(extractFirstParagraph(brief), 400)) : '<p>暂无社区讨论摘要。</p>'}</div>
+      <div class="section-title">💬 社区讨论点</div>
+      <div class="section-body">${communityDesc ? escapeHtml(truncate(communityDesc, 400)) : '<p>现有信号不足，无法提供社区讨论摘要。</p>'}</div>
     </div>
     <div class="section">
       <div class="section-title">😤 开发者痛点</div>
-      <div class="section-body">${facts.length > 0 ? `<ul>${facts.map(f => `<li>${escapeHtml(truncate(f, 200))}</li>`).join('')}</ul>` : '<p>暂无痛点分析。</p>'}</div>
+      <div class="section-body">${factsHtml}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">📝 可转化的内容角度</div>
+      <div class="section-body">
+        <ul>
+          <li>社区热议话题总结</li>
+          <li>痛点分析与解决方案探讨</li>
+          <li>工具推荐与使用技巧</li>
+        </ul>
+      </div>
     </div>
     `);
   } else {
     // Default / context
+    const bgDesc = primarySummary || briefSummary || extractSummaryBackground(summaryMd) || '';
     sections.push(`
     <div class="section">
       <div class="section-title">📖 背景信息</div>
-      <div class="section-body">${brief ? escapeHtml(truncate(extractFirstParagraph(brief), 400)) : '<p>暂无背景信息。</p>'}</div>
+      <div class="section-body">${bgDesc ? escapeHtml(truncate(bgDesc, 400)) : '<p>现有信号不足，无法提供背景信息。</p>'}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">🎯 适合生成的氛围内容</div>
+      <div class="section-body"><p>基于日期、天气或节气背景，生成与之匹配的氛围图片、短文案或音乐。</p></div>
     </div>
     `);
   }
@@ -221,9 +438,13 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
   const briefText = safeReadText(join(ASSETS, packDir, 'brief.md'), '');
   const factsText = safeReadText(join(ASSETS, packDir, 'facts.md'), '');
   const xpostText = safeReadText(join(ASSETS, packDir, 'x-post.zh.md'), '');
+  const summaryMdText = safeReadText(join(ASSETS, packDir, 'content-summary.zh.md'), '');
   const signalJson = safeReadJson<any>(join(ASSETS, packDir, 'signal.json'), {});
   const sourceJson = safeReadJson<any>(join(ASSETS, packDir, 'source.json'), {});
   const facts = extractFacts(factsText);
+
+  // Clean up why_it_matters - filter out template questions
+  const whyItMattersClean = cleanWhyItMatters(whyItMatters) || extractSummaryWhyMatters(summaryMdText) || '';
 
   // Build use items
   const useItems = recommendedUses.map((use: string) => {
@@ -309,7 +530,7 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
   }
 
   // Source-specific section
-  const sourceSpecific = generateSourceSpecificSection(st, briefText, facts, xpostText, signalJson, sourceJson);
+  const sourceSpecific = generateSourceSpecificSection(st, briefText, facts, xpostText, signalJson, sourceJson, summaryMdText, factsText);
 
   // Navigation
   const dateParts = date.split('-');
@@ -429,10 +650,10 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
       <div class="section-body">${escapeHtml(background)}</div>
     </div>` : ''}
     ${sourceSpecific}
-    ${whyItMatters ? `
+    ${whyItMattersClean ? `
     <div class="section">
       <div class="section-title">💡 为什么值得关注</div>
-      <div class="section-body">${escapeHtml(whyItMatters)}</div>
+      <div class="section-body">${escapeHtml(whyItMattersClean)}</div>
     </div>` : ''}
     ${useItems ? `
     <div class="section">
