@@ -25,7 +25,8 @@
     "archive:daily": "tsx scripts/build-daily-archive.ts",
     "validate:daily-archive": "tsx scripts/validate-daily-archive.ts",
     "validate:public-gallery": "tsx scripts/validate-public-gallery.ts",
-    "gallery:static": "tsx scripts/build-static-gallery.ts"
+    "gallery:static": "tsx scripts/build-static-gallery.ts",
+    "validate:mobile-gallery": "tsx scripts/validate-mobile-gallery.ts"
   },
   "keywords": [
     "ai",
