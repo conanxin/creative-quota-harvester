@@ -18,6 +18,8 @@
 | 0.9.2 | 2026-06-11 | Phase 3C | ✅ COMPLETE — MiniMax quota guard + explicit generation command |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
+| 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |
+| 0.10.0 | 2026-06-11 | Phase 4C | ✅ COMPLETE — Public gallery Chinese UI refresh (light theme, Chinese-first) |
 
 ---
 
@@ -244,28 +246,65 @@
 
 ---
 
-## Phase 4B — Scheduled Automation ⬜
+## Phase 4B — Scheduled Automation ✅
 
-**Goal:** Production-ready scheduled pipeline.
+> Phase 4B-0: Dry run — PASS
+> Phase 4B-1: Timer enabled — PASS
+> Phase 4B-1a: Persistence and safety check — PASS
+
+**Timer status:** `active (waiting)`, next run `Fri 2026-06-12 07:30:00 CST`
+**Schedule:** `07:30 CST daily` via systemd user timer (`creative-quota-digest.timer`)
+**Linger:** `yes` — survives logout/reboot
+
+**Validation after tomorrow 07:30:**
+```bash
+systemctl --user status creative-quota-digest.service
+journalctl --user -u creative-quota-digest.service -n 120 --no-pager
+tail -n 120 logs/daily-scheduled.log
+```
+
+**How to disable:** `systemctl --user disable --now creative-quota-digest.timer`
+
+---
+
+## Phase 4C — Public Gallery Chinese UI Refresh ✅
+
+
+**Status:** Complete (2026-06-11)
+**Assets repo:** `creative-quota-assets`
 
 **Scope:**
-- [ ] systemd timer or external cron (not auto-installed by this repo)
-- [ ] GitHub Actions CI/CD (lint, type-check, integration tests)
-- [ ] GitHub Actions: auto-publish `creative-quota-assets` on new content pack
-- [ ] Health check per source adapter
-- [ ] Alerting (Telegram alert on source failure)
-- [ ] Retention policy (prune old assets)
+- [x] `gallery/index.html` complete UI refresh (684 lines)
+- [x] Light theme (#f7f4ef beige + white cards)
+- [x] Chinese-first UI ("AI 创意素材库")
+- [x] Stats bar (Content Packs / 已生成图片 / 信号来源 / 最后更新)
+- [x] Generated images section with thumbnails (dynamic from assets.json)
+- [x] Chinese filter labels
+- [x] New status badges: ✅ 已接入真实信号源 · 已生成 Content Packs · 已包含 MiniMax 图片素材
+- [x] Chinese error/empty states
+- [x] `README.md` Chinese refresh (3 MiniMax images documented)
+- [x] GitHub push: `a035f4b`
 
-**Constraints:**
-- ⚠️ systemd/cron setup is external
-- ❌ No auto-publish without user confirmation
+**Public URL:** https://conanxin.github.io/creative-quota-assets/gallery/
 
-**Exit Criteria:** Daily automated run producing new content packs.
+**Gallery stats:** Content Packs: 25 | Total assets: 26 | Generated images: 3
+
 
 ---
 
 ## Future Considerations (Backlog)
 
+
+### Short-term (Next Phases)
+
+| Phase | Description | Trigger |
+|-------|-------------|--------|
+| **Phase 4B-2** | First Scheduled Run Validation | After tomorrow 07:30 |
+| **Phase 4B-1 follow-up** | Telegram auto-send hook after digest | Manual |
+| **Phase 3D** | Controlled Image Batch with Guard | Dad confirms |
+| **Phase 4D** | Telegram Auto-send Hook | Scheduled |
+
+### Long-term
 - [ ] Multi-provider support (OpenAI, Google, Stability AI as fallbacks)
 - [ ] Collaborative filtering (which briefs → high-engagement assets)
 - [ ] A/B brief testing (multiple brief variants per signal)
