@@ -4,6 +4,8 @@
   "description": "Transform real-world signals into reusable AI generation assets",
   "main": "src/index.ts",
   "scripts": {
+    "build:content-packs": "tsx scripts/build-content-pack-pages.ts",
+    "pages:content-packs": "tsx scripts/build-content-pack-pages.ts",
     "build": "tsc",
     "run-once": "npx ts-node scripts/run-once.ts",
     "collect": "npx ts-node scripts/collect.ts",
