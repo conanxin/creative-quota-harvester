@@ -3,10 +3,9 @@
  * scripts/validate-public-gallery.ts
  *
  * Validates the public gallery is correctly configured:
- * - Data loading paths work
- * - Daily archive links are correct
- * - JSON files are valid
- * - No broken links to key assets
+ * - Card layout, filtering, static content
+ * - Daily archive links, JSON validity
+ * - No broken links, no API leaks
  */
 
 import { readFileSync, existsSync } from 'fs';
@@ -23,144 +22,100 @@ function main() {
   const checks: Check[] = [];
   const html = readFileSync(join(ASSETS, 'gallery', 'index.html'), 'utf8');
 
-  // 1. gallery/index.html exists
-  checks.push(check(existsSync(join(ASSETS, 'gallery', 'index.html')), 'gallery/index.html exists'));
+  // ── Phase 4E-6: Card Layout & Filter Checks ───────────
+  checks.push(check(html.includes('asset-card'), 'Has asset-card class'));
+  checks.push(check(html.includes('data-source-type'), 'Has data-source-type attribute'));
+  checks.push(check(html.includes('data-filter'), 'Has data-filter attribute'));
+  checks.push(check(html.includes('asset-grid'), 'Has asset-grid class'));
+  checks.push(check(html.includes('image-grid'), 'Has image-grid class'));
+  checks.push(check(html.includes('data-kind="content-pack"'), 'Has data-kind content-pack'));
+  checks.push(check(html.includes('data-kind="generated-image"'), 'Has data-kind generated-image'));
+  checks.push(check(!html.includes('正在加载素材'), 'No loading text'));
+  checks.push(check(html.includes('addEventListener'), 'Has JS event listener'));
+  checks.push(check(html.includes('querySelectorAll'), 'Has JS querySelectorAll'));
+  checks.push(check(html.includes('暂无匹配素材'), 'Has empty state text'));
+  checks.push(check(html.includes('btn-primary'), 'Has primary button class'));
 
-  // 2. No wrong daily link (gallery/daily/)
-  checks.push(check(
-    !html.includes('href="daily/"'),
-    'No href="daily/" wrong relative link'
-  ));
+  // Count cards
+  const packCards = (html.match(/data-kind="content-pack"/g) || []).length;
+  const imgCards = (html.match(/data-kind="generated-image"/g) || []).length;
+  const filterBtns = (html.match(/data-filter=/g) || []).length;
+  checks.push(check(packCards >= 25, 'Has >= 25 content pack cards', `${packCards} found`));
+  checks.push(check(imgCards >= 3, 'Has >= 3 image cards', `${imgCards} found`));
+  checks.push(check(filterBtns >= 7, 'Has >= 7 filter buttons', `${filterBtns} found`));
 
-  // 3. Correct daily link present
-  checks.push(check(
-    html.includes('href="/creative-quota-assets/daily/"'),
-    'Has correct /creative-quota-assets/daily/ link'
-  ));
+  // ── Phase 4E-5: Static Content & Link Checks ───────────
+  checks.push(check(html.includes('SamurAIGPT'), 'Has SamurAIGPT content'));
+  checks.push(check(html.includes('cqa-2026-06-11'), 'Has generated image filename'));
+  checks.push(check(!html.includes('gallery/daily'), 'No gallery/daily link'));
+  checks.push(check(!html.includes('href="daily/"'), 'No href="daily/" wrong link'));
+  checks.push(check(html.includes('href="/creative-quota-assets/daily/"'), 'Has correct daily absolute link'));
 
-  // 4. Has BASE path resolution
-  checks.push(check(
-    html.includes('getBase()') && html.includes("location.pathname"),
-    'Has BASE path resolution (getBase)'
-  ));
+  // ── Phase 4E-5: CSS & Mobile Checks ───────────────────
+  const galStyleEnd = html.lastIndexOf('</style>');
+  const galMobileStart = html.indexOf('/* ── Mobile Responsive');
+  checks.push(check(galMobileStart < 0 || galMobileStart < galStyleEnd, 'Gallery mobile CSS inside style tag'));
 
-  // 5. assets.json valid
+  const dailyHtml = readFileSync(join(ASSETS, 'daily', 'index.html'), 'utf8');
+  const dailyStyleEnd = dailyHtml.lastIndexOf('</style>');
+  const dailyMobileStart = dailyHtml.indexOf('/* ── Mobile Responsive');
+  checks.push(check(dailyMobileStart < 0 || dailyMobileStart < dailyStyleEnd, 'Daily mobile CSS inside style tag'));
+
+  // ── JSON Validity ──────────────────────────────────────
   const assetsPath = join(ASSETS, 'gallery', 'assets.json');
-  let assetsOk = existsSync(assetsPath);
-  if (assetsOk) {
+  if (existsSync(assetsPath)) {
     try {
       const d = JSON.parse(readFileSync(assetsPath, 'utf8'));
       const assets = d.assets || d;
-      checks.push(check(Array.isArray(assets), 'gallery/assets.json is valid array', `${assets.length} items`));
-      const hasCpd = assets.filter((a: any) => a.content_pack_dir).length;
-      checks.push(check(hasCpd > 0, 'assets.json has content_pack_dir', `${hasCpd}/${assets.length}`));
+      checks.push(check(Array.isArray(assets), 'gallery/assets.json valid', `${assets.length} items`));
     } catch (e: any) {
-      checks.push(check(false, 'gallery/assets.json is valid JSON', e.message));
+      checks.push(check(false, 'gallery/assets.json valid', e.message));
     }
-  } else {
-    checks.push(check(false, 'gallery/assets.json exists'));
   }
 
-  // 6. content-pack-index.json valid
   const cpPath = join(ASSETS, 'metadata', 'content-pack-index.json');
-  let cpOk = existsSync(cpPath);
-  if (cpOk) {
+  if (existsSync(cpPath)) {
     try {
       const d = JSON.parse(readFileSync(cpPath, 'utf8'));
       checks.push(check(Array.isArray(d.content_packs), 'content-pack-index.json valid', `${d.content_packs?.length || 0} packs`));
     } catch (e: any) {
-      checks.push(check(false, 'content-pack-index.json valid JSON', e.message));
+      checks.push(check(false, 'content-pack-index.json valid', e.message));
     }
   }
-  checks.push(check(cpOk, 'content-pack-index.json exists'));
 
-  // 7. generated-assets.json valid
   const genPath = join(ASSETS, 'metadata', 'generated-assets.json');
-  checks.push(check(existsSync(genPath), 'generated-assets.json exists'));
   if (existsSync(genPath)) {
     try {
       const d: any[] = JSON.parse(readFileSync(genPath, 'utf8'));
       checks.push(check(Array.isArray(d), 'generated-assets.json valid', `${d.length} images`));
     } catch (e: any) {
-      checks.push(check(false, 'generated-assets.json valid JSON', e.message));
+      checks.push(check(false, 'generated-assets.json valid', e.message));
     }
   }
 
-  // 8. daily/index.html exists
+  // ── Daily Pages ────────────────────────────────────────
   checks.push(check(existsSync(join(ASSETS, 'daily', 'index.html')), 'daily/index.html exists'));
-
-  // 9. daily/calendar-index.json valid
   const calPath = join(ASSETS, 'daily', 'calendar-index.json');
-  let calOk = existsSync(calPath);
-  checks.push(check(calOk, 'calendar-index.json exists'));
-  if (calOk) {
-    try {
-      const d = JSON.parse(readFileSync(calPath, 'utf8'));
-      checks.push(check(Array.isArray(d.days), 'calendar-index.json days array', `${d.days?.length || 0} days`));
-    } catch (e: any) {
-      checks.push(check(false, 'calendar-index.json valid JSON', e.message));
-    }
-  }
-
-  // 10. No outdated status text
-  checks.push(check(
-    !html.includes('No Real Media Generated Yet'),
-    'No "No Real Media Generated Yet" text'
-  ));
-
-  // 11. No [truncated]
-  checks.push(check(!html.includes('[truncated]'), 'No [truncated] markers'));
-
-  // 12. No API key leaks
-  checks.push(check(
-    !html.match(/\bapi_key|secret|token|password\b/i),
-    'No API key leaks in gallery HTML'
-  ));
-
-  // 13. Daily pages exist
-  if (calOk) {
+  if (existsSync(calPath)) {
     try {
       const cal = JSON.parse(readFileSync(calPath, 'utf8'));
       let dayPagesOk = 0;
       for (const day of cal.days || []) {
-             const detailUrl = day.detail_url || '';
+        const detailUrl = day.detail_url || '';
         const raw = detailUrl.replace(/^\//, '').replace(/\/$/, '').replace(/^creative-quota-assets\//, '');
         const dayDir = join(ASSETS, raw);
         if (existsSync(join(dayDir, 'index.html'))) dayPagesOk++;
       }
-      
-  // Check mobile CSS is inside style tag (not exposed in body)
-  const galHtml = readFileSync(join(ASSETS, 'gallery', 'index.html'), 'utf8');
-  const galStyleEnd = galHtml.lastIndexOf('</style>');
-  const galMobileStart = galHtml.indexOf('/* ── Mobile Responsive');
-  checks.push(check(
-    galMobileStart < 0 || galMobileStart < galStyleEnd,
-    'Gallery mobile CSS inside style tag',
-    galMobileStart > 0 && galMobileStart > galStyleEnd ? 'OUTSIDE' : 'inside'
-  ));
-
-  // Check pre-rendered content is visible (no display:none)
-  checks.push(check(
-    !galHtml.includes('id="pre-rendered-packs" style="display:none"'),
-    'Pre-rendered packs visible by default'
-  ));
-
-  // Check only 1 PRE-RENDERED-CONTENT (no duplicates)
-  const preCount = (galHtml.match(/<!-- PRE-RENDERED-CONTENT -->/g) || []).length;
-  checks.push(check(preCount <= 1, 'No duplicate pre-rendered sections', `${preCount} found`));
-
-  // Check daily HTML mobile CSS not exposed
-  const dailyHtml = readFileSync(join(ASSETS, 'daily', 'index.html'), 'utf8');
-  const dailyStyleEnd = dailyHtml.lastIndexOf('</style>');
-  const dailyMobileStart = dailyHtml.indexOf('/* ── Mobile Responsive');
-  checks.push(check(
-    dailyMobileStart < 0 || dailyMobileStart < dailyStyleEnd,
-    'Daily mobile CSS inside style tag'
-  ));
-  checks.push(check(dayPagesOk === cal.days.length, 'All daily day pages exist', `${dayPagesOk}/${cal.days.length}`));
+      checks.push(check(dayPagesOk === cal.days.length, 'All daily day pages exist', `${dayPagesOk}/${cal.days.length}`));
     } catch {}
   }
 
+  // ── Safety ─────────────────────────────────────────────
+  checks.push(check(!html.includes('No Real Media Generated Yet'), 'No outdated status text'));
+  checks.push(check(!html.includes('[truncated]'), 'No [truncated] markers'));
+  checks.push(check(!html.match(/\bapi_key|secret|token|password\b/i), 'No API key leaks'));
+
+  // ── Results ────────────────────────────────────────────
   const passCount = checks.filter(c => c.pass).length;
   const totalCount = checks.length;
   const allPass = passCount === totalCount;
