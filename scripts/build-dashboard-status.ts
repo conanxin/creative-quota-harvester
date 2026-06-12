@@ -26,23 +26,22 @@ function safeReadText(path: string, fallback = ''): string {
 }
 
 function getTimerStatus(): { active: boolean; last_run: string; next_run: string; exit_status: string } {
-  try {
-    const output = execSync('systemctl --user status creative-quota-digest.timer --no-pager 2>&1', { encoding: 'utf8', timeout: 5000 });
-    const active = output.includes('active (waiting)') || output.includes('active (running)');
-    const triggerMatch = output.match(/Trigger:\s*(.+)/);
-    const next_run = triggerMatch ? triggerMatch[1].trim() : 'unknown';
-    
-    // Check service for last run
-    const svcOutput = execSync('systemctl --user status creative-quota-digest.service --no-pager 2>&1', { encoding: 'utf8', timeout: 5000 });
-    const activeMatch = svcOutput.match(/Active:\s*inactive \(dead\).*since\s+(.+)/);
-    const last_run = activeMatch ? activeMatch[1].trim() : 'unknown';
-    const exitMatch = svcOutput.match(/status=(\d+\/\w+)/);
-    const exit_status = exitMatch ? exitMatch[1] : 'unknown';
-    
-    return { active, last_run, next_run, exit_status };
-  } catch {
-    return { active: false, last_run: 'unknown', next_run: 'unknown', exit_status: 'unknown' };
-  }
+  // Read timer status from report if available
+  const scheduledReport = safeReadText(join(HARVESTER, 'reports', 'first-scheduled-run-validation.md'), '');
+  const timerActive = scheduledReport.includes('active (waiting)') || scheduledReport.includes('Timer: active');
+  const lastRunMatch = scheduledReport.match(/Last run:\s*(.+)/);
+  const lastRun = lastRunMatch ? lastRunMatch[1].trim() : 'unknown';
+  const nextRunMatch = scheduledReport.match(/Next run:\s*(.+)/);
+  const nextRun = nextRunMatch ? nextRunMatch[1].trim() : 'unknown';
+  const exitMatch = scheduledReport.match(/Exit:\s*(.+)/);
+  const exitStatus = exitMatch ? exitMatch[1].trim() : 'unknown';
+  
+  return {
+    active: timerActive,
+    last_run: lastRun,
+    next_run: nextRun,
+    exit_status: exitStatus,
+  };
 }
 
 function getGuardStatus(): { ambiguous_commands_blocked: boolean; max_images_per_run: number; music_video_disabled: boolean; confirm_required: boolean; dry_run_default: boolean } {
@@ -164,37 +163,37 @@ function generateHtml(status: any): string {
 <title>Creative Quota Harvester 控制台</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; line-height: 1.6; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f5f5f0; color: #333; line-height: 1.6; }
   .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-  header { text-align: center; padding: 30px 0; border-bottom: 1px solid #334155; margin-bottom: 30px; }
-  h1 { font-size: 1.8rem; color: #f8fafc; }
-  .subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 8px; }
-  .readonly-badge { display: inline-block; background: #3b82f615; color: #3b82f6; border: 1px solid #3b82f6; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; margin-top: 10px; }
+  header { text-align: center; padding: 30px 0; border-bottom: 2px solid #e0e0e0; margin-bottom: 30px; background: #fff; border-radius: 12px; }
+  h1 { font-size: 1.8rem; color: #2c3e50; }
+  .subtitle { color: #7f8c8d; font-size: 0.9rem; margin-top: 8px; }
+  .readonly-badge { display: inline-block; background: #e8f4fd; color: #2980b9; border: 1px solid #3498db; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; margin-top: 10px; }
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
-  .card { background: #1e293b; border-radius: 12px; padding: 20px; border: 1px solid #334155; }
-  .card h2 { font-size: 1.1rem; color: #f8fafc; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+  .card { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #e0e0e0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .card h2 { font-size: 1.1rem; color: #2c3e50; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
   .card h2 .icon { font-size: 1.3rem; }
-  .metric { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; }
+  .metric { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
   .metric:last-child { border-bottom: none; }
-  .metric-label { color: #94a3b8; font-size: 0.85rem; }
-  .metric-value { color: #f8fafc; font-weight: 500; font-size: 0.9rem; }
+  .metric-label { color: #7f8c8d; font-size: 0.85rem; }
+  .metric-value { color: #2c3e50; font-weight: 500; font-size: 0.9rem; }
   .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
   .status-green { background: #22c55e; }
   .status-red { background: #ef4444; }
-  .badge { display: inline-block; background: #334155; color: #cbd5e1; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px; }
-  .guard-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #334155; font-size: 0.85rem; }
+  .badge { display: inline-block; background: #e8f4fd; color: #2980b9; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px; }
+  .guard-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; font-size: 0.85rem; }
   .guard-item:last-child { border-bottom: none; }
-  .guard-label { color: #94a3b8; }
-  .guard-value { color: #f8fafc; }
+  .guard-label { color: #7f8c8d; }
+  .guard-value { color: #2c3e50; }
   table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  th, td { padding: 10px; text-align: left; border-bottom: 1px solid #334155; }
-  th { color: #94a3b8; font-weight: 500; }
-  td { color: #e2e8f0; }
+  th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+  th { color: #7f8c8d; font-weight: 500; }
+  td { color: #333; }
   .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-  .link-btn { display: inline-block; background: #334155; color: #e2e8f0; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; transition: background 0.2s; }
-  .link-btn:hover { background: #475569; }
-  footer { text-align: center; padding: 30px 0; color: #64748b; font-size: 0.8rem; border-top: 1px solid #334155; margin-top: 30px; }
-  .timestamp { text-align: center; color: #64748b; font-size: 0.75rem; margin-bottom: 20px; }
+  .link-btn { display: inline-block; background: #e8f4fd; color: #2980b9; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; transition: background 0.2s; border: 1px solid #d0e8f7; }
+  .link-btn:hover { background: #d0e8f7; }
+  footer { text-align: center; padding: 30px 0; color: #95a5a6; font-size: 0.8rem; border-top: 1px solid #e0e0e0; margin-top: 30px; }
+  .timestamp { text-align: center; color: #95a5a6; font-size: 0.75rem; margin-bottom: 20px; }
   @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } table { font-size: 0.75rem; } th, td { padding: 6px; } }
 </style>
 </head>
@@ -304,7 +303,7 @@ function generateHtml(status: any): string {
       <thead>
         <tr><th>#</th><th>标题</th><th>类型</th><th>评分</th><th>增强 Prompt</th><th>推荐理由</th></tr>
       </thead>
-      <tbody>${queueRows || '<tr><td colspan="6" style="text-align:center;color:#64748b">暂无推荐队列</td></tr>'}</tbody>
+      <tbody>${queueRows || '<tr><td colspan="6" style="text-align:center;color:#95a5a6">暂无推荐队列</td></tr>'}</tbody>
     </table>
   </div>
   

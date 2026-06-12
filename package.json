@@ -42,7 +42,8 @@
     "validate:image-reviews": "tsx scripts/validate-image-reviews.ts",
     "validate:image-prompts": "tsx scripts/validate-image-prompt-enhancement.ts",
     "dashboard:build": "tsx scripts/build-dashboard-status.ts",
-    "dashboard:validate": "tsx scripts/validate-dashboard.ts"
+    "dashboard:validate": "tsx scripts/validate-dashboard.ts",
+    "dashboard:pages:validate": "tsx scripts/validate-dashboard-pages.ts"
   },
   "keywords": [
     "ai",
