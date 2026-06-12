@@ -1,0 +1,45 @@
+PHASE 5A COMPLETE
+
+状态：PASS ✅
+
+# Phase 5A Harvester Read-only Dashboard
+
+Date: 2026-06-12 | Read-only | No MiniMax | No Timer Control
+
+## What Changed
+New scripts:
+- build-dashboard-status.ts — generates status.json + index.html
+- validate-dashboard.ts — 22-check validation
+
+Dashboard files:
+- dashboard/status.json — timer + guard + assets + queue + links
+- dashboard/index.html — dark-themed read-only UI
+
+## Dashboard Modules
+Timer: active/inactive, last run, next run, exit status
+Guard: policy, ambiguous blocking, max 2 images, music/video disabled
+Assets: 25 packs, 5 images, 0 music, 0 video, 5 source types
+Queue: Top 5 packs without images (score + enriched prompt status)
+Links: Gallery, Daily Archive, GitHub, Runbook
+
+## Safety
+Read-only badge: 只读模式 · 不触发 MiniMax · 不控制 Timer
+No <button> tags
+No API keys / .env / [truncated]
+
+## Validation
+dashboard:build     ✅
+dashboard:validate 22/22 PASS ✅
+
+## Local Preview
+npm run dashboard:build
+python3 -m http.server 8767
+open http://127.0.0.1:8767/dashboard/
+
+## Next Phase
+Phase 5B: Dashboard Publish / GitHub Pages
+Phase 4C: Telegram auto-send after digest
+Phase 4H: Video Prompt Enhancement
+
+报告路径：
+projects/creative-quota-harvester/reports/harvester-dashboard.md

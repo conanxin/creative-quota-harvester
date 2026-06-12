@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-06-11T23:59:39.121Z",
+  "phase": "5A",
+  "dashboard_version": "1.0.0",
+  "read_only": true,
+  "timer": {
+    "unit": "creative-quota-digest.timer",
+    "active": false,
+    "last_run": "unknown",
+    "next_run": "unknown",
+    "exit_status": "unknown",
+    "runs_at": "07:30 CST daily",
+    "calls_minimax": false
+  },
+  "generation_guard": {
+    "ambiguous_commands_blocked": true,
+    "max_images_per_run": 2,
+    "music_video_disabled": true,
+    "confirm_required": true,
+    "dry_run_default": true,
+    "policy": "Default DENY unless all conditions met",
+    "ambiguous_patterns": [
+      "继续",
+      "continue",
+      "下一步",
+      "run next",
+      "go",
+      "执行",
+      "运行",
+      "start",
+      "begin",
+      "proceed"
+    ]
+  },
+  "asset_library": {
+    "total_signals": 298,
+    "content_packs": 25,
+    "generated_images": 5,
+    "generated_music": 0,
+    "generated_video": 0,
+    "source_types_covered": [
+      "academic",
+      "code",
+      "culture-art",
+      "dev-community",
+      "ai-ecosystem"
+    ],
+    "gallery_url": "https://conanxin.github.io/creative-quota-assets/gallery/",
+    "daily_archive_url": "https://conanxin.github.io/creative-quota-assets/daily/"
+  },
+  "recommended_queue": [
+    {
+      "title": "SamurAIGPT/Generative-Media-Skills",
+      "source_type": "unknown",
+      "score": 0.7025,
+      "reason": "High score + no image yet",
+      "has_enriched_prompt": true
+    },
+    {
+      "title": "SamurAIGPT/Generative-Media-Skills",
+      "source_type": "unknown",
+      "score": 0.7025,
+      "reason": "High score + no image yet",
+      "has_enriched_prompt": true
+    },
+    {
+      "title": "SamurAIGPT/Generative-Media-Skills",
+      "source_type": "unknown",
+      "score": 0.7025,
+      "reason": "High score + no image yet",
+      "has_enriched_prompt": true
+    },
+    {
+      "title": "SamurAIGPT/Generative-Media-Skills",
+      "source_type": "unknown",
+      "score": 0.7025,
+      "reason": "High score + no image yet",
+      "has_enriched_prompt": true
+    },
+    {
+      "title": "Flaws in the LLM Automation Narrative",
+      "source_type": "unknown",
+      "score": 0.6619877011020773,
+      "reason": "High score + no image yet",
+      "has_enriched_prompt": true
+    }
+  ],
+  "links": {
+    "gallery": "https://conanxin.github.io/creative-quota-assets/gallery/",
+    "daily_archive": "https://conanxin.github.io/creative-quota-assets/daily/",
+    "assets_github": "https://github.com/conanxin/creative-quota-assets",
+    "harvester_github": "https://github.com/conanxin/creative-quota-harvester",
+    "runbook": "https://github.com/conanxin/creative-quota-harvester/blob/main/docs/SCHEDULED_DAILY_DIGEST_RUNBOOK.md"
+  }
+}

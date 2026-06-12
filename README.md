@@ -41,7 +41,8 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | Phase 4F | ✅ Complete | Facts enrichment from public sources |
 | Phase 4G | ✅ Complete | Source-aware image prompt enhancement |
 | Phase 3D | ✅ Complete | Controlled image batch with guard |
-| **Phase 3E** | **✅ Complete** | **Image quality review & asset scoring (5 dims, 20pts each)** |
+| Phase 3E | ✅ Complete | Image quality review & asset scoring (5 dims, 20pts each) |
+| **Phase 5A** | **✅ Complete** | **Harvester Read-only Dashboard (timer + guard + assets)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

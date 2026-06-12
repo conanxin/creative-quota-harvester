@@ -18,6 +18,8 @@
 | 0.9.2 | 2026-06-11 | Phase 3C | ✅ COMPLETE — MiniMax quota guard + explicit generation command |
 | 0.9.3 | 2026-06-11 | Phase 3D | ✅ COMPLETE — Controlled image batch (River AI + stabilityai, 2 images) |
 | 0.13.0 | 2026-06-11 | Phase 3E | ✅ COMPLETE — Image quality review & asset scoring (5 dims, 20pts each, 5 images) |
+| 0.13.1 | 2026-06-11 | Phase 4B-2 | ✅ COMPLETE — First scheduled run validation (07:30 auto-run, exit 0) |
+| 0.14.0 | 2026-06-12 | Phase 5A | ✅ COMPLETE — Harvester Read-only Dashboard (timer + guard + assets + queue) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |

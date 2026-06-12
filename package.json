@@ -40,7 +40,9 @@
     "generate:controlled:images": "tsx scripts/generate-controlled-image-batch.ts",
     "review:images": "tsx scripts/review-generated-images.ts",
     "validate:image-reviews": "tsx scripts/validate-image-reviews.ts",
-    "validate:image-prompts": "tsx scripts/validate-image-prompt-enhancement.ts"
+    "validate:image-prompts": "tsx scripts/validate-image-prompt-enhancement.ts",
+    "dashboard:build": "tsx scripts/build-dashboard-status.ts",
+    "dashboard:validate": "tsx scripts/validate-dashboard.ts"
   },
   "keywords": [
     "ai",
