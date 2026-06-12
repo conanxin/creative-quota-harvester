@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-12T00:41:16.211Z",
+  "generated_at": "2026-06-12T04:36:11.784Z",
   "phase": "4C-0",
   "mode": "dry-run",
   "digest_check": {
@@ -11,8 +11,9 @@
   },
   "send_permission": {
     "allowed": false,
-    "reason": "CQA_ALLOW_TELEGRAM_SEND is not 1. Set to 1 to enable real send.",
-    "has_token": true,
-    "has_chat_id": true
+    "reason": "TELEGRAM_BOT_TOKEN missing.",
+    "env_flag": "1",
+    "has_token": false,
+    "has_chat_id": false
   }
 }

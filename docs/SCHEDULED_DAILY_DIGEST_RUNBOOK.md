@@ -143,6 +143,50 @@ systemctl --user list-timers | grep creative-quota-digest
 
 ---
 
+## PHASE 4C-1: TELEGRAM AUTO-SEND (Reuses OpenClaw Bot) ✅
+
+**Date:** 2026-06-12  
+**Status:** ACTIVE — Daily digest sent to current OpenClaw Telegram chat
+
+### What Changed
+
+- **Reuses current OpenClaw Telegram bot** — No new bot created
+- **No gateway config modification** — Gateway keeps its original config
+- **`.env.telegram.local`** (gitignored, chmod 600) stores token/chat_id locally
+- **`scripts/daily-scheduled.sh`** optionally auto-sends if env is configured
+- **`scripts/send-telegram-digest.ts`** uses curl with SOCKS5 proxy for real send
+
+### How to Disable Auto-send
+
+1. Set `CQA_ALLOW_TELEGRAM_SEND=0` in `.env.telegram.local`, OR
+2. Delete `.env.telegram.local` entirely
+3. Timer will still generate digest; auto-send will be skipped
+
+### How to Check Send Log
+
+```bash
+tail -n 40 logs/daily-scheduled.log
+# Look for: "Telegram send: SUCCESS" or "Telegram send: FAIL"
+```
+
+### How to Check Timer Status
+
+```bash
+systemctl --user status creative-quota-digest.timer
+# Active: active (waiting) ✅
+```
+
+### Manual Test Commands
+
+```bash
+cd ~/.openclaw/workspace/projects/creative-quota-harvester
+bash scripts/daily-scheduled.sh  # Full daily + send cycle
+npm run digest:send:dry-run      # Validate only, no send
+npm run validate:telegram-auto-send  # 7-check validation
+```
+
+---
+
 ## FUTURE: PHASE 4B-1+ ADDITIONS (NOT YET IMPLEMENTED)
 
 | Feature | Status |

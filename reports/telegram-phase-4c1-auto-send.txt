@@ -1,0 +1,74 @@
+PHASE 4C-1 COMPLETE
+
+状态：PASS ✅
+
+# Phase 4C-1 Reuse OpenClaw Telegram Bot for Auto-send
+
+Date: 2026-06-12 | Bot: Reused (not new) | Send: 1 message ✅
+
+## What Changed
+- Reuses current OpenClaw Telegram bot
+- .env.telegram.local (chmod 600, gitignored)
+- daily-scheduled.sh: optional auto-send step
+- send-telegram-digest.ts: real send via curl + SOCKS5
+
+## Bot Source
+Source: openclaw-gateway.service Environment
+Token: detected (not printed)
+Chat: 1540208324 (matches current session)
+
+## Chat ID Status
+Detected: yes
+Matches: current OpenClaw session
+
+## Env Local Status
+File: .env.telegram.local
+Permissions: 600
+Git tracked: NO
+Contains: token + chat_id + CQA_ALLOW_TELEGRAM_SEND=1
+
+## Dry Run Result
+Digest: 1666 chars (≤3500 ✅)
+No [truncated] ✅
+No secrets ✅
+Permission: YES ✅
+
+## Confirmed Send Result
+Status: SUCCESS ✅
+message_id: 49803
+Sent: 1 message to current chat
+
+## Scheduled Wrapper Result
+daily-scheduled.sh: SUCCESS
+Digest generation: OK
+Telegram send: SUCCESS
+Timer not modified: ✅
+
+## Timer Status
+Active: active (waiting) ✅
+Next: Sat 2026-06-13 07:30:00 CST
+
+## Secret Safety
+- Token not printed ✅
+- Token not in reports ✅
+- Token not committed ✅
+- .env.telegram.local chmod 600 ✅
+- gitignore updated ✅
+
+## Safety
+- MiniMax: No ✅
+- New media: No ✅
+- Gateway modified: No ✅
+- Gateway restarted: No ✅
+
+## How to Disable
+1. Set CQA_ALLOW_TELEGRAM_SEND=0 in .env.telegram.local
+2. Or delete .env.telegram.local
+3. Timer still generates digest
+
+## Next Phase
+Phase 4H: Video Prompt Enhancement
+Phase 5C: Private Control Dashboard
+
+报告路径：
+projects/creative-quota-harvester/reports/telegram-auto-send.md

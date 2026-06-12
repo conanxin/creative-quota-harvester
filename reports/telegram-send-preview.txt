@@ -6,7 +6,7 @@ Has [truncated]: NO ✅
 Has secrets: NO ✅
 Digest valid: PASS ✅
 Send allowed: NO ❌
-Reason: CQA_ALLOW_TELEGRAM_SEND is not 1. Set to 1 to enable real send.
+Reason: TELEGRAM_BOT_TOKEN missing.
 
 --- Preview (first 200 chars) ---
 Creative Quota Daily Digest — 2026-06-12 STATUS: PASS  今日输入 Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11)) Content Packs: 25 (25 with im

@@ -176,24 +176,63 @@ async function main() {
     process.exit(0);
   }
 
-  // Real send path (only if confirmed)
+  // Real send path
   if (!permission.allowed) {
     console.log('\nBLOCKED: Cannot send. Check environment variables.');
     process.exit(1);
   }
 
-  // Real send would happen here, but we don't implement it in Phase 4C-0
-  // This is a placeholder for Phase 4C-1
+  // Real send — use Telegram Bot API via curl (SOCKS5 proxy compatible)
   console.log('\n=== REAL SEND PATH ===');
-  console.log('Token and chat ID verified. Sending would happen here.');
-  console.log('Note: Real send implementation in Phase 4C-1.');
+  console.log('Sending digest via Telegram Bot API...');
 
-  // Actual send code (commented out for safety in Phase 4C-0):
-  // const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  // const body = { chat_id: chatId, text: digest, parse_mode: 'Markdown' };
-  // const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  // const result = await response.json();
-  // console.log('Send result:', result.ok ? 'SUCCESS' : 'FAILED');
+  try {
+    const { execSync } = await import('child_process');
+    const url = `https://api.telegram.org/bot${permission.token}/sendMessage`;
+    // Escape digest for shell — use temp file to avoid escaping issues
+    const tmpFile = '/tmp/cqa-digest-send.json';
+    writeFileSync(tmpFile, JSON.stringify({
+      chat_id: permission.chatId,
+      text: digest,
+      parse_mode: 'Markdown',
+      disable_web_page_preview: true,
+    }));
+    
+    const result = execSync(
+      `curl -sS --connect-timeout 10 --max-time 20 --socks5-hostname 127.0.0.1:7898 ` +
+      `-H "Content-Type: application/json" ` +
+      `-X POST -d @${tmpFile} "${url}"`,
+      { encoding: 'utf-8', timeout: 25000 }
+    );
+    const parsed = JSON.parse(result) as { ok: boolean; description?: string; result?: { message_id: number } };
+    
+    // Clean up tmp file
+    try { require('fs').unlinkSync(tmpFile); } catch {}
+    
+    if (parsed.ok) {
+      console.log(`✅ Sent successfully. message_id: ${parsed.result?.message_id}`);
+      checkJson.send_permission = {
+        ...checkJson.send_permission,
+        allowed: true,
+        send_result: 'success',
+        message_id: parsed.result?.message_id,
+      };
+      writeFileSync(join(REPORTS_DIR, 'telegram-send-check.json'), JSON.stringify(checkJson, null, 2));
+    } else {
+      console.error(`❌ Send failed: ${parsed.description}`);
+      checkJson.send_permission = {
+        ...checkJson.send_permission,
+        allowed: true,
+        send_result: 'failed',
+        error: parsed.description,
+      };
+      writeFileSync(join(REPORTS_DIR, 'telegram-send-check.json'), JSON.stringify(checkJson, null, 2));
+      process.exit(1);
+    }
+  } catch (err: any) {
+    console.error('Send error:', err.message);
+    process.exit(1);
+  }
 
   console.log('\nDone!');
 }

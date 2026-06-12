@@ -47,7 +47,8 @@
     "digest:send:dry-run": "tsx scripts/send-telegram-digest.ts",
     "digest:send:check": "tsx scripts/validate-telegram-send-hook.ts",
     "digest:send:confirmed": "CQA_ALLOW_TELEGRAM_SEND=1 tsx scripts/send-telegram-digest.ts --confirmed",
-    "validate:telegram-send": "tsx scripts/validate-telegram-send-hook.ts"
+    "validate:telegram-send": "tsx scripts/validate-telegram-send-hook.ts",
+    "validate:telegram-auto-send": "tsx scripts/validate-telegram-auto-send.ts"
   },
   "keywords": [
     "ai",
