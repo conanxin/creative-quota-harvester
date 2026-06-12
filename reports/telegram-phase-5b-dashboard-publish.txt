@@ -1,0 +1,48 @@
+PHASE 5B COMPLETE
+
+状态：PASS ✅
+
+# Phase 5B Dashboard Publish / GitHub Pages
+
+Date: 2026-06-12 | Theme: Light Chinese | Read-only
+
+## What Changed
+- Dashboard UI: Dark → Light theme (米白/浅灰/蓝紫点缀)
+- Root index.html: Entry page with dashboard link + Gallery + Daily Archive
+- validate-dashboard-pages.ts: 24-check validation
+- GitHub Pages: Enabled (source: master branch, path: /)
+
+## Dashboard Modules
+Timer: active, last run 2026-06-12 07:30, next 2026-06-13 07:30
+Guard: max 2 images, music/video disabled, confirm required
+Assets: 25 packs, 5 images, 0 music, 0 video, 5 source types
+Queue: Top 5 packs without images
+Links: Gallery, Daily Archive, GitHub, Runbook
+
+## Validation
+dashboard:build           ✅
+dashboard:validate       22/22 ✅
+dashboard:pages:validate 24/24 ✅
+
+## GitHub Pages
+Status: Enabled ✅
+URL: https://conanxin.github.io/creative-quota-harvester/
+Dashboard: https://conanxin.github.io/creative-quota-harvester/dashboard/
+
+Note: Pages deployment may take 1-3 minutes after first push.
+If 404, wait and refresh.
+
+## Safety
+No button tags, no API keys, no .env, no [truncated]
+Read-only badge: 只读模式 · 不触发 MiniMax · 不控制 Timer
+
+## GitHub Push
+Harvester: 857921e
+
+## Next Phase
+Phase 4C: Telegram auto-send after digest
+Phase 4H: Video Prompt Enhancement
+Phase 5C: Private Control Dashboard
+
+报告路径：
+projects/creative-quota-harvester/reports/dashboard-publish.md
