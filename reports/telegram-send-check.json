@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-06-12T00:41:16.211Z",
+  "phase": "4C-0",
+  "mode": "dry-run",
+  "digest_check": {
+    "char_count": 1666,
+    "max_allowed": 3500,
+    "pass": true,
+    "has_truncated": false,
+    "has_secrets": false
+  },
+  "send_permission": {
+    "allowed": false,
+    "reason": "CQA_ALLOW_TELEGRAM_SEND is not 1. Set to 1 to enable real send.",
+    "has_token": true,
+    "has_chat_id": true
+  }
+}

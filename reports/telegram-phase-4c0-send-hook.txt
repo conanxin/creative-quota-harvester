@@ -1,0 +1,62 @@
+PHASE 4C-0 COMPLETE
+
+状态：PASS ✅
+
+# Phase 4C-0 Telegram Send Hook Dry Run
+
+Date: 2026-06-12 | Mode: Dry-run | No real send
+
+## What Changed
+New scripts:
+- send-telegram-digest.ts — Dry-run / confirmed sender
+- validate-telegram-send-hook.ts — 15-check validation
+
+Config:
+- .env.telegram.example — Template (no real tokens)
+- npm scripts: digest:send:dry-run / :check / :confirmed
+
+## Send Hook Mode
+Default: DRY-RUN ✅
+Confirmed: requires CQA_ALLOW_TELEGRAM_SEND=1
+Block: missing token or chat ID
+
+## Dry Run Result
+Digest: 1666 chars (≤3500 ✅)
+No [truncated] ✅
+No secrets ✅
+Preview written ✅
+Check JSON valid ✅
+
+## Digest Check
+chars: 1666 ≤ 3500 ✅
+truncated: NO ✅
+secrets: NO ✅
+valid: PASS ✅
+
+## Token Safety
+No .env.telegram.local committed ✅
+No real tokens in repo ✅
+Confirmed send BLOCKED without env vars ✅
+
+## Confirmed Send Block Status
+CQA_ALLOW_TELEGRAM_SEND: not set → BLOCK ✅
+TELEGRAM_BOT_TOKEN: not set → BLOCK ✅
+TELEGRAM_CHAT_ID: not set → BLOCK ✅
+
+## Timer Integration
+Status: NOT changed ✅
+Timer still runs digest only, no send
+
+## Safety
+- MiniMax called: No ✅
+- New media: No ✅
+- Timer modified: No ✅
+- Gateway token read: No ✅
+
+## Next Phase
+Phase 4C-1: Enable Telegram auto-send after digest
+Phase 4H: Video Prompt Enhancement
+Phase 5C: Private Control Dashboard
+
+报告路径：
+projects/creative-quota-harvester/reports/telegram-send-hook-dry-run.md

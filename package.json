@@ -43,7 +43,11 @@
     "validate:image-prompts": "tsx scripts/validate-image-prompt-enhancement.ts",
     "dashboard:build": "tsx scripts/build-dashboard-status.ts",
     "dashboard:validate": "tsx scripts/validate-dashboard.ts",
-    "dashboard:pages:validate": "tsx scripts/validate-dashboard-pages.ts"
+    "dashboard:pages:validate": "tsx scripts/validate-dashboard-pages.ts",
+    "digest:send:dry-run": "tsx scripts/send-telegram-digest.ts",
+    "digest:send:check": "tsx scripts/validate-telegram-send-hook.ts",
+    "digest:send:confirmed": "CQA_ALLOW_TELEGRAM_SEND=1 tsx scripts/send-telegram-digest.ts --confirmed",
+    "validate:telegram-send": "tsx scripts/validate-telegram-send-hook.ts"
   },
   "keywords": [
     "ai",

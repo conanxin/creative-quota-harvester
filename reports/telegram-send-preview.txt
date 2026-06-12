@@ -1,0 +1,70 @@
+=== Telegram Send Preview ===
+
+Mode: DRY-RUN
+Digest chars: 1666/3500
+Has [truncated]: NO ✅
+Has secrets: NO ✅
+Digest valid: PASS ✅
+Send allowed: NO ❌
+Reason: CQA_ALLOW_TELEGRAM_SEND is not 1. Set to 1 to enable real send.
+
+--- Preview (first 200 chars) ---
+Creative Quota Daily Digest — 2026-06-12 STATUS: PASS  今日输入 Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11)) Content Packs: 25 (25 with im
+...
+
+--- Full digest ---
+Creative Quota Daily Digest — 2026-06-12
+STATUS: PASS
+
+今日输入
+Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11))
+Content Packs: 25 (25 with image prompt)
+Generated Assets: 5 (5 img / 0 music / 0 video)
+
+Top 5 Signals (deduplicated, by score)
+1. SamurAIGPT/Generative-Media-Skills
+   Score: 0.703 | code | High
+
+2. EvoLinkAI/awesome-gpt-image-2-API-and-Prompts
+   Score: 0.676 | code | High
+
+3. Flaws in the LLM Automation Narrative
+   Score: 0.662 | academic | High
+
+4. FurkanGozukara/Stable-Diffusion
+   Score: 0.638 | code | Medium
+
+5. Show HN: Learn while you wait for your agents to code
+   Score: 0.629 | dev-community | Medium
+
+Recommended Generation Queue
+1. SamurAIGPT/Generative-Media-Skills
+   code | Score: 0.703
+   Generate image — High score + image prompt available
+
+2. Flaws in the LLM Automation Narrative
+   academic | Score: 0.662
+   Generate image — High score + image prompt available
+
+3. The Penitence of Saint Jerome
+   culture-art | Score: 0.600
+   Generate image — High score + image prompt available
+
+素材库状态
+Gallery: https://conanxin.github.io/creative-quota-assets/gallery/
+Latest image: https://conanxin.github.io/creative-quota-assets/images/2026/06/cqa-2026-06-11-gen-005_001.jpg
+Validation: PASS (npm run validate:assets)
+
+本阶段执行结果
+MiniMax called: No | New media: No | cron/systemd: No
+.env tracked: No
+
+报告路径
+Full: reports/daily-digest.md
+Telegram: reports/telegram-digest.txt
+Phase: docs/PHASE_3B1_DIGEST_QUALITY_PATCH_REPORT.md
+
+下一阶段
+Phase 3A Full: Batch image generation (quota guard)
+Phase 4A: Manual Daily Digest Runbook
+Phase 4B: Scheduled automation (external cron/systemd)
