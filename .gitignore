@@ -11,6 +11,15 @@ node_modules/
 !.env.example
 !.env.telegram.example
 
+# Local config (per-machine customization, never commit)
+config/*.local.json
+# Exception: .example.json is a template and is safe to commit
+!config/*.example.json
+# Local budget override
+config/source-budgets.json
+# Exception: keep the example template
+!config/source-budgets.example.json
+
 # SQLite signal database
 data/*.db
 data/*.sqlite

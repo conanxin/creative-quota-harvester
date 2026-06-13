@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "updated_at": "2026-06-13T03:39:46.968Z",
+  "cooldowns": {
+    "gdelt": {
+      "source": "gdelt",
+      "reason": "HTTP 429 at 2026-06-13T03:39:46.967Z",
+      "cooldown_until": "2026-06-13T09:39:46.968Z",
+      "created_at": "2026-06-13T03:39:46.968Z"
+    }
+  }
+}

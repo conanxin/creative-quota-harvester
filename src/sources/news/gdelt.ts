@@ -1,9 +1,17 @@
 /**
- * GDELT News Source Adapter — Phase 1R
- * Uses GDELT v2 DOC API with correct endpoint and parameters
+ * GDELT News Source Adapter — Phase 4C-5
+ * Uses GDELT v2 DOC API with correct endpoint and parameters.
+ *
+ * Phase 4C-5 changes:
+ *   - profile-aware: fast (smaller query, maxrecords=15) vs full (25)
+ *   - on HTTP 429, record cooldown (reports/source-cooldowns.json)
+ *   - if fast profile and cooldown active, skip without HTTP call
+ *   - full profile always tries (manual override)
+ *   - return empty on cooldown (not error) so digest still flows
  */
 import { fetchWithRetry } from "../../utils/fetch-with-retry";
 import { generateId, truncate } from "../utils";
+import { getActiveProfile, getFastOrFullConfig, getCooldown, getCooldownMs, setCooldown, type CollectProfile } from "../profile";
 import type { SourceAdapter, SourceRecord, SignalRecord } from "../types";
 
 const GDELT_KEYWORDS = [
@@ -12,8 +20,6 @@ const GDELT_KEYWORDS = [
   "large language model", "llm", "generative AI",
   "text to video", "multimodal",
 ];
-
-const MAX_RECORDS = 20;
 
 // GDELT v2 DOC API — correct endpoint
 const GDELT_V2_DOC = "https://api.gdeltproject.org/api/v2/doc/doc";
@@ -34,7 +40,25 @@ interface GDELTResponse {
   format?: string;
 }
 
-async function tryGdeltApi(): Promise<SourceRecord[]> {
+export interface GdeltRunInfo {
+  profile: CollectProfile;
+  cooldownSkipped: boolean;
+  cooldownUntil?: string;
+  cooldownReason?: string;
+  httpCallsMade: number;
+  recordsCollected: number;
+  lastStatus: number | null;
+  lastError?: string;
+  cooldownSet?: { until: string; reason: string };
+}
+
+let lastRunInfo: GdeltRunInfo | null = null;
+
+export function getLastRunInfo(): GdeltRunInfo | null {
+  return lastRunInfo;
+}
+
+async function tryGdeltApi(maxRecords: number): Promise<{ records: SourceRecord[]; status: number | null; error?: string; durationMs: number; rateLimited: boolean }> {
   const records: SourceRecord[] = [];
 
   // Build compound query with parentheses for correct boolean precedence
@@ -48,34 +72,31 @@ async function tryGdeltApi(): Promise<SourceRecord[]> {
   const params = new URLSearchParams({
     format: "json",
     mode: "ArtList",
-    maxrecords: String(MAX_RECORDS),
+    maxrecords: String(maxRecords),
     sort: "DateDesc",
     query: fullQuery,
   });
 
   const url = `${GDELT_V2_DOC}?${params.toString()}`;
-  console.log(`[gdelt] Trying v2 DOC API: ${url}`);
 
-  const result = await fetchWithRetry({ url, timeoutMs: 25000, retries: 2 });
+  const result = await fetchWithRetry({ url, timeoutMs: 20000, retries: 1, retryDelayMs: 2000 });
   const durationMs = result.durationMs;
 
   if (!result.ok) {
-    console.warn(`[gdelt] v2 DOC API failed: HTTP ${result.status} (${durationMs}ms) — ${result.error}`);
-    return records;
+    return {
+      records,
+      status: result.status,
+      error: result.error || `HTTP ${result.status}`,
+      durationMs,
+      rateLimited: result.status === 429,
+    };
   }
 
   const data = result.data as GDELTResponse | null;
   const articles = data?.articles || [];
 
   if (!Array.isArray(articles) || articles.length === 0) {
-    console.warn(`[gdelt] v2 DOC API returned ${articles?.length || 0} articles`);
-    // Try format=html as diagnostic
-    const diagUrl = `${GDELT_V2_DOC}?${new URLSearchParams({ format: "html", mode: "ArtList", maxrecords: "5", query: "AI" }).toString()}`;
-    const diagResult = await fetchWithRetry({ url: diagUrl, timeoutMs: 15000, retries: 0 });
-    if (diagResult.ok) {
-      console.log(`[gdelt] Diagnostic: format=html returned HTTP ${diagResult.status}`);
-    }
-    return records;
+    return { records, status: result.status, durationMs, rateLimited: false };
   }
 
   for (const article of articles) {
@@ -107,9 +128,7 @@ async function tryGdeltApi(): Promise<SourceRecord[]> {
       },
     });
   }
-
-  console.log(`[gdelt] v2 DOC API success: ${records.length} articles (${durationMs}ms, curl=${result.usedCurlFallback})`);
-  return records;
+  return { records, status: result.status, durationMs, rateLimited: false };
 }
 
 export const gdeltAdapter: SourceAdapter = {
@@ -117,12 +136,70 @@ export const gdeltAdapter: SourceAdapter = {
   sourceName: "GDELT",
 
   async fetch(_after?: Date): Promise<SourceRecord[]> {
-    const records = await tryGdeltApi();
+    const profile = getActiveProfile();
 
-    if (records.length === 0) {
-      console.warn(`[gdelt] No articles from v2 API, pipeline continues gracefully`);
+    if (profile === "diagnose") {
+      lastRunInfo = {
+        profile,
+        cooldownSkipped: false,
+        httpCallsMade: 0,
+        recordsCollected: 0,
+        lastStatus: null,
+      };
+      return [];
     }
 
+    const config = getFastOrFullConfig(profile);
+
+    // Cooldown check
+    const cooldown = await getCooldown("gdelt");
+    if (cooldown && config.gdelt === "skip_on_cooldown") {
+      console.log(`[gdelt] Skipped (cooldown active until ${cooldown.cooldown_until}, reason: ${cooldown.reason})`);
+      lastRunInfo = {
+        profile,
+        cooldownSkipped: true,
+        cooldownUntil: cooldown.cooldown_until,
+        cooldownReason: cooldown.reason,
+        httpCallsMade: 0,
+        recordsCollected: 0,
+        lastStatus: 0,
+      };
+      return [];
+    }
+
+    const maxRecords = config.gdelt_max_records;
+    const { records, status, error, durationMs, rateLimited } = await tryGdeltApi(maxRecords);
+
+    if (rateLimited) {
+      const cdMs = getCooldownMs("gdelt");
+      const cd = await setCooldown("gdelt", `HTTP 429 at ${new Date().toISOString()}`, cdMs);
+      console.warn(`[gdelt] HTTP 429 — cooldown set until ${cd.cooldown_until} (${Math.round(cdMs / 60000)}min)`);
+      lastRunInfo = {
+        profile,
+        cooldownSkipped: false,
+        httpCallsMade: 1,
+        recordsCollected: 0,
+        lastStatus: status,
+        lastError: error,
+        cooldownSet: { until: cd.cooldown_until, reason: cd.reason },
+      };
+      return [];
+    }
+
+    if (records.length === 0) {
+      console.warn(`[gdelt] No articles returned (status=${status}, error=${error || "none"})`);
+    } else {
+      console.log(`[gdelt] OK: ${records.length} articles (${durationMs}ms)`);
+    }
+
+    lastRunInfo = {
+      profile,
+      cooldownSkipped: false,
+      httpCallsMade: 1,
+      recordsCollected: records.length,
+      lastStatus: status,
+      lastError: error,
+    };
     return records;
   },
 

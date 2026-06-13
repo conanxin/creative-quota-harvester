@@ -1,0 +1,35 @@
+PHASE 4C-5 COMPLETE
+
+Status: PASS
+Collect: PASS (86 signals, 8/9 success + 1 skipped_cooldown)
+Boundaries: no MiniMax, no media, no gateway/.env/timer change
+
+Before (4C-4, implicit full):
+- 30 signals, 5/9 sources OK
+- GitHub timeout, HF timeout, HN 0, GDELT 429
+
+After (4C-5, fast profile):
+- 86 signals (+187%), 9/9 sources reachable
+- GitHub 2.2s (was 35s timeout) — 4 high-value queries
+- Hugging Face 8s (was 35s timeout) — 4 filters concurrent
+- Hacker News 7.2s, 16 signals (was 0) — concurrent fetch + fallback
+- GDELT: HTTP 429 → 6h cooldown, fast profile skips without HTTP
+
+Key additions:
+- config/source-budgets.example.json (fast/full/diagnose profiles)
+- src/sources/profile.ts (budget loader + runWithPool + cooldown API)
+- 4 adapters updated (github, hf, hn, gdelt) — profile + concurrency
+- collect pipeline emits profile/query_count/success_count/timeout_count/skipped_cooldown_count/next_allowed_at
+- daily-scheduled.sh defaults to fast profile
+- daily-manual.ts uses fast profile
+
+Scripts added:
+- npm run collect:fresh:fast
+- npm run collect:fresh:full
+- npm run collect:diagnose:connectivity
+
+Cooldown file: reports/source-cooldowns.json
+Validation: TS clean for new files, collect PASS, diagnose 8/9 reachable
+
+Report: docs/PHASE_4C5_ADAPTER_PARALLELIZATION_QUERY_REDUCTION_REPORT.md
+Source health: reports/source-health.json / .md

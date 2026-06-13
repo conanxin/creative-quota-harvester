@@ -92,13 +92,13 @@ async function main() {
   console.log('=== Manual Daily Digest Run ===');
   console.log(`Start: ${startTime}\n`);
 
-  // Step 1: collect (force fresh)
-  console.log('[Step 1/4] Running npm run collect:fresh...');
-  const collectResult = execCmd('npm run collect:fresh', HARVESTER_DIR);
+  // Step 1: collect (force fresh fast profile by default — daily 07:30 fit)
+  console.log('[Step 1/4] Running npm run collect:fresh:fast...');
+  const collectResult = execCmd('npm run collect:fresh:fast', HARVESTER_DIR);
   if (collectResult.code !== 0) {
-    console.warn('[WARN] collect:fresh had issues:', collectResult.stderr.slice(0, 200));
+    console.warn('[WARN] collect:fresh:fast had issues:', collectResult.stderr.slice(0, 200));
   } else {
-    console.log('[OK] collect:fresh complete');
+    console.log('[OK] collect:fresh:fast complete');
   }
 
   // Step 2: briefs
@@ -152,11 +152,12 @@ async function main() {
     `**Start:** ${startTime}`,
     `**End:** ${endTime}`,
     `**STATUS:** PASS`,
+    `**Profile:** fast`,
     '',
     '## Step Results',
     `| Step | Command | Status |`,
     `|------|---------|--------|`,
-    `| 1 | npm run collect | ${collectResult.code === 0 ? '✅ PASS' : '⚠️ WARN'} |`,
+    `| 1 | npm run collect:fresh:fast | ${collectResult.code === 0 ? '✅ PASS' : '⚠️ WARN'} |`,
     `| 2 | npm run briefs | ${briefsResult.code === 0 ? '✅ PASS' : '⚠️ WARN'} |`,
     `| 3 | npm run digest:telegram | ${digestResult.code === 0 ? '✅ PASS' : '❌ FAIL'} |`,
     `| 4 | npm run digest:telegram:check | ${digestCheckOk ? '✅ PASS' : '⚠️ WARN'} |`,

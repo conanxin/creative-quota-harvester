@@ -31,8 +31,9 @@ async function main() {
 
   console.log("[collect:fresh] Force collecting signals from all sources...");
   const collectResult = await collectSignals();
-  const { runId, startedAt, endedAt, totalSignals, sourceResults, overallStatus } = collectResult;
+  const { runId, startedAt, endedAt, totalSignals, sourceResults, overallStatus, profile } = collectResult;
 
+  console.log(`[collect:fresh] Active profile: ${profile}`);
   console.log(`[collect:fresh] Collected ${totalSignals} total signals from ${sourceResults.length} sources`);
   console.log(`[collect:fresh] Overall Status: ${overallStatus}`);
   console.log("");
@@ -94,22 +95,40 @@ async function main() {
   console.log("");
 
   // Write source health
-  const healthEntries = sourceResults.map(r => ({
-    source_name: r.adapter.sourceName,
-    source_type: r.adapter.sourceType,
-    status: r.success ? (r.signalRecords.length > 0 ? "success" : "partial") : (r.error?.includes("timeout") ? "timeout" : "failed"),
-    signal_count: r.signalRecords.length,
-    started_at: startedAt,
-    ended_at: endedAt,
-    duration_ms: r.durationMs,
-    error_summary: r.error || undefined,
-    last_success_at: r.success ? endedAt : null,
-  }));
+  const healthEntries = sourceResults.map(r => {
+    const status = r.skippedCooldown
+      ? "skipped_cooldown"
+      : r.success
+        ? (r.signalRecords.length > 0 ? "success" : "partial")
+        : (r.error?.includes("timeout") ? "timeout" : "failed");
+    return {
+      source_name: r.adapter.sourceName,
+      source_type: r.adapter.sourceType,
+      status,
+      signal_count: r.signalRecords.length,
+      query_count: r.skippedCooldown ? 0 : (r.success ? Math.max(1, r.sourceRecords.length > 0 ? 1 : 0) : 0),
+      success_count: r.success && r.signalRecords.length > 0 ? 1 : 0,
+      partial_count: r.success && r.signalRecords.length === 0 ? 1 : 0,
+      timeout_count: r.error?.includes("timeout") ? 1 : 0,
+      failed_count: !r.success && !r.skippedCooldown && !r.error?.includes("timeout") ? 1 : 0,
+      skipped_cooldown_count: r.skippedCooldown ? 1 : 0,
+      started_at: startedAt,
+      ended_at: endedAt,
+      duration_ms: r.durationMs,
+      error_summary: r.skippedCooldown
+        ? `cooldown until ${r.cooldownUntil} (${r.cooldownReason})`
+        : (r.error || undefined),
+      last_success_at: r.success && r.signalRecords.length > 0 ? endedAt : null,
+      next_allowed_at: r.cooldownUntil || null,
+      profile,
+    };
+  });
 
   fs.writeFileSync(path.join(REPORTS_DIR, "source-health.json"), JSON.stringify({
     run_id: runId,
     generated_at: endedAt,
     overall_status: overallStatus,
+    profile,
     sources: healthEntries,
   }, null, 2), "utf-8");
 
@@ -117,25 +136,31 @@ async function main() {
     "# Source Health Report",
     `**Run ID:** ${runId}`,
     `**Generated:** ${endedAt}`,
+    `**Profile:** ${profile}`,
     `**Overall Status:** ${overallStatus}`,
     "",
-    "| Source | Type | Status | Signals | Duration | Error |",
-    "|--------|------|--------|---------|----------|-------|",
-    ...healthEntries.map((h: any) => `| ${h.source_name} | ${h.source_type} | ${h.status} | ${h.signal_count} | ${h.duration_ms}ms | ${h.error_summary || ""} |`),
+    "| Source | Type | Profile | Status | Signals | Q | S | P | T | F | Sk | Duration | Error / Cooldown |",
+    "|--------|------|---------|--------|---------|---|---|---|---|---|---|----------|-----------------|",
+    ...healthEntries.map((h: any) =>
+      `| ${h.source_name} | ${h.source_type} | ${h.profile} | ${h.status} | ${h.signal_count} | ${h.query_count} | ${h.success_count} | ${h.partial_count} | ${h.timeout_count} | ${h.failed_count} | ${h.skipped_cooldown_count} | ${h.duration_ms}ms | ${h.error_summary || ""} |`
+    ),
     "",
+    "Legend: Q=query_count, S=success_count, P=partial_count, T=timeout_count, F=failed_count, Sk=skipped_cooldown_count",
   ];
   fs.writeFileSync(path.join(REPORTS_DIR, "source-health.md"), healthMdLines.join("\n"), "utf-8");
 
   // Write brief report
+  const skippedCount = sourceResults.filter(r => r.skippedCooldown).length;
   const reportLines = [
     "# Force Fresh Collect Report",
     `**Run ID:** ${runId}`,
+    `**Profile:** ${profile}`,
     `**Overall Status:** ${overallStatus}`,
     `**Signals:** ${scored.length}`,
-    `**Sources:** ${successCount} success, ${failCount} failed`,
+    `**Sources:** ${successCount} success, ${failCount} failed, ${skippedCount} skipped_cooldown`,
     "",
     "## Source Health",
-    ...healthEntries.map(h => `- ${h.source_name}: ${h.status} (${h.signal_count} signals, ${h.duration_ms}ms)`),
+    ...healthEntries.map(h => `- ${h.source_name} [${h.profile}]: ${h.status} (${h.signal_count} signals, ${h.duration_ms}ms)${h.error_summary ? " — " + h.error_summary : ""}`),
     "",
     `**Report:** reports/source-health.json`,
   ];
@@ -145,9 +170,10 @@ async function main() {
   console.log("✅ Force Fresh Collect Complete");
   console.log("=".repeat(60));
   console.log(`Run ID: ${runId}`);
+  console.log(`Profile: ${profile}`);
   console.log(`Overall: ${overallStatus}`);
   console.log(`Signals: ${scored.length}`);
-  console.log(`Success: ${successCount}/${sourceResults.length}`);
+  console.log(`Success: ${successCount}/${sourceResults.length}, Skipped cooldown: ${skippedCount}`);
   console.log("");
 }
 
