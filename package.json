@@ -50,7 +50,10 @@
     "validate:telegram-send": "tsx scripts/validate-telegram-send-hook.ts",
     "validate:telegram-auto-send": "tsx scripts/validate-telegram-auto-send.ts",
     "validate:digest-freshness": "tsx scripts/validate-digest-freshness.ts",
-    "validate:telegram-sanitizer": "tsx scripts/validate-telegram-sanitizer.ts"
+    "validate:telegram-sanitizer": "tsx scripts/validate-telegram-sanitizer.ts",
+    "report:send:dry-run": "tsx scripts/send-project-report.ts",
+    "report:send": "tsx scripts/send-project-report.ts",
+    "validate:project-report-send": "tsx scripts/validate-project-report-send.ts"
   },
   "keywords": [
     "ai",

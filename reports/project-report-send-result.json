@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-06-13T00:52:31.782Z",
+  "phase": "4C-3A",
+  "mode": "real-send",
+  "file": "reports/telegram-phase-4c3a-final-report-send-gate.txt",
+  "label": "Phase 4C-3A test",
+  "char_count": 1983,
+  "max_allowed": 3500,
+  "sanitizer_pass": true,
+  "forbidden_hits": [],
+  "send_attempted": true,
+  "send_result": {
+    "ok": true,
+    "message_id": 50036
+  },
+  "reason": "sent successfully"
+}

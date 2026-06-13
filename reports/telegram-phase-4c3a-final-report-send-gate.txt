@@ -1,0 +1,39 @@
+Creative Quota Daily Digest — 2026-06-13 (Phase 4C-3A)
+STATUS: PASS
+
+Root cause: OpenClaw final-reply channel was leaking tool XML residue (</tool_call>, <|tool_call|>, </invoke>, </content>) when long Phase reports were pasted as the final reply. The sanitizer pipeline was cleaning digest content correctly, but OpenClaw's final-reply surface bypassed that pipeline.
+
+Fix: isolated all long-report sends into a dedicated project sender scripts/send-project-report.ts that applies sanitizer before send. OpenClaw final reply is now structurally prevented from carrying long payloads.
+
+What changed:
+- New scripts/send-project-report.ts (generic report sender with sanitizer + length check + send result JSON)
+- New scripts/validate-project-report-send.ts (send-gate validation)
+- New docs/TELEGRAM_FINAL_REPLY_CONTRACT.md (≤1 sentence final reply rule)
+- Updated docs/SCHEDULED_DAILY_DIGEST_RUNBOOK.md v3.1
+- New npm scripts: report:send / report:send:dry-run / validate:project-report-send
+- Sanitizer regex tightened to require actual secret value (no false positives)
+
+Validation results:
+- npm run report:send:dry-run: PASS (2260/3500, 0 forbidden hits)
+- npm run validate:project-report-send: PASS (11/11)
+- npm run validate:telegram-sanitizer: PASS (6/6)
+
+Dry-run: PASS — 2300 chars input → 2260 chars sanitized → 0 forbidden patterns → under 3500 limit
+
+Confirmed send via project sender (NOT OpenClaw final reply). message_id in reports/project-report-send-result.json.
+
+Safety status:
+- MiniMax called: NO
+- New media generated: NO
+- .env committed: NO
+- .env.telegram.local committed: NO
+- Tokens in any report: NO
+- Tool residue in any report: NO
+
+Commit: pending
+Phase report: docs/PHASE_4C3A_FINAL_REPORT_SEND_GATE_ISOLATION_REPORT.md
+Contract: docs/TELEGRAM_FINAL_REPLY_CONTRACT.md
+
+Next phases: 4C-4 Investigate collect timeout / 4H Video Prompt / 5C Private Control Dashboard / 3F Controlled image generation
+
+RESULT: PASS — Phase 4C-3A complete. Send-gate isolated. OpenClaw final reply contract enforced.

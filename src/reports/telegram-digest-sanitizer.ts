@@ -42,10 +42,11 @@ const FORBIDDEN_PATTERNS: Array<{ id: string; regex: RegExp; desc: string }> = [
   { id: 'openai_proj_key',    regex: /sk-(cp|proj)-[A-Za-z0-9_-]{20,}/g, desc: 'OpenAI project key' },
   { id: 'github_token',       regex: /ghp_[A-Za-z0-9]{20,}/g, desc: 'GitHub personal token' },
   { id: 'slack_token',        regex: /xox[baprs]-[A-Za-z0-9-]{8,}/g, desc: 'Slack token' },
-  { id: 'telegram_bot_token', regex: /TELEGRAM_BOT_TOKEN\s*=\s*\S+/g, desc: 'Telegram bot token assignment' },
-  { id: 'minimax_key',        regex: /MINIMAX_API_KEY\s*=\s*\S+/g, desc: 'MiniMax API key assignment' },
-  { id: 'generic_key',        regex: /[A-Z_]+_API_KEY\s*=\s*\S{10,}/g, desc: 'Generic API key assignment' },
-  { id: 'bearer',             regex: /Authorization:\s*Bearer\s+\S+/gi, desc: 'Authorization header' },
+  // Secrets — require actual assignment with value (avoids false positives on the word itself)
+  { id: 'telegram_bot_token', regex: /TELEGRAM_BOT_TOKEN\s*=\s*[\w-]{8,}/g, desc: 'Telegram bot token assignment' },
+  { id: 'minimax_key',        regex: /MINIMAX_API_KEY\s*=\s*[\w-]{8,}/g, desc: 'MiniMax API key assignment' },
+  { id: 'generic_key',        regex: /[A-Z_]+_API_KEY\s*=\s*[\w-]{8,}/g, desc: 'Generic API key assignment' },
+  { id: 'bearer',             regex: /Authorization:\s*Bearer\s+[\w-]{10,}/gi, desc: 'Authorization header' },
   { id: 'env_secret',         regex: /\.env\s+(?:contains|holds|has|leaks?)\s+.{0,80}secret/gi, desc: 'env secret leak' },
   // Truncated markers
   { id: 'truncated_marker',   regex: /\[truncated\]/gi, desc: 'Truncated marker' },
@@ -70,12 +71,12 @@ function redactSecrets(text: string): string {
   out = out.replace(/sk-(cp|proj)-[A-Za-z0-9_-]{20,}/g, '[REDACTED-API-KEY]');
   out = out.replace(/ghp_[A-Za-z0-9]{20,}/g, '[REDACTED-GITHUB-TOKEN]');
   out = out.replace(/xox[baprs]-[A-Za-z0-9-]{8,}/g, '[REDACTED-SLACK-TOKEN]');
-  // TELEGRAM_BOT_TOKEN=...
-  out = out.replace(/TELEGRAM_BOT_TOKEN\s*=\s*\S+/g, 'TELEGRAM_BOT_TOKEN=[REDACTED]');
-  out = out.replace(/MINIMAX_API_KEY\s*=\s*\S+/g, 'MINIMAX_API_KEY=[REDACTED]');
-  // Generic patterns
-  out = out.replace(/[A-Z_]+_API_KEY\s*=\s*\S{10,}/g, (m) => m.split('=')[0] + '=[REDACTED]');
-  out = out.replace(/Authorization:\s*Bearer\s+\S+/gi, 'Authorization: Bearer [REDACTED]');
+  // TELEGRAM_BOT_TOKEN=... (with value)
+  out = out.replace(/TELEGRAM_BOT_TOKEN\s*=\s*[\w-]{8,}/g, 'TELEGRAM_BOT_TOKEN=[REDACTED]');
+  out = out.replace(/MINIMAX_API_KEY\s*=\s*[\w-]{8,}/g, 'MINIMAX_API_KEY=[REDACTED]');
+  // Generic patterns (require value with at least 8 word/dash chars)
+  out = out.replace(/[A-Z_]+_API_KEY\s*=\s*[\w-]{8,}/g, (m) => m.split('=')[0] + '=[REDACTED]');
+  out = out.replace(/Authorization:\s*Bearer\s+[\w-]{10,}/gi, 'Authorization: Bearer [REDACTED]');
   return out;
 }
 

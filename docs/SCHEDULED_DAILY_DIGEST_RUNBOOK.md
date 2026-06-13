@@ -7,6 +7,46 @@
 
 ---
 
+## STATUS: PHASE 4C-3A — FINAL REPORT SEND-GATE ISOLATED ✅
+
+**Verified 2026-06-13:** Project reports are sent via `scripts/send-project-report.ts` (NOT via OpenClaw final reply). OpenClaw final replies are now restricted to one short sentence (see `docs/TELEGRAM_FINAL_REPLY_CONTRACT.md`).
+
+### Send-Gate Architecture
+
+- **Daily Digest auto-send:** `scripts/send-telegram-digest.ts` (unchanged) — runs daily at 07:30 via systemd timer
+- **Project Report send:** `scripts/send-project-report.ts` (new in Phase 4C-3A) — for sending Phase reports and other long project outputs
+- **Both pipelines** apply the same `sanitizeTelegramDigest` sanitizer
+- **OpenClaw final reply** is restricted to ≤ 1 sentence, no attachments, no long payloads
+
+### Sanitizer (Phase 4C-3)
+
+The Digest generator (`src/reports/telegram-daily-digest.ts`) was updated to:
+
+- **Latest image URL:** Read from `metadata/generated-assets.json` `path` field (includes date subdirectory). Markdown underscores escaped for Telegram Markdown parse_mode.
+- **Recommended Generation Queue:** Excludes already-generated topics via topic-slug keyword overlap (>=0.5 score, stop words removed).
+- **Delivery line:** Replaced "cron/systemd: No" with "Delivery: systemd timer + Telegram auto-send".
+- **Signal freshness:** New `Signal freshness: ...` line shows hours since last collection. WARN if >24h.
+- **Next-phase list:** Current phases only (4C-2 / 4H / 5C / 3F). Removed completed 3A Full / 4A / 4B.
+
+### Validation
+
+```bash
+npm run validate:digest-freshness
+```
+Runs 16 checks against the latest digest for: no [truncated], no secrets, no legacy phases, correct delivery text, latest image URL matches real filename + date directory, no underscore-missing pattern, recommended queue excludes already-generated topics, MD report consistency.
+
+```bash
+npm run validate:telegram-sanitizer
+```
+Runs 6 checks: scans digest + preview + MD report for forbidden patterns (tool_call, </tool_call>, minimax, secrets, [truncated], etc).
+
+```bash
+npm run validate:project-report-send
+```
+Validates the Phase 4C-3A send-gate isolation: sender script exists, result json valid, sanitizer pass, no token residue, no MiniMax calls.
+
+---
+
 ## STATUS: PHASE 4C-2 — SCHEDULED AUTO-SEND VERIFIED ✅
 
 **Verified 2026-06-13 07:30 CST:** Daily Digest runs via systemd timer and auto-sends to Telegram (message_id 49980). A manual confirmed re-send of the freshened digest also succeeded (message_id 49983).

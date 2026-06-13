@@ -1,124 +1,124 @@
 # Telegram Final Reply Contract
 
-**Version:** 1.0
-**Applies to:** All OpenClaw agent sessions via Telegram
-**Enforced from:** Phase 2B onward
+**Version:** 2.0 (Phase 4C-3A)
+**Status:** ACTIVE
 
 ---
 
-## Core Rule
+## Purpose
 
-**One message. One reply. Short summary. Paths to reports.**
-
-Every task completion reply on Telegram follows this pattern — no exceptions.
+Prevent OpenClaw final-reply channel from leaking tool residue (`<tool_call>`, `</tool_call>`, `<|tool_call|>`, etc.) or long report payloads into Telegram.
 
 ---
 
-## The Contract
+## Rules (binding)
 
-| Rule | Description |
-|------|-------------|
-| **1 message max** | Send exactly 1 Telegram message per task completion |
-| **≤800 chars** | Total message length must not exceed 800 characters |
-| **No mid-task spam** | No progress updates, no stage markers, no "starting now" messages |
-| **No long tables** | Long tables go to a report file; Telegram gets a1-line summary |
-| **No long logs** | Full logs go to `reports/*.md` |
-| **Paths, not content** | Telegram message contains paths to reports; not the content |
-| **Always include** | STATUS, report paths, what was done, what's next |
+### 1. OpenClaw final reply MUST be short
 
----
+Maximum: **one sentence**. No exceptions. Examples:
 
-## Message Template
+- `Phase 4C-3A complete. Sanitized report sent by project sender. message_id=50003.`
+- `Phase X finished but report send failed. See reports/<file>.md.`
+
+### 2. No long report in final reply
+
+The final reply MUST NOT contain:
+- Full report text
+- Code blocks > 5 lines
+- Tables > 3 rows
+- Markdown headers (no `#`, `##`, `###`)
+- More than 80 characters (rough guideline)
+
+### 3. No attachments in final reply
+
+OpenClaw final reply MUST NOT include:
+- `attachments` array
+- `[/path/to/file]`
+- Image / Document references
+
+### 4. No tool residue allowed ANYWHERE
+
+Final reply MUST NOT contain:
+- `<tool_call>`, `</tool_call>`, `<|tool_call|>`, `</invoke>`, `</content>`, `<content>`
+- `<tool`, `<invoke`, `<function` (open tags)
+- `minimax`, `MiniMax` (model identifier mentions)
+- `Authorization: Bearer ...`
+- Raw JSON tool payloads (`{"name": "...", "tool": "...", "arguments": {...}`)
+- `[truncated]`
+- `.env`, `TELEGRAM_BOT_TOKEN=`, `MINIMAX_API_KEY=`
+
+### 5. Long reports MUST go through project sender
+
+Any report > 350 chars MUST be sent via the project's own sender:
 
 ```
-STATUS: ✅ PASS / ❌ FAIL
-
-[One-line conclusion]
-
-报告：
-- docs/PHASE_X_*.md
-- reports/latest-*.md
-
-命令：cd projects/creative-quota-harvester && npm run [cmd]
-
-[Optional: brief note on next phase]
+npm run report:send -- --file reports/<file>.txt --label "Phase X"
 ```
 
----
+This:
+- Applies sanitizer
+- Verifies length <= 3500
+- Verifies no forbidden patterns
+- Uses project's Telegram bot token (not OpenClaw gateway)
+- Logs `message_id` to `reports/project-report-send-result.json`
 
-## Intermediate Messages (Forbidden)
+### 6. Daily Digest stays in its own pipeline
 
-The following message types are **forbidden** during task execution:
-
-```
-❌ "Starting Phase 2A..."
-❌ "Step 1/4: collecting signals..."
-❌ "Progress: 50 signals so far"
-❌ "Now writing reports..."
-❌ "Almost done..."
-❌ "━━━━━━━━━━━━━━━━━━━━"
-❌ Any table longer than 3 rows
-```
-
-**Exception:** Only when user explicitly asks for step-by-step updates.
-
----
-
-## Long Report Handling
-
-When a report exceeds 800 characters:
-
-1. Write the full report to `reports/PHASE_X_*.md`
-2. Write a1-line summary to `reports/PHASE_X_SHORT.md` (optional)
-3. Send this on Telegram:
+The Daily Digest (Phase 4B) continues to use:
 
 ```
-STATUS: ✅ Phase 2B Complete
-
-5 Content Packs exported, validation PASS ✅
-
-报告：
-docs/PHASE_2B_ASSET_GALLERY_REPORT.md
-reports/asset-validation.md
-reports/latest-briefs.md
-
-命令：cd projects/creative-quota-harvester && npm run briefs
+npm run digest:send:confirmed
 ```
 
----
+It does NOT go through `report:send`. The two pipelines are separate.
 
-## Why This Matters
+### 7. If project sender fails
 
-- Telegram is a **messaging** surface, not a **document** surface
-- Long messages disrupt，爸爸's workflow and context
-- The `reports/` directory is the permanent record — Telegram is the notification layer
-- Following this contract respects cognitive load (from AGENTS.md 🛡️ section)
+OpenClaw final reply MUST say:
 
----
+```
+Phase X finished but report send failed. See reports/<file>.md.
+```
 
-## Verification Checklist (Self-Check Before Sending)
+OpenClaw MUST NOT paste the long report body as a fallback.
 
-- [ ] Exactly 1 Telegram message will be sent
-- [ ] Message is ≤ 800 characters
-- [ ] No mid-task messages sent during execution
-- [ ] Report paths included
-- [ ] No full tables in Telegram message
-- [ ] No long logs in Telegram message
-- [ ] conanxin/* exclusion verified
+### 8. Token safety
+
+- `.env.telegram.local` MUST NOT be committed
+- Tokens MUST NOT appear in any committed file or report
+- `git status` MUST show no `.env*` files
 
 ---
 
-## Future Phase Commands Reference
+## Validation
 
-All future phase commands must follow this contract:
+Run after each phase:
 
-| Phase | Command | Contract applies |
-|-------|---------|-----------------|
-| Phase 2C | GitHub publish prep | ✅ |
-| Phase 3A | MiniMax generation | ✅ |
-| Phase 3B | Telegram daily report | ✅ |
-| Phase 4 | Scheduled automation | ✅ |
+```
+npm run validate:project-report-send
+```
+
+Must return **PASS** before any phase is marked complete.
 
 ---
 
-_Last updated: Phase 2B — 2026-06-11_
+## What this prevents
+
+- Tool residue leaking into Telegram from long agent outputs
+- Long report payloads flooding Telegram
+- `<|tool_call|>` or similar XML tags reaching the user
+- `minimax` / `MiniMax` identifiers leaking the underlying model
+- Multiple-message spam from retry logic
+- Token leaks via `Authorization:` headers in copied text
+
+---
+
+## When this contract applies
+
+- Any OpenClaw final reply that mentions a phase, a report, or any file path
+- Any agent that completes a creative-quota-harvester task
+- Any Telegram-bound output produced by this project
+
+---
+
+*Effective: 2026-06-13 (Phase 4C-3A)*
