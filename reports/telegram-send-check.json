@@ -1,19 +1,21 @@
 {
-  "generated_at": "2026-06-12T04:36:11.784Z",
+  "generated_at": "2026-06-13T00:20:27.544Z",
   "phase": "4C-0",
-  "mode": "dry-run",
+  "mode": "real-send",
   "digest_check": {
-    "char_count": 1666,
+    "char_count": 1630,
     "max_allowed": 3500,
     "pass": true,
     "has_truncated": false,
     "has_secrets": false
   },
   "send_permission": {
-    "allowed": false,
-    "reason": "TELEGRAM_BOT_TOKEN missing.",
+    "allowed": true,
+    "reason": "All conditions met for real send.",
     "env_flag": "1",
-    "has_token": false,
-    "has_chat_id": false
+    "has_token": true,
+    "has_chat_id": true,
+    "send_result": "success",
+    "message_id": 49983
   }
 }

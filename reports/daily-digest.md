@@ -1,5 +1,5 @@
 # Creative Quota Daily Digest
-**Generated:** 2026-06-12T00:38:48.065Z
+**Generated:** 2026-06-13T00:20:27.243Z
 **STATUS:** PASS
 
 ## 今日输入
@@ -12,6 +12,7 @@
 | Images | 5 |
 | Music | 0 |
 | Video | 0 |
+| Signal freshness | WARN: signals last collected 55h ago (>24h) |
 
 ### Signal Sources
 - code: 110
@@ -34,29 +35,34 @@
    URL: https://github.com/get-foyer/foyer
 
 ## Recommended Generation Queue
-1. **SamurAIGPT/Generative-Media-Skills** — code (0.703)
-   Generate: image — High score + image prompt available
-2. **Flaws in the LLM Automation Narrative** — academic (0.662)
-   Generate: image — High score + image prompt available
-3. **The Penitence of Saint Jerome** — culture-art (0.600)
-   Generate: image — High score + image prompt available
+All top-priority packs already have generated images.
+Next step: produce video prompt / music prompt / run new signal collection.
+
+**Skipped already-generated:** 5 packs (SamurAIGPT/Generative-Media-Skills, Flaws in the LLM Automation Narrative, The Penitence of Saint Jerome...)
 
 ## 素材库状态
 - Gallery: https://conanxin.github.io/creative-quota-assets/gallery/
-- Latest image: https://conanxin.github.io/creative-quota-assets/images/2026/06/cqa-2026-06-11-gen-005_001.jpg
+- Latest image: https://conanxin.github.io/creative-quota-assets/images/2026/06/11/cqa-2026-06-11-gen-005\_001.jpg
 - Validation: PASS (npm run validate:assets)
 
 ## 执行结果
 | Item | Result |
 |------|--------|
+| Delivery | systemd timer + Telegram auto-send |
 | MiniMax called | No |
 | New media generated | No |
-| cron/systemd | No |
 | .env git-tracked | No |
+| signal_last_collected_at | 2026-06-10T17:14:07.976Z |
+
+## 下一阶段
+- Phase 4C-2: Scheduled Telegram Auto-send Validation & Digest Freshness Fix
+- Phase 4H: Video Prompt Enhancement
+- Phase 5C: Private Control Dashboard
+- Phase 3F: Controlled image generation only if explicitly confirmed
 
 ## 报告路径
 - Full: `reports/daily-digest.md`
 - Telegram: `reports/telegram-digest.txt`
-- Phase: `docs/PHASE_3B1_DIGEST_QUALITY_PATCH_REPORT.md`
+- Phase: `docs/PHASE_4C2_SCHEDULED_TELEGRAM_DIGEST_VALIDATION_REPORT.md`
 
-_Phase 3B-1 quality patch complete._
+_Phase 4C-2 quality patch complete._

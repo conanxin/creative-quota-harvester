@@ -1,10 +1,11 @@
-Creative Quota Daily Digest — 2026-06-12
+Creative Quota Daily Digest — 2026-06-13
 STATUS: PASS
 
 今日输入
 Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11))
 Content Packs: 25 (25 with image prompt)
 Generated Assets: 5 (5 img / 0 music / 0 video)
+Signal freshness: WARN: signals last collected 55h ago (>24h)
 
 Top 5 Signals (deduplicated, by score)
 1. SamurAIGPT/Generative-Media-Skills
@@ -23,33 +24,27 @@ Top 5 Signals (deduplicated, by score)
    Score: 0.629 | dev-community | Medium
 
 Recommended Generation Queue
-1. SamurAIGPT/Generative-Media-Skills
-   code | Score: 0.703
-   Generate image — High score + image prompt available
-
-2. Flaws in the LLM Automation Narrative
-   academic | Score: 0.662
-   Generate image — High score + image prompt available
-
-3. The Penitence of Saint Jerome
-   culture-art | Score: 0.600
-   Generate image — High score + image prompt available
+All top-priority packs already have generated images (5 skipped).
+Next step: produce video prompt / music prompt / run new signal collection.
 
 素材库状态
 Gallery: https://conanxin.github.io/creative-quota-assets/gallery/
-Latest image: https://conanxin.github.io/creative-quota-assets/images/2026/06/cqa-2026-06-11-gen-005_001.jpg
+Latest image: https://conanxin.github.io/creative-quota-assets/images/2026/06/11/cqa-2026-06-11-gen-005\_001.jpg
 Validation: PASS (npm run validate:assets)
 
 本阶段执行结果
-MiniMax called: No | New media: No | cron/systemd: No
+Delivery: systemd timer + Telegram auto-send
+MiniMax called: No
+New media generated: No
 .env tracked: No
 
 报告路径
 Full: reports/daily-digest.md
 Telegram: reports/telegram-digest.txt
-Phase: docs/PHASE_3B1_DIGEST_QUALITY_PATCH_REPORT.md
+Phase: docs/PHASE_4C2_SCHEDULED_TELEGRAM_DIGEST_VALIDATION_REPORT.md
 
 下一阶段
-Phase 3A Full: Batch image generation (quota guard)
-Phase 4A: Manual Daily Digest Runbook
-Phase 4B: Scheduled automation (external cron/systemd)
+Phase 4C-2: Scheduled Telegram Auto-send Validation & Digest Freshness Fix
+Phase 4H: Video Prompt Enhancement
+Phase 5C: Private Control Dashboard
+Phase 3F: Controlled image generation only if explicitly confirmed
