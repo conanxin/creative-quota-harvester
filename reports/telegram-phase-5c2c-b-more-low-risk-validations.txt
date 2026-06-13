@@ -1,0 +1,79 @@
+Phase 5C-2C-B: More Low-risk Validation Executions
+
+STATUS: PASS
+Date: 2026-06-13
+
+WHAT_CHANGED:
+- Expanded confirmed_low_risk execution allowlist from 5 to 17 commands
+- All 17 commands are validation scripts (no model calls, no media generation, no timer modification)
+- confirmation_phrase统一为 "EXECUTE LOW RISK" for all confirmed_low_risk commands
+
+PREVIOUS_ALLOWLIST (5):
+validate:control-server, validate:control-readonly-actions, validate:control-actions-dry-run, dashboard:control:drift-check, dashboard:policy:validate
+
+NEW_ALLOWLIST (17) = 5 original + 12 new:
+6. validate:telegram-sanitizer
+7. validate:sanitizer-false-positives
+8. validate:sanitizer-secret-completeness
+9. validate:project-report-send
+10. dashboard:control:validate
+11. dashboard:validate
+12. validate:public-gallery
+13. validate:daily-archive
+14. validate:gallery-dedup
+15. validate:content-pack-pages
+16. validate:music-prompts
+17. validate:video-prompts
+
+STILL_BLOCKED:
+- generate:* (calls model, generates media)
+- send:* (requires CQA_ALLOW_TELEGRAM_SEND)
+- timer:* (modifies timer)
+- collect:* (external data collection)
+- git/push/pull/deploy/release/build (blocked by pattern)
+
+VALIDATION_RESULTS: All 9 suites PASS (412 checks, 0 failures)
+- dashboard:control:drift-check: 19/19 PASS
+- dashboard:policy:validate: 35/35 PASS
+- validate:control-server: 20/20 PASS
+- dashboard:control:validate: 15/15 PASS
+- validate:control-actions-dry-run: 20/20 PASS
+- validate:control-readonly-actions: 21/21 PASS
+- validate:control-low-risk-execution: 167/167 PASS
+- validate:sanitizer-secret-completeness: 36/36 PASS
+- validate:sanitizer-false-positives: 25/25 PASS
+- validate:telegram-sanitizer: 43/43 PASS
+- validate:project-report-send: 11/11 PASS
+
+SMOKE_TEST: All 7 tests PASS
+- 3 allowed actions: real_execution=true, exit_code=0
+- Wrong confirmation: blocked
+- generate:image:confirmed: blocked (Forbidden)
+- Audit log: no token
+- Health endpoint: phase=5C-2C-B, allowed_scripts_count=17
+
+SANITIZER_REGRESSION: PASS
+- False positives (15): PASS
+- Real secrets (7): PASS
+- Mixed (4): PASS
+- Telegram edge cases (5): PASS
+
+MODEL_CALLS: 0
+GENERATED_MEDIA: 0
+
+LIMITATIONS:
+1. generate:image:confirmed still blocked
+2. digest:send:confirmed still blocked
+3. collect:* still blocked
+4. timer:* still blocked
+5. git push still blocked
+6. Server still localhost-only (127.0.0.1:8788)
+7. All execution requires CQA_CONTROL_TOKEN + "EXECUTE LOW RISK" confirmation
+
+NEXT_PHASE_PROPOSAL:
+- 5C-2C-C: End-to-end execution test (collect → digest → send)
+- 5C-5: Production hardening (rate limiting, HTTPS)
+- 5C-6: Audit log analysis
+
+Full report: docs/PHASE_5C2C_B_MORE_LOW_RISK_VALIDATIONS_REPORT.md
+Sanitized report: reports/more-low-risk-validations.md

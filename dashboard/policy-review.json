@@ -1,24 +1,24 @@
 {
   "version": "0.4.0",
   "phase": "5C-4",
-  "generated_at": "2026-06-13T12:59:51Z",
-  "total_commands": 79,
-  "classified": 79,
+  "generated_at": "2026-06-13T14:13:03Z",
+  "total_commands": 82,
+  "classified": 82,
   "needs_policy_review": 0,
   "risk_counts": {
-    "safe": 65,
+    "safe": 68,
     "medium": 12,
     "high": 2,
     "danger": 0
   },
   "execution_mode_counts": {
     "safe_readonly": 7,
-    "dry_run_only": 66,
-    "confirmed_low_risk": 5,
+    "dry_run_only": 57,
+    "confirmed_low_risk": 17,
     "disabled": 1
   },
   "source_counts": {
-    "package-script": 72,
+    "package-script": 75,
     "manual": 7,
     "generated": 0
   },
@@ -26,7 +26,7 @@
   "risk_groups": [
     {
       "risk": "safe",
-      "count": 65,
+      "count": 68,
       "execution_mode": "dry_run_only",
       "examples": [
         "Daily: Manual",
@@ -63,13 +63,13 @@
     },
     {
       "mode": "dry_run_only",
-      "count": 66,
+      "count": 57,
       "can_real_execute": false,
       "description": "Dry-run only. Simulation without execution."
     },
     {
       "mode": "confirmed_low_risk",
-      "count": 5,
+      "count": 17,
       "can_real_execute": true,
       "description": "Confirmed low-risk execution. Requires explicit confirmation phrase. 5 canary commands only."
     },
@@ -80,12 +80,60 @@
       "description": "Disabled. Cannot execute in any mode."
     }
   ],
-  "real_execution_supported_count": 5,
-  "confirmed_low_risk_count": 5,
+  "real_execution_supported_count": 17,
+  "confirmed_low_risk_count": 17,
   "confirmed_low_risk_enabled": [
+    {
+      "id": "validate_daily-archive",
+      "label_zh": "Validate: Daily-archive",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_video-prompts",
+      "label_zh": "Validate: Video-prompts",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_music-prompts",
+      "label_zh": "Validate: Music-prompts",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_public-gallery",
+      "label_zh": "Validate: Public-gallery",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_gallery-dedup",
+      "label_zh": "Validate: Gallery-dedup",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_content-pack-pages",
+      "label_zh": "Validate: Content-pack-pages",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "dashboard_validate",
+      "label_zh": "Dashboard: Validate",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
     {
       "id": "dashboard_control_drift-check",
       "label_zh": "Dashboard: Control: Drift-check",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "dashboard_control_validate",
+      "label_zh": "Dashboard: Control: Validate",
       "risk": "safe",
       "confirmation_phrase": "EXECUTE LOW RISK"
     },
@@ -110,6 +158,30 @@
     {
       "id": "validate_control-actions-dry-run",
       "label_zh": "Validate: Control-actions-dry-run",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_telegram-sanitizer",
+      "label_zh": "Validate: Telegram-sanitizer",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_project-report-send",
+      "label_zh": "Validate: Project-report-send",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_sanitizer-false-positives",
+      "label_zh": "Validate: Sanitizer-false-positives",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_sanitizer-secret-completeness",
+      "label_zh": "Validate: Sanitizer-secret-completeness",
       "risk": "safe",
       "confirmation_phrase": "EXECUTE LOW RISK"
     }
@@ -140,13 +212,6 @@
       "id": "archive_daily",
       "label_zh": "Archive: Daily",
       "risk": "medium",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "validate_daily-archive",
-      "label_zh": "Validate: Daily-archive",
-      "risk": "safe",
       "execution_mode": "dry_run_only",
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
     },
@@ -263,13 +328,6 @@
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
     },
     {
-      "id": "validate_video-prompts",
-      "label_zh": "Validate: Video-prompts",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
       "id": "prompts_music_enhance",
       "label_zh": "Prompts: Music: Enhance",
       "risk": "safe",
@@ -279,13 +337,6 @@
     {
       "id": "validate_music-prompt-enhancement",
       "label_zh": "Validate: Music-prompt-enhancement",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "validate_music-prompts",
-      "label_zh": "Validate: Music-prompts",
       "risk": "safe",
       "execution_mode": "dry_run_only",
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
@@ -347,27 +398,6 @@
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
     },
     {
-      "id": "validate_public-gallery",
-      "label_zh": "Validate: Public-gallery",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "validate_gallery-dedup",
-      "label_zh": "Validate: Gallery-dedup",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "validate_content-pack-pages",
-      "label_zh": "Validate: Content-pack-pages",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
       "id": "validate_mobile-gallery",
       "label_zh": "Validate: Mobile-gallery",
       "risk": "safe",
@@ -382,15 +412,8 @@
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
     },
     {
-      "id": "dashboard_validate",
-      "label_zh": "Dashboard: Validate",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "dashboard_control_validate",
-      "label_zh": "Dashboard: Control: Validate",
+      "id": "validate_control-low-risk-execution",
+      "label_zh": "Validate: Control-low-risk-execution",
       "risk": "safe",
       "execution_mode": "dry_run_only",
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
@@ -419,20 +442,6 @@
     {
       "id": "validate_telegram-auto-send",
       "label_zh": "Validate: Telegram-auto-send",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "validate_telegram-sanitizer",
-      "label_zh": "Validate: Telegram-sanitizer",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "validate_project-report-send",
-      "label_zh": "Validate: Project-report-send",
       "risk": "safe",
       "execution_mode": "dry_run_only",
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"

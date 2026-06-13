@@ -1,15 +1,16 @@
 #!/usr/bin/env tsx
 /**
- * scripts/validate-control-low-risk-execution.ts — Phase 5C-2C-A
+ * scripts/validate-control-low-risk-execution.ts — Phase 5C-2C-B
  *
- * Validates the confirmed low-risk execution canary:
+ * Validates the expanded low-risk execution allowlist:
  *  - control-execution-allowlist.json exists and is valid
- *  - Contains exactly 5 allowed scripts
- *  - All 5 scripts are in control-catalog.json with confirmed_low_risk mode
- *  - All 5 have real_execution_supported=true
- *  - All 5 have risk_level=safe, calls_model=false, generates_media=false, modifies_timer=false
+ *  - All allowed scripts are in control-catalog.json with confirmed_low_risk mode
+ *  - All allowed scripts have real_execution_supported=true
+ *  - All allowed scripts have risk_level=safe, calls_model=false, generates_media=false, modifies_timer=false
  *  - No other commands have real_execution_supported=true
  *  - Blocked patterns cover dangerous commands
+ *  - All allowed scripts exist in package.json
+ *  - Sanitizer regression PASS
  *
  * Usage: npm run validate:control-low-risk-execution
  */
@@ -20,6 +21,7 @@ import { join } from "path";
 const HARVESTER_DIR = "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester";
 const ALLOWLIST_PATH = join(HARVESTER_DIR, "dashboard", "control-execution-allowlist.json");
 const CATALOG_PATH = join(HARVESTER_DIR, "dashboard", "control-catalog.json");
+const PKG_PATH = join(HARVESTER_DIR, "package.json");
 
 let passes = 0;
 let failures = 0;
@@ -27,7 +29,7 @@ let failures = 0;
 function pass(msg: string) { console.log(`PASS  ${msg}`); passes++; }
 function fail(msg: string) { console.log(`FAIL  ${msg}`); failures++; }
 
-console.log("=== Validate Control Low-risk Execution Canary (Phase 5C-2C-A) ===");
+console.log("=== Validate Control Low-risk Execution (Phase 5C-2C-B) ===");
 
 // 1. Allowlist exists
 if (!existsSync(ALLOWLIST_PATH)) {
@@ -49,18 +51,42 @@ try {
   process.exit(1);
 }
 
-// 3. Allowlist has exactly 5 allowed scripts
-if (allowlist.allowed_scripts && allowlist.allowed_scripts.length === 5) {
-  pass(`allowlist has exactly 5 allowed scripts: ${allowlist.allowed_scripts.join(", ")}`);
-} else {
-  fail(`allowlist has ${allowlist.allowed_scripts?.length || 0} scripts (expected 5)`);
+// 3. Allowlist has blocked patterns covering dangerous commands
+const dangerousPatterns = ["generate", "timer", "collect", "git", "push", "pull", "deploy", "release", "model", "music-gen", "video-gen", "image-gen", "digest:send", "report:send"];
+const blockedLower = (allowlist.blocked_patterns || []).map((p: string) => p.toLowerCase());
+let allDangerousBlocked = true;
+for (const d of dangerousPatterns) {
+  if (!blockedLower.includes(d.toLowerCase())) {
+    fail(`blocked_patterns missing: ${d}`);
+    allDangerousBlocked = false;
+  }
+}
+if (allDangerousBlocked) {
+  pass("blocked_patterns cover all dangerous commands");
 }
 
-// 4. Allowlist has blocked patterns
-if (allowlist.blocked_patterns && allowlist.blocked_patterns.length > 0) {
-  pass(`allowlist has ${allowlist.blocked_patterns.length} blocked patterns`);
-} else {
-  fail("allowlist missing blocked patterns");
+// 4. Blocked patterns do NOT contain validation keywords
+const safeKeywords = ["validate:control", "validate:telegram", "validate:sanitizer", "validate:project", "validate:public", "validate:daily", "validate:gallery", "validate:content", "dashboard:control", "dashboard:validate"];
+for (const pattern of allowlist.blocked_patterns || []) {
+  for (const safe of safeKeywords) {
+    if (pattern.toLowerCase().includes(safe.toLowerCase())) {
+      fail(`blocked_patterns "${pattern}" incorrectly blocks safe keyword "${safe}"`);
+    }
+  }
+}
+if (failures === 0 || (failures > 0 && passes > 0)) {
+  // recheck
+  let safeBlocked = false;
+  for (const pattern of allowlist.blocked_patterns || []) {
+    for (const safe of safeKeywords) {
+      if (pattern.toLowerCase().includes(safe.toLowerCase())) {
+        safeBlocked = true;
+      }
+    }
+  }
+  if (!safeBlocked) {
+    pass("blocked_patterns do not block safe validation keywords");
+  }
 }
 
 // 5. Safety rules configured
@@ -90,7 +116,41 @@ if (allowlist.safety_rules && allowlist.safety_rules.no_secrets_in_env === true)
   fail("allowlist safety_rules: no_secrets_in_env must be true");
 }
 
-// 6. Load catalog and verify all 5 commands are confirmed_low_risk
+// 6. All allowed scripts exist in package.json
+let pkg: any;
+if (existsSync(PKG_PATH)) {
+  pkg = JSON.parse(readFileSync(PKG_PATH, "utf-8"));
+} else {
+  fail("package.json not found");
+  console.log(`\nSummary: PASS=${passes}  FAIL=${failures}`);
+  console.log("RESULT: FAIL");
+  process.exit(1);
+}
+
+const scripts = pkg.scripts || {};
+for (const scriptName of allowlist.allowed_scripts || []) {
+  if (scripts[scriptName]) {
+    pass(`allowed script exists in package.json: ${scriptName}`);
+  } else {
+    fail(`allowed script NOT in package.json: ${scriptName}`);
+  }
+}
+
+// 7. No allowed script matches blocked patterns
+for (const scriptName of allowlist.allowed_scripts || []) {
+  let blocked = false;
+  for (const pattern of allowlist.blocked_patterns || []) {
+    if (scriptName.toLowerCase().includes(pattern.toLowerCase())) {
+      fail(`allowed script "${scriptName}" matches blocked pattern "${pattern}"`);
+      blocked = true;
+    }
+  }
+  if (!blocked) {
+    pass(`allowed script not blocked: ${scriptName}`);
+  }
+}
+
+// 8. Load catalog and verify all allowed commands are confirmed_low_risk
 if (!existsSync(CATALOG_PATH)) {
   fail("control-catalog.json not found");
   console.log(`\nSummary: PASS=${passes}  FAIL=${failures}`);
@@ -101,13 +161,14 @@ if (!existsSync(CATALOG_PATH)) {
 const catalog = JSON.parse(readFileSync(CATALOG_PATH, "utf-8"));
 let realExecCount = 0;
 let canaryCount = 0;
+const allowedSet = new Set(allowlist.allowed_scripts || []);
 
 for (const group of catalog.command_groups || []) {
   for (const cmd of group.commands || []) {
     if (cmd.real_execution_supported === true) {
       realExecCount++;
       const scriptName = cmd.script_name || cmd.id?.replace(/_/g, ":") || cmd.id;
-      if (allowlist.allowed_scripts.includes(scriptName)) {
+      if (allowedSet.has(scriptName)) {
         canaryCount++;
         if (cmd.execution_mode === "confirmed_low_risk") {
           pass(`canary ${cmd.id}: execution_mode=confirmed_low_risk`);
@@ -139,6 +200,11 @@ for (const group of catalog.command_groups || []) {
         } else {
           fail(`canary ${cmd.id}: requires_confirm=false (expected true)`);
         }
+        if (cmd.audit_required === true) {
+          pass(`canary ${cmd.id}: audit_required=true`);
+        } else {
+          fail(`canary ${cmd.id}: audit_required=false (expected true)`);
+        }
       } else {
         fail(`command ${cmd.id} has real_execution_supported=true but NOT in allowlist`);
       }
@@ -146,16 +212,42 @@ for (const group of catalog.command_groups || []) {
   }
 }
 
-if (realExecCount === 5) {
-  pass(`exactly 5 commands have real_execution_supported=true`);
+if (realExecCount === allowlist.allowed_scripts.length) {
+  pass(`exactly ${realExecCount} commands have real_execution_supported=true`);
 } else {
-  fail(`${realExecCount} commands have real_execution_supported=true (expected 5)`);
+  fail(`${realExecCount} commands have real_execution_supported=true (expected ${allowlist.allowed_scripts.length})`);
 }
 
-if (canaryCount === 5) {
-  pass(`all 5 real_execution commands are in allowlist`);
+if (canaryCount === allowlist.allowed_scripts.length) {
+  pass(`all ${canaryCount} real_execution commands are in allowlist`);
 } else {
-  fail(`${canaryCount} real_execution commands are in allowlist (expected 5)`);
+  fail(`${canaryCount} real_execution commands are in allowlist (expected ${allowlist.allowed_scripts.length})`);
+}
+
+// 9. No disallowed commands have real_execution_supported=true
+if (realExecCount === canaryCount) {
+  pass("no disallowed commands have real_execution_supported=true");
+} else {
+  fail(`${realExecCount - canaryCount} disallowed commands have real_execution_supported=true`);
+}
+
+// 10. Max runtime and output limits
+if (allowlist.max_runtime_ms <= 60000) {
+  pass(`max_runtime_ms=${allowlist.max_runtime_ms} <= 60000`);
+} else {
+  fail(`max_runtime_ms=${allowlist.max_runtime_ms} > 60000`);
+}
+if (allowlist.max_output_chars <= 12000) {
+  pass(`max_output_chars=${allowlist.max_output_chars} <= 12000`);
+} else {
+  fail(`max_output_chars=${allowlist.max_output_chars} > 12000`);
+}
+
+// 11. Phase matches
+if (allowlist.phase === "5C-2C-B") {
+  pass(`allowlist phase=${allowlist.phase}`);
+} else {
+  fail(`allowlist phase=${allowlist.phase} (expected 5C-2C-B)`);
 }
 
 console.log(`\nSummary: PASS=${passes}  FAIL=${failures}`);

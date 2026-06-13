@@ -154,6 +154,8 @@
     <span class="filter-count" id="filter-count"></span>
   </div>
 
+  <div id="low-risk-root">加载低风险执行列表中…</div>
+
   <div id="policy-review-root">加载策略审查中…</div>
 
   <div id="catalog-root">加载命令目录中…</div>
@@ -187,7 +189,149 @@
     'generated': 'generated'
   };
 
+  var lowRiskRoot = document.getElementById('low-risk-root');
+  if (lowRiskRoot) {
+    fetch('./control-execution-allowlist.json', { method: 'GET', cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (allowlist) { renderLowRiskAllowlist(allowlist, lowRiskRoot); })
+      .catch(function (err) { lowRiskRoot.innerHTML = '<div class="critical-warning"><div class="warning-title">低风险执行列表加载失败</div><p>无法读取 control-execution-allowlist.json：' + String(err) + '</p></div>'; });
+  }
+
   var prRoot = document.getElementById('policy-review-root');
+  if (lowRiskRoot) {
+    fetch('./control-execution-allowlist.json', { method: 'GET', cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (allowlist) { renderLowRiskAllowlist(allowlist, lowRiskRoot); })
+      .catch(function (err) { lowRiskRoot.innerHTML = '<div class="critical-warning"><div class="warning-title">低风险执行列表加载失败</div><p>无法读取 control-execution-allowlist.json：' + String(err) + '</p></div>'; });
+  }
+
+  function renderLowRiskAllowlist(allowlist, mount) {
+    mount.innerHTML = '';
+    var box = document.createElement('div');
+    box.style.background = '#fff';
+    box.style.border = '1px solid #e0e0e0';
+    box.style.borderRadius = '12px';
+    box.style.padding = '24px';
+    box.style.marginBottom = '24px';
+
+    var title = document.createElement('h2');
+    title.textContent = '✅ 低风险真实执行列表 / Confirmed Low-risk Execution Allowlist';
+    title.style.color = '#2c3e50';
+    title.style.marginBottom = '16px';
+    title.style.fontSize = '1.3rem';
+    box.appendChild(title);
+
+    var warning = document.createElement('div');
+    warning.style.background = '#fff3cd';
+    warning.style.border = '2px solid #ffc107';
+    warning.style.color = '#856404';
+    warning.style.padding = '12px 16px';
+    warning.style.borderRadius = '8px';
+    warning.style.marginBottom = '16px';
+    warning.style.fontSize = '0.9rem';
+    warning.innerHTML = '<strong>⚠️ 安全提示：</strong>仅允许验证类命令真实执行；生成、发送、timer、collect、git 仍被禁止。';
+    box.appendChild(warning);
+
+    var stats = document.createElement('div');
+    stats.style.display = 'grid';
+    stats.style.gridTemplateColumns = 'repeat(auto-fit, minmax(140px, 1fr))';
+    stats.style.gap = '12px';
+    stats.style.marginBottom = '16px';
+
+    function statCard(label, value, color) {
+      var c = document.createElement('div');
+      c.style.background = '#f8f9fa';
+      c.style.borderRadius = '8px';
+      c.style.padding = '12px';
+      c.style.textAlign = 'center';
+      var n = document.createElement('div');
+      n.style.fontSize = '1.6rem';
+      n.style.fontWeight = '700';
+      n.style.color = color || '#1e3a5f';
+      n.textContent = String(value);
+      var l = document.createElement('div');
+      l.style.fontSize = '0.75rem';
+      l.style.color = '#7f8c8d';
+      l.style.marginTop = '4px';
+      l.textContent = label;
+      c.appendChild(n); c.appendChild(l);
+      return c;
+    }
+
+    var scripts = allowlist.allowed_scripts || [];
+    stats.appendChild(statCard('允许命令数', scripts.length, '#22c55e'));
+    stats.appendChild(statCard('最大运行时间', (allowlist.max_runtime_ms || 0) + 'ms'));
+    stats.appendChild(statCard('最大输出长度', (allowlist.max_output_chars || 0) + 'chars'));
+    box.appendChild(stats);
+
+    var list = document.createElement('div');
+    list.style.display = 'grid';
+    list.style.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))';
+    list.style.gap = '12px';
+
+    for (var i = 0; i < scripts.length; i++) {
+      var cmd = document.createElement('div');
+      cmd.style.background = '#f0fdf4';
+      cmd.style.border = '1px solid #bbf7d0';
+      cmd.style.borderRadius = '8px';
+      cmd.style.padding = '12px';
+      cmd.style.fontSize = '0.85rem';
+
+      var name = document.createElement('div');
+      name.style.fontFamily = 'monospace';
+      name.style.fontWeight = '600';
+      name.style.color = '#166534';
+      name.style.marginBottom = '6px';
+      name.textContent = scripts[i];
+      cmd.appendChild(name);
+
+      var meta = document.createElement('div');
+      meta.style.display = 'flex';
+      meta.style.flexWrap = 'wrap';
+      meta.style.gap = '4px';
+
+      function chip(label, bg, color) {
+        var s = document.createElement('span');
+        s.style.display = 'inline-block';
+        s.style.padding = '2px 8px';
+        s.style.borderRadius = '4px';
+        s.style.fontSize = '0.7rem';
+        s.style.background = bg;
+        s.style.color = color;
+        s.textContent = label;
+        return s;
+      }
+
+      meta.appendChild(chip('confirmed_low_risk', '#dbeafe', '#1e40af'));
+      meta.appendChild(chip('EXECUTE LOW RISK', '#fef3c7', '#92400e'));
+      meta.appendChild(chip('real_execution=true', '#d1fae5', '#065f46'));
+      meta.appendChild(chip('audit_required=true', '#ede9fe', '#5b21b6'));
+      cmd.appendChild(meta);
+      list.appendChild(cmd);
+    }
+    box.appendChild(list);
+
+    var blocked = document.createElement('div');
+    blocked.style.background = '#fee2e2';
+    blocked.style.border = '1px solid #fecaca';
+    blocked.style.borderRadius = '8px';
+    blocked.style.padding = '12px 16px';
+    blocked.style.marginTop = '16px';
+    blocked.style.fontSize = '0.85rem';
+    var blockedTitle = document.createElement('div');
+    blockedTitle.style.fontWeight = '600';
+    blockedTitle.style.marginBottom = '6px';
+    blockedTitle.textContent = '🚫 被禁止的模式 / Blocked Patterns';
+    blocked.appendChild(blockedTitle);
+    var blockedList = document.createElement('div');
+    blockedList.style.fontFamily = 'monospace';
+    blockedList.style.fontSize = '0.75rem';
+    blockedList.textContent = (allowlist.blocked_patterns || []).join(', ');
+    blocked.appendChild(blockedList);
+    box.appendChild(blocked);
+
+    mount.appendChild(box);
+  }
   if (prRoot) {
     fetch('./policy-review.json', { method: 'GET', cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })

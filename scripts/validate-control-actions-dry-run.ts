@@ -107,26 +107,33 @@ if (serverCode.includes("real_execution: false") && serverCode.includes('dry_run
   fail("control-server.ts: real_execution may not be always false");
 }
 
-// 10. control-catalog.json: real_execution_supported=false for all except confirmed_low_risk canary
+// 10. control-catalog.json: real_execution_supported=false for all except confirmed_low_risk allowlist
 if (!existsSync(CATALOG_PATH)) { fail("control-catalog.json missing"); process.exit(1); }
 const catalog = JSON.parse(readFileSync(CATALOG_PATH, "utf-8"));
 let allFalse = true;
 let highDangerRequireConfirm = true;
-const canaryIds = [
-  "validate_control-server",
-  "validate_control-readonly-actions",
-  "validate_control-actions-dry-run",
-  "dashboard_control_drift-check",
-  "dashboard_policy_validate",
-];
+
+// Load allowlist from control-execution-allowlist.json
+const allowlistIds = new Set<string>();
+try {
+  const allowlist = JSON.parse(readFileSync(join(HARVESTER_DIR, "dashboard", "control-execution-allowlist.json"), "utf-8"));
+  for (const script of allowlist.allowed_scripts || []) {
+    allowlistIds.add(script.replace(/:/g, "_"));
+  }
+  pass(`Loaded allowlist: ${allowlistIds.size} commands allowed for real execution`);
+} catch {
+  fail("Failed to load control-execution-allowlist.json");
+  allFalse = false;
+}
+
 for (const g of catalog.command_groups || []) {
   for (const cmd of g.commands || []) {
     if (cmd.real_execution_supported !== false) {
-      if (canaryIds.includes(cmd.id) && cmd.execution_mode === "confirmed_low_risk") {
-        // 5C-2C-A canary: allowed
+      if (allowlistIds.has(cmd.id) && cmd.execution_mode === "confirmed_low_risk" && cmd.risk_level === "safe") {
+        // allowlist command: allowed
       } else {
         allFalse = false;
-        fail(`control-catalog.json: ${cmd.id} has real_execution_supported=${cmd.real_execution_supported} (not confirmed_low_risk canary)`);
+        fail(`control-catalog.json: ${cmd.id} has real_execution_supported=${cmd.real_execution_supported} (not confirmed_low_risk allowlist)`);
       }
     }
     if ((cmd.risk_level === "high" || cmd.risk_level === "danger") && !cmd.requires_confirm) {
@@ -135,7 +142,7 @@ for (const g of catalog.command_groups || []) {
     }
   }
 }
-if (allFalse) pass("control-catalog.json: all real_execution_supported=false (or confirmed_low_risk canary)");
+if (allFalse) pass("control-catalog.json: all real_execution_supported=false (or confirmed_low_risk allowlist)");
 if (highDangerRequireConfirm) pass("control-catalog.json: all high/danger require confirmation");
 
 // 11. Audit log does not contain token (if exists)

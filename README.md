@@ -57,6 +57,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-2C-A1** | **✅ Complete** | **Policy Review Validation Fix (dynamic never_execute, confirmed_low_risk=5, allowlist validation, 34/34 PASS)** |
 | **Phase 5C-2C-A2** | **✅ Complete** | **Sanitizer False Positive Fix for sk- Pattern (negative lookbehind, 25/25 false-positive tests, 43/43 sanitizer tests)** |
 | **Phase 5C-2C-A3** | **✅ Complete** | **Secret Redaction Completeness Check (colon fix, CQA_CONTROL_TOKEN, standalone Telegram token, 36/36 PASS)** |
+| **Phase 5C-2C-B** | **✅ Complete** | **More Low-risk Validation Executions (17 commands, expanded allowlist, no model calls, no media generation)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

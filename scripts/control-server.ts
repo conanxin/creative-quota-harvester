@@ -363,7 +363,7 @@ function buildHomePage(): string {
     </div>
   </div>
   <footer>
-    <p>Creative Quota Harvester · Phase 5C-2C-A · localhost-only · dry-run + safe-readonly + confirmed-low-risk-canary</p>
+    <p>Creative Quota Harvester · Phase 5C-2C-B · localhost-only · dry-run + safe-readonly + confirmed-low-risk-expanded</p>
   </footer>
 </div>
 </body>
@@ -412,25 +412,21 @@ const server = http.createServer((req, res) => {
     }
 
     case "/health": {
+      const allowlist = safeReadJson(path.join(HARVESTER_DIR, "dashboard", "control-execution-allowlist.json"), null) as any;
       jsonResponse(res, {
         status: "ok",
-        mode: "localhost-only-dry-run-safe-readonly-confirmed-low-risk-canary",
-        phase: "5C-2C-A",
+        mode: "localhost-only-dry-run-safe-readonly-confirmed-low-risk-expanded",
+        phase: "5C-2C-B",
         host: HOST,
         port: PORT,
         actions_enabled: CONTROL_CONFIG.actionsEnabled,
         token_configured: !!CONTROL_CONFIG.token,
         confirmed_low_risk_canary: {
           enabled: true,
-          allowed_scripts: [
-            "validate:control-server",
-            "validate:control-readonly-actions",
-            "validate:control-actions-dry-run",
-            "dashboard:control:drift-check",
-            "dashboard:policy:validate"
-          ],
-          max_runtime_ms: 60000,
-          max_output_chars: 12000,
+          allowed_scripts_count: allowlist?.allowed_scripts?.length || 0,
+          allowed_scripts: allowlist?.allowed_scripts || [],
+          max_runtime_ms: allowlist?.max_runtime_ms || 60000,
+          max_output_chars: allowlist?.max_output_chars || 12000,
         },
         timestamp: new Date().toISOString(),
       });
@@ -549,7 +545,7 @@ server.listen(PORT, HOST, () => {
   console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
-  console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution canary, 5 scripts only)`);
+  console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist)`);
   console.log(`[control-server] Actions enabled: ${CONTROL_CONFIG.actionsEnabled}, Token configured: ${!!CONTROL_CONFIG.token}`);
 });
 

@@ -123,6 +123,17 @@ if (modeSum === review.total_commands) {
   fail(`execution_mode_counts sum = ${modeSum} !== total_commands = ${review.total_commands}`);
 }
 
+// Load allowlist for expected confirmed_low_risk count
+const allowlistPath = join(HARVESTER_DIR, "dashboard", "control-execution-allowlist.json");
+let expectedLowRiskCount = 5;
+try {
+  const al = JSON.parse(readFileSync(allowlistPath, "utf-8"));
+  expectedLowRiskCount = al.allowed_scripts?.length || 5;
+  pass(`allowlist loaded: ${expectedLowRiskCount} allowed scripts`);
+} catch {
+  pass("allowlist not found, using default 5");
+}
+
 // real_execution_supported_count must equal confirmed_low_risk_count
 if (review.real_execution_supported_count === review.confirmed_low_risk_count) {
   pass(`real_execution_supported_count (${review.real_execution_supported_count}) === confirmed_low_risk_count (${review.confirmed_low_risk_count})`);
@@ -130,11 +141,11 @@ if (review.real_execution_supported_count === review.confirmed_low_risk_count) {
   fail(`real_execution_supported_count (${review.real_execution_supported_count}) !== confirmed_low_risk_count (${review.confirmed_low_risk_count})`);
 }
 
-// confirmed_low_risk_count must be 5 (Phase 5C-2C-A canary)
-if (review.confirmed_low_risk_count === 5) {
-  pass(`confirmed_low_risk_count === 5 (Phase 5C-2C-A canary)`);
+// confirmed_low_risk_count must match allowlist size
+if (review.confirmed_low_risk_count === expectedLowRiskCount) {
+  pass(`confirmed_low_risk_count === ${expectedLowRiskCount} (Phase 5C-2C allowlist)`);
 } else {
-  fail(`confirmed_low_risk_count === ${review.confirmed_low_risk_count} (expected 5)`);
+  fail(`confirmed_low_risk_count === ${review.confirmed_low_risk_count} (expected ${expectedLowRiskCount})`);
 }
 
 // confirmed_low_risk_enabled commands must all be safe, no model/media/timer, require confirm

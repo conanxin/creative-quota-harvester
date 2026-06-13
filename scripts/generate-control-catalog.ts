@@ -149,9 +149,10 @@ function generateCommand(scriptName: string, scriptCmd: string, policy: Policy):
     ? notes
     : `${labelZh} — ${notes}`;
 
-  // Confirmation phrase based on risk
+  // Confirmation phrase based on risk and execution mode
   const riskLower = risk.toLowerCase();
-  const confirmationPhrase = riskLower === "safe" ? "dry-run-safe" :
+  const confirmationPhrase = executionMode === "confirmed_low_risk" ? "EXECUTE LOW RISK" :
+    riskLower === "safe" ? "dry-run-safe" :
     riskLower === "medium" ? "dry-run-medium" :
     riskLower === "high" ? "dry-run-high" :
     riskLower === "danger" ? "dry-run-danger" : "dry-run";

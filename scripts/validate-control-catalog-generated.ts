@@ -234,28 +234,51 @@ if (generatedJson === finalJson) {
   if (!drift) pass("Generated and final catalogs match (no drift)");
 }
 
-// 16. All commands have real_execution_supported=false, except confirmed_low_risk canary
-const canaryIds = [
-  "validate_control-server",
-  "validate_control-readonly-actions",
-  "validate_control-actions-dry-run",
-  "dashboard_control_drift-check",
-  "dashboard_policy_validate",
-];
+// 16. All commands have real_execution_supported=false, except confirmed_low_risk allowlist
 let allFalse = true;
+
+// Load allowlist from control-execution-allowlist.json
+const allowlistIds = new Set<string>();
+try {
+  const allowlist = JSON.parse(readFileSync(join(HARVESTER_DIR, "dashboard", "control-execution-allowlist.json"), "utf-8"));
+  for (const script of allowlist.allowed_scripts || []) {
+    allowlistIds.add(script.replace(/:/g, "_"));
+  }
+  pass(`Loaded allowlist: ${allowlistIds.size} commands allowed for real execution`);
+} catch (e) {
+  fail("Failed to load control-execution-allowlist.json");
+  allFalse = false;
+}
+
 for (const g of generated.command_groups || []) {
   for (const c of g.commands || []) {
-    if (c.real_execution_supported !== false && !canaryIds.includes(c.id)) {
-      fail(`Command ${c.id} has real_execution_supported=${c.real_execution_supported}`);
+    if (c.real_execution_supported !== false && !allowlistIds.has(c.id)) {
+      fail(`Command ${c.id} has real_execution_supported=${c.real_execution_supported} but NOT in allowlist`);
       allFalse = false;
     }
-    if (c.real_execution_supported === true && canaryIds.includes(c.id) && c.execution_mode !== "confirmed_low_risk") {
-      fail(`Command ${c.id} is canary but execution_mode != confirmed_low_risk: ${c.execution_mode}`);
+    if (c.real_execution_supported === true && allowlistIds.has(c.id) && c.execution_mode !== "confirmed_low_risk") {
+      fail(`Command ${c.id} is in allowlist but execution_mode != confirmed_low_risk: ${c.execution_mode}`);
+      allFalse = false;
+    }
+    if (c.real_execution_supported === true && allowlistIds.has(c.id) && c.risk_level !== "safe") {
+      fail(`Command ${c.id} is in allowlist but risk_level != safe: ${c.risk_level}`);
+      allFalse = false;
+    }
+    if (c.real_execution_supported === true && allowlistIds.has(c.id) && c.calls_model !== false) {
+      fail(`Command ${c.id} is in allowlist but calls_model != false: ${c.calls_model}`);
+      allFalse = false;
+    }
+    if (c.real_execution_supported === true && allowlistIds.has(c.id) && c.generates_media !== false) {
+      fail(`Command ${c.id} is in allowlist but generates_media != false: ${c.generates_media}`);
+      allFalse = false;
+    }
+    if (c.real_execution_supported === true && allowlistIds.has(c.id) && c.modifies_timer !== false) {
+      fail(`Command ${c.id} is in allowlist but modifies_timer != false: ${c.modifies_timer}`);
       allFalse = false;
     }
   }
 }
-if (allFalse) pass("All commands have real_execution_supported=false, except 5C-2C-A canary (5 commands)");
+if (allFalse) pass("All commands have real_execution_supported=false, except allowlist (confirmed_low_risk)");
 
 // 17. Catalog version matches phase
 if (generated.version && generated.phase === "5C-3") {

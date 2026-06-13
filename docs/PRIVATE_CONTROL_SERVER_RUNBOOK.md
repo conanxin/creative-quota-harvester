@@ -546,4 +546,101 @@ After this fix:
 
 ---
 
-*Runbook v5.0 — Phase 5C-2C-A1*
+## Phase 5C-2C-B — More Low-risk Validation Executions
+
+Phase 5C-2C-B expands the confirmed_low_risk execution allowlist from 5 canary commands to 17 safe validation commands. All 12 new commands are pure validation scripts with no model calls, no media generation, and no timer modification.
+
+### What Changed
+
+- `dashboard/control-execution-allowlist.json` — expanded from 5 to 17 commands:
+  - Original 5: validate:control-server, validate:control-readonly-actions, validate:control-actions-dry-run, dashboard:control:drift-check, dashboard:policy:validate
+  - New 12: validate:telegram-sanitizer, validate:sanitizer-false-positives, validate:sanitizer-secret-completeness, validate:project-report-send, dashboard:control:validate, dashboard:validate, validate:public-gallery, validate:daily-archive, validate:gallery-dedup, validate:content-pack-pages, validate:music-prompts, validate:video-prompts
+- `scripts/generate-control-catalog.ts` — updated to set `confirmation_phrase="EXECUTE LOW RISK"` for all `confirmed_low_risk` commands
+- `scripts/control-server.ts` — updated:
+  - Health endpoint dynamically loads allowlist from `control-execution-allowlist.json`
+  - Phase updated to `5C-2C-B`
+  - Log message updated to "expanded validation allowlist"
+- `dashboard/control.html` — added low-risk execution allowlist section showing:
+  - Allowed script count, max runtime, max output
+  - Each allowed command with execution_mode, confirmation phrase, audit_required
+  - Blocked patterns list
+- `dashboard/control-policy.json` — added 12 new rules for `confirmed_low_risk` execution
+- `scripts/validate-control-low-risk-execution.ts` — already updated for 17 commands
+
+### Execution Allowlist Safety Rules (Unchanged)
+
+| Rule | Value |
+|------|-------|
+| shell | false |
+| command | npm only |
+| args | ["run", scriptName] only |
+| cwd | project root only |
+| env | PATH, HOME, NODE_ENV only (no secrets) |
+| timeout | 60,000 ms |
+| max output | 12,000 chars |
+
+### How to Execute an Expanded Command
+
+```bash
+# Start server
+cd ~/.openclaw/workspace/projects/creative-quota-harvester
+npm run control:server
+
+# Execute any of the 17 allowed commands
+curl -s -X POST http://127.0.0.1:8788/api/action/execute-low-risk \
+  -H "Content-Type: application/json" \
+  -d '{"action_id":"validate_telegram-sanitizer","confirm_phrase":"EXECUTE LOW RISK","token":"your-secret-token"}'
+```
+
+### Why Still Blocked
+
+The following command categories remain blocked for real execution:
+- `generate:*` — calls model, generates media
+- `send:*` — requires CQA_ALLOW_TELEGRAM_SEND
+- `timer:*` — modifies timer
+- `collect:*` — external data collection
+- `git/push/pull/deploy/release` — blocked by pattern
+- `build` — blocked by pattern
+
+### Validation Results
+
+| Validation | Result |
+|------------|--------|
+| `dashboard:control:drift-check` | PASS (19/19) |
+| `dashboard:policy:validate` | PASS (35/35) |
+| `validate:control-server` | PASS (20/20) |
+| `dashboard:control:validate` | PASS (15/15) |
+| `validate:control-actions-dry-run` | PASS (20/20) |
+| `validate:control-readonly-actions` | PASS (21/21) |
+| `validate:control-low-risk-execution` | PASS (167/167) |
+| `validate:sanitizer-secret-completeness` | PASS (36/36) |
+| `validate:sanitizer-false-positives` | PASS (25/25) |
+| `validate:telegram-sanitizer` | PASS (43/43) |
+| `validate:project-report-send` | PASS (11/11) |
+
+### Smoke Test Results
+
+| Test | Result |
+|------|--------|
+| validate:control-server (allowed) | PASS (exit_code=0, real_execution=true) |
+| validate:telegram-sanitizer (allowed) | PASS (exit_code=0, real_execution=true) |
+| dashboard:control:validate (allowed) | PASS (exit_code=0, real_execution=true) |
+| Wrong confirmation (blocked) | PASS (real_execution=false) |
+| generate:image:confirmed (blocked) | PASS (403 Forbidden) |
+| Audit log no token | PASS (0 leaks) |
+| Health endpoint | PASS (phase=5C-2C-B, count=17) |
+
+### Files
+
+- `dashboard/control-execution-allowlist.json` — expanded to 17 commands
+- `scripts/control-action-runner.ts` — no changes (already correct)
+- `scripts/control-server.ts` — health endpoint and phase updated
+- `dashboard/control.html` — added low-risk execution section
+- `dashboard/control-policy.json` — added 12 new rules
+- `dashboard/control-catalog.json` — regenerated with 82 commands
+- `scripts/generate-control-catalog.ts` — confirmation phrase logic updated
+- `scripts/validate-control-low-risk-execution.ts` — 167 checks, all PASS
+
+---
+
+*Runbook v5.1 — Phase 5C-2C-B*

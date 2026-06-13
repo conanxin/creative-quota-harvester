@@ -29,6 +29,12 @@
 | 0.20.0 | 2026-06-13 | Phase 5C-2A | ✅ COMPLETE — Authenticated Control Actions Dry-run (auth + confirm + audit, no real execution) |
 | 0.21.0 | 2026-06-13 | Phase 5C-2B | ✅ COMPLETE — Safe Read-only Action Execution (read-only queries, no side effects, no model calls) |
 | 0.22.0 | 2026-06-13 | Phase 5C-3 | ✅ COMPLETE — Auto-generated Control Catalog from package.json scripts (policy-driven, drift-check) |
+| 0.22.1 | 2026-06-13 | Phase 5C-4 | ✅ COMPLETE — Policy Review UI (auto-generated policy analysis, future execution candidates, never-execute list) |
+| 0.23.0 | 2026-06-13 | Phase 5C-2C-A | ✅ COMPLETE — Confirmed Low-risk Execution Canary (5 safe validation scripts, spawn(shell=false), 60s timeout, 12K output limit) |
+| 0.23.1 | 2026-06-13 | Phase 5C-2C-A1 | ✅ COMPLETE — Policy Review Validation Fix (dynamic never_execute, confirmed_low_risk=5, allowlist validation, 34/34 PASS) |
+| 0.23.2 | 2026-06-13 | Phase 5C-2C-A2 | ✅ COMPLETE — Sanitizer False Positive Fix for sk- Pattern (negative lookbehind, 25/25 false-positive tests, 43/43 sanitizer tests) |
+| 0.23.3 | 2026-06-13 | Phase 5C-2C-A3 | ✅ COMPLETE — Secret Redaction Completeness Check (colon fix, CQA_CONTROL_TOKEN, standalone Telegram token, 36/36 PASS) |
+| 0.23.4 | 2026-06-13 | Phase 5C-2C-B | ✅ COMPLETE — More Low-risk Validation Executions (17 commands, expanded allowlist, no model calls, no media generation) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |
