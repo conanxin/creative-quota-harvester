@@ -133,7 +133,8 @@ if (existsSync(mdReportPath)) {
   else fail('md report missing delivery line');
   if (md.includes('signal_last_collected_at')) pass('md report has signal_last_collected_at');
   else fail('md report missing signal_last_collected_at');
-  if (md.includes('Phase 4C-2')) pass('md report references current phase');
+  if (md.includes('Phase 4C-4')) pass('md report references current phase');
+  else if (md.includes('Phase 4C-2')) pass('md report references current phase');
   else fail('md report missing current phase reference');
 } else {
   fail('md report missing');

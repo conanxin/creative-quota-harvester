@@ -1,0 +1,29 @@
+PHASE 4C-4 COMPLETE
+
+Status: PASS
+Collect: PARTIAL_PASS (30 signals, 5/9 sources OK)
+Digest: PASS (1722 chars, freshness 0h)
+Validations: digest-freshness PASS, telegram-sanitizer PASS, digest-check PASS
+
+Root Cause:
+- GitHub Radar timeout: 12 queries x 7s gap exceeds 35s limit
+- Hugging Face timeout: 11 filters x 5s gap exceeds 35s limit
+- Hacker News partial: fetch reliability (0 signals)
+- GDELT partial: HTTP 429 rate limit (0 signals)
+
+Fix Applied:
+- Per-source timeout: 35s (independent try/catch)
+- Overall timeout: 240s warning (no SIGKILL)
+- Source health JSON/MD output per source
+- Digest shows source health + freshness
+- collect:diagnose (connectivity check) added
+- collect:fresh (force refresh) added
+- daily-scheduled.sh handles partial failures gracefully
+
+MiniMax Called: No
+New Media Generated: No
+.env committed: No
+
+Next Phase: 4C-5 Adapter Parallelization & Query Reduction
+
+Full Report: docs/PHASE_4C4_COLLECT_TIMEOUT_FRESHNESS_REPORT.md

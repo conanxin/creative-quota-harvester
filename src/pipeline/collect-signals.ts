@@ -1,6 +1,6 @@
 /**
- * collect-signals.ts — Phase 1 Real Implementation
- * Orchestrates all source adapters and returns SignalRecord[]
+ * collect-signals.ts — Phase 4C-4
+ * Orchestrates all source adapters with per-source timeout and health tracking
  */
 import type { SourceRecord, SignalRecord, SourceAdapter } from "../sources/types";
 
@@ -21,6 +21,8 @@ export interface CollectResult {
   endedAt: string;
   totalSignals: number;
   sourceResults: SourceResult[];
+  sourceHealth: SourceHealth[];
+  overallStatus: "PASS" | "PARTIAL_PASS" | "WARN" | "FAIL";
 }
 
 export interface SourceResult {
@@ -30,6 +32,32 @@ export interface SourceResult {
   error?: string;
   durationMs: number;
   success: boolean;
+}
+
+export interface SourceHealth {
+  source_name: string;
+  source_type: string;
+  status: "success" | "partial" | "timeout" | "failed" | "skipped";
+  signal_count: number;
+  started_at: string;
+  ended_at: string;
+  duration_ms: number;
+  error_summary?: string;
+  last_success_at?: string | null;
+}
+
+const PER_SOURCE_TIMEOUT_MS = 35000;
+const OVERALL_TIMEOUT_MS = 240000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`timeout after ${ms}ms`));
+    }, ms);
+    promise
+      .then((val) => { clearTimeout(timer); resolve(val); })
+      .catch((err) => { clearTimeout(timer); reject(err); });
+  });
 }
 
 export async function collectSignals(after?: Date): Promise<CollectResult> {
@@ -49,17 +77,28 @@ export async function collectSignals(after?: Date): Promise<CollectResult> {
   ];
 
   const sourceResults: SourceResult[] = [];
+  const sourceHealth: SourceHealth[] = [];
+
+  const overallTimer = setTimeout(() => {
+    console.warn(`[collect] OVERALL TIMEOUT (${OVERALL_TIMEOUT_MS}ms) approaching — remaining sources may be skipped`);
+  }, OVERALL_TIMEOUT_MS - 15000);
 
   for (const adapter of adapters) {
+    const sourceStart = new Date().toISOString();
     const start = Date.now();
+    let status: SourceHealth["status"] = "success";
+    let errorSummary: string | undefined;
+    let signalCount = 0;
+
     try {
-      console.log(`[collect] Fetching from ${adapter.sourceName}...`);
-      const sourceRecords = await adapter.fetch(after);
+      console.log(`[collect] Fetching from ${adapter.sourceName} (timeout: ${PER_SOURCE_TIMEOUT_MS}ms)...`);
+      const sourceRecords = await withTimeout(adapter.fetch(after), PER_SOURCE_TIMEOUT_MS, adapter.sourceName);
       const signalRecords = sourceRecords
         .flatMap(record => adapter.normalize(record))
         .filter(s => s.title && s.summary);
 
       const durationMs = Date.now() - start;
+      signalCount = signalRecords.length;
       sourceResults.push({
         adapter,
         sourceRecords,
@@ -71,7 +110,14 @@ export async function collectSignals(after?: Date): Promise<CollectResult> {
     } catch (err: unknown) {
       const durationMs = Date.now() - start;
       const error = (err as Error).message;
-      console.warn(`[collect] ${adapter.sourceName} failed: ${error}`);
+      errorSummary = error;
+      if (error.includes("timeout")) {
+        status = "timeout";
+        console.warn(`[collect] ${adapter.sourceName} TIMEOUT after ${durationMs}ms`);
+      } else {
+        status = "failed";
+        console.warn(`[collect] ${adapter.sourceName} FAILED: ${error} (${durationMs}ms)`);
+      }
       sourceResults.push({
         adapter,
         sourceRecords: [],
@@ -81,10 +127,38 @@ export async function collectSignals(after?: Date): Promise<CollectResult> {
         success: false,
       });
     }
+
+    const sourceEnd = new Date().toISOString();
+    sourceHealth.push({
+      source_name: adapter.sourceName,
+      source_type: adapter.sourceType,
+      status: signalCount > 0 ? "success" : status,
+      signal_count: signalCount,
+      started_at: sourceStart,
+      ended_at: sourceEnd,
+      duration_ms: Date.now() - start,
+      error_summary: errorSummary,
+      last_success_at: null,
+    });
   }
 
+  clearTimeout(overallTimer);
   const endedAt = new Date().toISOString();
   const totalSignals = sourceResults.reduce((sum, r) => sum + r.signalRecords.length, 0);
+  const successCount = sourceResults.filter(r => r.success && r.signalRecords.length > 0).length;
+  const failCount = sourceResults.filter(r => !r.success).length;
+  const timeoutCount = sourceResults.filter(r => r.error?.includes("timeout")).length;
+
+  let overallStatus: CollectResult["overallStatus"] = "FAIL";
+  if (successCount >= 3) {
+    overallStatus = failCount === 0 ? "PASS" : "PARTIAL_PASS";
+  } else if (successCount > 0) {
+    overallStatus = "PARTIAL_PASS";
+  } else if (totalSignals > 0) {
+    overallStatus = "WARN";
+  } else {
+    overallStatus = "FAIL";
+  }
 
   return {
     runId,
@@ -92,6 +166,8 @@ export async function collectSignals(after?: Date): Promise<CollectResult> {
     endedAt,
     totalSignals,
     sourceResults,
+    sourceHealth,
+    overallStatus,
   };
 }
 

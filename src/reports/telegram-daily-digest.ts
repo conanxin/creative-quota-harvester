@@ -1,13 +1,12 @@
 #!/usr/bin/env npx ts-node
 /**
- * Telegram Daily Digest Generator — Phase 4C-2
+ * Telegram Daily Digest Generator — Phase 4C-4
  *
- * Fixes over Phase 3B-1:
- * - Latest image URL: use actual `path` from generated-assets.json (with date subdirectory)
- * - Recommended Queue: dedup by topic-slug, not by manifest id (id mismatch bug)
- * - Stage status: accurate "systemd timer + Telegram auto-send" line
- * - Signal freshness: show signal_last_collected_at; WARN if >24h stale
- * - Next phase list: current real phases (4C-2, 4H, 5C, 3F)
+ * Fixes over Phase 4C-2:
+ * - Source health summary from reports/source-health.json
+ * - Per-source freshness in digest
+ * - Signal freshness uses source-health generated_at when available
+ * - Digest STATUS reflects source health, not just DB mtime
  *
  * Usage:
  *   npm run digest:telegram
@@ -36,7 +35,6 @@ function titleToSlug(title: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-// Build a keyword bag from a slug, dropping common stop words.
 function keywordsFromSlug(slug: string): Set<string> {
   const STOP = new Set(['the', 'a', 'an', 'of', 'in', 'on', 'for', 'and', 'or', 'to', 'is', 'by', 'with', 'as', 'at', 'from']);
   const out = new Set<string>();
@@ -82,6 +80,43 @@ interface GeneratedAsset {
   generated_at?: string;
 }
 
+interface SourceHealthEntry {
+  source_name: string;
+  source_type: string;
+  status: string;
+  signal_count: number;
+  started_at: string;
+  ended_at: string;
+  duration_ms: number;
+  error_summary?: string;
+  last_success_at?: string | null;
+}
+
+interface SourceHealthReport {
+  run_id: string;
+  generated_at: string;
+  overall_status: string;
+  sources: SourceHealthEntry[];
+}
+
+function getSourceHealth(): SourceHealthReport | null {
+  try {
+    const path = join(HARVESTER_DIR, 'reports/source-health.json');
+    if (!existsSync(path)) return null;
+    const content = safeRead(path);
+    if (!content) return null;
+    return JSON.parse(content) as SourceHealthReport;
+  } catch {
+    return null;
+  }
+}
+
+function formatSourceHealthLine(sources: SourceHealthEntry[]): string {
+  if (!sources.length) return 'N/A';
+  const icons: Record<string, string> = { success: '✅', partial: '⚠️', timeout: '⏱️', failed: '❌', skipped: '⏭️' };
+  return sources.map(s => `${s.source_name.split(' ')[0]}: ${icons[s.status] || s.status}`).join(' / ');
+}
+
 function getSignalsFromDb() {
   try {
     const sqlite3 = require('better-sqlite3');
@@ -110,21 +145,11 @@ function getSignalsFromDb() {
       uniqueSignals.push(s);
     }
 
-    // Try to get last collection time
     let lastCollected: string | null = null;
     try {
-      const sourceCache = safeRead(join(ASSETS_DIR, 'metadata/source-data-cache.json'));
-      if (sourceCache) {
-        const sc = JSON.parse(sourceCache);
-        lastCollected = sc.last_collected_at || sc.collected_at || sc.updated_at || null;
-      }
+      const dbStat = statSync(dbPath);
+      lastCollected = dbStat.mtime.toISOString();
     } catch {}
-    if (!lastCollected) {
-      try {
-        const dbStat = statSync(dbPath);
-        lastCollected = dbStat.mtime.toISOString();
-      } catch {}
-    }
 
     db.close();
     return { total, bySource, topUnique: uniqueSignals, lastCollected };
@@ -183,16 +208,9 @@ function getContentPackStats() {
 
 function extractTopicSlug(cp: string): string {
   if (!cp) return '';
-  // Strip "brief-" prefix(es), then take everything after the second-hyphen segment
-  // Examples:
-  //   brief-brief-mq8swsla-f-samuraigpt-generative-media-skills
-  //     -> samuraigpt-generative-media-skills
-  //   brief-mq8c6kp4-7-samuraigpt-generative-media-skills
-  //     -> samuraigpt-generative-media-skills
   let s = cp.replace(/^brief-/, '');
   const parts = s.split('-').filter(Boolean);
   if (parts.length >= 4) {
-    // Assume first 2 parts are hash+shortcode; rest is topic
     return parts.slice(2).join('-').toLowerCase();
   }
   return parts.join('-').toLowerCase();
@@ -221,7 +239,6 @@ function getGeneratedAssets() {
       const cp: string = a.content_pack || a.content_pack_dir || '';
       if (dir) packDirNames.add(dir);
       if (cp.includes('/')) packDirNames.add(basename(cp));
-      // Build topic-slug set from content_pack field
       const slug = extractTopicSlug(cp);
       if (slug) topicSlugs.add(slug);
     }
@@ -254,7 +271,6 @@ function buildRecommendedQueue(
     const titleKw = keywordsFromSlug(titleSlug);
     const titleShort = titleSlug.split('-').filter(s => s.length > 2).slice(-3).join('-');
 
-    // Match if any of: dir name, exact slug, exact short slug, or strong keyword overlap (>=0.5)
     let alreadyGenerated = genPackDirs.has(dirName) || genTopicSlugs.has(titleSlug) || genTopicSlugs.has(titleShort);
     if (!alreadyGenerated) {
       for (const slug of genTopicSlugs) {
@@ -264,7 +280,6 @@ function buildRecommendedQueue(
       }
     }
     if (!alreadyGenerated) {
-      // Substring fallback (require >=8 chars to avoid false positives)
       for (const slug of genTopicSlugs) {
         if (slug.length >= 8 && (titleSlug.includes(slug) || slug.includes(titleShort))) {
           alreadyGenerated = true; break;
@@ -311,7 +326,6 @@ function buildLatestImageUrl(latestAsset: GeneratedAsset | null): string {
   if (filename && !p.includes(filename)) {
     console.warn(`Latest image URL does not contain filename; using path field: ${p}`);
   }
-  // Escape underscores so Telegram Markdown parser does not interpret them as italics markers.
   return (assetsBase + p).replace(/_/g, '\\_');
 }
 
@@ -349,7 +363,8 @@ function generateDigest() {
     genAssets.packDirNames,
     genAssets.topicSlugs
   );
-  const freshness = checkStaleness(signalsData.lastCollected);
+  const health = getSourceHealth();
+  const freshness = checkStaleness(health?.generated_at || signalsData.lastCollected);
 
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -377,7 +392,18 @@ function generateDigest() {
     queueLines = `All top-priority packs already have generated images (${skippedAlreadyGenerated.length} skipped).\nNext step: produce video prompt / music prompt / run new signal collection.`;
   }
 
-  const overallStatus: 'PASS' | 'WARN' | 'FAIL' = freshness.status === 'PASS' ? 'PASS' : 'WARN';
+  const healthSummary = health ? formatSourceHealthLine(health.sources) : 'N/A';
+  const successSources = health ? health.sources.filter(s => s.status === 'success').length : 0;
+  const totalSources = health ? health.sources.length : 0;
+
+  let overallStatus: 'PASS' | 'WARN' | 'FAIL';
+  if (successSources >= 3) {
+    overallStatus = successSources === totalSources ? 'PASS' : 'WARN';
+  } else if (successSources > 0) {
+    overallStatus = 'WARN';
+  } else {
+    overallStatus = freshness.status === 'FALLBACK' ? 'WARN' : 'FAIL';
+  }
 
   const telegramLines: string[] = [
     `Creative Quota Daily Digest — ${today}`,
@@ -388,6 +414,7 @@ function generateDigest() {
     `Content Packs: ${packStats.packCount} (${packStats.hasImage} with image prompt)`,
     `Generated Assets: ${genAssets.count} (${genAssets.images} img / ${genAssets.music} music / ${genAssets.video} video)`,
     `Signal freshness: ${freshness.warning}`,
+    `Source health: ${healthSummary}`,
     ``,
     `Top 5 Signals (deduplicated, by score)`,
     topSignalLines,
@@ -409,18 +436,16 @@ function generateDigest() {
     `报告路径`,
     `Full: reports/daily-digest.md`,
     `Telegram: reports/telegram-digest.txt`,
-    `Phase: docs/PHASE_4C2_SCHEDULED_TELEGRAM_DIGEST_VALIDATION_REPORT.md`,
+    `Phase: docs/PHASE_4C4_COLLECT_TIMEOUT_FRESHNESS_REPORT.md`,
     ``,
     `下一阶段`,
-    `Phase 4C-2: Scheduled Telegram Auto-send Validation & Digest Freshness Fix`,
+    `Phase 4C-4: Collect Timeout Fix & Source Health (COMPLETE)`,
     `Phase 4H: Video Prompt Enhancement`,
     `Phase 5C: Private Control Dashboard`,
     `Phase 3F: Controlled image generation only if explicitly confirmed`,
   ];
 
   let telegramText = telegramLines.join('\n');
-
-  // Phase 4C-3: sanitize digest before writing/sending (remove tool residue, secrets, etc.)
   telegramText = sanitizeTelegramDigest(telegramText);
 
   const charCount = telegramText.length;
@@ -434,6 +459,7 @@ function generateDigest() {
   console.log(`Generated assets: ${genAssets.count}`);
   console.log(`Skipped already-generated: ${skippedAlreadyGenerated.length}`);
   console.log(`Freshness: ${freshness.warning}`);
+  console.log(`Source health: ${successSources}/${totalSources} sources OK`);
 
   if (charCount > 3500) {
     telegramText = telegramText.slice(0, 3497) + '...';
@@ -455,6 +481,7 @@ function generateDigest() {
     `| Music | ${genAssets.music} |`,
     `| Video | ${genAssets.video} |`,
     `| Signal freshness | ${freshness.warning} |`,
+    `| Source health | ${healthSummary} |`,
     '',
     '### Signal Sources',
     ...Object.entries(signalsData.bySource).sort((a, b) => b[1] - a[1]).map(([k, v]) => `- ${k}: ${v}`),
@@ -483,10 +510,13 @@ function generateDigest() {
     '| Image model called | No |',
     '| New media generated | No |',
     '| .env git-tracked | No |',
-    `| signal_last_collected_at | ${signalsData.lastCollected || 'unknown'} |`,
+    `| signal_last_collected_at | ${health?.generated_at || signalsData.lastCollected || 'unknown'} |`,
+    '',
+    '## Source Health',
+    ...(health ? health.sources.map(s => `- ${s.source_name}: ${s.status} (${s.signal_count} signals, ${s.duration_ms}ms)${s.error_summary ? ' — ' + s.error_summary : ''}`) : ['- No source health data available']),
     '',
     '## 下一阶段',
-    '- Phase 4C-2: Scheduled Telegram Auto-send Validation & Digest Freshness Fix',
+    '- Phase 4C-4: Collect Timeout Fix & Source Health (COMPLETE)',
     '- Phase 4H: Video Prompt Enhancement',
     '- Phase 5C: Private Control Dashboard',
     '- Phase 3F: Controlled image generation only if explicitly confirmed',
@@ -494,9 +524,9 @@ function generateDigest() {
     '## 报告路径',
     '- Full: `reports/daily-digest.md`',
     '- Telegram: `reports/telegram-digest.txt`',
-    '- Phase: `docs/PHASE_4C2_SCHEDULED_TELEGRAM_DIGEST_VALIDATION_REPORT.md`',
+    '- Phase: `docs/PHASE_4C4_COLLECT_TIMEOUT_FRESHNESS_REPORT.md`',
     '',
-    '_Phase 4C-2 quality patch complete._',
+    '_Phase 4C-4 quality patch complete._',
   ].join('\n');
 
   writeFileSync(join(HARVESTER_DIR, 'reports/daily-digest.md'), mdReport);

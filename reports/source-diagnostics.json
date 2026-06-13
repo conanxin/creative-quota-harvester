@@ -1,0 +1,86 @@
+{
+  "generated_at": "2026-06-13T03:17:44.381Z",
+  "sources": [
+    {
+      "source": "arXiv AI",
+      "type": "academic",
+      "reachable": true,
+      "status": 200,
+      "durationMs": 1640,
+      "error": null,
+      "curlFallback": false
+    },
+    {
+      "source": "GitHub Open Source Radar",
+      "type": "code",
+      "reachable": true,
+      "status": 200,
+      "durationMs": 981,
+      "error": null,
+      "curlFallback": false
+    },
+    {
+      "source": "Hacker News",
+      "type": "dev-community",
+      "reachable": true,
+      "status": 200,
+      "durationMs": 2866,
+      "error": null,
+      "curlFallback": false
+    },
+    {
+      "source": "GDELT",
+      "type": "news",
+      "reachable": true,
+      "status": 200,
+      "durationMs": 6203,
+      "error": null,
+      "curlFallback": false
+    },
+    {
+      "source": "Hugging Face Hub",
+      "type": "ai-ecosystem",
+      "reachable": true,
+      "status": 200,
+      "durationMs": 2202,
+      "error": null,
+      "curlFallback": true
+    },
+    {
+      "source": "Open-Meteo",
+      "type": "context",
+      "reachable": true,
+      "status": 200,
+      "durationMs": 1531,
+      "error": null,
+      "curlFallback": false
+    },
+    {
+      "source": "The Met Collection",
+      "type": "culture-art",
+      "reachable": true,
+      "status": 200,
+      "durationMs": 866,
+      "error": null,
+      "curlFallback": false
+    },
+    {
+      "source": "Date Context",
+      "type": "context",
+      "reachable": true,
+      "status": 200,
+      "durationMs": 0,
+      "error": null,
+      "curlFallback": false
+    },
+    {
+      "source": "Solar Terms",
+      "type": "context",
+      "reachable": true,
+      "status": 200,
+      "durationMs": 0,
+      "error": null,
+      "curlFallback": false
+    }
+  ]
+}

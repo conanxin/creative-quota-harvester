@@ -31,7 +31,7 @@ async function main() {
   // ── Stage 1: Collect signals from all adapters ──────────
   console.log("[Stage 1] Collecting signals from all sources...");
   const collectResult = await collectSignals();
-  const { runId, startedAt, endedAt, totalSignals, sourceResults } = collectResult;
+  const { runId, startedAt, endedAt, totalSignals, sourceResults, overallStatus } = collectResult;
 
   console.log(`[Stage 1] Collected ${totalSignals} total signals from ${sourceResults.length} sources`);
   console.log("");
@@ -53,7 +53,8 @@ async function main() {
   console.log("[Stage 4] Writing to SQLite...");
   store.insertRun(runId);
 
-  // Insert source stats
+  // Insert source stats and health
+  const healthEntries: any[] = [];
   for (const result of sourceResults) {
     const adapter = result.adapter;
     const count = result.signalRecords.length;
@@ -68,7 +69,44 @@ async function main() {
     if (count > 0) {
       store.updateSourceStats(adapter.sourceType, count);
     }
+    healthEntries.push({
+      source_name: adapter.sourceName,
+      source_type: adapter.sourceType,
+      status: result.success ? (count > 0 ? "success" : "partial") : (result.error?.includes("timeout") ? "timeout" : "failed"),
+      signal_count: count,
+      started_at: startedAt,
+      ended_at: endedAt,
+      duration_ms: result.durationMs,
+      error_summary: result.error || undefined,
+      last_success_at: result.success ? endedAt : null,
+    });
   }
+
+  // Write source health JSON
+  const healthPath = path.join(REPORTS_DIR, "source-health.json");
+  fs.writeFileSync(healthPath, JSON.stringify({
+    run_id: runId,
+    generated_at: endedAt,
+    overall_status: collectResult.overallStatus,
+    sources: healthEntries,
+  }, null, 2), "utf-8");
+
+  // Write source health MD
+  const healthMdPath = path.join(REPORTS_DIR, "source-health.md");
+  const healthMdLines = [
+    "# Source Health Report",
+    `**Run ID:** ${runId}`,
+    `**Generated:** ${endedAt}`,
+    `**Overall Status:** ${collectResult.overallStatus}`,
+    "",
+    "| Source | Type | Status | Signals | Duration | Error |",
+    "|--------|------|--------|---------|----------|-------|",
+    ...healthEntries.map((h: any) => `| ${h.source_name} | ${h.source_type} | ${h.status} | ${h.signal_count} | ${h.duration_ms}ms | ${h.error_summary || ""} |`),
+    "",
+  ];
+  fs.writeFileSync(healthMdPath, healthMdLines.join("\n"), "utf-8");
+
+  console.log(`[Stage 4] Source health written: ${healthPath}`);
 
   // Insert all scored signals
   for (const signal of scored) {
@@ -92,7 +130,7 @@ async function main() {
     attempted: sourceResults.length,
     succeeded: successCount,
     failed: failCount,
-    status: scored.length > 0 ? "completed" : "no_signals",
+    status: scored.length > 0 ? (overallStatus === "PASS" ? "completed" : "partial") : "no_signals",
   });
 
   const finalCount = store.getTotalSignalCount(runId);

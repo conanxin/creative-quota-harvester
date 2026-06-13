@@ -2,10 +2,11 @@ Creative Quota Daily Digest — 2026-06-13
 STATUS: WARN
 
 今日输入
-Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11))
+Signals: 457 (code(165) / ai-ecosystem(96) / academic(80) / dev-community(57) / culture-art(42) / context(17))
 Content Packs: 25 (25 with image prompt)
 Generated Assets: 5 (5 img / 0 music / 0 video)
-Signal freshness: WARN — signals last collected 55h ago (>24h, fallback to previous data)
+Signal freshness: PASS — signals last collected 0h ago
+Source health: arXiv: ✅ / GitHub: ⏱️ / Hacker: ⚠️ / GDELT: ⚠️ / Hugging: ⏱️ / Open-Meteo: ✅ / Date: ✅ / Solar: ✅ / The: ✅
 
 Top 5 Signals (deduplicated, by score)
 1. SamurAIGPT/Generative-Media-Skills
@@ -41,10 +42,10 @@ New media generated: No
 报告路径
 Full: reports/daily-digest.md
 Telegram: reports/telegram-digest.txt
-Phase: docs/PHASE_4C2_SCHEDULED_TELEGRAM_DIGEST_VALIDATION_REPORT.md
+Phase: docs/PHASE_4C4_COLLECT_TIMEOUT_FRESHNESS_REPORT.md
 
 下一阶段
-Phase 4C-2: Scheduled Telegram Auto-send Validation & Digest Freshness Fix
+Phase 4C-4: Collect Timeout Fix & Source Health (COMPLETE)
 Phase 4H: Video Prompt Enhancement
 Phase 5C: Private Control Dashboard
 Phase 3F: Controlled image generation only if explicitly confirmed

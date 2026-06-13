@@ -92,13 +92,13 @@ async function main() {
   console.log('=== Manual Daily Digest Run ===');
   console.log(`Start: ${startTime}\n`);
 
-  // Step 1: collect
-  console.log('[Step 1/4] Running npm run collect...');
-  const collectResult = execCmd('npm run collect', HARVESTER_DIR);
+  // Step 1: collect (force fresh)
+  console.log('[Step 1/4] Running npm run collect:fresh...');
+  const collectResult = execCmd('npm run collect:fresh', HARVESTER_DIR);
   if (collectResult.code !== 0) {
-    console.warn('[WARN] collect had issues:', collectResult.stderr.slice(0, 200));
+    console.warn('[WARN] collect:fresh had issues:', collectResult.stderr.slice(0, 200));
   } else {
-    console.log('[OK] collect complete');
+    console.log('[OK] collect:fresh complete');
   }
 
   // Step 2: briefs

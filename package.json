@@ -9,6 +9,8 @@
     "build": "tsc",
     "run-once": "npx ts-node scripts/run-once.ts",
     "collect": "npx ts-node scripts/collect.ts",
+    "collect:diagnose": "npx ts-node scripts/collect-diagnose.ts",
+    "collect:fresh": "npx ts-node scripts/collect-fresh.ts",
     "report": "npx ts-node scripts/collect.ts",
     "briefs": "npx ts-node scripts/generate-briefs.ts",
     "validate:assets": "npx ts-node scripts/validate-assets.ts",

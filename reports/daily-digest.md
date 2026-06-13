@@ -1,26 +1,27 @@
 # Creative Quota Daily Digest
-**Generated:** 2026-06-13T00:36:22.930Z
+**Generated:** 2026-06-13T03:21:52.999Z
 **STATUS:** WARN
 
 ## 今日输入
 | 指标 | 数值 |
 |------|------|
-| Signals (DB) | 298 |
+| Signals (DB) | 457 |
 | Content Packs | 25 |
 | Packs with image prompt | 25 |
 | Generated Assets | 5 |
 | Images | 5 |
 | Music | 0 |
 | Video | 0 |
-| Signal freshness | WARN — signals last collected 55h ago (>24h, fallback to previous data) |
+| Signal freshness | PASS — signals last collected 0h ago |
+| Source health | arXiv: ✅ / GitHub: ⏱️ / Hacker: ⚠️ / GDELT: ⚠️ / Hugging: ⏱️ / Open-Meteo: ✅ / Date: ✅ / Solar: ✅ / The: ✅ |
 
 ### Signal Sources
-- code: 110
-- ai-ecosystem: 66
-- dev-community: 43
-- academic: 40
-- culture-art: 28
-- context: 11
+- code: 165
+- ai-ecosystem: 96
+- academic: 80
+- dev-community: 57
+- culture-art: 42
+- context: 17
 
 ## Top 5 Signals (deduplicated)
 1. **SamurAIGPT/Generative-Media-Skills** — code (score: 0.703)
@@ -52,10 +53,21 @@ Next step: produce video prompt / music prompt / run new signal collection.
 | Image model called | No |
 | New media generated | No |
 | .env git-tracked | No |
-| signal_last_collected_at | 2026-06-10T17:14:07.976Z |
+| signal_last_collected_at | 2026-06-13T03:21:05.004Z |
+
+## Source Health
+- arXiv AI: success (20 signals, 18468ms)
+- GitHub Open Source Radar: timeout (0 signals, 35003ms) — timeout after 35000ms
+- Hacker News: partial (0 signals, 10490ms)
+- GDELT: partial (0 signals, 22048ms)
+- Hugging Face Hub: timeout (0 signals, 35003ms) — timeout after 35000ms
+- Open-Meteo: success (1 signals, 944ms)
+- Date Context: success (1 signals, 1ms)
+- Solar Terms: success (1 signals, 0ms)
+- The Met Collection: success (7 signals, 34749ms)
 
 ## 下一阶段
-- Phase 4C-2: Scheduled Telegram Auto-send Validation & Digest Freshness Fix
+- Phase 4C-4: Collect Timeout Fix & Source Health (COMPLETE)
 - Phase 4H: Video Prompt Enhancement
 - Phase 5C: Private Control Dashboard
 - Phase 3F: Controlled image generation only if explicitly confirmed
@@ -63,6 +75,6 @@ Next step: produce video prompt / music prompt / run new signal collection.
 ## 报告路径
 - Full: `reports/daily-digest.md`
 - Telegram: `reports/telegram-digest.txt`
-- Phase: `docs/PHASE_4C2_SCHEDULED_TELEGRAM_DIGEST_VALIDATION_REPORT.md`
+- Phase: `docs/PHASE_4C4_COLLECT_TIMEOUT_FRESHNESS_REPORT.md`
 
-_Phase 4C-2 quality patch complete._
+_Phase 4C-4 quality patch complete._
