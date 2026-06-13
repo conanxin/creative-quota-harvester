@@ -1,7 +1,7 @@
 {
   "version": "0.4.0",
   "phase": "5C-4",
-  "generated_at": "2026-06-13T12:46:40Z",
+  "generated_at": "2026-06-13T12:59:51Z",
   "total_commands": 79,
   "classified": 79,
   "needs_policy_review": 0,
@@ -14,7 +14,8 @@
   "execution_mode_counts": {
     "safe_readonly": 7,
     "dry_run_only": 66,
-    "disabled": 6
+    "confirmed_low_risk": 5,
+    "disabled": 1
   },
   "source_counts": {
     "package-script": 72,
@@ -57,8 +58,8 @@
     {
       "mode": "safe_readonly",
       "count": 7,
-      "can_real_execute": true,
-      "description": "Read-only queries. No side effects. Can execute in future."
+      "can_real_execute": false,
+      "description": "Read-only queries. No side effects. Cannot execute directly (use safe-readonly API instead)."
     },
     {
       "mode": "dry_run_only",
@@ -67,10 +68,50 @@
       "description": "Dry-run only. Simulation without execution."
     },
     {
+      "mode": "confirmed_low_risk",
+      "count": 5,
+      "can_real_execute": true,
+      "description": "Confirmed low-risk execution. Requires explicit confirmation phrase. 5 canary commands only."
+    },
+    {
       "mode": "disabled",
-      "count": 6,
+      "count": 1,
       "can_real_execute": false,
       "description": "Disabled. Cannot execute in any mode."
+    }
+  ],
+  "real_execution_supported_count": 5,
+  "confirmed_low_risk_count": 5,
+  "confirmed_low_risk_enabled": [
+    {
+      "id": "dashboard_control_drift-check",
+      "label_zh": "Dashboard: Control: Drift-check",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "dashboard_policy_validate",
+      "label_zh": "Dashboard: Policy: Validate",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_control-server",
+      "label_zh": "Validate: Control-server",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_control-readonly-actions",
+      "label_zh": "Validate: Control-readonly-actions",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_control-actions-dry-run",
+      "label_zh": "Validate: Control-actions-dry-run",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
     }
   ],
   "future_execution_candidates": [
@@ -592,5 +633,5 @@
       "reason": "execution_mode=disabled"
     }
   ],
-  "notes": "Phase 5C-4 Policy Review. All commands classified. No commands need policy review. High/danger/media/timer commands never execute from public UI. Safe/medium commands may be candidates for future confirmed execution."
+  "notes": "Phase 5C-4 Policy Review + 5C-2C-A Canary. All commands classified. 5 confirmed_low_risk commands enabled for real execution. No commands need policy review. High/danger/media/timer/disabled commands never execute from public UI. Safe/medium dry_run_only commands may be candidates for future confirmed execution."
 }

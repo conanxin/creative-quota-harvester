@@ -66,7 +66,7 @@ for (const re of FORBIDDEN) {
 if (!anyForbidden) pass(`policy-review.json: no secrets / tokens / [truncated]`);
 
 // Required fields
-const requiredTop = ["version", "phase", "generated_at", "total_commands", "classified", "needs_policy_review", "risk_counts", "execution_mode_counts", "source_counts", "all_commands_reviewed", "future_execution_candidates", "never_execute"];
+const requiredTop = ["version", "phase", "generated_at", "total_commands", "classified", "needs_policy_review", "risk_counts", "execution_mode_counts", "source_counts", "all_commands_reviewed", "future_execution_candidates", "never_execute", "real_execution_supported_count", "confirmed_low_risk_count", "confirmed_low_risk_enabled"];
 for (const f of requiredTop) {
   if (review[f] === undefined) {
     fail(`policy-review.json missing field: ${f}`);
@@ -115,13 +115,41 @@ if (riskSum === review.total_commands) {
   fail(`risk_counts sum = ${riskSum} !== total_commands = ${review.total_commands}`);
 }
 
-// execution_mode_counts sum === total
-const modeSum = (review.execution_mode_counts?.safe_readonly || 0) + (review.execution_mode_counts?.dry_run_only || 0) + (review.execution_mode_counts?.disabled || 0);
+// execution_mode_counts sum === total (includes confirmed_low_risk)
+const modeSum = (review.execution_mode_counts?.safe_readonly || 0) + (review.execution_mode_counts?.dry_run_only || 0) + (review.execution_mode_counts?.confirmed_low_risk || 0) + (review.execution_mode_counts?.disabled || 0);
 if (modeSum === review.total_commands) {
   pass(`execution_mode_counts sum = ${modeSum} === total_commands`);
 } else {
   fail(`execution_mode_counts sum = ${modeSum} !== total_commands = ${review.total_commands}`);
 }
+
+// real_execution_supported_count must equal confirmed_low_risk_count
+if (review.real_execution_supported_count === review.confirmed_low_risk_count) {
+  pass(`real_execution_supported_count (${review.real_execution_supported_count}) === confirmed_low_risk_count (${review.confirmed_low_risk_count})`);
+} else {
+  fail(`real_execution_supported_count (${review.real_execution_supported_count}) !== confirmed_low_risk_count (${review.confirmed_low_risk_count})`);
+}
+
+// confirmed_low_risk_count must be 5 (Phase 5C-2C-A canary)
+if (review.confirmed_low_risk_count === 5) {
+  pass(`confirmed_low_risk_count === 5 (Phase 5C-2C-A canary)`);
+} else {
+  fail(`confirmed_low_risk_count === ${review.confirmed_low_risk_count} (expected 5)`);
+}
+
+// confirmed_low_risk_enabled commands must all be safe, no model/media/timer, require confirm
+let confirmedOk = true;
+for (const c of review.confirmed_low_risk_enabled || []) {
+  if ((c.risk || "").toLowerCase() !== "safe") {
+    fail(`confirmed_low_risk ${c.id}: risk=${c.risk} (expected safe)`);
+    confirmedOk = false;
+  }
+  if (!c.confirmation_phrase || c.confirmation_phrase === "") {
+    fail(`confirmed_low_risk ${c.id}: missing confirmation_phrase`);
+    confirmedOk = false;
+  }
+}
+if (confirmedOk) pass(`confirmed_low_risk_enabled: all safe, all have confirmation_phrase`);
 
 // source_counts sum === total
 const sourceSum = (review.source_counts?.["package-script"] || 0) + (review.source_counts?.manual || 0) + (review.source_counts?.generated || 0);
@@ -146,15 +174,78 @@ for (const c of review.future_execution_candidates || []) {
 }
 if (futureOk) pass("future_execution_candidates: no high/danger/media/timer");
 
-// Never execute: must contain high/danger/media/timer/disabled
-let neverOk = true;
-const highDanger = (review.risk_counts?.high || 0) + (review.risk_counts?.danger || 0);
-const disabled = review.execution_mode_counts?.disabled || 0;
-const expectedNever = highDanger + disabled; // approximation
-if (review.never_execute.length < expectedNever) {
-  fail(`never_execute count (${review.never_execute.length}) < expected (${expectedNever})`);
-  neverOk = false;
+// Never execute: dynamic check based on catalog
+// Load catalog for precise validation
+const CATALOG_PATH = join(HARVESTER_DIR, "dashboard", "control-catalog.json");
+let catalog: any = null;
+try {
+  catalog = JSON.parse(readFileSync(CATALOG_PATH, "utf-8"));
+  pass("control-catalog.json loaded for never_execute validation");
+} catch (e: any) {
+  fail(`control-catalog.json load failed: ${e.message}`);
 }
+
+let neverOk = true;
+if (catalog) {
+  const allCmds: any[] = [];
+  for (const g of catalog.command_groups || []) {
+    for (const c of g.commands || []) allCmds.push(c);
+  }
+  
+  // Calculate expected never_execute from catalog
+  const expectedNever = allCmds.filter((c: any) => {
+    const r = (c.risk_level || "").toLowerCase();
+    return r === "high" || r === "danger" || c.calls_model || c.generates_media || c.modifies_timer || c.execution_mode === "disabled";
+  }).length;
+  
+  if (review.never_execute.length === expectedNever) {
+    pass(`never_execute count (${review.never_execute.length}) === catalog-derived expected (${expectedNever})`);
+  } else {
+    fail(`never_execute count (${review.never_execute.length}) !== expected (${expectedNever})`);
+    neverOk = false;
+  }
+  
+  // Verify real_execution_supported=true commands are in allowlist
+  const allowlistPath = join(HARVESTER_DIR, "dashboard", "control-execution-allowlist.json");
+  let allowlist: string[] = [];
+  try {
+    const al = JSON.parse(readFileSync(allowlistPath, "utf-8"));
+    allowlist = al.allowed_scripts || [];
+  } catch {}
+  
+  const realExecCmds = allCmds.filter((c: any) => c.real_execution_supported === true);
+  for (const c of realExecCmds) {
+    const scriptName = c.script_name || c.id?.replace(/_/g, ":") || c.id;
+    if (!allowlist.includes(scriptName)) {
+      fail(`real_execution_supported=true command ${c.id} not in control-execution-allowlist.json`);
+      neverOk = false;
+    }
+    if (c.risk_level !== "safe") {
+      fail(`real_execution_supported=true command ${c.id} risk_level=${c.risk_level} (expected safe)`);
+      neverOk = false;
+    }
+    if (c.execution_mode !== "confirmed_low_risk") {
+      fail(`real_execution_supported=true command ${c.id} execution_mode=${c.execution_mode} (expected confirmed_low_risk)`);
+      neverOk = false;
+    }
+    if (c.calls_model) {
+      fail(`real_execution_supported=true command ${c.id} calls_model=true`);
+      neverOk = false;
+    }
+    if (c.generates_media) {
+      fail(`real_execution_supported=true command ${c.id} generates_media=true`);
+      neverOk = false;
+    }
+    if (c.modifies_timer) {
+      fail(`real_execution_supported=true command ${c.id} modifies_timer=true`);
+      neverOk = false;
+    }
+  }
+  if (realExecCmds.length > 0) {
+    pass(`All ${realExecCmds.length} real_execution_supported=true commands validated against allowlist and safety constraints`);
+  }
+}
+
 for (const c of review.never_execute || []) {
   const r = (c.risk || "").toLowerCase();
   if (r !== "high" && r !== "danger" && !c.reason.includes("disabled") && !c.reason.includes("calls_model") && !c.reason.includes("generates_media") && !c.reason.includes("modifies_timer")) {

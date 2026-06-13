@@ -359,3 +359,191 @@ Real execution is planned for Phase 5C-2C (confirmed low-risk execution) and Pha
 ---
 
 *Runbook v4.0 — Phase 5C-4*
+
+---
+
+## Phase 5C-2C-A — Confirmed Low-risk Execution Canary
+
+Phase 5C-2C-A adds **real execution** for 5 safe validation commands only. This is the first canary for real command execution through the localhost-only control server.
+
+### What Changed
+
+- New `dashboard/control-execution-allowlist.json` — lists 5 allowed scripts:
+  - `validate:control-server`
+  - `validate:control-readonly-actions`
+  - `validate:control-actions-dry-run`
+  - `dashboard:control:drift-check`
+  - `dashboard:policy:validate`
+- New `scripts/control-action-runner.ts` — safe execution runner:
+  - `spawn("npm", ["run", scriptName], { shell: false })` — no shell, no arbitrary command injection
+  - Script name must be in allowlist
+  - Minimal environment (PATH, HOME, NODE_ENV only) — no secrets
+  - 60-second timeout with SIGTERM → SIGKILL escalation
+  - stdout/stderr truncated to 12,000 chars
+- `scripts/control-server.ts` updated:
+  - New `POST /api/action/execute-low-risk` endpoint
+  - 9-layer safety checks before execution:
+    1. action_id exists in catalog
+    2. execution_mode === "confirmed_low_risk"
+    3. real_execution_supported === true
+    4. risk_level === "safe"
+    5. calls_model === false
+    6. generates_media === false
+    7. modifies_timer === false
+    8. token matches (if configured)
+    9. confirm_phrase === "EXECUTE LOW RISK"
+- `control-policy.json` updated:
+  - 5 canary rules at top (before wildcards)
+  - `execution_mode: confirmed_low_risk`, `real_execution_supported: true`, `requires_confirm: true`
+- `control-catalog.json` updated:
+  - 5 commands marked `execution_mode: confirmed_low_risk`, `confirmation_phrase: "EXECUTE LOW RISK"`
+
+### Execution Allowlist Safety Rules
+
+| Rule | Value |
+|------|-------|
+| shell | false |
+| command | npm only |
+| args | ["run", scriptName] only |
+| cwd | project root only |
+| env | PATH, HOME, NODE_ENV only (no secrets) |
+| timeout | 60,000 ms |
+| max output | 12,000 chars |
+
+### How to Execute a Canary Command
+
+```bash
+# Start server
+cd ~/.openclaw/workspace/projects/creative-quota-harvester
+npm run control:server
+
+# Execute (dry-run first recommended)
+curl -s -X POST http://127.0.0.1:8788/api/action/execute-low-risk \
+  -H "Content-Type: application/json" \
+  -d '{"action_id":"validate_control-server","confirm_phrase":"EXECUTE LOW RISK","token":"your-secret-token"}'
+```
+
+Expected response (success):
+```json
+{
+  "action_id": "validate_control-server",
+  "real_execution": true,
+  "execution_result": {
+    "exit_code": 0,
+    "timed_out": false,
+    "duration_ms": 304,
+    "stdout_tail": "...",
+    "stderr_tail": ""
+  },
+  "message": "Execution completed successfully."
+}
+```
+
+### Why Only 5 Commands
+
+Phase 5C-2C-A is **canary only** by design:
+- Only validation scripts (no side effects)
+- No model calls, no media generation, no timer modification
+- No network calls, no file writes outside reports/
+- All 5 commands are `risk_level=safe`, `calls_model=false`, `generates_media=false`, `modifies_timer=false`
+- Expanding the allowlist requires Phase 5C-2C-B assessment
+
+### Audit Log
+
+Every execution attempt is logged to `reports/control-action-audit.jsonl`:
+
+```json
+{"ts":"2026-06-13T13:06:04.194Z","mode":"confirmed_low_risk","phase":"5C-2C-A","action_id":"validate_control-server","script_name":"validate:control-server","risk_level":"safe","confirm_ok":true,"real_execution":true,"result":"success","reason":"executed","exit_code":0,"timed_out":false,"duration_ms":304}
+```
+
+**The audit log never contains tokens or secrets.**
+
+### Files
+
+- `dashboard/control-execution-allowlist.json` — execution allowlist (new)
+- `scripts/control-action-runner.ts` — safe execution runner (new)
+- `scripts/control-server.ts` — execute-low-risk endpoint (updated)
+- `scripts/validate-control-server.ts` — validator (updated)
+- `dashboard/control-policy.json` — canary rules (updated)
+- `dashboard/control-catalog.json` — canary flags (updated)
+
+---
+
+## Phase 5C-2C-A1 — Policy Review Validation Fix
+
+Phase 5C-2C-A1 fixes the policy review infrastructure to correctly account for the 5 `confirmed_low_risk` commands introduced in Phase 5C-2C-A.
+
+### What Changed
+
+- `scripts/build-policy-review.ts` updated:
+  - Added `confirmed_low_risk` to `execution_mode_counts` (4 modes now)
+  - Added `confirmed_low_risk_enabled` array (5 commands with confirmation_phrase)
+  - Added `real_execution_supported_count` field
+  - `never_execute` now dynamically computed from catalog (not hardcoded)
+- `scripts/validate-policy-review.ts` updated:
+  - Dynamic `expectedNever` from control-catalog.json (high/danger/media/timer/disabled)
+  - `confirmed_low_risk_count === 5` invariant check
+  - `real_execution_supported=true` commands validated against allowlist
+  - All safety constraints checked (safe, no model/media/timer, confirmed_low_risk mode)
+- `scripts/validate-control-actions-dry-run.ts` updated:
+  - Allows 5 canary commands with `real_execution_supported=true` and `execution_mode=confirmed_low_risk`
+
+### Policy Review Status (After Fix)
+
+| Metric | Value |
+|---|---|
+| Total commands | 79 |
+| Classified | 79 (100%) |
+| Needs policy review | 0 |
+| Safe | 65 |
+| Medium | 12 |
+| High | 2 |
+| Danger | 0 |
+| Confirmed low-risk | 5 |
+| Future execution candidates | 71 |
+| Never execute | 3 |
+| Real execution supported | 5 |
+
+### Validation Results
+
+| Validation | Result |
+|------------|--------|
+| `dashboard:policy:validate` | PASS (34/34) |
+| `dashboard:control:drift-check` | PASS (18/18) |
+| `validate:control-actions-dry-run` | PASS (19/19) |
+| `validate:control-readonly-actions` | PASS (21/21) |
+
+### Smoke Test Results
+
+| Test | Result |
+|------|--------|
+| Health endpoint | PASS (phase=5C-2C-A, canary=true) |
+| Policy review JSON | PASS (79 commands, 5 confirmed_low_risk) |
+| Execute canary | PASS (exit_code=0, real_execution=true) |
+| Blocked generate_image_confirmed | PASS (403 Forbidden) |
+| Audit log token leak | PASS (0 leaks) |
+
+### Why This Matters
+
+Before this fix:
+- `execution_mode_counts` showed `disabled: 6` (incorrect, included 5 canary commands)
+- `never_execute` was hardcoded to `highDanger + disabled` (approximation, didn't match catalog)
+- `validate-policy-review.ts` failed because expected count didn't match actual
+
+After this fix:
+- `execution_mode_counts` correctly shows `confirmed_low_risk: 5, disabled: 1`
+- `never_execute` dynamically computed from catalog (3 commands: 2 high + 1 disabled)
+- All 34 validation checks pass
+- Policy review accurately reflects the 5 canary commands with real execution enabled
+
+### Files
+
+- `scripts/build-policy-review.ts` — updated with confirmed_low_risk support
+- `scripts/validate-policy-review.ts` — updated with dynamic validation
+- `scripts/validate-control-actions-dry-run.ts` — updated with canary exception
+- `dashboard/policy-review.json` — regenerated with correct counts
+- `dashboard/control-catalog.json` — confirmation_phrase fixed for canary commands
+
+---
+
+*Runbook v5.0 — Phase 5C-2C-A1*

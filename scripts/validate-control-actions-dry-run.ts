@@ -1,14 +1,14 @@
 #!/usr/bin/env tsx
 /**
- * scripts/validate-control-actions-dry-run.ts — Phase 5C-2A
+ * scripts/validate-control-actions-dry-run.ts — Phase 5C-2A + 5C-2C-A
  *
  * Validates the authenticated control actions dry-run framework:
  *   - control-server.ts still binds to 127.0.0.1 only
- *   - No child_process / exec / spawn in source
- *   - No real command execution logic (no exec, no spawn, no eval)
+ *   - No child_process / exec / spawn in source (control-server.ts)
+ *   - No real command execution logic in control-server.ts (dry-run only)
  *   - /api/action/dry-run endpoint exists
  *   - No /api/action/execute endpoint exists
- *   - control-catalog.json: all real_execution_supported=false
+ *   - control-catalog.json: all real_execution_supported=false, except confirmed_low_risk canary (5 commands)
  *   - high/danger actions require confirmation
  *   - audit log does not contain token (regex check)
  *   - .control.local not git-tracked
@@ -107,16 +107,27 @@ if (serverCode.includes("real_execution: false") && serverCode.includes('dry_run
   fail("control-server.ts: real_execution may not be always false");
 }
 
-// 10. control-catalog.json all real_execution_supported=false
+// 10. control-catalog.json: real_execution_supported=false for all except confirmed_low_risk canary
 if (!existsSync(CATALOG_PATH)) { fail("control-catalog.json missing"); process.exit(1); }
 const catalog = JSON.parse(readFileSync(CATALOG_PATH, "utf-8"));
 let allFalse = true;
 let highDangerRequireConfirm = true;
+const canaryIds = [
+  "validate_control-server",
+  "validate_control-readonly-actions",
+  "validate_control-actions-dry-run",
+  "dashboard_control_drift-check",
+  "dashboard_policy_validate",
+];
 for (const g of catalog.command_groups || []) {
   for (const cmd of g.commands || []) {
     if (cmd.real_execution_supported !== false) {
-      allFalse = false;
-      fail(`control-catalog.json: ${cmd.id} has real_execution_supported=${cmd.real_execution_supported}`);
+      if (canaryIds.includes(cmd.id) && cmd.execution_mode === "confirmed_low_risk") {
+        // 5C-2C-A canary: allowed
+      } else {
+        allFalse = false;
+        fail(`control-catalog.json: ${cmd.id} has real_execution_supported=${cmd.real_execution_supported} (not confirmed_low_risk canary)`);
+      }
     }
     if ((cmd.risk_level === "high" || cmd.risk_level === "danger") && !cmd.requires_confirm) {
       highDangerRequireConfirm = false;
@@ -124,7 +135,7 @@ for (const g of catalog.command_groups || []) {
     }
   }
 }
-if (allFalse) pass("control-catalog.json: all real_execution_supported=false");
+if (allFalse) pass("control-catalog.json: all real_execution_supported=false (or confirmed_low_risk canary)");
 if (highDangerRequireConfirm) pass("control-catalog.json: all high/danger require confirmation");
 
 // 11. Audit log does not contain token (if exists)

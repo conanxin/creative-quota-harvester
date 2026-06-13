@@ -502,6 +502,8 @@ https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-1
 | **Phase 5C-2C** | Confirmed low-risk command execution (with 2FA for high/danger) | After 5C-2B |
 | **Phase 5C-3** | ✅ **Auto-generated control catalog from package.json scripts** (policy-driven, drift-check, 69 scripts mapped) | After 5C-2B |
 | **Phase 5C-4** | ✅ **Policy Review UI** (auto-generated policy analysis, future execution candidates, never-execute list) | After 5C-3 |
+| **Phase 5C-2C-A** | ✅ **Confirmed low-risk execution canary** (5 safe validation scripts, spawn(shell=false), 60s timeout, 12K output) | After 5C-4 |
+| **Phase 5C-2C-A1** | ✅ **Policy review validation fix** (dynamic never_execute, confirmed_low_risk=5, allowlist validation, 34/34 PASS) | After 5C-2C-A |
 | **Phase 5D** | Lyrics-aware music prompt variants (when lyrics make sense) | After 4J |
 
 ### Long-term

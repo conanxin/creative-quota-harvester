@@ -13,6 +13,7 @@ import { join } from "path";
 
 const HARVESTER_DIR = "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester";
 const CATALOG_PATH = join(HARVESTER_DIR, "dashboard", "control-catalog.json");
+const ALLOWLIST_PATH = join(HARVESTER_DIR, "dashboard", "control-execution-allowlist.json");
 const REVIEW_PATH = join(HARVESTER_DIR, "dashboard", "policy-review.json");
 
 interface Command {
@@ -46,6 +47,7 @@ interface PolicyReview {
   execution_mode_counts: {
     safe_readonly: number;
     dry_run_only: number;
+    confirmed_low_risk: number;
     disabled: number;
   };
   source_counts: {
@@ -65,6 +67,14 @@ interface PolicyReview {
     count: number;
     can_real_execute: boolean;
     description: string;
+  }>;
+  real_execution_supported_count: number;
+  confirmed_low_risk_count: number;
+  confirmed_low_risk_enabled: Array<{
+    id: string;
+    label_zh: string;
+    risk: string;
+    confirmation_phrase: string;
   }>;
   future_execution_candidates: Array<{
     id: string;
@@ -98,7 +108,7 @@ function main() {
   const needsReview = allCommands.filter(c => c.needs_policy_review).length;
 
   const riskCounts = { safe: 0, medium: 0, high: 0, danger: 0 };
-  const modeCounts = { safe_readonly: 0, dry_run_only: 0, disabled: 0 };
+  const modeCounts = { safe_readonly: 0, dry_run_only: 0, confirmed_low_risk: 0, disabled: 0 };
   const sourceCounts = { "package-script": 0, manual: 0, generated: 0 };
 
   for (const cmd of allCommands) {
@@ -107,6 +117,7 @@ function main() {
     const m = (cmd.execution_mode || "disabled").toLowerCase();
     if (m === "safe_readonly") modeCounts.safe_readonly++;
     else if (m === "dry_run_only") modeCounts.dry_run_only++;
+    else if (m === "confirmed_low_risk") modeCounts.confirmed_low_risk++;
     else modeCounts.disabled++;
     const s = (cmd.source || "unknown") as keyof typeof sourceCounts;
     if (s in sourceCounts) sourceCounts[s]++;
@@ -133,8 +144,9 @@ function main() {
 
   // Execution matrix
   const modeMap: Record<string, { count: number; can_real_execute: boolean; description: string }> = {
-    safe_readonly: { count: 0, can_real_execute: true, description: "Read-only queries. No side effects. Can execute in future." },
+    safe_readonly: { count: 0, can_real_execute: false, description: "Read-only queries. No side effects. Cannot execute directly (use safe-readonly API instead)." },
     dry_run_only: { count: 0, can_real_execute: false, description: "Dry-run only. Simulation without execution." },
+    confirmed_low_risk: { count: 0, can_real_execute: true, description: "Confirmed low-risk execution. Requires explicit confirmation phrase. 5 canary commands only." },
     disabled: { count: 0, can_real_execute: false, description: "Disabled. Cannot execute in any mode." },
   };
   for (const cmd of allCommands) {
@@ -149,7 +161,20 @@ function main() {
     description: data.description,
   }));
 
-  // Future execution candidates: safe + medium, dry_run_only, no model/media/timer, not disabled
+  // Confirmed low-risk enabled commands (from allowlist)
+  const confirmedLowRisk = allCommands
+    .filter(cmd => cmd.execution_mode === "confirmed_low_risk" && cmd.real_execution_supported === true)
+    .map(cmd => ({
+      id: cmd.id,
+      label_zh: cmd.label_zh,
+      risk: cmd.risk_level,
+      confirmation_phrase: cmd.confirmation_phrase || "EXECUTE LOW RISK",
+    }));
+
+  const realExecutionCount = allCommands.filter(cmd => cmd.real_execution_supported === true).length;
+
+  // Future execution candidates: safe + medium, dry_run_only or safe_readonly, no model/media/timer
+  // Exclude confirmed_low_risk (they already have real execution enabled)
   const futureCandidates = allCommands
     .filter(cmd => {
       const r = (cmd.risk_level || "").toLowerCase();
@@ -168,6 +193,7 @@ function main() {
     }));
 
   // Never execute: high, danger, calls_model, generates_media, modifies_timer, or disabled
+  // Also includes confirmed_low_risk? No — they are already enabled for real execution.
   const neverExecute = allCommands
     .filter(cmd => {
       const r = (cmd.risk_level || "").toLowerCase();
@@ -193,9 +219,12 @@ function main() {
     all_commands_reviewed: needsReview === 0,
     risk_groups: riskGroups,
     execution_matrix: executionMatrix,
+    real_execution_supported_count: realExecutionCount,
+    confirmed_low_risk_count: confirmedLowRisk.length,
+    confirmed_low_risk_enabled: confirmedLowRisk,
     future_execution_candidates: futureCandidates,
     never_execute: neverExecute,
-    notes: "Phase 5C-4 Policy Review. All commands classified. No commands need policy review. High/danger/media/timer commands never execute from public UI. Safe/medium commands may be candidates for future confirmed execution.",
+    notes: "Phase 5C-4 Policy Review + 5C-2C-A Canary. All commands classified. 5 confirmed_low_risk commands enabled for real execution. No commands need policy review. High/danger/media/timer/disabled commands never execute from public UI. Safe/medium dry_run_only commands may be candidates for future confirmed execution.",
   };
 
   writeFileSync(REVIEW_PATH, JSON.stringify(review, null, 2));

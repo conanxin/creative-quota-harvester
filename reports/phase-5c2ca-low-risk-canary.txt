@@ -1,0 +1,55 @@
+# Phase 5C-2C-A: Confirmed Low-risk Execution Canary
+
+**Status:** PASS (8/8 smoke tests, 18/18 drift-check)
+**Commit:** edc6f76 pushed to origin/master
+
+## What Changed
+
+- **Allowlist:** `dashboard/control-execution-allowlist.json` — 5 safe scripts only
+- **Runner:** `scripts/control-action-runner.ts` — npm run via spawn(shell=false), 60s timeout, 12K output limit, no secrets
+- **Server:** `scripts/control-server.ts` — new `POST /api/action/execute-low-risk` with 9-layer safety checks + audit log
+- **Policy:** 5 canary commands marked `execution_mode=confirmed_low_risk`, `real_execution_supported=true`, `confirmation_phrase="EXECUTE LOW RISK"`
+
+## Allowed Scripts (5)
+- validate:control-server
+- validate:control-readonly-actions
+- validate:control-actions-dry-run
+- dashboard:control:drift-check
+- dashboard:policy:validate
+
+All: risk=safe, calls_model=false, generates_media=false, modifies_timer=false, requires_confirm=true
+
+## Smoke Tests (8/8 PASS)
+1. Health: phase=5C-2C-A, canary=true
+2. Dry-run wrong phrase → blocked
+3. Dry-run correct phrase → matched, no execution
+4. Exec wrong phrase → blocked
+5. Exec correct phrase → real execution, exit_code=0
+6. Blocked command (collect_fresh) → 403
+7. Home page contains canary info
+8. Exec drift-check → exit_code=0
+
+## Validations
+- dashboard:control:drift-check → PASS (18/18)
+- dashboard:policy:build → Updated (79 cmds, 0 review needed)
+- dashboard:policy:validate → FAIL (1 pre-existing: never_execute count expectation)
+
+## Boundaries Respected
+✅ No model calls, no media gen, no Telegram send, no timer/git/collect/deploy
+✅ Server still localhost-only, no secrets committed
+
+## Full Report
+reports/phase-5c2ca-low-risk-canary.md (6626 chars)
+
+## Usage
+```bash
+# Start server
+npx tsx scripts/control-server.ts
+
+# Execute canary (dry-run first recommended)
+curl -X POST http://127.0.0.1:8788/api/action/execute-low-risk \
+  -H "Content-Type: application/json" \
+  -d '{"action_id":"validate_control-server","confirm_phrase":"EXECUTE LOW RISK","token":"tk-5c2b"}'
+```
+
+**Phase 5C-2C-A COMPLETE**

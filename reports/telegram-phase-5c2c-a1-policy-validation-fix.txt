@@ -1,0 +1,34 @@
+Phase 5C-2C-A1: Policy Review Validation Fix
+
+Status: PASS (34/34 policy validation, 19/19 dry-run, 21/21 readonly, 18/18 drift-check)
+
+Root Cause: 5C-2C-A introduced 5 confirmed_low_risk commands with real_execution=true. Broke 3 validators that assumed real_execution=0 for all.
+
+What Changed:
+- build-policy-review.ts: added confirmed_low_risk mode, confirmed_low_risk_enabled array (5 cmds), real_execution_supported_count
+- validate-policy-review.ts: dynamic never_execute from catalog, confirmed_low_risk_count=5 check, allowlist validation for real_exec commands
+- validate-control-actions-dry-run.ts: allow 5 canary commands with real_execution=true
+- control-catalog.json: fixed confirmation_phrase to "EXECUTE LOW RISK" for 5 canary commands
+
+Before/After:
+- execution_mode_counts: disabled=6 → disabled=1 + confirmed_low_risk=5
+- never_execute: 8 → 3 (correct: 2 high + 1 disabled)
+- real_execution_supported_count: 0 → 5
+
+Validation: ALL PASS
+- dashboard:policy:validate 34/34 PASS
+- dashboard:control:drift-check 18/18 PASS
+- validate:control-actions-dry-run 19/19 PASS
+- validate:control-readonly-actions 21/21 PASS
+
+Smoke Test: PASS
+- Health: phase=5C-2C-A, canary=true
+- Execute canary: exit_code=0, real_execution=true
+- Blocked generate_image_confirmed: 403 Forbidden
+- Audit log: 0 token leaks
+
+Model calls: None. Media generated: None.
+
+Full report: reports/low-risk-execution-policy-validation-fix.md
+
+Phase 5C-2C-A1 COMPLETE
