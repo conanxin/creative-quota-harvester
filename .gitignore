@@ -1,3 +1,9 @@
+# Local control auth config (never commit real token)
+.control.local
+
+# Audit logs (never commit runtime audit data)
+reports/control-action-audit.jsonl
+
 # Dependencies
 node_modules/
 

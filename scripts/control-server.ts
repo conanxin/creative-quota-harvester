@@ -23,6 +23,32 @@ const HOST = "127.0.0.1";
 const PORT = parseInt(process.env.CQA_CONTROL_PORT || "8788", 10);
 const HARVESTER_DIR = path.resolve(__dirname, "..");
 
+// --- Phase 5C-2A: Auth config ---
+function loadControlConfig(): { token: string; actionsEnabled: boolean } {
+  const configPath = path.join(HARVESTER_DIR, ".control.local");
+  let token = "";
+  let actionsEnabled = false;
+  try {
+    const content = fs.readFileSync(configPath, "utf-8");
+    for (const line of content.split(/\r?\n/)) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith("#") || trimmed === "") continue;
+      const eq = trimmed.indexOf("=");
+      if (eq === -1) continue;
+      const key = trimmed.slice(0, eq).trim();
+      const val = trimmed.slice(eq + 1).trim();
+      if (key === "CQA_CONTROL_TOKEN") token = val;
+      if (key === "CQA_CONTROL_ENABLE_ACTIONS") actionsEnabled = val === "1" || val.toLowerCase() === "true";
+    }
+  } catch {
+    // .control.local not present — default to read-only mode
+  }
+  return { token, actionsEnabled };
+}
+
+const CONTROL_CONFIG = loadControlConfig();
+const AUDIT_LOG_PATH = path.join(HARVESTER_DIR, "reports", "control-action-audit.jsonl");
+
 const REPORTS_WHITELIST = [
   "telegram-digest.txt",
   "daily-digest.md",
@@ -162,6 +188,8 @@ function buildHomePage(): string {
       if (cmd.modifies_timer) chips.push("⏰ modifies_timer");
       if (cmd.requires_confirm) chips.push("✅ requires_confirm");
       if (!cmd.public_safe) chips.push("🔒 not_public");
+      chips.push("🧪 dry_run_only");
+      chips.push(cmd.real_execution_supported ? "❌ real_exec=true" : "✅ real_exec=false");
       const chipHtml = chips.length > 0 ? `<div class="meta-chips">${chips.map((c: string) => `<span class="chip">${c}</span>`).join(" ")}</div>` : "";
 
       const cmdHtml = `<div class="command-card risk-${riskClass}">
@@ -238,12 +266,16 @@ function buildHomePage(): string {
 <div class="container">
   <header>
     <h1>🔒 Creative Quota 私有控制台</h1>
-    <div class="subtitle">Phase 5C-1 · localhost-only private control server</div>
-    <div class="mode-badge">localhost-only · read-only · 不执行命令 · 不触发模型</div>
+    <div class="subtitle">Phase 5C-2A · localhost-only private control server · dry-run only</div>
+    <div class="mode-badge">localhost-only · read-only · dry-run only · 不执行命令 · 不触发模型</div>
   </header>
   <div class="warning-box">
     <strong>⚠️ 安全说明</strong>
-    <p>本服务器仅监听 127.0.0.1，不提供公网访问。页面内容只读，不执行任何命令。命令文本仅供手动复制。高风险命令（high / danger）需要 CQA_ALLOW_* 环境变量和显式确认。请勿公开暴露此服务。</p>
+    <p>本服务器仅监听 127.0.0.1，不提供公网访问。Phase 5C-2A 仅支持 dry-run 模拟，不执行任何命令。命令文本仅供手动复制或 dry-run 验证。高风险命令（high / danger）需要确认短语和配置 token。请勿公开暴露此服务。</p>
+  </div>
+  <div class="warning-box" style="background:#f0f9ff;border-color:#3b82f6;color:#1e40af;">
+    <strong>🧪 Phase 5C-2A 仅模拟，不执行任何命令</strong>
+    <p>Dry-run endpoint: POST /api/action/dry-run<br>所有 real_execution_supported=false。没有 /api/action/execute。</p>
   </div>
   <div class="section">
     <h2>📊 系统状态</h2>
@@ -278,7 +310,7 @@ function buildHomePage(): string {
     </div>
   </div>
   <footer>
-    <p>Creative Quota Harvester · Phase 5C-1 · localhost-only · read-only</p>
+    <p>Creative Quota Harvester · Phase 5C-2A · localhost-only · dry-run only · no real execution</p>
   </footer>
 </div>
 </body>
@@ -286,19 +318,25 @@ function buildHomePage(): string {
 }
 
 const server = http.createServer((req, res) => {
-  // Block anything that's not GET
-  if (req.method !== "GET") {
-    methodNotAllowed(res);
-    return;
-  }
-
   const parsedUrl = url.parse(req.url || "/", true);
   const pathname = parsedUrl.pathname || "/";
   const query = parsedUrl.query;
 
-  // Path traversal check
+  // Path traversal check (applies to ALL methods)
   if (pathname.includes("..") || pathname.includes("\0")) {
     badRequest(res, "Path traversal not allowed");
+    return;
+  }
+
+  // --- Phase 5C-2A: dry-run POST handler ---
+  if (pathname === "/api/action/dry-run" && req.method === "POST") {
+    handleDryRun(req, res);
+    return;
+  }
+
+  // Block anything that's not GET (for all other routes)
+  if (req.method !== "GET") {
+    methodNotAllowed(res);
     return;
   }
 
@@ -311,9 +349,11 @@ const server = http.createServer((req, res) => {
     case "/health": {
       jsonResponse(res, {
         status: "ok",
-        mode: "localhost-only-read-only",
+        mode: "localhost-only-dry-run-only",
         host: HOST,
         port: PORT,
+        actions_enabled: CONTROL_CONFIG.actionsEnabled,
+        token_configured: !!CONTROL_CONFIG.token,
         timestamp: new Date().toISOString(),
       });
       return;
@@ -413,9 +453,11 @@ server.on("error", (err) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, read-only)`);
+  console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run only)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /static/dashboard`);
+  console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
+  console.log(`[control-server] Actions enabled: ${CONTROL_CONFIG.actionsEnabled}, Token configured: ${!!CONTROL_CONFIG.token}`);
 });
 
 process.on("SIGTERM", () => {
@@ -427,3 +469,177 @@ process.on("SIGINT", () => {
   console.log("[control-server] SIGINT received, shutting down...");
   server.close(() => process.exit(0));
 });
+
+// --- Phase 5C-2A: Dry-run handler (no command execution, no child_process, no exec/spawn) ---
+function handleDryRun(req: http.IncomingMessage, res: http.ServerResponse) {
+  let body = "";
+  req.on("data", (chunk) => { body += chunk; });
+  req.on("end", () => {
+    let payload: any = {};
+    try {
+      payload = JSON.parse(body);
+    } catch {
+      badRequest(res, "Invalid JSON body");
+      return;
+    }
+
+    const actionId = String(payload.action_id || "").trim();
+    const confirmPhrase = String(payload.confirm_phrase || "").trim();
+    const token = String(payload.token || "").trim();
+
+    if (!actionId) {
+      badRequest(res, "Missing 'action_id' field");
+      return;
+    }
+
+    // Load catalog to find action metadata
+    const catalog = safeReadJson(path.join(HARVESTER_DIR, "dashboard", "control-catalog.json"), null) as any;
+    if (!catalog) {
+      notFound(res, "control-catalog.json not found");
+      return;
+    }
+
+    let foundCommand: any = null;
+    for (const g of catalog.command_groups || []) {
+      for (const cmd of g.commands || []) {
+        if (cmd.id === actionId || cmd.action_id === actionId) {
+          foundCommand = cmd;
+          break;
+        }
+      }
+      if (foundCommand) break;
+    }
+
+    if (!foundCommand) {
+      notFound(res, `Action "${actionId}" not found in catalog`);
+      writeAuditLog({
+        action_id: actionId,
+        risk_level: "unknown",
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "action_id_not_found",
+      });
+      return;
+    }
+
+    const riskLevel = (foundCommand.risk_level || "safe").toLowerCase();
+
+    // Check token if actions are enabled and token is configured
+    if (CONTROL_CONFIG.actionsEnabled && CONTROL_CONFIG.token) {
+      if (token !== CONTROL_CONFIG.token) {
+        forbidden(res, "Invalid or missing control token");
+        writeAuditLog({
+          action_id: actionId,
+          risk_level: riskLevel,
+          confirm_ok: false,
+          real_execution: false,
+          result: "blocked",
+          reason: "invalid_token",
+        });
+        return;
+      }
+    }
+
+    if (!CONTROL_CONFIG.actionsEnabled && !CONTROL_CONFIG.token) {
+      // No auth configured — read-only mode, block all dry-run attempts
+      jsonResponse(res, {
+        action_id: actionId,
+        label_zh: foundCommand.label_zh || actionId,
+        risk_level: riskLevel,
+        would_run_command: foundCommand.command || null,
+        requires_confirm: !!foundCommand.requires_confirm,
+        confirmation_phrase_expected: foundCommand.confirmation_phrase || "",
+        confirmation_status: "blocked_needs_control_config",
+        real_execution: false,
+        message: "Blocked: .control.local not configured. Add CQA_CONTROL_TOKEN to .control.local to enable dry-run mode.",
+      });
+      writeAuditLog({
+        action_id: actionId,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "control_config_missing",
+      });
+      return;
+    }
+
+    // Check confirmation phrase (all commands require it in dry-run)
+    const expectedPhrase = foundCommand.confirmation_phrase || "dry-run";
+    const confirmOk = confirmPhrase === expectedPhrase;
+
+    if (!confirmOk) {
+      jsonResponse(res, {
+        action_id: actionId,
+        label_zh: foundCommand.label_zh || actionId,
+        risk_level: riskLevel,
+        would_run_command: foundCommand.command || null,
+        requires_confirm: !!foundCommand.requires_confirm,
+        confirmation_phrase_expected: expectedPhrase,
+        confirmation_status: "mismatch",
+        real_execution: false,
+        message: `Dry-run failed: confirmation phrase mismatch. Expected: "${expectedPhrase}"`,
+      });
+      writeAuditLog({
+        action_id: actionId,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "confirm_phrase_mismatch",
+      });
+      return;
+    }
+
+    // All checks passed — dry-run success (still no real execution)
+    jsonResponse(res, {
+      action_id: actionId,
+      label_zh: foundCommand.label_zh || actionId,
+      risk_level: riskLevel,
+      would_run_command: foundCommand.command || null,
+      requires_confirm: !!foundCommand.requires_confirm,
+      confirmation_phrase_expected: expectedPhrase,
+      confirmation_status: "matched",
+      real_execution: false,
+      dry_run_only: true,
+      message: "Dry-run passed. No command executed. This is a simulation only.",
+      audit_required: !!foundCommand.audit_required,
+    });
+    writeAuditLog({
+      action_id: actionId,
+      risk_level: riskLevel,
+      confirm_ok: true,
+      real_execution: false,
+      result: "allowed_dry_run",
+      reason: "confirm_phrase_matched",
+    });
+  });
+}
+
+interface AuditEntry {
+  action_id: string;
+  risk_level: string;
+  confirm_ok: boolean;
+  real_execution: boolean;
+  result: string;
+  reason: string;
+}
+
+function writeAuditLog(entry: AuditEntry) {
+  const line = JSON.stringify({
+    ts: new Date().toISOString(),
+    mode: "dry-run",
+    action_id: entry.action_id,
+    risk_level: entry.risk_level,
+    confirm_ok: entry.confirm_ok,
+    real_execution: entry.real_execution,
+    result: entry.result,
+    reason: entry.reason,
+  }) + "\n";
+  try {
+    fs.appendFileSync(AUDIT_LOG_PATH, line);
+  } catch (err: any) {
+    console.error("[control-server] Audit log write failed:", err.message);
+  }
+}

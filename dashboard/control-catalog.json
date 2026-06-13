@@ -1,7 +1,7 @@
 {
-  "version": "0.1.0",
-  "phase": "5C-0",
-  "generated_at": "2026-06-13T05:11:00.000Z",
+  "version": "0.2.0",
+  "phase": "5C-2A",
+  "generated_at": "2026-06-13T08:27:44Z",
   "purpose": "Read-only command catalog for Creative Quota Harvester. Displays available control actions, the corresponding shell/npm commands, risk levels, and safety requirements. THIS CATALOG DOES NOT EXECUTE COMMANDS. The control.html page renders this catalog but does not include any executable buttons, fetch POST handlers, WebSockets, or other trigger mechanisms. This is intentional — the public GitHub Pages deployment is read-only by design.",
   "public_safety_model": "All commands are listed for reference only. The public catalog cannot execute any of them. Real control actions require either a localhost-only control server (Phase 5C-1) or an authenticated dashboard (Phase 5C-2). Both phases are out of scope for Phase 5C-0.",
   "risk_levels": {
@@ -28,7 +28,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯本地处理；不调用 MiniMax / image model / video model / music model。生成 reports/* 而已。"
+          "notes": "纯本地处理；不调用 MiniMax / image model / video model / music model。生成 reports/* 而已。",
+          "action_id": "run_manual_digest",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "regenerate_digest",
@@ -42,7 +48,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "只读 signals.db + 写 reports/daily-digest.md 和 reports/telegram-digest.txt。"
+          "notes": "只读 signals.db + 写 reports/daily-digest.md 和 reports/telegram-digest.txt。",
+          "action_id": "regenerate_digest",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "send_digest_dry_run",
@@ -56,7 +68,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "不发送任何 Telegram 消息。生成 reports/telegram-send-preview.txt。"
+          "notes": "不发送任何 Telegram 消息。生成 reports/telegram-send-preview.txt。",
+          "action_id": "send_digest_dry_run",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "send_digest_confirmed",
@@ -65,12 +83,22 @@
           "command": "CQA_ALLOW_TELEGRAM_SEND=1 npm run digest:send:confirmed",
           "risk_level": "medium",
           "requires_confirm": true,
-          "requires_env": ["CQA_ALLOW_TELEGRAM_SEND", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"],
+          "requires_env": [
+            "CQA_ALLOW_TELEGRAM_SEND",
+            "TELEGRAM_BOT_TOKEN",
+            "TELEGRAM_CHAT_ID"
+          ],
           "calls_model": false,
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": false,
-          "notes": "需要显式 CQA_ALLOW_TELEGRAM_SEND=1 才会真实发送。沙箱状态下不会发。"
+          "notes": "需要显式 CQA_ALLOW_TELEGRAM_SEND=1 才会真实发送。沙箱状态下不会发。",
+          "action_id": "send_digest_confirmed",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-medium",
+          "audit_required": true
         },
         {
           "id": "check_digest_freshness",
@@ -84,7 +112,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯检查；不会触发任何外部动作。"
+          "notes": "纯检查；不会触发任何外部动作。",
+          "action_id": "check_digest_freshness",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         }
       ]
     },
@@ -100,12 +134,21 @@
           "command": "npm run collect:fresh:fast",
           "risk_level": "safe",
           "requires_confirm": false,
-          "requires_env": ["GITHUB_TOKEN (optional)", "HF_TOKEN (optional)"],
+          "requires_env": [
+            "GITHUB_TOKEN (optional)",
+            "HF_TOKEN (optional)"
+          ],
           "calls_model": false,
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "会写 data/signals.db 和 reports/source-health.*。无 token 时仍可工作。"
+          "notes": "会写 data/signals.db 和 reports/source-health.*。无 token 时仍可工作。",
+          "action_id": "collect_fast",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "collect_full",
@@ -114,12 +157,21 @@
           "command": "npm run collect:fresh:full",
           "risk_level": "medium",
           "requires_confirm": true,
-          "requires_env": ["GITHUB_TOKEN (optional)", "HF_TOKEN (optional)"],
+          "requires_env": [
+            "GITHUB_TOKEN (optional)",
+            "HF_TOKEN (optional)"
+          ],
           "calls_model": false,
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "需要主动确认。生产数据全量刷新，影响下一步 digest。"
+          "notes": "需要主动确认。生产数据全量刷新，影响下一步 digest。",
+          "action_id": "collect_full",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-medium",
+          "audit_required": true
         },
         {
           "id": "collect_diagnose",
@@ -133,7 +185,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "只读取 source 端点 + 写 reports/source-diagnostics.*。"
+          "notes": "只读取 source 端点 + 写 reports/source-diagnostics.*。",
+          "action_id": "collect_diagnose",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "show_source_health",
@@ -147,7 +205,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯读取本地文件。已通过 dashboard/index.html 提供可视化。"
+          "notes": "纯读取本地文件。已通过 dashboard/index.html 提供可视化。",
+          "action_id": "show_source_health",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         }
       ]
     },
@@ -168,7 +232,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "不调用 MiniMax / image model。返回 quota 状态和 would-spend 估算。"
+          "notes": "不调用 MiniMax / image model。返回 quota 状态和 would-spend 估算。",
+          "action_id": "image_dry_run",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "image_confirmed_1",
@@ -177,12 +247,22 @@
           "command": "CQA_ALLOW_GENERATION=1 npx ts-node src/generators/minimax-image-canary.ts --confirm-spend",
           "risk_level": "high",
           "requires_confirm": true,
-          "requires_env": ["CQA_ALLOW_GENERATION", "MINIMAX_API_KEY", "MINIMAX_BASE_URL"],
+          "requires_env": [
+            "CQA_ALLOW_GENERATION",
+            "MINIMAX_API_KEY",
+            "MINIMAX_BASE_URL"
+          ],
           "calls_model": true,
           "generates_media": true,
           "modifies_timer": false,
           "public_safe": false,
-          "notes": "HIGH RISK: 调用真实 image model，扣减 quota。必须显式 CQA_ALLOW_GENERATION=1 + --confirm-spend。Token 永远不应该出现在 public Pages / GitHub 中。"
+          "notes": "HIGH RISK: 调用真实 image model，扣减 quota。必须显式 CQA_ALLOW_GENERATION=1 + --confirm-spend。Token 永远不应该出现在 public Pages / GitHub 中。",
+          "action_id": "image_confirmed_1",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-high",
+          "audit_required": true
         },
         {
           "id": "image_confirmed_2",
@@ -191,12 +271,22 @@
           "command": "CQA_ALLOW_GENERATION=1 npm run generate:controlled:images",
           "risk_level": "high",
           "requires_confirm": true,
-          "requires_env": ["CQA_ALLOW_GENERATION", "MINIMAX_API_KEY", "MINIMAX_BASE_URL"],
+          "requires_env": [
+            "CQA_ALLOW_GENERATION",
+            "MINIMAX_API_KEY",
+            "MINIMAX_BASE_URL"
+          ],
           "calls_model": true,
           "generates_media": true,
           "modifies_timer": false,
           "public_safe": false,
-          "notes": "HIGH RISK: 批量调用。每次最大 2 张 (Phase 3A quota guard)。此脚本在内部强制 confirm_spend=true（不像 canary 脚本那样使用 --confirm-spend CLI 标志）；CQA_ALLOW_GENERATION=1 门控作为额外保护。失败的话人工检查 metadata/quota-status.json。"
+          "notes": "HIGH RISK: 批量调用。每次最大 2 张 (Phase 3A quota guard)。此脚本在内部强制 confirm_spend=true（不像 canary 脚本那样使用 --confirm-spend CLI 标志）；CQA_ALLOW_GENERATION=1 门控作为额外保护。失败的话人工检查 metadata/quota-status.json。",
+          "action_id": "image_confirmed_2",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-high",
+          "audit_required": true
         },
         {
           "id": "video_prompt_only",
@@ -210,7 +300,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯文本生成。不调用 video model。生成 video-prompt.enriched.md 等。Phase 4H 产物。"
+          "notes": "纯文本生成。不调用 video model。生成 video-prompt.enriched.md 等。Phase 4H 产物。",
+          "action_id": "video_prompt_only",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "music_prompt_only",
@@ -224,7 +320,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯文本生成。不调用 music model。生成 music-prompt.enriched.md 等。Phase 4I 产物。"
+          "notes": "纯文本生成。不调用 music model。生成 music-prompt.enriched.md 等。Phase 4I 产物。",
+          "action_id": "music_prompt_only",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         }
       ]
     },
@@ -245,7 +347,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯检查；不修改任何文件。"
+          "notes": "纯检查；不修改任何文件。",
+          "action_id": "validate_assets",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "validate_gallery",
@@ -259,7 +367,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯检查。"
+          "notes": "纯检查。",
+          "action_id": "validate_gallery",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "validate_daily_archive",
@@ -273,7 +387,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯检查。"
+          "notes": "纯检查。",
+          "action_id": "validate_daily_archive",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "validate_dashboard",
@@ -287,7 +407,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯检查。"
+          "notes": "纯检查。",
+          "action_id": "validate_dashboard",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "validate_telegram_sanitizer",
@@ -301,7 +427,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "纯检查。Phase 4I-1 后包含 12 self-test cases。"
+          "notes": "纯检查。Phase 4I-1 后包含 12 self-test cases。",
+          "action_id": "validate_telegram_sanitizer",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         }
       ]
     },
@@ -322,7 +454,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "只读 status。"
+          "notes": "只读 status。",
+          "action_id": "timer_status",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "timer_logs",
@@ -336,7 +474,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "只读。"
+          "notes": "只读。",
+          "action_id": "timer_logs",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "timer_disable_command",
@@ -350,7 +494,13 @@
           "generates_media": false,
           "modifies_timer": true,
           "public_safe": false,
-          "notes": "DANGER: 会影响每日 07:30 自动 collect / digest。Phase 5C-0 不会从公开 dashboard 触发。手动执行需双确认。"
+          "notes": "DANGER: 会影响每日 07:30 自动 collect / digest。Phase 5C-0 不会从公开 dashboard 触发。手动执行需双确认。",
+          "action_id": "timer_disable_command",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-danger",
+          "audit_required": true
         },
         {
           "id": "timer_enable_command",
@@ -364,7 +514,13 @@
           "generates_media": false,
           "modifies_timer": true,
           "public_safe": false,
-          "notes": "MEDIUM: 修改系统级状态。Phase 5C-0 不会从公开 dashboard 触发。"
+          "notes": "MEDIUM: 修改系统级状态。Phase 5C-0 不会从公开 dashboard 触发。",
+          "action_id": "timer_enable_command",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-medium",
+          "audit_required": true
         }
       ]
     },
@@ -385,7 +541,13 @@
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": true,
-          "notes": "不发送任何 Telegram 消息。"
+          "notes": "不发送任何 Telegram 消息。",
+          "action_id": "send_project_report_dry_run",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true
         },
         {
           "id": "send_project_report_confirmed",
@@ -394,12 +556,22 @@
           "command": "CQA_ALLOW_TELEGRAM_SEND=1 npm run report:send -- --file reports/telegram-phase-XXX.txt --label \"Phase X\"",
           "risk_level": "medium",
           "requires_confirm": true,
-          "requires_env": ["CQA_ALLOW_TELEGRAM_SEND", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"],
+          "requires_env": [
+            "CQA_ALLOW_TELEGRAM_SEND",
+            "TELEGRAM_BOT_TOKEN",
+            "TELEGRAM_CHAT_ID"
+          ],
           "calls_model": false,
           "generates_media": false,
           "modifies_timer": false,
           "public_safe": false,
-          "notes": "需要 CQA_ALLOW_TELEGRAM_SEND=1 才会真实发送。OpenClaw final reply 永远 1 句，不通过这里。"
+          "notes": "需要 CQA_ALLOW_TELEGRAM_SEND=1 才会真实发送。OpenClaw final reply 永远 1 句，不通过这里。",
+          "action_id": "send_project_report_confirmed",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2A-dry-run-only",
+          "confirmation_phrase": "dry-run-medium",
+          "audit_required": true
         }
       ]
     }
