@@ -8,33 +8,61 @@ WHAT_CHANGED:
 • New npm scripts: dashboard:policy:build + dashboard:policy:validate
 • New policy-review.json: 79 commands, 0 need review, 76 future candidates, 3 never execute
 • control.html updated: Policy Review section with stats, risk distribution, future candidates, never-execute
-• control-server.ts updated: GET /api/policy-review endpoint
+• control-server.ts updated: GET /api/policy-review endpoint + server-rendered Policy Review UI
 • Updated docs: PRIVATE_CONTROL_SERVER_RUNBOOK.md, README.md, ROADMAP.md
+
+BUILD_COMMAND_POLICY:
+• Before: build had no explicit rule → needs_policy_review=true
+• After: match=build, risk=safe, execution_mode=disabled, real_execution=false
+• Result: needs_policy_review=0 for all 79 commands ✅
 
 POLICY_REVIEW_STATUS:
 • Total commands: 79
 • Classified: 79 (100%)
 • Needs review: 0 ✅
-• Safe: 65 | Medium: 13 | High: 2 | Danger: 0
+• Safe: 65 | Medium: 12 | High: 2 | Danger: 0
 • Future candidates: 76 (safe/medium, no model/media/timer)
-• Never execute: 3 (high/disabled)
+• Never execute: 3 (high=2, disabled=1)
+
+NEEDS_REVIEW_COUNT: 0
+
+RISK_DISTRIBUTION:
+• safe: 65 (dry_run_only/safe_readonly/disabled)
+• medium: 12 (dry_run_only)
+• high: 2 (dry_run_only)
+• danger: 0
+
+FUTURE_EXECUTION_CANDIDATES: 76
+Examples: validate:*, diagnose, check, type-check, guard:check, enrich:facts:offline
+
+NEVER_EXECUTE_LIST: 3
+• generate:image:confirmed (high)
+• generate:controlled:images (high)
+• build (disabled)
 
 VALIDATION: 8/8 PASS
-✅ generate ✅ drift-check ✅ policy:build ✅ policy:validate ✅ control-server ✅ catalog validate ✅ dry-run ✅ readonly-actions
+✅ control:generate ✅ control:drift-check ✅ policy:build ✅ policy:validate ✅ control-server ✅ catalog-validate ✅ dry-run ✅ readonly-actions
 
 SMOKE_TEST: PASS
 • Server on 127.0.0.1:8788
-• Catalog API + Policy Review API readable
-• UI shows Policy Review section
+• /api/policy-review returns JSON
+• UI shows Policy Review / 策略审查 section
+• UI shows All commands reviewed badge
+• UI shows Future candidates: 76 · Never execute: 3
 • Dry-run blocked with wrong confirm phrase
-• real_execution=false
+• real_execution=false on all responses
 
 MODEL_CALL: ❌ None
 MEDIA_GEN: ❌ None
 
+LIMITATIONS:
+• Policy Review is read-only analysis only
+• Future candidates are theoretical (need Phase 5C-2C)
+• Never-execute list is advisory
+
 NEXT:
 • Phase 5C-2C: Confirmed low-risk execution
-• Phase 5C-4: Auto-generated safe-readonly handlers
+• Phase 5C-4 (original): Auto-generated safe-readonly handlers
 • Phase 4J: Audio coupling
 
-Full report: reports/phase-5c4-policy-review.md
+Full report: reports/policy-review-ui.md

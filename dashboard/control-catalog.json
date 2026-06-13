@@ -1,7 +1,7 @@
 {
   "version": "0.4.0",
   "phase": "5C-3",
-  "generated_at": "2026-06-13T11:53:33Z",
+  "generated_at": "2026-06-13T11:58:39Z",
   "purpose": "Auto-generated command catalog from package.json scripts + control-policy.json. Merged with manual safe_readonly queries from Phase 5C-2B. All commands have real_execution_supported=false.",
   "public_safety_model": "All commands are listed for reference only. The public catalog cannot execute any of them. Real control actions require either a localhost-only control server (Phase 5C-1) or an authenticated dashboard (Phase 5C-2).",
   "risk_levels": {

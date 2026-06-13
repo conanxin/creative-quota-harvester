@@ -176,6 +176,40 @@ function buildHomePage(): string {
 
   const groups = catalog.command_groups || [];
 
+  let policyReviewHtml = "";
+  const review = safeReadJson(
+    path.join(HARVESTER_DIR, "dashboard", "policy-review.json"),
+    {}
+  ) as any;
+  if (review && review.total_commands) {
+    const rc = review.risk_counts || {};
+    const safeReadonlyCount = review.execution_mode_counts?.safe_readonly || 0;
+    const dryRunCount = review.execution_mode_counts?.dry_run_only || 0;
+    const disabledCount = review.execution_mode_counts?.disabled || 0;
+    const allReviewed = review.all_commands_reviewed ? '<div style="background:#d1fae5;color:#065f46;padding:6px 12px;border-radius:6px;font-size:0.8rem;font-weight:600;margin-top:8px;">✅ All commands reviewed</div>' : '';
+    const futureCount = (review.future_execution_candidates || []).length;
+    const neverCount = (review.never_execute || []).length;
+    policyReviewHtml = `
+    <div class="section" style="background:#f0f9ff;border:1px solid #bae6fd;">
+      <h2>📋 Policy Review / 策略审查</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px;">
+        <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#1e3a5f;">${review.total_commands}</div><div style="font-size:0.75rem;color:#7f8c8d;">Total Commands</div></div>
+        <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#22c55e;">${review.classified}</div><div style="font-size:0.75rem;color:#7f8c8d;">Classified</div></div>
+        <div style="background:#fff;border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:${review.needs_policy_review > 0 ? '#ef4444' : '#22c55e'};">${review.needs_policy_review}</div><div style="font-size:0.75rem;color:#7f8c8d;">Needs Review</div></div>
+      </div>
+      <div style="font-size:0.85rem;color:#555;margin-bottom:8px;">
+        ⚡ Risk: Safe=${rc.safe || 0} · Medium=${rc.medium || 0} · High=${rc.high || 0} · Danger=${rc.danger || 0}
+      </div>
+      <div style="font-size:0.85rem;color:#555;margin-bottom:8px;">
+        🔧 Execution: Safe-readonly=${safeReadonlyCount} · Dry-run=${dryRunCount} · Disabled=${disabledCount}
+      </div>
+      ${allReviewed}
+      <div style="margin-top:10px;font-size:0.8rem;color:#555;">
+        🚀 Future candidates: ${futureCount} · 🚫 Never execute: ${neverCount}
+      </div>
+    </div>`;
+  }
+
   let groupsHtml = "";
   for (const g of groups) {
     const cmds = g.commands || [];
@@ -304,6 +338,7 @@ function buildHomePage(): string {
     <div class="guard-line">Video generation: ${guardVideo}</div>
     <div class="guard-line">Ambiguous commands: blocked</div>
   </div>
+  ${policyReviewHtml}
   <div class="section">
     <h2>📋 Command Catalog</h2>
     ${groupsHtml}
@@ -311,6 +346,8 @@ function buildHomePage(): string {
   <div class="section">
     <h2>🔗 链接</h2>
     <div class="links">
+      <a href="/api/control-catalog">Control Catalog JSON</a>
+      <a href="/api/policy-review">Policy Review JSON</a>
       <a href="https://conanxin.github.io/creative-quota-harvester/dashboard/" target="_blank">Public Dashboard</a>
       <a href="https://conanxin.github.io/creative-quota-assets/gallery/" target="_blank">Assets Gallery</a>
       <a href="https://conanxin.github.io/creative-quota-assets/daily/" target="_blank">Daily Archive</a>

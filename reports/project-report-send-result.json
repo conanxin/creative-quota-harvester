@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-06-13T10:01:19.408Z",
+  "generated_at": "2026-06-13T11:57:43.042Z",
   "phase": "4C-3A",
   "mode": "real-send",
-  "file": "reports/telegram-phase-5c3-control-catalog.txt",
-  "label": "Phase 5C-3",
-  "char_count": 1402,
+  "file": "reports/telegram-phase-5c4-policy-review.txt",
+  "label": "Phase 5C-4",
+  "char_count": 1371,
   "max_allowed": 3500,
   "sanitizer_pass": true,
   "forbidden_hits": [],
   "send_attempted": true,
   "send_result": {
     "ok": true,
-    "message_id": 50331
+    "message_id": 50337
   },
   "reason": "sent successfully"
 }
