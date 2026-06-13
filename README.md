@@ -55,6 +55,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-4** | **✅ Complete** | **Policy Review UI (auto-generated policy analysis, future execution candidates, never-execute list)** |
 | **Phase 5C-2C-A** | **✅ Complete** | **Confirmed Low-risk Execution Canary (5 safe validation scripts, spawn(shell=false), 60s timeout, 12K output limit)** |
 | **Phase 5C-2C-A1** | **✅ Complete** | **Policy Review Validation Fix (dynamic never_execute, confirmed_low_risk=5, allowlist validation, 34/34 PASS)** |
+| **Phase 5C-2C-A2** | **✅ Complete** | **Sanitizer False Positive Fix for sk- Pattern (negative lookbehind, 25/25 false-positive tests, 43/43 sanitizer tests)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

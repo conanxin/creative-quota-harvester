@@ -61,6 +61,7 @@
     "dashboard:policy:validate": "tsx scripts/validate-policy-review.ts",
     "validate:control-server": "tsx scripts/validate-control-server.ts",
     "validate:control-readonly-actions": "tsx scripts/validate-control-readonly-actions.ts",
+    "validate:control-low-risk-execution": "tsx scripts/validate-control-low-risk-execution.ts",
     "validate:control-actions-dry-run": "tsx scripts/validate-control-actions-dry-run.ts",
     "control:server": "tsx scripts/control-server.ts",
     "control:server:check": "tsx scripts/validate-control-server.ts",
@@ -75,7 +76,8 @@
     "validate:telegram-sanitizer": "tsx scripts/validate-telegram-sanitizer.ts",
     "report:send:dry-run": "tsx scripts/send-project-report.ts",
     "report:send": "tsx scripts/send-project-report.ts",
-    "validate:project-report-send": "tsx scripts/validate-project-report-send.ts"
+    "validate:project-report-send": "tsx scripts/validate-project-report-send.ts",
+    "validate:sanitizer-false-positives": "tsx scripts/validate-sanitizer-false-positives.ts"
   },
   "keywords": [
     "ai",

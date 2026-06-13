@@ -53,8 +53,26 @@ const selfTests: Array<{ name: string; input: string; expectPass: boolean }> = [
   { name: 'flag: </invoke>', input: 'before</invoke>after', expectPass: false },
   { name: 'flag: <tool_call>', input: '<tool_call>{"name":"x"}</tool_call>', expectPass: false },
   { name: 'flag: [truncated]', input: 'content [truncated] more', expectPass: false },
-  // Real secrets should be FLAGGED
-  { name: 'flag: sk-cp-real-key-here', input: 'sk-cp-aBcDeFgHiJkLmNoPqRsTuVwXyZ123456', expectPass: false },
+  // Phase 5C-2C-A2: False positive self-tests for sk- pattern
+  { name: 'allow: low-risk-execution (not sk-key)', input: 'reports/low-risk-execution-policy-validation-fix.md', expectPass: true },
+  { name: 'allow: risk-execution (not sk-key)', input: 'prompt: risk-execution', expectPass: true },
+  { name: 'allow: task-execution (not sk-key)', input: 'task-execution', expectPass: true },
+  { name: 'allow: markdown-sketch-note (not sk-key)', input: 'markdown-sketch-note', expectPass: true },
+  { name: 'allow: desk-report (not sk-key)', input: 'desk-report', expectPass: true },
+  { name: 'allow: flask-app (not sk-key)', input: 'flask-app', expectPass: true },
+  { name: 'allow: risk-management (not sk-key)', input: 'risk-management', expectPass: true },
+  { name: 'allow: disk-space (not sk-key)', input: 'disk-space', expectPass: true },
+  { name: 'allow: mask-policy (not sk-key)', input: 'mask-policy', expectPass: true },
+  { name: 'allow: task-list (not sk-key)', input: 'task-list', expectPass: true },
+  { name: 'allow: sk-cp (too short)', input: 'sk-cp', expectPass: true },
+  { name: 'allow: sk-test (too short)', input: 'sk-test', expectPass: true },
+  // Real secrets should still be FLAGGED
+  { name: 'flag: sk-cp-real-looking-secret-1234567890', input: 'sk-cp-real-looking-secret-1234567890', expectPass: false },
+  { name: 'flag: sk-real-looking-secret-1234567890', input: 'sk-real-looking-secret-1234567890', expectPass: false },
+  { name: 'flag: OPENAI_API_KEY=real-looking-secret-value', input: 'OPENAI_API_KEY=real-looking-secret-value', expectPass: false },
+  { name: 'flag: Authorization Bearer real-looking-token', input: 'Authorization: Bearer real-looking-token-1234567890', expectPass: false },
+  // Phase 5C-2C-A2: Check redaction preserves surrounding text for false positives
+  { name: 'redact: low-risk-execution preserves path', input: 'reports/low-risk-execution-policy-validation-fix.md', expectPass: true },
   { name: 'flag: TELEGRAM_BOT_TOKEN=realvalue12345', input: 'TELEGRAM_BOT_TOKEN=1234567890:ABCdef_GHIjkl', expectPass: false },
   { name: 'flag: MINIMAX_API_KEY=realvalue', input: 'MINIMAX_API_KEY=sk-1234567890abcdef', expectPass: false },
   { name: 'flag: Authorization: Bearer realtoken', input: 'Authorization: Bearer ya29aBcDeFgHiJkLmNoPqRsT', expectPass: false },
@@ -69,6 +87,25 @@ for (const t of selfTests) {
   } else {
     fail(`self-test: ${t.name} (expected ${t.expectPass ? 'PASS' : 'FAIL'}, got ${clean ? 'PASS' : 'FAIL'})`);
   }
+}
+
+// --- Phase 5C-2C-A2: Sanitizer behavior self-test for false positives ---
+const falsePositiveInput = 'Full report: reports/low-risk-execution-policy-validation-fix.md\nlow-risk-execution\nrisk-execution\ntask-execution\nmarkdown-sketch-note\nMiniMax Music Prompt\nminimax-music';
+const falsePositiveSanitized = sanitizeTelegramDigest(falsePositiveInput);
+if (falsePositiveSanitized.includes('low-risk-execution-policy-validation-fix.md')) {
+  pass('sanitizer preserves false-positive path: low-risk-execution-policy-validation-fix.md');
+} else {
+  fail('sanitizer redacted false-positive path. Output: ' + falsePositiveSanitized.slice(0, 200));
+}
+if (falsePositiveSanitized.includes('low-risk-execution') && falsePositiveSanitized.includes('risk-execution') && falsePositiveSanitized.includes('task-execution')) {
+  pass('sanitizer preserves false-positive words: low-risk-execution, risk-execution, task-execution');
+} else {
+  fail('sanitizer redacted false-positive words. Output: ' + falsePositiveSanitized.slice(0, 200));
+}
+if (falsePositiveSanitized.includes('MiniMax Music Prompt') && falsePositiveSanitized.includes('minimax-music')) {
+  pass('sanitizer preserves MiniMax product names');
+} else {
+  fail('sanitizer removed MiniMax product names. Output: ' + falsePositiveSanitized.slice(0, 200));
 }
 
 // --- Sanitizer behavior self-test (no substitution of product name) ---
@@ -104,6 +141,34 @@ for (const t of targets) {
       fail(`${h.pattern} → ${safe}`);
     }
   }
+}
+
+// --- Phase 5C-2C-A2: Redaction self-test for real secrets ---
+const secretInput = 'Token: sk-cp-real-looking-secret-1234567890\nKey: sk-real-looking-secret-1234567890\nOPENAI_API_KEY=real-looking-secret-value\nMINIMAX_API_KEY=real-looking-secret-value\nAuthorization: Bearer real-looking-token-1234567890\nTELEGRAM_BOT_TOKEN=1234567890:ABCdef_GHIjkl';
+const secretSanitized = sanitizeTelegramDigest(secretInput);
+if (secretSanitized.includes('[REDACTED-API-KEY]') && !secretSanitized.includes('sk-cp-real-looking-secret')) {
+  pass('sanitizer redacts sk-cp-* real secrets');
+} else {
+  fail('sanitizer did NOT redact sk-cp-* real secrets. Output: ' + secretSanitized.slice(0, 200));
+}
+if (secretSanitized.includes('OPENAI_API_KEY=[REDACTED]') && secretSanitized.includes('MINIMAX_API_KEY=[REDACTED]')) {
+  pass('sanitizer redacts API key assignments');
+} else {
+  fail('sanitizer did NOT redact API key assignments. Output: ' + secretSanitized.slice(0, 200));
+}
+if (secretSanitized.includes('Authorization: Bearer [REDACTED]') && secretSanitized.includes('TELEGRAM_BOT_TOKEN=[REDACTED]')) {
+  pass('sanitizer redacts Bearer token and Telegram token');
+} else {
+  fail('sanitizer did NOT redact Bearer/Telegram token. Output: ' + secretSanitized.slice(0, 200));
+}
+
+// --- Phase 5C-2C-A2: Mixed false-positive + real secret test ---
+const mixedInput = 'Path: reports/low-risk-execution-policy-validation-fix.md\nToken: sk-cp-real-looking-secret-1234567890\nProduct: MiniMax Music Prompt';
+const mixedSanitized = sanitizeTelegramDigest(mixedInput);
+if (mixedSanitized.includes('low-risk-execution-policy-validation-fix.md') && mixedSanitized.includes('[REDACTED-API-KEY]') && mixedSanitized.includes('MiniMax Music Prompt')) {
+  pass('sanitizer: false positives preserved, real secrets redacted, product names preserved');
+} else {
+  fail('sanitizer mixed test failed. Output: ' + mixedSanitized.slice(0, 300));
 }
 
 console.log(`\n=== Summary ===`);

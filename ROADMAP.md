@@ -504,6 +504,7 @@ https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-1
 | **Phase 5C-4** | ✅ **Policy Review UI** (auto-generated policy analysis, future execution candidates, never-execute list) | After 5C-3 |
 | **Phase 5C-2C-A** | ✅ **Confirmed low-risk execution canary** (5 safe validation scripts, spawn(shell=false), 60s timeout, 12K output) | After 5C-4 |
 | **Phase 5C-2C-A1** | ✅ **Policy review validation fix** (dynamic never_execute, confirmed_low_risk=5, allowlist validation, 34/34 PASS) | After 5C-2C-A |
+| **Phase 5C-2C-A2** | ✅ **Sanitizer false positive fix for sk- pattern** (negative lookbehind, 25/25 false-positive tests, 43/43 sanitizer tests, 8/8 validations PASS) | After 5C-2C-A1 |
 | **Phase 5D** | Lyrics-aware music prompt variants (when lyrics make sense) | After 4J |
 
 ### Long-term

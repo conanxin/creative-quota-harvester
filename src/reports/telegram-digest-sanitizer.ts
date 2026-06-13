@@ -41,8 +41,11 @@ const FORBIDDEN_PATTERNS: Array<{ id: string; regex: RegExp; desc: string }> = [
   { id: 'tool_call_self_close', regex: /<[|]?(tool_call|tool|function|invoke)\b[^>]*\/>?/gi, desc: 'Tool call self-close' },
   { id: 'xml_brackets',       regex: /<\/?[a-z_][a-z0-9_]*>/gi, desc: 'XML-style tag' },
   // Secrets
-  { id: 'openai_key',         regex: /sk-[A-Za-z0-9_-]{20,}/g, desc: 'OpenAI-style API key' },
-  { id: 'openai_proj_key',    regex: /sk-(cp|proj)-[A-Za-z0-9_-]{20,}/g, desc: 'OpenAI project key' },
+  // Phase 5C-2C-A2: Added negative lookbehind to avoid matching 'sk-' inside words
+  // like 'risk-execution', 'task-execution', 'markdown-sketch-note' etc.
+  // Only matches 'sk-' when preceded by non-word chars (whitespace, start of string, =, :, etc.)
+  { id: 'openai_key',         regex: /(?<![A-Za-z0-9_-])sk-[A-Za-z0-9_-]{20,}/g, desc: 'OpenAI-style API key' },
+  { id: 'openai_proj_key',    regex: /(?<![A-Za-z0-9_-])sk-(cp|proj)-[A-Za-z0-9_-]{20,}/g, desc: 'OpenAI project key' },
   { id: 'github_token',       regex: /ghp_[A-Za-z0-9]{20,}/g, desc: 'GitHub personal token' },
   { id: 'slack_token',        regex: /xox[baprs]-[A-Za-z0-9-]{8,}/g, desc: 'Slack token' },
   // Secrets — require actual assignment with value (avoids false positives on the word itself)
@@ -70,8 +73,9 @@ function stripXmlFragments(text: string): string {
 function redactSecrets(text: string): string {
   let out = text;
   // Replace sk-... with [REDACTED-API-KEY]
-  out = out.replace(/sk-[A-Za-z0-9_-]{20,}/g, '[REDACTED-API-KEY]');
-  out = out.replace(/sk-(cp|proj)-[A-Za-z0-9_-]{20,}/g, '[REDACTED-API-KEY]');
+  // Phase 5C-2C-A2: Use negative lookbehind to avoid redacting 'sk-' inside words
+  out = out.replace(/(?<![A-Za-z0-9_-])sk-[A-Za-z0-9_-]{20,}/g, '[REDACTED-API-KEY]');
+  out = out.replace(/(?<![A-Za-z0-9_-])sk-(cp|proj)-[A-Za-z0-9_-]{20,}/g, '[REDACTED-API-KEY]');
   out = out.replace(/ghp_[A-Za-z0-9]{20,}/g, '[REDACTED-GITHUB-TOKEN]');
   out = out.replace(/xox[baprs]-[A-Za-z0-9-]{8,}/g, '[REDACTED-SLACK-TOKEN]');
   // TELEGRAM_BOT_TOKEN=... (with value)
