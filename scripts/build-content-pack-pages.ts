@@ -594,9 +594,73 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
   if (musicPrompt) {
     promptPreviews.push(`
       <div class="prompt-card">
-        <h4>🎵 音乐 Prompt</h4>
+        <h4>🎵 原始音乐 Prompt</h4>
+        <p class="prompt-subtitle">未增强的原始 prompt，作为兑底</p>
         <pre class="prompt-preview">${escapeHtml(truncate(musicPrompt, 600))}</pre>
         <a class="prompt-link" href="${baseUrl}/music-prompt.md" target="_blank">查看完整文件 →</a>
+      </div>
+    `);
+  }
+  // Phase 4I: enhanced music prompt
+  const enrichedMusicMd = safeReadText(join(ASSETS, packDir, 'music-prompt.enriched.md'), '');
+  const enrichedMusicMeta = safeReadJson<any>(join(ASSETS, packDir, 'music-prompt.meta.json'), null);
+  if (enrichedMusicMd) {
+    const enMatch = enrichedMusicMd.match(/## MiniMax Music Prompt\s*\n+\n```text\n([\s\S]+?)\n```/);
+    const enBlock = enMatch ? enMatch[1] : '';
+    const negMatch = enrichedMusicMd.match(/## Negative \/ Avoid\s*\n+\n```text\n([\s\S]+?)\n```/);
+    const negBlock = negMatch ? negMatch[1] : '';
+    const dirMatch = enrichedMusicMd.match(/## 音乐方向\s*\n+([\s\S]+?)\n+\n## MiniMax Music Prompt/);
+    const dirBlock = dirMatch ? dirMatch[1] : '';
+
+    const a = enrichedMusicMeta?.attributes || {};
+    const p = enrichedMusicMeta?.parameters || enrichedMusicMeta || {};
+    const priorityLabel = p.priority === 'high' ? '高' : p.priority === 'medium' ? '中' : '低';
+    const recommendedUse = (enrichedMusicMeta?.recommended_use || []).map((u: string) => {
+      const labels: Record<string, string> = {
+        'background-music': '背景音乐', 'short-video': '短视频', 'project-intro': '项目介绍',
+        'coding-session': '编程背景', 'paper-explainer': '论文讲解', 'podcast-intro': '播客开场',
+        'conference-talk': '会议演讲', 'model-demo': '模型演示', 'product-card': '产品卡片',
+        'discussion-clip': '讨论片段', 'x-post': 'X帖', 'museum-clip': '博物馆片',
+        'gallery-loop': '画廊循环', 'mood-clip': '氛围', 'morning-ambience': '早晨氛围',
+        'social': '社媒',
+      };
+      return labels[u] || u;
+    }).join('、');
+
+    promptPreviews.push(`
+      <div class="prompt-card prompt-card--enhanced-music">
+        <h4>✨ 增强音乐 Prompt <span class="badge-enhanced">Phase 4I</span></h4>
+        <p class="prompt-subtitle">🎵 源感知增强版 (${escapeHtml(enrichedMusicMeta?.source_label_zh || enrichedMusicMeta?.source_type || '')})</p>
+        <div class="video-status-note">⚠️ 当前仅生成 Prompt，未调用音乐模型。</div>
+        ${enrichedMusicMeta?.prompt_strategy ? `<p class="video-strategy"><strong>策略</strong>: ${escapeHtml(enrichedMusicMeta.prompt_strategy)}</p>` : ''}
+        ${dirBlock ? `<details open>
+          <summary>🎼 音乐方向 (mood/genre/tempo/instrumentation/texture/energy/loopability)</summary>
+          <pre class="prompt-preview">${escapeHtml(dirBlock)}</pre>
+        </details>` : ''}
+        ${enBlock ? `<details>
+          <summary>🎵 MiniMax Music Prompt</summary>
+          <pre class="prompt-preview">${escapeHtml(truncate(enBlock, 1200))}</pre>
+        </details>` : ''}
+        ${negBlock ? `<details>
+          <summary>❌ Negative / Avoid</summary>
+          <pre class="prompt-preview">${escapeHtml(negBlock)}</pre>
+        </details>` : ''}
+        <div class="video-params">
+          <strong>推荐参数</strong>:
+          <span class="param-chip">model_family: ${escapeHtml(p.modelFamily || 'minimax-music')}</span>
+          <span class="param-chip">duration: ${escapeHtml(p.duration || '60-90s')}</span>
+          <span class="param-chip">instrumental: ${escapeHtml(String(p.instrumental !== undefined ? p.instrumental : true))}</span>
+          <span class="param-chip">lyrics: ${escapeHtml(p.lyrics || 'none')}</span>
+          <span class="param-chip">priority: ${escapeHtml(priorityLabel)}</span>
+          <span class="param-chip">generation_mode: ${escapeHtml(p.generationMode || 'prompt-only')}</span>
+        </div>
+        ${recommendedUse ? `<p class="video-recommended-use"><strong>推荐用途</strong>: ${escapeHtml(recommendedUse)}</p>` : ''}
+        <div class="prompt-links">
+          <a class="prompt-link" href="${baseUrl}/music-prompt.enriched.md" target="_blank">📄 完整增强版 →</a>
+          <a class="prompt-link" href="${baseUrl}/music-prompt.zh.md" target="_blank">🇨🇳 中文说明 →</a>
+          <a class="prompt-link" href="${baseUrl}/music-prompt.meta.json" target="_blank">🔧 meta.json →</a>
+          <a class="prompt-link" href="${baseUrl}/music-prompt.md" target="_blank">原始音乐 Prompt →</a>
+        </div>
       </div>
     `);
   }

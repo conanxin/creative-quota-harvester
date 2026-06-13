@@ -1,0 +1,63 @@
+PHASE 4I COMPLETE
+
+Status: PASS
+Mode: prompt-only (NO real music gen)
+Packs enhanced: 25/25
+Source-type distribution: code=5, academic=5, culture-art=5, dev-community=5, ai-ecosystem=5
+
+What Changed:
+- 3 new output files per pack (75 total): music-prompt.enriched.md, music-prompt.zh.md, music-prompt.meta.json
+- Original music-prompt.md preserved (idempotent, never overwritten)
+- Detail page (build-content-pack-pages.ts): new 增强音乐 Prompt card with strategy / 7 attributes / MiniMax Music prompt / Negative / 推荐参数 / 状态提示
+- Gallery card (build-gallery-from-dedup.ts): 增强音乐 Prompt 已就绪 badge + 背景音乐/音乐 use chips
+- Gallery still 5 unique topics (dedup unchanged)
+- Validator: 1009/1009 checks PASS
+- New aliases: npm run prompts:music:enhance, npm run validate:music-prompts
+
+meta.json Top-Level Spec Fields (all present):
+- title, source_type, source_label_zh
+- prompt_strategy (string)
+- model_family: minimax-music
+- duration: 60-90s
+- instrumental: true
+- lyrics: none
+- priority: high/medium/low
+- recommended_use: array
+- facts_used: array
+- original_prompt_path: music-prompt.md
+- enriched_prompt_path: music-prompt.enriched.md
+- zh_prompt_path: music-prompt.zh.md
+- generation_mode: prompt-only
+- uncertainty_notes: array
+
+7 Attributes (mood/genre/tempo/instrumentation/texture/energy/loopability):
+All non-empty strings per pack
+
+Source-Type Strategies (6):
+- code → focus coding lo-fi / agent workflow pulse
+- academic → calm analytical ambient / chamber ambient
+- ai-ecosystem → futuristic model flow / light electronic pulse
+- dev-community → indie electronic / waiting-for-agent vibe
+- culture-art → museum ambience / chamber texture (NO living composer imitation)
+- context → weather mood / seasonal lo-fi
+
+Defaults: instrumental=true, lyrics=none, duration=60-90s, model_family=minimax-music, generation_mode=prompt-only
+
+Hard Rules: No model calls, no LLM, no new audio/media, no lyrics/vocals, no living artist imitation, no copyrighted melodies, no famous song references
+
+Validation: validate:music-prompts 1009/1009 PASS; validate:content-pack-pages 260/260, validate:gallery-dedup 19/19, validate:public-gallery 30/30, validate:daily-archive 12/12, validate:video-prompts PASS (regression)
+
+Local Preview (http://127.0.0.1:8766/):
+- Gallery: 增强音乐 Prompt (5x), 背景音乐, 增强视频 Prompt, 增强图片 Prompt
+- Code: 增强音乐 Prompt, 音乐方向, MiniMax Music Prompt, Negative, 推荐参数, 未调用音乐模型, lo-fi
+- Academic: 增强音乐 Prompt, ambient, MiniMax Music Prompt, prompt-only
+- Culture-art: 增强音乐 Prompt, museum ambience, chamber, MiniMax Music Prompt, prompt-only
+
+Public URL: pre-push shows 4G+4H; will update to include 4I after next push
+
+Boundaries: no model/LLM call, no new media/audio, gateway/timer/.env untouched, secrets not committed
+
+Next Phase: 4J audio coupling, 4K music scoring, 5C budget extension, 5D lyrics-aware variants
+
+Report: docs/PHASE_4I_SOURCE_AWARE_MUSIC_PROMPTS_REPORT.md
+Detail: reports/source-aware-music-prompts.md

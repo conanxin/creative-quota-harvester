@@ -117,6 +117,9 @@ function main() {
     // Phase 4H: detect enhanced video prompt on the primary pack
     const hasEnhancedVideo = existsSync(join(ASSETS, primaryDir, 'video-prompt.enriched.md'));
     const enhancedVideoBadge = hasEnhancedVideo ? `<span class="enhanced-badge enhanced-video-badge" title="Phase 4H: 来源感知视频 Prompt 增强">🎥 增强视频 Prompt 已就绪</span>` : '';
+    // Phase 4I: detect enhanced music prompt on the primary pack
+    const hasEnhancedMusic = existsSync(join(ASSETS, primaryDir, 'music-prompt.enriched.md'));
+    const enhancedMusicBadge = hasEnhancedMusic ? `<span class="enhanced-badge enhanced-music-badge" title="Phase 4I: 来源感知音乐 Prompt 增强">🎵 增强音乐 Prompt 已就绪</span>` : '';
 
     const detailUrl = `https://conanxin.github.io/creative-quota-assets/${item.detail_page_path}`;
     const summaryUrl = `https://conanxin.github.io/creative-quota-assets/${item.primary_pack_dir}/content-summary.zh.md`;
@@ -131,6 +134,10 @@ function main() {
       const videoUses = '<span class="use-chip">短视频</span><span class="use-chip">动态图形</span>';
       usesHtml = usesHtml + videoUses;
     }
+    if (hasEnhancedMusic) {
+      const musicUses = '<span class="use-chip">背景音乐</span><span class="use-chip">音乐</span>';
+      usesHtml = usesHtml + musicUses;
+    }
 
     return `      <article class="asset-card pack-card" data-source-type="${escapeHtml(st)}" data-kind="content-pack">
   <div class="card-header">
@@ -139,6 +146,7 @@ function main() {
     ${genImageBadge}
     ${enhancedBadge}
     ${enhancedVideoBadge}
+    ${enhancedMusicBadge}
     <h3 class="card-title">${escapeHtml(title)}</h3>
     <div class="card-score">评分: ${score.toFixed(3)}</div>
   </div>
@@ -393,6 +401,9 @@ function main() {
     }
     .enhanced-video-badge {
       background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+    }
+    .enhanced-music-badge {
+      background: linear-gradient(135deg, #22c55e 0%, #5b5bd6 100%);
     }
     .card-title { font-size: 1.1rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.3rem; }
     .card-score { font-size: 0.8rem; color: var(--text-muted); }
