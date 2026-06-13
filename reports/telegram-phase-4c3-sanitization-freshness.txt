@@ -1,0 +1,53 @@
+Creative Quota Daily Digest — 2026-06-13 (Phase 4C-3)
+STATUS: PASS
+
+Sanitizer deployed:
+- Tool residue removed: tool_call / </tool_call> / </invoke> / </content> / <|tool_call|>
+- Secrets redacted: sk-* / sk-cp-* / ghp_* / xoxb-* / TELEGRAM_BOT_TOKEN= / MINIMAX_API_KEY= / *_API_KEY= / Bearer
+- minimax/MiniMax mentions replaced with "image model"
+- [truncated] markers stripped
+- Applied in BOTH digest generator AND send hook
+- New npm script: validate:telegram-sanitizer
+
+Signal freshness fix:
+- 3-state status: PASS / WARN (>24h) / FALLBACK (no timestamp)
+- Overall STATUS now reflects freshness (PASS only if signals <24h)
+- signal_last_collected_at present in digest.txt and daily-digest.md
+- Manual collect attempt: process killed (SIGKILL after timeout) → fallback semantics correctly applied
+- Last successful collect: 2026-06-11 01:14 (DB mtime, ~55h ago)
+
+Digest status after fix:
+STATUS: WARN (signals >24h stale, fallback to previous data)
+Signal freshness: WARN — signals last collected 55h ago (>24h, fallback to previous data)
+Delivery: systemd timer + Telegram auto-send
+Image model called: No (was: MiniMax called: No)
+New media generated: No
+.env tracked: No
+
+Validation results (all PASS):
+- npm run validate:digest-freshness: PASS (16/16)
+- npm run validate:telegram-sanitizer: PASS (6/6)
+- npm run digest:telegram:check: PASS
+- npm run digest:send:dry-run: PASS
+- npm run validate:telegram-send: 13/15 (1 intentional: .env.telegram.local not committed)
+- npm run validate:telegram-auto-send: PASS (7/7)
+
+Send dry-run: PASS (1662/3500 chars, no secrets, no tool residue after sanitize)
+
+Confirmed send: message_id=50003 via npm run digest:send:confirmed (sanitized text)
+
+Safety status:
+- MiniMax called: NO
+- New media generated: NO
+- .env committed: NO
+- .env.telegram.local committed: NO
+- Tokens in digest: NO
+- Tool residue in digest: NO
+
+Commit: pending
+Phase report: docs/PHASE_4C3_DIGEST_SANITIZATION_FRESHNESS_REPORT.md
+Runbook: docs/SCHEDULED_DAILY_DIGEST_RUNBOOK.md (v3.0)
+
+Next phases: 4C-4 Investigate collect timeout / 4H Video Prompt Enhancement / 5C Private Control Dashboard / 3F Controlled image generation (human-in-loop)
+
+RESULT: PASS — Phase 4C-3 complete. Digest is sanitized, freshness logic fixed, all validators pass, confirmed re-send delivered cleanly.

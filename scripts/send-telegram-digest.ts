@@ -13,6 +13,7 @@
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join } from 'path';
+import { sanitizeTelegramDigest, findForbiddenPatterns } from '../src/reports/telegram-digest-sanitizer';
 
 const HARVESTER = '/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester';
 const REPORTS_DIR = join(HARVESTER, 'reports');
@@ -38,9 +39,13 @@ function loadDigest(): string {
 function validateDigest(digest: string): SendCheck {
   const charCount = digest.length;
   const hasTruncated = digest.includes('[truncated]');
-  const hasSecrets = /API_KEY=[^\s]|sk-[a-zA-Z0-9]{20,}|Bearer\s+[A-Za-z0-9]{20,}|TELEGRAM_BOT_TOKEN=\S{10,}|\.env\s+(?:contains|holds|has)|Authorization:\s*Bearer/.test(digest);
+  // Apply sanitizer to verify output is safe, then re-check.
+  const sanitized = sanitizeTelegramDigest(digest);
+  const hasSecrets = /API_KEY=[^\s]|sk-[a-zA-Z0-9]{20,}|Bearer\s+[A-Za-z0-9]{20,}|TELEGRAM_BOT_TOKEN=\S{10,}|\.env\s+(?:contains|holds|has)|Authorization:\s*Bearer/.test(sanitized);
+  const forbiddenHits = findForbiddenPatterns(sanitized);
+  const hasToolResidue = forbiddenHits.length > 0;
 
-  const pass = charCount <= 3500 && !hasTruncated && !hasSecrets;
+  const pass = charCount <= 3500 && !hasTruncated && !hasSecrets && !hasToolResidue;
 
   return {
     pass,
@@ -79,7 +84,7 @@ function generatePreview(digest: string, check: SendCheck, permission: { allowed
     '',
     `Mode: ${permission.allowed ? 'REAL SEND' : 'DRY-RUN'}`,
     `Digest chars: ${check.charCount}/3500`,
-    `Has [truncated]: ${check.hasTruncated ? 'YES ❌' : 'NO ✅'}`,
+    `Has truncated marker: ${check.hasTruncated ? 'YES ❌' : 'NO ✅'}`,
     `Has secrets: ${check.hasSecrets ? 'YES ❌' : 'NO ✅'}`,
     `Digest valid: ${check.pass ? 'PASS ✅' : 'FAIL ❌'}`,
     `Send allowed: ${permission.allowed ? 'YES ✅' : 'NO ❌'}`,
@@ -98,7 +103,7 @@ function generatePreview(digest: string, check: SendCheck, permission: { allowed
 function generateCheckJson(check: SendCheck, permission: { allowed: boolean; reason: string }): object {
   return {
     generated_at: new Date().toISOString(),
-    phase: '4C-0',
+    phase: '4C-3',
     mode: permission.allowed ? 'real-send' : 'dry-run',
     digest_check: {
       char_count: check.charCount,
@@ -122,7 +127,7 @@ async function main() {
   const isConfirmed = args.includes('--confirmed') || args.includes('-c');
   const isDryRun = !isConfirmed;
 
-  console.log('=== Telegram Digest Send Hook (Phase 4C-0) ===');
+  console.log('=== Telegram Digest Send Hook (Phase 4C-3) ===');
   console.log(`Mode: ${isDryRun ? 'DRY-RUN' : 'CONFIRMED'}`);
 
   // Step 1: Load digest
@@ -135,16 +140,25 @@ async function main() {
     process.exit(1);
   }
 
-  // Step 2: Validate digest
+  // Step 2: Validate digest (sanitize + check)
+  const sanitizedDigest = sanitizeTelegramDigest(digest);
   const check = validateDigest(digest);
+  const forbiddenAfterSanitize = findForbiddenPatterns(sanitizedDigest);
   console.log(`\nDigest check:`);
   console.log(`  Chars: ${check.charCount}/3500`);
-  console.log(`  [truncated]: ${check.hasTruncated ? 'YES ❌' : 'NO ✅'}`);
+  console.log(`  Truncated marker: ${check.hasTruncated ? 'YES ❌' : 'NO ✅'}`);
   console.log(`  Secrets: ${check.hasSecrets ? 'YES ❌' : 'NO ✅'}`);
-  console.log(`  Valid: ${check.pass ? 'PASS ✅' : 'FAIL ❌'}`);
+  console.log(`  Tool residue after sanitize: ${forbiddenAfterSanitize.length === 0 ? 'NONE ✅' : 'STILL PRESENT ❌'}`);
+  console.log(`  Valid: ${check.pass && forbiddenAfterSanitize.length === 0 ? 'PASS ✅' : 'FAIL ❌'}`);
 
-  if (!check.pass) {
+  if (!check.pass || forbiddenAfterSanitize.length > 0) {
     console.log('\nDigest validation FAILED. Not sending.');
+    if (forbiddenAfterSanitize.length > 0) {
+      console.log('Forbidden patterns still present after sanitize:');
+      for (const h of forbiddenAfterSanitize) {
+        console.log(`  - ${h.pattern} (${h.matches.length} match)`);
+      }
+    }
     process.exit(1);
   }
 
@@ -154,8 +168,8 @@ async function main() {
   console.log(`  Allowed: ${permission.allowed ? 'YES ✅' : 'NO ❌'}`);
   console.log(`  Reason: ${permission.reason}`);
 
-  // Step 4: Generate preview
-  const preview = generatePreview(digest, check, permission);
+  // Step 4: Generate preview (using sanitized text so preview matches what gets sent)
+  const preview = generatePreview(sanitizedDigest, check, permission);
   writeFileSync(join(REPORTS_DIR, 'telegram-send-preview.txt'), preview);
   console.log('\nPreview written: reports/telegram-send-preview.txt');
 
@@ -184,7 +198,7 @@ async function main() {
 
   // Real send — use Telegram Bot API via curl (SOCKS5 proxy compatible)
   console.log('\n=== REAL SEND PATH ===');
-  console.log('Sending digest via Telegram Bot API...');
+  console.log('Sending digest via Telegram Bot API (sanitized text)...');
 
   try {
     const { execSync } = await import('child_process');
@@ -193,7 +207,7 @@ async function main() {
     const tmpFile = '/tmp/cqa-digest-send.json';
     writeFileSync(tmpFile, JSON.stringify({
       chat_id: permission.chatId,
-      text: digest,
+      text: sanitizedDigest,  // send sanitized version
       parse_mode: 'Markdown',
       disable_web_page_preview: true,
     }));

@@ -1,8 +1,32 @@
 # Scheduled Daily Digest Runbook
 
-**Version:** 1.0
+**Version:** 2.0 (Phase 4C-2 update)
 **Created:** 2026-06-11
-**Phase:** 4B-0
+**Updated:** 2026-06-13
+**Phase:** 4C-2
+
+---
+
+## STATUS: PHASE 4C-2 — SCHEDULED AUTO-SEND VERIFIED ✅
+
+**Verified 2026-06-13 07:30 CST:** Daily Digest runs via systemd timer and auto-sends to Telegram (message_id 49980). A manual confirmed re-send of the freshened digest also succeeded (message_id 49983).
+
+### Digest Freshness (Phase 4C-2)
+
+The Digest generator (`src/reports/telegram-daily-digest.ts`) was updated to:
+
+- **Latest image URL:** Read from `metadata/generated-assets.json` `path` field (includes date subdirectory). Markdown underscores escaped for Telegram Markdown parse_mode.
+- **Recommended Generation Queue:** Excludes already-generated topics via topic-slug keyword overlap (>=0.5 score, stop words removed).
+- **Delivery line:** Replaced "cron/systemd: No" with "Delivery: systemd timer + Telegram auto-send".
+- **Signal freshness:** New `Signal freshness: ...` line shows hours since last collection. WARN if >24h.
+- **Next-phase list:** Current phases only (4C-2 / 4H / 5C / 3F). Removed completed 3A Full / 4A / 4B.
+
+### Validation
+
+```bash
+npm run validate:digest-freshness
+```
+Runs 16 checks against the latest digest for: no [truncated], no secrets, no legacy phases, correct delivery text, latest image URL matches real filename + date directory, no underscore-missing pattern, recommended queue excludes already-generated topics, MD report consistency.
 
 ---
 

@@ -1,26 +1,26 @@
 === Telegram Send Preview ===
 
 Mode: REAL SEND
-Digest chars: 1630/3500
-Has [truncated]: NO ✅
+Digest chars: 1662/3500
+Has truncated marker: NO ✅
 Has secrets: NO ✅
 Digest valid: PASS ✅
 Send allowed: YES ✅
 Reason: All conditions met for real send.
 
 --- Preview (first 200 chars) ---
-Creative Quota Daily Digest — 2026-06-13 STATUS: PASS  今日输入 Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11)) Content Packs: 25 (25 with im
+Creative Quota Daily Digest — 2026-06-13 STATUS: WARN  今日输入 Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11)) Content Packs: 25 (25 with im
 ...
 
 --- Full digest ---
 Creative Quota Daily Digest — 2026-06-13
-STATUS: PASS
+STATUS: WARN
 
 今日输入
 Signals: 298 (code(110) / ai-ecosystem(66) / dev-community(43) / academic(40) / culture-art(28) / context(11))
 Content Packs: 25 (25 with image prompt)
 Generated Assets: 5 (5 img / 0 music / 0 video)
-Signal freshness: WARN: signals last collected 55h ago (>24h)
+Signal freshness: WARN — signals last collected 55h ago (>24h, fallback to previous data)
 
 Top 5 Signals (deduplicated, by score)
 1. SamurAIGPT/Generative-Media-Skills
@@ -49,7 +49,7 @@ Validation: PASS (npm run validate:assets)
 
 本阶段执行结果
 Delivery: systemd timer + Telegram auto-send
-MiniMax called: No
+Image model called: No
 New media generated: No
 .env tracked: No
 

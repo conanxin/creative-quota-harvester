@@ -1,8 +1,8 @@
 {
-  "runId": "run-mq8bi6od",
-  "startedAt": "2026-06-10T17:03:24.493Z",
-  "endedAt": "2026-06-10T17:10:27.084Z",
-  "totalSignals": 127,
+  "runId": "run-mqbmevj5",
+  "startedAt": "2026-06-13T00:32:04.385Z",
+  "endedAt": "2026-06-13T00:37:04.669Z",
+  "totalSignals": 129,
   "succeededSources": [
     "arXiv AI",
     "GitHub Open Source Radar",
@@ -21,7 +21,7 @@
       "signals": 20,
       "success": true,
       "error": null,
-      "durationMs": 18825
+      "durationMs": 15802
     },
     {
       "source": "GitHub Open Source Radar",
@@ -29,15 +29,15 @@
       "signals": 55,
       "success": true,
       "error": null,
-      "durationMs": 231425
+      "durationMs": 93605
     },
     {
       "source": "Hacker News",
       "sourceType": "dev-community",
-      "signals": 9,
+      "signals": 14,
       "success": true,
       "error": null,
-      "durationMs": 15004
+      "durationMs": 13687
     },
     {
       "source": "GDELT",
@@ -45,15 +45,15 @@
       "signals": 0,
       "success": true,
       "error": null,
-      "durationMs": 23085
+      "durationMs": 27843
     },
     {
       "source": "Hugging Face Hub",
       "sourceType": "ai-ecosystem",
-      "signals": 33,
+      "signals": 30,
       "success": true,
       "error": null,
-      "durationMs": 103272
+      "durationMs": 117313
     },
     {
       "source": "Open-Meteo",
@@ -61,7 +61,7 @@
       "signals": 1,
       "success": true,
       "error": null,
-      "durationMs": 796
+      "durationMs": 784
     },
     {
       "source": "Date Context",
@@ -85,46 +85,12 @@
       "signals": 7,
       "success": true,
       "error": null,
-      "durationMs": 30183
+      "durationMs": 31249
     }
   ],
   "topSignals": [
     {
-      "id": "gh-mq8bkxih-kbegm",
-      "sourceType": "code",
-      "title": "SamurAIGPT/Generative-Media-Skills",
-      "summary": "Multi-modal Generative Media Skills for AI Agents (Claude Code, Cursor, Gemini CLI). High-quality image, video, and audio generation powered by muapi.ai.",
-      "url": "https://github.com/SamurAIGPT/Generative-Media-Skills",
-      "finalScore": 0.7025,
-      "tags": [
-        "agent-tools",
-        "ai-agents",
-        "ai-art",
-        "ai-music",
-        "ai-video",
-        "claude-code",
-        "flux",
-        "generative-ai",
-        "image-generation",
-        "kling",
-        "mcp",
-        "midjourney",
-        "muapi",
-        "multimodal-ai",
-        "skills",
-        "suno",
-        "text-to-audio",
-        "text-to-image",
-        "text-to-video",
-        "video-generation",
-        "github",
-        "open-source",
-        "shell",
-        "code"
-      ]
-    },
-    {
-      "id": "gh-mq8bkxih-dakba",
+      "id": "gh-mqbmg2fd-iq7eo",
       "sourceType": "code",
       "title": "EvoLinkAI/awesome-gpt-image-2-API-and-Prompts",
       "summary": "GPT-Image-2 API and Prompts",
@@ -158,21 +124,41 @@
       ]
     },
     {
-      "id": "arxiv-mq8bi92l-ohjvh",
-      "sourceType": "academic",
-      "title": "Flaws in the LLM Automation Narrative",
-      "summary": "George Perrett, Javae Elliott, Jennifer Hill, Marc Scott. Large Language Models (LLMs) are increasingly described as performing at the level of human experts on knowledge economy tasks. These claims a",
-      "url": "https://arxiv.org/abs/2606.11166v1",
-      "finalScore": 0.6619877011020773,
+      "id": "gh-mqbmg2fd-mzx4y",
+      "sourceType": "code",
+      "title": "SamurAIGPT/Generative-Media-Skills",
+      "summary": "Multi-modal Generative Media Skills for AI Agents (Claude Code, Cursor, Gemini CLI). High-quality image, video, and audio generation powered by muapi.ai.",
+      "url": "https://github.com/SamurAIGPT/Generative-Media-Skills",
+      "finalScore": 0.6589999999999999,
       "tags": [
-        "arxivcsai",
-        "academic",
-        "paper",
-        "academic"
+        "agent-skills",
+        "agent-tools",
+        "ai-agents",
+        "ai-video",
+        "claude-code",
+        "claude-code-skills",
+        "claude-skills",
+        "flux",
+        "generative-ai",
+        "image-generation",
+        "kling",
+        "mcp",
+        "midjourney",
+        "muapi",
+        "multimodal-ai",
+        "skills",
+        "suno",
+        "text-to-image",
+        "text-to-video",
+        "video-generation",
+        "github",
+        "open-source",
+        "shell",
+        "code"
       ]
     },
     {
-      "id": "gh-mq8bl9m6-bp91s",
+      "id": "gh-mqbmg8i3-2eqv0",
       "sourceType": "code",
       "title": "FurkanGozukara/Stable-Diffusion",
       "summary": "FLUX, Stable Diffusion, SDXL, SD3, LoRA, Fine Tuning, DreamBooth, Training, Automatic1111, Forge WebUI, SwarmUI, DeepFake, TTS, Animation, Text To Video, Tutorials, Guides, Lectures, Courses, ComfyUI,",
@@ -206,49 +192,35 @@
       ]
     },
     {
-      "id": "hn-mq8bnsx8-bpe1t",
+      "id": "hn-mqbmhbwi-65np2",
       "sourceType": "dev-community",
-      "title": "Show HN: Learn while you wait for your agents to code",
-      "summary": "Hi HN, While waiting for Claude Code to finish running, It&#x27;s very tempting to start another task or browse the internet. This is what happened to me so I built Foyer to try to learn about what th",
-      "url": "https://github.com/get-foyer/foyer",
-      "finalScore": 0.6287110440617627,
+      "title": "Ask HN: What will be the next big memory management system for AI Agents?",
+      "summary": "We have all seen RAG and Graph Knowledge, but in your opinion or if you know of some cool project, what’s the next innovation that could a hierve true perpetual memory and true personalization???",
+      "url": "https://news.ycombinator.com/item?id=48510721",
+      "finalScore": 0.6281026110091449,
       "tags": [
         "hackernews",
         "dev-community",
-        "githubcom",
+        "link-post",
         "dev-community"
       ]
     },
     {
-      "id": "arxiv-mq8bi92l-hi3y2",
+      "id": "arxiv-mqbmf50r-mgmgq",
       "sourceType": "academic",
-      "title": "EEVEE: Towards Test-time Prompt Learning in the Real World for Self-Improving Agents",
-      "summary": "Weixian Xu, Shilong Liu, Mengdi Wang. In this paper, we propose EEVEE, the first multi-dataset test-time prompt learning framework for LLM agents, enabling test-time prompt learning under real-world t",
-      "url": "https://arxiv.org/abs/2606.11182v1",
-      "finalScore": 0.6061610240194033,
+      "title": "EvoArena: Tracking Memory Evolution for Robust LLM Agents in Dynamic Environments",
+      "summary": "Jundong Xu, Qingchuan Li, Jiaying Wu, Yihuai Lan, Shuyue Stella Li, Huichi Zhou, Bowen Jiang, Lei Wang, Jun Wang, Anh Tuan Luu, Caiming Xiong, Hae Won Park, Bryan Hooi, Zhiyuan Hu. Large language mode",
+      "url": "https://arxiv.org/abs/2606.13681v1",
+      "finalScore": 0.6273316356250117,
       "tags": [
-        "arxivcsai",
+        "arxivcscl",
         "academic",
         "paper",
         "academic"
       ]
     },
     {
-      "id": "arxiv-mq8bic9c-frou5",
-      "sourceType": "academic",
-      "title": "EEVEE: Towards Test-time Prompt Learning in the Real World for Self-Improving Agents",
-      "summary": "Weixian Xu, Shilong Liu, Mengdi Wang. In this paper, we propose EEVEE, the first multi-dataset test-time prompt learning framework for LLM agents, enabling test-time prompt learning under real-world t",
-      "url": "https://arxiv.org/abs/2606.11182v1",
-      "finalScore": 0.6061610240194033,
-      "tags": [
-        "arxivcslg",
-        "academic",
-        "paper",
-        "academic"
-      ]
-    },
-    {
-      "id": "met-mq8bqm4f-5uipo",
+      "id": "met-mqbmkocs-2sfdh",
       "sourceType": "culture-art",
       "title": "The Penitence of Saint Jerome",
       "summary": "Joachim Patinir. Oil on wood",
@@ -265,12 +237,12 @@
       ]
     },
     {
-      "id": "arxiv-mq8bifbc-zm6wp",
+      "id": "arxiv-mqbmf1x9-5pyue",
       "sourceType": "academic",
-      "title": "Next Forcing: Causal World Modeling with Multi-Chunk Prediction",
-      "summary": "Gangwei Xu, Qihang Zhang, Jiaming Zhou, Xing Zhu, Yujun Shen, Xin Yang, Yinghao Xu. Autoregressive video generation has emerged as a powerful paradigm for World Action Models (WAMs). However, existing",
-      "url": "https://arxiv.org/abs/2606.11187v1",
-      "finalScore": 0.5866938297262054,
+      "title": "InterleaveThinker: Reinforcing Agentic Interleaved Generation",
+      "summary": "Dian Zheng, Harry Lee, Manyuan Zhang, Kaituo Feng, Zoey Guo, Ray Zhang, Hongsheng Li. Recent image generators have demonstrated impressive photorealism and instruction-following capabilities in single",
+      "url": "https://arxiv.org/abs/2606.13679v1",
+      "finalScore": 0.599329363236687,
       "tags": [
         "arxivcscv",
         "academic",
@@ -279,14 +251,42 @@
       ]
     },
     {
-      "id": "arxiv-mq8bifbc-ezvwb",
+      "id": "arxiv-mqbmew3j-kd4uq",
       "sourceType": "academic",
-      "title": "Lip Forcing: Few-Step Autoregressive Diffusion for Real-time Lip Synchronization",
-      "summary": "Paul Hyunbin Cho, Jinhyuk Jang, SeokYoung Lee, Joungbin Lee, Siyoon Jin, Heeseong Shin, Jung Yi, Yunjin Park, Chulmin Park, Seungryong Kim. Diffusion-based lip synchronization models achieve strong vi",
-      "url": "https://arxiv.org/abs/2606.11180v1",
-      "finalScore": 0.586650610499942,
+      "title": "Agents-K1: Towards Agent-native Knowledge Orchestration",
+      "summary": "Zongsheng Cao, Bihao Zhan, Jinxin Shi, Jiong Wang, Fangchen Yu, Zhijie Zhong, Zijie Guo, Tianshuo Peng, Zhuo Liu, Yi Xie, Xiang Zhuang, Yue Fan, Runmin Ma, Shiyang Feng, Xiangchao Yan, Anran Liu, Peng",
+      "url": "https://arxiv.org/abs/2606.13669v1",
+      "finalScore": 0.5993104254745962,
       "tags": [
-        "arxivcscv",
+        "arxivcsai",
+        "academic",
+        "paper",
+        "academic"
+      ]
+    },
+    {
+      "id": "arxiv-mqbmf50r-ezgt6",
+      "sourceType": "academic",
+      "title": "HyperTool: Beyond Step-Wise Tool Calls for Tool-Augmented Agents",
+      "summary": "Yaxin Du, Yifan Zhou, Yujie Ge, Jiajun Wang, Xianghe Pang, Shuo Tang, Tuney Zheng, Bryan Dai, Jian Yang, Siheng Chen. Tool-augmented LLM agents commonly rely on step-wise atomic tool calls, where each",
+      "url": "https://arxiv.org/abs/2606.13663v1",
+      "finalScore": 0.5992803806464976,
+      "tags": [
+        "arxivcscl",
+        "academic",
+        "paper",
+        "academic"
+      ]
+    },
+    {
+      "id": "arxiv-mqbmf50r-x771l",
+      "sourceType": "academic",
+      "title": "EurekAgent: Agent Environment Engineering is All You Need For Autonomous Scientific Discovery",
+      "summary": "Amy Xin, Jiening Siow, Junjie Wang, Zijun Yao, Fanjin Zhang, Jian Song, Lei Hou, Juanzi Li. LLM-based agents have shown increasing potential in automating scientific discovery. Given an optimizable me",
+      "url": "https://arxiv.org/abs/2606.13662v1",
+      "finalScore": 0.5992801281884332,
+      "tags": [
+        "arxivcscl",
         "academic",
         "paper",
         "academic"

@@ -1,6 +1,6 @@
 # Creative Quota Daily Digest
-**Generated:** 2026-06-13T00:20:27.243Z
-**STATUS:** PASS
+**Generated:** 2026-06-13T00:36:22.930Z
+**STATUS:** WARN
 
 ## 今日输入
 | 指标 | 数值 |
@@ -12,7 +12,7 @@
 | Images | 5 |
 | Music | 0 |
 | Video | 0 |
-| Signal freshness | WARN: signals last collected 55h ago (>24h) |
+| Signal freshness | WARN — signals last collected 55h ago (>24h, fallback to previous data) |
 
 ### Signal Sources
 - code: 110
@@ -49,7 +49,7 @@ Next step: produce video prompt / music prompt / run new signal collection.
 | Item | Result |
 |------|--------|
 | Delivery | systemd timer + Telegram auto-send |
-| MiniMax called | No |
+| Image model called | No |
 | New media generated | No |
 | .env git-tracked | No |
 | signal_last_collected_at | 2026-06-10T17:14:07.976Z |

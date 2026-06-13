@@ -16,6 +16,7 @@
 import { readFileSync, writeFileSync, existsSync, statSync } from 'fs';
 import { join, dirname, basename } from 'path';
 import { execSync } from 'child_process';
+import { sanitizeTelegramDigest } from './telegram-digest-sanitizer';
 
 const HARVESTER_DIR = '/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester';
 const ASSETS_DIR = '/home/ubuntu/.openclaw/workspace/projects/creative-quota-assets';
@@ -314,20 +315,28 @@ function buildLatestImageUrl(latestAsset: GeneratedAsset | null): string {
   return (assetsBase + p).replace(/_/g, '\\_');
 }
 
-function checkStaleness(lastCollected: string | null): { isStale: boolean; hoursAgo: number | null; warning: string } {
-  if (!lastCollected) return { isStale: true, hoursAgo: null, warning: 'no collection timestamp available' };
+function checkStaleness(lastCollected: string | null): { isStale: boolean; hoursAgo: number | null; warning: string; status: 'PASS' | 'WARN' | 'FALLBACK' } {
+  if (!lastCollected) return { isStale: true, hoursAgo: null, warning: 'FALLBACK — no collection timestamp available', status: 'FALLBACK' };
   try {
     const t = new Date(lastCollected).getTime();
     const now = Date.now();
     const hoursAgo = Math.round((now - t) / 3600000);
-    const isStale = hoursAgo > 24;
+    if (hoursAgo > 24) {
+      return {
+        isStale: true,
+        hoursAgo,
+        warning: `WARN — signals last collected ${hoursAgo}h ago (>24h, fallback to previous data)`,
+        status: 'WARN',
+      };
+    }
     return {
-      isStale,
+      isStale: false,
       hoursAgo,
-      warning: isStale ? `WARN: signals last collected ${hoursAgo}h ago (>24h)` : `OK: signals collected ${hoursAgo}h ago`,
+      warning: `PASS — signals last collected ${hoursAgo}h ago`,
+      status: 'PASS',
     };
   } catch {
-    return { isStale: true, hoursAgo: null, warning: 'unable to parse collection timestamp' };
+    return { isStale: true, hoursAgo: null, warning: 'FALLBACK — unable to parse collection timestamp', status: 'FALLBACK' };
   }
 }
 
@@ -368,9 +377,11 @@ function generateDigest() {
     queueLines = `All top-priority packs already have generated images (${skippedAlreadyGenerated.length} skipped).\nNext step: produce video prompt / music prompt / run new signal collection.`;
   }
 
+  const overallStatus: 'PASS' | 'WARN' | 'FAIL' = freshness.status === 'PASS' ? 'PASS' : 'WARN';
+
   const telegramLines: string[] = [
     `Creative Quota Daily Digest — ${today}`,
-    `STATUS: PASS`,
+    `STATUS: ${overallStatus}`,
     ``,
     `今日输入`,
     `Signals: ${signalsData.total} (${sourceList})`,
@@ -391,7 +402,7 @@ function generateDigest() {
     ``,
     `本阶段执行结果`,
     `Delivery: systemd timer + Telegram auto-send`,
-    `MiniMax called: No`,
+    `Image model called: No`,
     `New media generated: No`,
     `.env tracked: No`,
     ``,
@@ -408,6 +419,10 @@ function generateDigest() {
   ];
 
   let telegramText = telegramLines.join('\n');
+
+  // Phase 4C-3: sanitize digest before writing/sending (remove tool residue, secrets, etc.)
+  telegramText = sanitizeTelegramDigest(telegramText);
+
   const charCount = telegramText.length;
   const isValid = charCount <= 3500;
 
@@ -427,7 +442,7 @@ function generateDigest() {
   const mdReport = [
     '# Creative Quota Daily Digest',
     `**Generated:** ${nowStr}`,
-    '**STATUS:** PASS',
+    `**STATUS:** ${overallStatus}`,
     '',
     '## 今日输入',
     `| 指标 | 数值 |`,
@@ -465,7 +480,7 @@ function generateDigest() {
     '| Item | Result |',
     '|------|--------|',
     '| Delivery | systemd timer + Telegram auto-send |',
-    '| MiniMax called | No |',
+    '| Image model called | No |',
     '| New media generated | No |',
     '| .env git-tracked | No |',
     `| signal_last_collected_at | ${signalsData.lastCollected || 'unknown'} |`,

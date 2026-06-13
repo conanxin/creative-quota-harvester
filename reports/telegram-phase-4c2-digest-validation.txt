@@ -1,0 +1,37 @@
+Creative Quota Daily Digest — 2026-06-13
+STATUS: PASS
+
+Auto-send validation: PASS
+- systemd timer: active, next run Sun 2026-06-14 07:30 CST
+- 2026-06-13 07:30 scheduled send: message_id=49980
+- 2026-06-13 08:20 confirmed re-send: message_id=49983
+
+Digest fixes applied:
+1. Latest image URL — now reads metadata/generated-assets.json path field (with date subdir). Fixed: images/2026/06/11/cqa-2026-06-11-gen-005_001.jpg
+2. Recommended Queue — excludes already-generated topics via keyword overlap score. 5/5 top topics correctly skipped (SamurAIGPT, Flaws, River AI, StabilityAI, Saint Jerome all have images)
+3. Delivery line — replaced "cron/systemd: No" with "Delivery: systemd timer + Telegram auto-send"
+4. Signal freshness — added "Signal freshness: WARN: signals last collected 55h ago (>24h)" line + signal_last_collected_at field
+5. Next-phase list — removed legacy 3A Full / 4A / 4B; now 4C-2 / 4H / 5C / 3F
+6. URLs — Markdown underscores escaped to prevent Telegram parse errors
+
+Validation results (16/16 PASS):
+- npm run validate:digest-freshness: PASS (16/16)
+- npm run digest:telegram:check: PASS
+- npm run digest:send:dry-run: PASS
+- npm run validate:telegram-auto-send: PASS (7/7)
+- npm run validate:telegram-send: 14/15 (1 intentional: .env.telegram.local not committed)
+
+Safety status:
+- MiniMax called: NO
+- New media generated: NO
+- .env committed: NO
+- .env.telegram.local committed: NO
+- Tokens in digest: NO
+
+Commit: 397f0c2
+Phase report: docs/PHASE_4C2_SCHEDULED_TELEGRAM_DIGEST_VALIDATION_REPORT.md
+Runbook updated: docs/SCHEDULED_DAILY_DIGEST_RUNBOOK.md (v2.0)
+
+Next phases: 4H Video Prompt Enhancement / 5C Private Control Dashboard / 3F Controlled image generation (human-in-loop)
+
+RESULT: PASS — Phase 4C-2 complete, digest ready for next scheduled run at 2026-06-14 07:30 CST.

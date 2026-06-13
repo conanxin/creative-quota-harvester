@@ -77,9 +77,11 @@ const urlMatch = digest.match(/Latest image:\s*(https?:\S+)/);
 if (!urlMatch) { fail('no Latest image URL in digest'); }
 else {
   const url = urlMatch[1];
-  if (url.includes(expectedFilename)) pass(`Latest image URL contains filename: ${expectedFilename}`);
+  // Unescape Telegram Markdown \\_ back to _ before comparison
+  const urlUnescaped = url.replace(/\\_/g, '_');
+  if (urlUnescaped.includes(expectedFilename)) pass(`Latest image URL contains filename: ${expectedFilename}`);
   else fail(`Latest image URL missing filename: ${expectedFilename} (got ${url})`);
-  if (url.includes(expectedPath.replace(/^\/+/, ''))) pass(`Latest image URL contains path: ${expectedPath}`);
+  if (urlUnescaped.includes(expectedPath.replace(/^\/+/, ''))) pass(`Latest image URL contains path: ${expectedPath}`);
   else fail(`Latest image URL does not match expected path: ${expectedPath} (got ${url})`);
   if (url.includes('gen-005001') || url.match(/gen-\d{6,}/)) fail(`URL contains underscore-missing filename pattern: ${url}`);
   else pass('URL has no underscore-missing pattern');
