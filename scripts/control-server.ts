@@ -400,6 +400,19 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/policy-review": {
+      const review = safeReadJson(
+        path.join(HARVESTER_DIR, "dashboard", "policy-review.json"),
+        null
+      );
+      if (!review) {
+        notFound(res, "policy-review.json not found — run 'npm run dashboard:policy:build' first");
+        return;
+      }
+      jsonResponse(res, review);
+      return;
+    }
+
     case "/api/reports": {
       jsonResponse(res, {
         whitelist: REPORTS_WHITELIST,

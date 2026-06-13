@@ -1,0 +1,631 @@
+{
+  "version": "0.4.0",
+  "phase": "5C-4",
+  "generated_at": "2026-06-13T11:51:57Z",
+  "total_commands": 79,
+  "classified": 79,
+  "needs_policy_review": 0,
+  "risk_counts": {
+    "safe": 65,
+    "medium": 12,
+    "high": 2,
+    "danger": 0
+  },
+  "execution_mode_counts": {
+    "safe_readonly": 7,
+    "dry_run_only": 71,
+    "disabled": 1
+  },
+  "source_counts": {
+    "package-script": 72,
+    "manual": 7,
+    "generated": 0
+  },
+  "all_commands_reviewed": true,
+  "risk_groups": [
+    {
+      "risk": "safe",
+      "count": 65,
+      "execution_mode": "dry_run_only",
+      "examples": [
+        "Daily: Manual",
+        "Digest: Telegram",
+        "Digest: Telegram: Check"
+      ]
+    },
+    {
+      "risk": "medium",
+      "count": 12,
+      "execution_mode": "dry_run_only",
+      "examples": [
+        "Archive: Daily",
+        "Digest: Send: Confirmed",
+        "Collect"
+      ]
+    },
+    {
+      "risk": "high",
+      "count": 2,
+      "execution_mode": "dry_run_only",
+      "examples": [
+        "Generate: Image: Confirmed",
+        "Generate: Controlled: Images"
+      ]
+    }
+  ],
+  "execution_matrix": [
+    {
+      "mode": "safe_readonly",
+      "count": 7,
+      "can_real_execute": true,
+      "description": "Read-only queries. No side effects. Can execute in future."
+    },
+    {
+      "mode": "dry_run_only",
+      "count": 71,
+      "can_real_execute": false,
+      "description": "Dry-run only. Simulation without execution."
+    },
+    {
+      "mode": "disabled",
+      "count": 1,
+      "can_real_execute": false,
+      "description": "Disabled. Cannot execute in any mode."
+    }
+  ],
+  "future_execution_candidates": [
+    {
+      "id": "daily_manual",
+      "label_zh": "Daily: Manual",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "digest_telegram",
+      "label_zh": "Digest: Telegram",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "digest_telegram_check",
+      "label_zh": "Digest: Telegram: Check",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "archive_daily",
+      "label_zh": "Archive: Daily",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_daily-archive",
+      "label_zh": "Validate: Daily-archive",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "digest_send_dry-run",
+      "label_zh": "Digest: Send: Dry-run",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "digest_send_check",
+      "label_zh": "Digest: Send: Check",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "digest_send_confirmed",
+      "label_zh": "Digest: Send: Confirmed",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_digest-freshness",
+      "label_zh": "Validate: Digest-freshness",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "collect",
+      "label_zh": "Collect",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "collect_diagnose",
+      "label_zh": "Collect: Diagnose",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "collect_fresh",
+      "label_zh": "Collect: Fresh",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "collect_fresh_fast",
+      "label_zh": "Collect: Fresh: Fast",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "collect_fresh_full",
+      "label_zh": "Collect: Fresh: Full",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "collect_diagnose_connectivity",
+      "label_zh": "Collect: Diagnose: Connectivity",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "diagnose_sources",
+      "label_zh": "Diagnose: Sources",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "generate_image_canary",
+      "label_zh": "Generate: Image: Canary",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "generate_image_dry-run",
+      "label_zh": "Generate: Image: Dry-run",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "prompts_image_enhance",
+      "label_zh": "Prompts: Image: Enhance",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "prompts_video_enhance",
+      "label_zh": "Prompts: Video: Enhance",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_video-prompt-enhancement",
+      "label_zh": "Validate: Video-prompt-enhancement",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_video-prompts",
+      "label_zh": "Validate: Video-prompts",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "prompts_music_enhance",
+      "label_zh": "Prompts: Music: Enhance",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_music-prompt-enhancement",
+      "label_zh": "Validate: Music-prompt-enhancement",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_music-prompts",
+      "label_zh": "Validate: Music-prompts",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "review_images",
+      "label_zh": "Review: Images",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_image-reviews",
+      "label_zh": "Validate: Image-reviews",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_image-prompts",
+      "label_zh": "Validate: Image-prompts",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "dashboard_control_generate",
+      "label_zh": "Dashboard: Control: Generate",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_assets",
+      "label_zh": "Validate: Assets",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "guard_check",
+      "label_zh": "Guard: Check",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "type-check",
+      "label_zh": "Type-check",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_enrichment",
+      "label_zh": "Validate: Enrichment",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_public-gallery",
+      "label_zh": "Validate: Public-gallery",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_gallery-dedup",
+      "label_zh": "Validate: Gallery-dedup",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_content-pack-pages",
+      "label_zh": "Validate: Content-pack-pages",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_mobile-gallery",
+      "label_zh": "Validate: Mobile-gallery",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_facts-enrichment",
+      "label_zh": "Validate: Facts-enrichment",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "dashboard_validate",
+      "label_zh": "Dashboard: Validate",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "dashboard_control_drift-check",
+      "label_zh": "Dashboard: Control: Drift-check",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "dashboard_control_validate",
+      "label_zh": "Dashboard: Control: Validate",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "dashboard_policy_validate",
+      "label_zh": "Dashboard: Policy: Validate",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_control-server",
+      "label_zh": "Validate: Control-server",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_control-readonly-actions",
+      "label_zh": "Validate: Control-readonly-actions",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_control-actions-dry-run",
+      "label_zh": "Validate: Control-actions-dry-run",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "control_server_check",
+      "label_zh": "Control: Server: Check",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "dashboard_pages_validate",
+      "label_zh": "Dashboard: Pages: Validate",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_telegram-send",
+      "label_zh": "Validate: Telegram-send",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_telegram-auto-send",
+      "label_zh": "Validate: Telegram-auto-send",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_telegram-sanitizer",
+      "label_zh": "Validate: Telegram-sanitizer",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_project-report-send",
+      "label_zh": "Validate: Project-report-send",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "report",
+      "label_zh": "Report",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "report_send_dry-run",
+      "label_zh": "Report: Send: Dry-run",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "report_send",
+      "label_zh": "Report: Send",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "run-once",
+      "label_zh": "Run-once",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "test-adapter",
+      "label_zh": "Test-adapter",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "build_content-packs",
+      "label_zh": "Build: Content-packs",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "briefs",
+      "label_zh": "Briefs",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "enrich_content",
+      "label_zh": "Enrich: Content",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "gallery_from-dedup",
+      "label_zh": "Gallery: From-dedup",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "gallery_dedup",
+      "label_zh": "Gallery: Dedup",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "enrich_facts",
+      "label_zh": "Enrich: Facts",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "enrich_facts_offline",
+      "label_zh": "Enrich: Facts: Offline",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "enrich_facts_force",
+      "label_zh": "Enrich: Facts: Force",
+      "risk": "medium",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "dashboard_build",
+      "label_zh": "Dashboard: Build",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "dashboard_policy_build",
+      "label_zh": "Dashboard: Policy: Build",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "control_server",
+      "label_zh": "Control: Server",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "control_server_smoke",
+      "label_zh": "Control: Server: Smoke",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "pages_content-packs",
+      "label_zh": "Pages: Content-packs",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "get_status",
+      "label_zh": "查询系统状态",
+      "risk": "safe",
+      "execution_mode": "safe_readonly",
+      "reason": "Low-risk, no model/media/timer, mode=safe_readonly"
+    },
+    {
+      "id": "get_source_health",
+      "label_zh": "查询 Source Health",
+      "risk": "safe",
+      "execution_mode": "safe_readonly",
+      "reason": "Low-risk, no model/media/timer, mode=safe_readonly"
+    },
+    {
+      "id": "get_latest_digest",
+      "label_zh": "查询最新 Digest",
+      "risk": "safe",
+      "execution_mode": "safe_readonly",
+      "reason": "Low-risk, no model/media/timer, mode=safe_readonly"
+    },
+    {
+      "id": "get_generation_queue",
+      "label_zh": "查询生成队列",
+      "risk": "safe",
+      "execution_mode": "safe_readonly",
+      "reason": "Low-risk, no model/media/timer, mode=safe_readonly"
+    },
+    {
+      "id": "get_asset_summary",
+      "label_zh": "查询 Asset 汇总",
+      "risk": "safe",
+      "execution_mode": "safe_readonly",
+      "reason": "Low-risk, no model/media/timer, mode=safe_readonly"
+    },
+    {
+      "id": "get_timer_snapshot",
+      "label_zh": "查询 Timer 快照",
+      "risk": "safe",
+      "execution_mode": "safe_readonly",
+      "reason": "Low-risk, no model/media/timer, mode=safe_readonly"
+    },
+    {
+      "id": "get_dashboard_links",
+      "label_zh": "查询 Dashboard 链接",
+      "risk": "safe",
+      "execution_mode": "safe_readonly",
+      "reason": "Low-risk, no model/media/timer, mode=safe_readonly"
+    }
+  ],
+  "never_execute": [
+    {
+      "id": "generate_image_confirmed",
+      "label_zh": "Generate: Image: Confirmed",
+      "risk": "high",
+      "reason": "calls_model"
+    },
+    {
+      "id": "generate_controlled_images",
+      "label_zh": "Generate: Controlled: Images",
+      "risk": "high",
+      "reason": "calls_model"
+    },
+    {
+      "id": "build",
+      "label_zh": "Build",
+      "risk": "safe",
+      "reason": "execution_mode=disabled"
+    }
+  ],
+  "notes": "Phase 5C-4 Policy Review. All commands classified. No commands need policy review. High/danger/media/timer commands never execute from public UI. Safe/medium commands may be candidates for future confirmed execution."
+}

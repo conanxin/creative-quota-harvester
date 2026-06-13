@@ -57,6 +57,8 @@
         "dashboard:control:generate": "tsx scripts/generate-control-catalog.ts",
     "dashboard:control:drift-check": "tsx scripts/validate-control-catalog-generated.ts",
     "dashboard:control:validate": "tsx scripts/validate-control-catalog.ts",
+    "dashboard:policy:build": "tsx scripts/build-policy-review.ts",
+    "dashboard:policy:validate": "tsx scripts/validate-policy-review.ts",
     "validate:control-server": "tsx scripts/validate-control-server.ts",
     "validate:control-readonly-actions": "tsx scripts/validate-control-readonly-actions.ts",
     "validate:control-actions-dry-run": "tsx scripts/validate-control-actions-dry-run.ts",

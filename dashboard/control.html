@@ -119,8 +119,8 @@
 <div class="container">
   <header>
     <h1>🔒 Creative Quota 私有控制目录</h1>
-    <div class="subtitle">Phase 5C-3 · Auto-generated Command Catalog</div>
-    <div class="readonly-badge">📖 只读命令目录 · 不会执行任何命令 · 自动生成</div>
+    <div class="subtitle">Phase 5C-4 · Policy Review UI · Auto-generated Command Catalog</div>
+    <div class="readonly-badge">📖 只读命令目录 · 不会执行任何命令 · 自动生成 · 策略审查</div>
   </header>
 
   <div class="critical-warning">
@@ -154,10 +154,12 @@
     <span class="filter-count" id="filter-count"></span>
   </div>
 
+  <div id="policy-review-root">加载策略审查中…</div>
+
   <div id="catalog-root">加载命令目录中…</div>
 
   <footer>
-    <p>Creative Quota Harvester · Phase 5C-3 · Auto-generated Control Catalog</p>
+    <p>Creative Quota Harvester · Phase 5C-4 · Policy Review UI</p>
     <p class="emphasis">公开 GitHub Pages 版本仅展示命令，不具备执行能力。</p>
   </footer>
 </div>
@@ -184,6 +186,173 @@
     'manual': 'manual',
     'generated': 'generated'
   };
+
+  var prRoot = document.getElementById('policy-review-root');
+  if (prRoot) {
+    fetch('./policy-review.json', { method: 'GET', cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (review) { renderPolicyReview(review, prRoot); })
+      .catch(function (err) { prRoot.innerHTML = '<div class="critical-warning"><div class="warning-title">策略审查加载失败</div><p>无法读取 policy-review.json：' + String(err) + '</p></div>'; });
+  }
+
+  function renderPolicyReview(review, mount) {
+    mount.innerHTML = '';
+    var box = document.createElement('div');
+    box.style.background = '#fff';
+    box.style.border = '1px solid #e0e0e0';
+    box.style.borderRadius = '12px';
+    box.style.padding = '24px';
+    box.style.marginBottom = '24px';
+
+    var title = document.createElement('h2');
+    title.textContent = '📋 策略审查 / Policy Review';
+    title.style.color = '#2c3e50';
+    title.style.marginBottom = '16px';
+    title.style.fontSize = '1.3rem';
+    box.appendChild(title);
+
+    // Stats grid
+    var grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(140px, 1fr))';
+    grid.style.gap = '12px';
+    grid.style.marginBottom = '16px';
+
+    function statCard(label, value, color) {
+      var c = document.createElement('div');
+      c.style.background = '#f8f9fa';
+      c.style.borderRadius = '8px';
+      c.style.padding = '12px';
+      c.style.textAlign = 'center';
+      var n = document.createElement('div');
+      n.style.fontSize = '1.6rem';
+      n.style.fontWeight = '700';
+      n.style.color = color || '#1e3a5f';
+      n.textContent = String(value);
+      var l = document.createElement('div');
+      l.style.fontSize = '0.75rem';
+      l.style.color = '#7f8c8d';
+      l.style.marginTop = '4px';
+      l.textContent = label;
+      c.appendChild(n); c.appendChild(l);
+      return c;
+    }
+
+    grid.appendChild(statCard('总命令数', review.total_commands || 0));
+    grid.appendChild(statCard('已分类', review.classified || 0, '#22c55e'));
+    grid.appendChild(statCard('需审查', review.needs_policy_review || 0, review.needs_policy_review > 0 ? '#ef4444' : '#22c55e'));
+    box.appendChild(grid);
+
+    // Risk counts
+    var riskBox = document.createElement('div');
+    riskBox.style.background = '#f0f9ff';
+    riskBox.style.border = '1px solid #bae6fd';
+    riskBox.style.borderRadius = '8px';
+    riskBox.style.padding = '12px 16px';
+    riskBox.style.marginBottom = '12px';
+    riskBox.style.fontSize = '0.85rem';
+    var rh = document.createElement('div');
+    rh.style.fontWeight = '600';
+    rh.style.marginBottom = '6px';
+    rh.textContent = '⚡ 风险分布';
+    riskBox.appendChild(rh);
+    var rc = review.risk_counts || {};
+    riskBox.appendChild(text('Safe: ' + (rc.safe || 0) + ' · Medium: ' + (rc.medium || 0) + ' · High: ' + (rc.high || 0) + ' · Danger: ' + (rc.danger || 0)));
+    box.appendChild(riskBox);
+
+    // All reviewed badge
+    if (review.all_commands_reviewed) {
+      var badge = document.createElement('div');
+      badge.style.background = '#d1fae5';
+      badge.style.color = '#065f46';
+      badge.style.padding = '8px 16px';
+      badge.style.borderRadius = '8px';
+      badge.style.fontWeight = '600';
+      badge.style.fontSize = '0.9rem';
+      badge.style.marginBottom = '12px';
+      badge.textContent = '✅ 所有命令已完成策略分类 · All commands reviewed';
+      box.appendChild(badge);
+    }
+
+    // Future candidates
+    var fc = review.future_execution_candidates || [];
+    if (fc.length > 0) {
+      var fcBox = document.createElement('div');
+      fcBox.style.background = '#fef3c7';
+      fcBox.style.border = '1px solid #fde68a';
+      fcBox.style.borderRadius = '8px';
+      fcBox.style.padding = '12px 16px';
+      fcBox.style.marginBottom = '12px';
+      fcBox.style.fontSize = '0.85rem';
+      var fcTitle = document.createElement('div');
+      fcTitle.style.fontWeight = '600';
+      fcTitle.style.marginBottom = '6px';
+      fcTitle.textContent = '🚀 Future Execution Candidates (' + fc.length + ')';
+      fcBox.appendChild(fcTitle);
+      var fcList = document.createElement('div');
+      for (var i = 0; i < Math.min(fc.length, 5); i++) {
+        var item = document.createElement('span');
+        item.style.display = 'inline-block';
+        item.style.background = '#fff';
+        item.style.padding = '2px 8px';
+        item.style.borderRadius = '4px';
+        item.style.margin = '2px 4px 2px 0';
+        item.style.fontSize = '0.75rem';
+        item.style.fontFamily = 'monospace';
+        item.textContent = fc[i].label_zh || fc[i].id;
+        fcList.appendChild(item);
+      }
+      if (fc.length > 5) {
+        var more = document.createElement('span');
+        more.style.fontSize = '0.75rem';
+        more.style.color = '#7f8c8d';
+        more.textContent = ' + ' + (fc.length - 5) + ' more';
+        fcList.appendChild(more);
+      }
+      fcBox.appendChild(fcList);
+      box.appendChild(fcBox);
+    }
+
+    // Never execute
+    var ne = review.never_execute || [];
+    if (ne.length > 0) {
+      var neBox = document.createElement('div');
+      neBox.style.background = '#fee2e2';
+      neBox.style.border = '1px solid #fecaca';
+      neBox.style.borderRadius = '8px';
+      neBox.style.padding = '12px 16px';
+      neBox.style.fontSize = '0.85rem';
+      var neTitle = document.createElement('div');
+      neTitle.style.fontWeight = '600';
+      neTitle.style.marginBottom = '6px';
+      neTitle.textContent = '🚫 Never Execute from Public UI (' + ne.length + ')';
+      neBox.appendChild(neTitle);
+      var neList = document.createElement('div');
+      for (var i = 0; i < Math.min(ne.length, 5); i++) {
+        var item = document.createElement('span');
+        item.style.display = 'inline-block';
+        item.style.background = '#fff';
+        item.style.padding = '2px 8px';
+        item.style.borderRadius = '4px';
+        item.style.margin = '2px 4px 2px 0';
+        item.style.fontSize = '0.75rem';
+        item.style.fontFamily = 'monospace';
+        item.textContent = (ne[i].label_zh || ne[i].id) + ' (' + ne[i].reason + ')';
+        neList.appendChild(item);
+      }
+      if (ne.length > 5) {
+        var more = document.createElement('span');
+        more.style.fontSize = '0.75rem';
+        more.style.color = '#7f8c8d';
+        more.textContent = ' + ' + (ne.length - 5) + ' more';
+        neList.appendChild(more);
+      }
+      neBox.appendChild(neList);
+      box.appendChild(neBox);
+    }
+
+    mount.appendChild(box);
+  }
 
   var root = document.getElementById('catalog-root');
   if (!root) return;

@@ -424,6 +424,20 @@
       "notes": "真实发送项目报告。需要 CQA_ALLOW_TELEGRAM_SEND=1。"
     },
     {
+      "match": "build",
+      "risk_level": "safe",
+      "requires_confirm": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": false,
+      "modifies_files": true,
+      "public_safe": true,
+      "dry_run_supported": true,
+      "real_execution_supported": false,
+      "execution_mode": "disabled",
+      "notes": "Build/static generation command. Disabled for real execution in public and localhost control UI; safe to list but not executable."
+    },
+    {
       "match": "build:*",
       "risk_level": "safe",
       "requires_confirm": false,

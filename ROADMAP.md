@@ -501,7 +501,7 @@ https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-1
 | **Phase 5C-2B** | ✅ **Safe read-only action execution** (read-only queries, no side effects, no model calls) | After 5C-2A |
 | **Phase 5C-2C** | Confirmed low-risk command execution (with 2FA for high/danger) | After 5C-2B |
 | **Phase 5C-3** | ✅ **Auto-generated control catalog from package.json scripts** (policy-driven, drift-check, 69 scripts mapped) | After 5C-2B |
-| **Phase 5C-4** | Auto-generated safe-readonly action handlers from catalog | After 5C-3 |
+| **Phase 5C-4** | ✅ **Policy Review UI** (auto-generated policy analysis, future execution candidates, never-execute list) | After 5C-3 |
 | **Phase 5D** | Lyrics-aware music prompt variants (when lyrics make sense) | After 4J |
 
 ### Long-term

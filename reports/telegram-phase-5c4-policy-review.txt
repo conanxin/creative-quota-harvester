@@ -1,0 +1,40 @@
+Phase 5C-4 — Policy Review UI
+
+STATUS: ✅ COMPLETE
+
+WHAT_CHANGED:
+• Fixed build command policy: risk=safe, execution_mode=disabled
+• New build-policy-review.ts + validate-policy-review.ts
+• New npm scripts: dashboard:policy:build + dashboard:policy:validate
+• New policy-review.json: 79 commands, 0 need review, 76 future candidates, 3 never execute
+• control.html updated: Policy Review section with stats, risk distribution, future candidates, never-execute
+• control-server.ts updated: GET /api/policy-review endpoint
+• Updated docs: PRIVATE_CONTROL_SERVER_RUNBOOK.md, README.md, ROADMAP.md
+
+POLICY_REVIEW_STATUS:
+• Total commands: 79
+• Classified: 79 (100%)
+• Needs review: 0 ✅
+• Safe: 65 | Medium: 13 | High: 2 | Danger: 0
+• Future candidates: 76 (safe/medium, no model/media/timer)
+• Never execute: 3 (high/disabled)
+
+VALIDATION: 8/8 PASS
+✅ generate ✅ drift-check ✅ policy:build ✅ policy:validate ✅ control-server ✅ catalog validate ✅ dry-run ✅ readonly-actions
+
+SMOKE_TEST: PASS
+• Server on 127.0.0.1:8788
+• Catalog API + Policy Review API readable
+• UI shows Policy Review section
+• Dry-run blocked with wrong confirm phrase
+• real_execution=false
+
+MODEL_CALL: ❌ None
+MEDIA_GEN: ❌ None
+
+NEXT:
+• Phase 5C-2C: Confirmed low-risk execution
+• Phase 5C-4: Auto-generated safe-readonly handlers
+• Phase 4J: Audio coupling
+
+Full report: reports/phase-5c4-policy-review.md

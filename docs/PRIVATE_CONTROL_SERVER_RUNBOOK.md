@@ -276,4 +276,86 @@ Real execution is planned for Phase 5C-2C (confirmed low-risk) and Phase 5C-4 (a
 
 ---
 
-*Runbook v3.0 — Phase 5C-3*
+## Phase 5C-4 — Policy Review UI
+
+Phase 5C-4 adds a **Policy Review dashboard** to the control UI. It analyzes the auto-generated catalog, identifies future execution candidates, and ensures all commands are properly classified.
+
+### What Changed
+
+- New `scripts/build-policy-review.ts` — analyzes `control-catalog.json` and generates `dashboard/policy-review.json`.
+- New `scripts/validate-policy-review.ts` — validates the policy review JSON (25 checks).
+- New npm scripts:
+  - `npm run dashboard:policy:build` — build policy review
+  - `npm run dashboard:policy:validate` — validate policy review
+- New `dashboard/policy-review.json` — auto-generated policy analysis.
+- `control.html` updated with:
+  - Policy Review section showing: total commands, classified count, needs review count
+  - Risk distribution (safe/medium/high/danger)
+  - "All commands reviewed" badge
+  - Future Execution Candidates list (safe/medium, no model/media/timer)
+  - Never Execute list (high/danger/media/timer/disabled)
+- `scripts/control-server.ts` updated with:
+  - `GET /api/policy-review` — serves `dashboard/policy-review.json`
+- `dashboard/control-policy.json` updated:
+  - Explicit rule for `build` command: risk=safe, execution_mode=disabled
+  - `needs_policy_review` now 0 for all 79 commands
+
+### Policy Review Status
+
+| Metric | Value |
+|---|---|
+| Total commands | 79 |
+| Classified | 79 (100%) |
+| Needs policy review | 0 |
+| Safe | 65 |
+| Medium | 13 |
+| High | 2 |
+| Danger | 0 |
+| Future execution candidates | 76 |
+| Never execute | 3 |
+
+### How to Build Policy Review
+
+```bash
+cd ~/.openclaw/workspace/projects/creative-quota-harvester
+npm run dashboard:policy:build
+```
+
+This creates `dashboard/policy-review.json` from the current `control-catalog.json`.
+
+### How to Validate Policy Review
+
+```bash
+npm run dashboard:policy:validate
+```
+
+PASS means:
+- `needs_policy_review === 0`
+- `all_commands_reviewed === true`
+- High/danger/media/timer commands NOT in future execution candidates
+- Risk counts sum to total commands
+- No secrets in the review file
+
+### Why Real Execution is Still Disabled
+
+Phase 5C-4 is **policy review and analysis only**:
+- No new execution endpoints added
+- No `/api/action/execute` endpoint exists
+- `real_execution_supported=false` on all 79 commands
+- High/danger commands remain `execution_mode: disabled` or `dry_run_only`
+- The server only serves `dry-run` and `read-only` endpoints
+
+Real execution is planned for Phase 5C-2C (confirmed low-risk execution) and Phase 5C-4 (auto-generated safe-readonly handlers).
+
+### Files
+
+- `scripts/build-policy-review.ts` — policy review builder (new)
+- `scripts/validate-policy-review.ts` — policy review validator (new)
+- `dashboard/policy-review.json` — auto-generated policy analysis (new, git-tracked)
+- `dashboard/control.html` — updated with Policy Review section (updated)
+- `scripts/control-server.ts` — serves policy review API (updated)
+- `dashboard/control-policy.json` — updated build rule (updated)
+
+---
+
+*Runbook v4.0 — Phase 5C-4*
