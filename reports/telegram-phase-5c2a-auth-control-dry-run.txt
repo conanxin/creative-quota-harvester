@@ -1,0 +1,63 @@
+PHASE 5C-2A COMPLETE
+
+Status: PASS
+Mode: Authenticated Control Actions Dry-run (no real execution, no model call, no media generation)
+
+What Changed:
+- .control.local.example (CQA_CONTROL_TOKEN, CQA_CONTROL_ENABLE_ACTIONS)
+- .gitignore: .control.local and reports/control-action-audit.jsonl ignored
+- dashboard/control-catalog.json: all 25 commands get action metadata (action_id, dry_run_supported=true, real_execution_supported=false, confirmation_phrase, audit_required=true)
+- scripts/control-server.ts: POST /api/action/dry-run endpoint (validates token, confirm_phrase, risk level; never executes)
+- scripts/validate-control-actions-dry-run.ts: 19 validation checks
+- reports/control-action-audit.jsonl: runtime audit log (git-ignored, no secrets)
+
+Auth Model:
+- Host: 127.0.0.1 only
+- Auth file: .control.local (git-ignored)
+- No config → blocked_needs_control_config
+- Wrong token → Forbidden
+- Audit secrets: Never
+
+Dry-run Endpoint: POST /api/action/dry-run
+- All responses: real_execution=false
+- No child_process, no exec, no spawn
+- No file modification outside audit log
+- No model calls, no media generation
+
+Smoke Test:
+- No config: blocked_needs_control_config ✅
+- Invalid token: Forbidden ✅
+- Valid + good confirm (safe): allowed_dry_run, real_execution=false ✅
+- Valid + bad confirm (safe): mismatch, real_execution=false ✅
+- Valid + good confirm (high): allowed_dry_run, real_execution=false ✅
+- Valid + good confirm (danger): allowed_dry_run, real_execution=false ✅
+- Unknown action: Not Found, blocked ✅
+
+Validation:
+- validate:control-server: 20/20 PASS (regression)
+- dashboard:control:validate: 15/15 PASS (regression)
+- validate:control-actions-dry-run: 19/19 PASS (new)
+
+Boundaries:
+- MiniMax called: No
+- Image/Video/Music model called: No
+- LLM called: No
+- New media/audio generated: No
+- Systemd timer: untouched
+- Gateway config: untouched
+- .env / .env.telegram.local: not committed
+- Telegram token: not printed
+- Real execution: not possible
+- Public Pages executable control: not possible
+
+GitHub Push: creative-quota-harvester updated (master)
+
+Next Phase:
+- Phase 5C-2B: Safe read-only action execution (with auth + audit)
+- Phase 5C-2C: Confirmed low-risk command execution (2FA for high/danger)
+- Phase 5C-3: Auto-generated catalog from package.json scripts
+- Phase 4J: Audio coupling (video + music)
+
+Full Report: docs/PHASE_5C2A_AUTH_CONTROL_DRY_RUN_REPORT.md
+Detail Report: reports/auth-control-dry-run.md
+Runbook: docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md

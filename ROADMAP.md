@@ -25,6 +25,8 @@
 | 0.17.0 | 2026-06-13 | Phase 4I | ✅ COMPLETE — Source-aware music prompt enhancement (25 packs, 1009 checks) |
 | 0.17.1 | 2026-06-13 | Phase 4I-1 | ✅ COMPLETE — Sanitizer scope fix (allow public product name "MiniMax") |
 | 0.18.0 | 2026-06-13 | Phase 5C-0 | ✅ COMPLETE — Private Control Command Catalog (read-only, 25 commands × 6 groups) |
+| 0.19.0 | 2026-06-13 | Phase 5C-1 | ✅ COMPLETE — localhost-only Private Control Server (127.0.0.1:8788, read-only, no command execution) |
+| 0.20.0 | 2026-06-13 | Phase 5C-2A | ✅ COMPLETE — Authenticated Control Actions Dry-run (auth + confirm + audit, no real execution) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |
@@ -493,7 +495,9 @@ https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-1
 | **Phase 4J** | Audio coupling (video 8s + music 60-90s timeline alignment) | After 4H+4I stable |
 | **Phase 4K** | Music prompt scoring (mood specificity, instrument coverage) | After 4J |
 | **Phase 5C-1** | localhost-only private control server (127.0.0.1 bind, CORS locked) | After 5C-0 |
-| **Phase 5C-2** | Authenticated control actions (2FA for high/danger, per-user audit) | After 5C-1 |
+| **Phase 5C-2A** | ✅ **Authenticated control actions dry-run** (auth + confirm + audit, no real execution) | After 5C-1 |
+| **Phase 5C-2B** | Safe read-only action execution (with auth + audit) | After 5C-2A |
+| **Phase 5C-2C** | Confirmed low-risk command execution (with 2FA for high/danger) | After 5C-2B |
 | **Phase 5C-3** | Auto-generated catalog from package.json scripts | After 5C-2 |
 | **Phase 5D** | Lyrics-aware music prompt variants (when lyrics make sense) | After 4J |
 
@@ -613,7 +617,9 @@ Regression checks:
 
 ### Next Phase
 
-- **Phase 5C-2**: Authenticated control actions (2FA for high/danger, per-user audit)
+- **Phase 5C-2A**: Authenticated control actions dry-run (auth + confirm + audit, no real execution) ✅
+- **Phase 5C-2B**: Safe read-only action execution (with auth + audit)
+- **Phase 5C-2C**: Confirmed low-risk command execution (with 2FA for high/danger)
 - **Phase 5C-3**: Auto-generated catalog from package.json scripts
 - **Phase 4J**: Audio coupling (video + music)
 - **Phase 6A**: Smart profile selection

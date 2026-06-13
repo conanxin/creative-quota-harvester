@@ -1,0 +1,65 @@
+PHASE 5C-2A COMPLETE
+
+Status: PASS
+Mode: Authenticated Control Actions Dry-run (no real execution, no model call, no media generation)
+
+What Changed:
+- New .control.local.example (CQA_CONTROL_TOKEN, CQA_CONTROL_ENABLE_ACTIONS)
+- .gitignore: .control.local and reports/control-action-audit.jsonl ignored
+- dashboard/control-catalog.json: all 25 commands get action metadata
+  - action_id, dry_run_supported=true, real_execution_supported=false
+  - allowed_in_phase=5C-2A-dry-run-only, confirmation_phrase, audit_required=true
+- scripts/control-server.ts: POST /api/action/dry-run endpoint
+  - Validates action_id, confirm_phrase, optional CQA_CONTROL_TOKEN
+  - No child_process, no exec, no spawn, no real execution
+  - Audit log writes to reports/control-action-audit.jsonl
+  - GET routes unchanged, all non-POST/GET still blocked
+- scripts/validate-control-actions-dry-run.ts: 19 validation checks
+- package.json: +validate:control-actions-dry-run script
+
+Validation Results:
+- validate:control-server: 20/20 PASS (regression)
+- dashboard:control:validate: 15/15 PASS (regression)
+- validate:control-actions-dry-run: 19/19 PASS (new)
+
+Smoke Test Results:
+- /health: mode=localhost-only-dry-run-only, actions_enabled=true, token_configured=true
+- Dry-run no token: Forbidden (invalid_token)
+- Dry-run bad token: Forbidden (invalid_token)
+- Dry-run good token + good confirm: allowed_dry_run, real_execution=false
+- Dry-run bad confirm: mismatch, blocked
+- Dry-run high risk (image_confirmed_1): allowed_dry_run, real_execution=false
+- Dry-run danger (timer_disable_command): allowed_dry_run, real_execution=false
+- Dry-run unknown action: Not Found, blocked
+
+Audit Log: 4 entries written, no tokens, no secrets
+
+Security Model:
+- Still binds to 127.0.0.1 only
+- No /api/action/execute endpoint
+- All real_execution_supported=false
+- All real_execution fields in response are false
+- No child_process, no exec, no spawn
+- No .env reading, no token exposure in code
+- Audit log writes only ts/mode/action_id/risk_level/confirm_ok/result/reason
+
+Boundaries:
+- MiniMax called: No
+- Image/Video/Music model called: No
+- LLM called: No
+- New media generated: No
+- New audio generated: No
+- Systemd timer: untouched
+- Gateway config: untouched
+- .env / .env.telegram.local: not committed
+- Telegram token: not printed
+- Real execution: not possible from this server
+- Public Pages executable control: not possible
+
+GitHub Push: creative-quota-harvester 7db6266 -> origin/master
+
+Next Phase:
+- Phase 5C-2B: Real execution for safe commands (with auth + audit)
+- Phase 5C-2C: 2FA for high/danger commands
+- Phase 5C-3: Auto-generated catalog from package.json scripts
+- Phase 4J: Audio coupling (video + music)

@@ -71,8 +71,105 @@ Before starting the server, verify:
 
 ## Next Phase
 
-- **Phase 5C-2** will introduce authenticated control actions (2FA for high/danger commands, per-user audit logs). This is the phase where actual command execution becomes possible, but only for authenticated users.
+- **Phase 5C-2A (current)** introduces authenticated dry-run actions. See below.
+- **Phase 5C-2B** will allow real execution of safe (read-only) commands with auth + audit.
+- **Phase 5C-2C** will add 2FA for high/danger commands.
 - **Phase 5C-3** will auto-generate the catalog from `package.json` scripts to avoid drift.
+
+---
+
+## Phase 5C-2A — Authenticated Control Actions Dry-run
+
+Phase 5C-2A adds a **dry-run action endpoint** to the localhost-only server. It validates authentication, confirmation phrases, and risk levels — but **never executes any command**.
+
+### What Changed
+
+- New `.control.local` config file (git-ignored) for authentication:
+  - `CQA_CONTROL_TOKEN=<your-token>`
+  - `CQA_CONTROL_ENABLE_ACTIONS=1`
+- All commands in `control-catalog.json` now have `action_id`, `dry_run_supported`, `real_execution_supported=false`, `confirmation_phrase`, and `audit_required`.
+- New `POST /api/action/dry-run` endpoint:
+  - Validates `action_id` exists in catalog
+  - Validates `confirm_phrase` matches catalog
+  - Validates `token` against `.control.local` (if configured)
+  - Returns what the command would do, but **never executes it**
+  - All responses have `real_execution: false`
+
+### How to Configure Authentication
+
+```bash
+cd ~/.openclaw/workspace/projects/creative-quota-harvester
+# Create .control.local (already in .gitignore)
+cat > .control.local << 'EOF'
+CQA_CONTROL_TOKEN=your-secret-token-here
+CQA_CONTROL_ENABLE_ACTIONS=1
+EOF
+```
+
+Without `.control.local`, the dry-run endpoint returns `blocked_needs_control_config`.
+
+### How to Call Dry-run
+
+```bash
+# Safe action (run_manual_digest)
+curl -s -X POST http://127.0.0.1:8788/api/action/dry-run \
+  -H "Content-Type: application/json" \
+  -d '{"action_id":"run_manual_digest","confirm_phrase":"dry-run-safe","token":"your-secret-token"}'
+
+# High-risk action (image_confirmed_1)
+curl -s -X POST http://127.0.0.1:8788/api/action/dry-run \
+  -H "Content-Type: application/json" \
+  -d '{"action_id":"image_confirmed_1","confirm_phrase":"dry-run-high","token":"your-secret-token"}'
+```
+
+Expected response (all cases):
+```json
+{
+  "action_id": "...",
+  "label_zh": "...",
+  "risk_level": "safe|medium|high|danger",
+  "would_run_command": "...",
+  "requires_confirm": true/false,
+  "confirmation_phrase_expected": "...",
+  "confirmation_status": "matched|mismatch|blocked_needs_control_config",
+  "real_execution": false,
+  "dry_run_only": true,
+  "message": "Dry-run passed. No command executed. This is a simulation only."
+}
+```
+
+### Why This Phase Does Not Execute Commands
+
+Phase 5C-2A is **dry-run only** by design:
+- No `child_process`, `exec`, or `spawn` calls
+- No file modifications outside audit log
+- No model calls
+- No media generation
+- No timer modifications
+- All `real_execution_supported` fields are `false`
+- No `/api/action/execute` endpoint exists
+
+Real execution is planned for Phase 5C-2B (safe commands) and Phase 5C-2C (confirmed high/danger commands).
+
+### Audit Log
+
+Every dry-run attempt is logged to `reports/control-action-audit.jsonl` (git-ignored):
+
+```json
+{"ts":"2026-06-13T08:32:42.906Z","mode":"dry-run","action_id":"run_manual_digest","risk_level":"safe","confirm_ok":true,"real_execution":false,"result":"allowed_dry_run","reason":"confirm_phrase_matched"}
+```
+
+**The audit log never contains tokens or secrets.**
+
+### Viewing Audit Log
+
+```bash
+# See all audit entries
+cat reports/control-action-audit.jsonl
+
+# Count entries
+wc -l reports/control-action-audit.jsonl
+```
 
 ## Troubleshooting
 
@@ -82,14 +179,20 @@ Before starting the server, verify:
 | `tsx` not found | Run `npm install` or use `npx tsx` |
 | status.json not found | Run `npm run dashboard:build` first |
 | Report not found | Check whitelist in `scripts/control-server.ts` |
+| Dry-run blocked (needs config) | Create `.control.local` with `CQA_CONTROL_TOKEN` and `CQA_CONTROL_ENABLE_ACTIONS=1` |
+| Dry-run blocked (invalid token) | Check token in `.control.local` matches request |
+| Dry-run blocked (confirm mismatch) | Check `confirm_phrase` matches catalog value for the action's risk level |
 
 ## Files
 
-- `scripts/control-server.ts` — server source
-- `scripts/validate-control-server.ts` — validator
+- `scripts/control-server.ts` — server source (includes dry-run handler)
+- `scripts/validate-control-server.ts` — validator (20 checks)
+- `scripts/validate-control-actions-dry-run.ts` — dry-run validator (19 checks)
+- `.control.local.example` — auth config template
 - `dashboard/status.json` — data source
-- `dashboard/control-catalog.json` — data source
+- `dashboard/control-catalog.json` — data source (with action metadata)
+- `reports/control-action-audit.jsonl` — audit log (runtime, git-ignored)
 
 ---
 
-*Runbook v1.0 — Phase 5C-1*
+*Runbook v2.0 — Phase 5C-2A*
