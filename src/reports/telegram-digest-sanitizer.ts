@@ -28,15 +28,18 @@ export interface ForbiddenHit {
 
 // Patterns that should NEVER appear in a publicly-sent Telegram digest.
 // Each entry: { id, regex, description }
+//
+// Phase 4I-1: Removed the broad `minimax` / `MiniMax` word-boundary checks
+// because they were catching the product/model name (e.g. "minimax-music",
+// "MiniMax Music Prompt") used in project reports. The product name is
+// safe public context. Only INTERIOR tool residue and real secrets are
+// still forbidden.
 const FORBIDDEN_PATTERNS: Array<{ id: string; regex: RegExp; desc: string }> = [
   // Tool-call residue from upstream LLM tools
   { id: 'tool_call_open',     regex: /<[|]?(tool_call|tool|function|invoke)\b[^>]*>/gi, desc: 'Tool call XML/bracket open' },
   { id: 'tool_call_close',    regex: /<\/(tool_call|tool|function|invoke|content)\s*>/gi, desc: 'Tool call XML close' },
   { id: 'tool_call_self_close', regex: /<[|]?(tool_call|tool|function|invoke)\b[^>]*\/>?/gi, desc: 'Tool call self-close' },
   { id: 'xml_brackets',       regex: /<\/?[a-z_][a-z0-9_]*>/gi, desc: 'XML-style tag' },
-  // 'minimax' / 'MiniMax' as identifier (case insensitive, word-boundary)
-  { id: 'minimax_word',       regex: /\bminimax\b/gi, desc: 'MiniMax identifier' },
-  { id: 'MiniMax_word',       regex: /\bMiniMax\b/g, desc: 'MiniMax identifier' },
   // Secrets
   { id: 'openai_key',         regex: /sk-[A-Za-z0-9_-]{20,}/g, desc: 'OpenAI-style API key' },
   { id: 'openai_proj_key',    regex: /sk-(cp|proj)-[A-Za-z0-9_-]{20,}/g, desc: 'OpenAI project key' },
@@ -80,11 +83,13 @@ function redactSecrets(text: string): string {
   return out;
 }
 
-// Replace minimax/MiniMax mentions with neutral phrasing
+// Phase 4I-1: neutralizeMinimaxMentions is now a no-op.
+// We no longer replace the product/model name "MiniMax" / "minimax" in
+// public reports because the name is a legitimate project term
+// (e.g. "MiniMax Music Prompt", "minimax-music"). Only real secrets
+// and tool residue are sanitized.
 function neutralizeMinimaxMentions(text: string): string {
-  let out = text.replace(/\bMiniMax\b/g, 'image model');
-  out = out.replace(/\bminimax\b/g, 'image model');
-  return out;
+  return text;
 }
 
 export function findForbiddenPatterns(text: string): ForbiddenHit[] {
@@ -103,7 +108,10 @@ export function findForbiddenPatterns(text: string): ForbiddenHit[] {
  * - Removes forbidden patterns
  * - Redacts secrets
  * - Strips tool residue
- * - Neutralizes minimax/MiniMax mentions
+ *
+ * Phase 4I-1: No longer neutralizes the public product name
+ * "MiniMax" / "minimax" because it is legitimately used in project
+ * metadata (model names, product references).
  *
  * Returns sanitized text safe for Telegram.
  */
@@ -111,9 +119,9 @@ export function sanitizeTelegramDigest(text: string): string {
   let out = text;
   // Step 1: strip XML/tool residue
   out = stripXmlFragments(out);
-  // Step 2: redact secrets (do this BEFORE neutralizing minimax)
+  // Step 2: redact secrets
   out = redactSecrets(out);
-  // Step 3: neutralize minimax mentions
+  // Step 3: neutralize minimax mentions (no-op since Phase 4I-1)
   out = neutralizeMinimaxMentions(out);
   // Step 4: remove [truncated]
   out = out.replace(/\[truncated\]/gi, '');

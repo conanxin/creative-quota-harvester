@@ -1,0 +1,79 @@
+PHASE 4I-1 COMPLETE
+
+Status: PASS
+Mode: sanitizer scope fix only (NO model call, NO media)
+
+Root Cause:
+- src/reports/telegram-digest-sanitizer.ts had:
+  text.replace(/\bMiniMax\b/g, 'image model')
+  text.replace(/\bminimax\b/g, 'image model')
+- Caught legitimate product name in reports
+- "model_family: minimax-music" -> "model_family: image model-music" in sanitized output only
+- "MiniMax Music Prompt" -> "image model Music Prompt" in sanitized output only
+
+Files Audited:
+- grep image model-music in both repos: 0 hits
+- grep image model Music in both repos: 0 hits
+- grep model_family.*image model in assets: 0 hits
+- grep minimax-music in content-packs: 100 hits (all correct)
+- grep MiniMax Music Prompt in content-packs: 50 hits (all correct)
+
+Wrong Text Found:
+- ONLY in 2 historical report files that document the OLD sanitizer:
+  - reports/digest-sanitization-freshness.md (line 9)
+  - reports/telegram-phase-4c3-sanitization-freshness.txt (line 7)
+- These are accurate historical records, NOT modified
+
+Asset Files Fixed:
+- None needed. All 25 packs already have correct:
+  - music-prompt.enriched.md with MiniMax Music Prompt heading
+  - music-prompt.meta.json with model_family: minimax-music
+  - music-prompt.zh.md with correct Chinese explanations
+  - detail pages and gallery HTML all correct
+- Re-running npm run prompts:music:enhance confirms enhancer never produced image model-music
+
+Sanitizer Scope Change:
+- File: src/reports/telegram-digest-sanitizer.ts
+- REMOVED: minimax_word and MiniMax_word from FORBIDDEN_PATTERNS
+- neutralizedMinimaxMentions() is now a no-op (explicitly documented)
+- KEPT: tool residue (tool_call, </tool_call>, </invoke>, </content>)
+- KEPT: secret patterns (sk-..., ghp_..., xox[baprs]-..., TELEGRAM_BOT_TOKEN=..., MINIMAX_API_KEY=..., Authorization: Bearer ...)
+- KEPT: [truncated] marker
+- KEPT: raw JSON tool payload residue
+
+Validation Results:
+- validate:telegram-sanitizer: 20/20 PASS (12 self-tests + 6 file checks + 2 integration)
+- validate:music-prompts: PASS (regression, 25/25 unchanged)
+- validate:project-report-send: PASS 11/11
+- validate:content-pack-pages: PASS 260/260
+- validate:gallery-dedup: PASS 19/19
+- validate:public-gallery: PASS 30/30
+- validate:daily-archive: PASS 12/12
+
+Local Preview (http://127.0.0.1:8766/):
+- Gallery: 0 image model-music, 0 image model Music
+- Detail page (code): minimax-music present, MiniMax Music Prompt present, 0 image model pollution
+
+Boundaries:
+- MiniMax called: No
+- Image model called: No
+- Video model called: No
+- Music model called: No
+- LLM called: No
+- New media generated: No
+- New audio generated: No
+- Gateway/timer/.env: untouched
+- Secrets: not committed
+- Pure sanitizer scope fix
+
+GitHub Push:
+- creative-quota-harvester: pending
+- creative-quota-assets: pending (no content change, no-op)
+
+Next Phase:
+- Phase 4I-2: Persistent sanitizer test suite
+- Phase 4I-3: Asset-side naming sanity check
+- Phase 4J: Audio coupling (video + music)
+
+Report: docs/PHASE_4I1_MUSIC_METADATA_SANITIZER_SCOPE_FIX_REPORT.md
+Detail: reports/music-metadata-sanitizer-scope-fix.md
