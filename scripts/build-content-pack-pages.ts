@@ -522,9 +522,71 @@ function generatePackPage(pack: PackData, detail: any, dedupItem: DedupItem | nu
   if (videoPrompt) {
     promptPreviews.push(`
       <div class="prompt-card">
-        <h4>🎬 视频 Prompt</h4>
+        <h4>🎬 原始视频 Prompt</h4>
+        <p class="prompt-subtitle">未增强的原始 prompt，作为兑底</p>
         <pre class="prompt-preview">${escapeHtml(truncate(videoPrompt, 600))}</pre>
         <a class="prompt-link" href="${baseUrl}/video-prompt.md" target="_blank">查看完整文件 →</a>
+      </div>
+    `);
+  }
+  // Phase 4H: enhanced video prompt
+  const enrichedVideoMd = safeReadText(join(ASSETS, packDir, 'video-prompt.enriched.md'), '');
+  const enrichedVideoMeta = safeReadJson<any>(join(ASSETS, packDir, 'video-prompt.meta.json'), null);
+  if (enrichedVideoMd) {
+    // Extract English prompt block and shots from the enriched file
+    const enMatch = enrichedVideoMd.match(/## MiniMax \/ Hailuo Video Prompt\s*\n+\n```text\n([\s\S]+?)\n```/);
+    const enBlock = enMatch ? enMatch[1] : '';
+    const negMatch = enrichedVideoMd.match(/## Negative \/ Avoid\s*\n+\n```text\n([\s\S]+?)\n```/);
+    const negBlock = negMatch ? negMatch[1] : '';
+    const shotsMatch = enrichedVideoMd.match(/## 镜头设计\s*\n+([\s\S]+?)\n+\n## 画面风格/);
+    const shotsBlock = shotsMatch ? shotsMatch[1] : '';
+
+    const p = enrichedVideoMeta?.parameters || {};
+    const priorityLabel = p.priority === 'high' ? '高' : p.priority === 'medium' ? '中' : '低';
+    const recommendedUse = (enrichedVideoMeta?.recommended_use || []).map((u: string) => {
+      const labels: Record<string, string> = {
+        'short-video': '短视频', 'x-post': 'X帖', 'project-demo': '项目演示',
+        'launch-clip': '发布片', 'paper-summary': '论文摘要', 'concept-animation': '概念动画',
+        'model-demo': '模型演示', 'pipeline-flow': '流程', 'capability-card': '能力卡',
+        'discussion-clip': '讨论片', 'museum-clip': '博物馆片', 'cinematic-pan': '电影摇摄',
+        'motion-graphic': '动态图形', 'mood-clip': '氛围', 'ambient': '环境', 'social': '社媒',
+      };
+      return labels[u] || u;
+    }).join('、');
+
+    promptPreviews.push(`
+      <div class="prompt-card prompt-card--enhanced-video">
+        <h4>✨ 增强视频 Prompt <span class="badge-enhanced">Phase 4H</span></h4>
+        <p class="prompt-subtitle">🎥 源感知增强版 (${escapeHtml(enrichedVideoMeta?.source_label_zh || enrichedVideoMeta?.source_type || '')})</p>
+        <div class="video-status-note">⚠️ 当前仅生成 Prompt，未调用视频模型。</div>
+        ${enrichedVideoMeta?.prompt_strategy ? `<p class="video-strategy"><strong>策略</strong>: ${escapeHtml(enrichedVideoMeta.prompt_strategy)}</p>` : ''}
+        ${enBlock ? `<details open>
+          <summary>🎥 MiniMax / Hailuo Video Prompt</summary>
+          <pre class="prompt-preview">${escapeHtml(truncate(enBlock, 1200))}</pre>
+        </details>` : ''}
+        ${shotsBlock ? `<details>
+          <summary>🎬 镜头设计 (3 shots, ${escapeHtml(p.duration + 's') || '8s'} total)</summary>
+          <pre class="prompt-preview">${escapeHtml(shotsBlock)}</pre>
+        </details>` : ''}
+        ${negBlock ? `<details>
+          <summary>❌ Negative / Avoid</summary>
+          <pre class="prompt-preview">${escapeHtml(negBlock)}</pre>
+        </details>` : ''}
+        <div class="video-params">
+          <strong>推荐参数</strong>:
+          <span class="param-chip">model_family: ${escapeHtml(p.modelFamily || 'hailuo')}</span>
+          <span class="param-chip">duration: ${escapeHtml(String(p.duration || 8) + 's')}</span>
+          <span class="param-chip">aspect_ratio: ${escapeHtml(p.aspectRatio || '16:9')}</span>
+          <span class="param-chip">priority: ${escapeHtml(priorityLabel)}</span>
+          <span class="param-chip">generation_mode: ${escapeHtml(p.generationMode || 'prompt-only')}</span>
+        </div>
+        ${recommendedUse ? `<p class="video-recommended-use"><strong>推荐用途</strong>: ${escapeHtml(recommendedUse)}</p>` : ''}
+        <div class="prompt-links">
+          <a class="prompt-link" href="${baseUrl}/video-prompt.enriched.md" target="_blank">📄 完整增强版 →</a>
+          <a class="prompt-link" href="${baseUrl}/video-prompt.zh.md" target="_blank">🇨🇳 中文说明 →</a>
+          <a class="prompt-link" href="${baseUrl}/video-prompt.meta.json" target="_blank">🔧 meta.json →</a>
+          <a class="prompt-link" href="${baseUrl}/video-prompt.md" target="_blank">原始视频 Prompt →</a>
+        </div>
       </div>
     `);
   }

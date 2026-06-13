@@ -44,6 +44,7 @@
     "prompts:image:enhance": "tsx scripts/enhance-image-prompts.ts",
     "prompts:video:enhance": "tsx scripts/enhance-video-prompts.ts",
     "validate:video-prompt-enhancement": "tsx scripts/validate-video-prompt-enhancement.ts",
+    "validate:video-prompts": "tsx scripts/validate-video-prompt-enhancement.ts",
     "generate:controlled:images": "tsx scripts/generate-controlled-image-batch.ts",
     "review:images": "tsx scripts/review-generated-images.ts",
     "validate:image-reviews": "tsx scripts/validate-image-reviews.ts",

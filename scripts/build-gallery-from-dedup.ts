@@ -114,6 +114,9 @@ function main() {
     const primaryDir = item.primary_pack_dir;
     const hasEnhanced = existsSync(join(ASSETS, primaryDir, 'image-prompt.enriched.md'));
     const enhancedBadge = hasEnhanced ? `<span class="enhanced-badge" title="Phase 4G: 来源感知图片 Prompt 增强">✨ 增强图片 Prompt 已就绪</span>` : '';
+    // Phase 4H: detect enhanced video prompt on the primary pack
+    const hasEnhancedVideo = existsSync(join(ASSETS, primaryDir, 'video-prompt.enriched.md'));
+    const enhancedVideoBadge = hasEnhancedVideo ? `<span class="enhanced-badge enhanced-video-badge" title="Phase 4H: 来源感知视频 Prompt 增强">🎥 增强视频 Prompt 已就绪</span>` : '';
 
     const detailUrl = `https://conanxin.github.io/creative-quota-assets/${item.detail_page_path}`;
     const summaryUrl = `https://conanxin.github.io/creative-quota-assets/${item.primary_pack_dir}/content-summary.zh.md`;
@@ -121,19 +124,28 @@ function main() {
 
     const whyShort = why ? `<div class="card-why">${escapeHtml(truncate(why, 200))}</div>` : '';
 
+    // Phase 4H: enrich uses with video prompt tags
+    let usesHtml = uses;
+    if (hasEnhancedVideo) {
+      // Add video-related uses to the card
+      const videoUses = '<span class="use-chip">短视频</span><span class="use-chip">动态图形</span>';
+      usesHtml = usesHtml + videoUses;
+    }
+
     return `      <article class="asset-card pack-card" data-source-type="${escapeHtml(st)}" data-kind="content-pack">
   <div class="card-header">
     <span class="card-type" style="color:${stColor};background:${stColor}15">${escapeHtml(stLabel)}</span>
     ${versionBadge}
     ${genImageBadge}
     ${enhancedBadge}
+    ${enhancedVideoBadge}
     <h3 class="card-title">${escapeHtml(title)}</h3>
     <div class="card-score">评分: ${score.toFixed(3)}</div>
   </div>
   ${oneSentence ? `<div class="card-one-sentence">${escapeHtml(truncate(oneSentence, 200))}</div>` : ''}
   ${whyShort}
   <div class="card-tags">${tags}</div>
-  ${uses ? `<div class="card-uses">${uses}</div>` : ''}
+  ${usesHtml ? `<div class="card-uses">${usesHtml}</div>` : ''}
   <div class="card-actions">
     <a class="btn-primary" href="${detailUrl}" target="_blank">📋 详情</a>
     <a class="btn-secondary" href="${summaryUrl}" target="_blank">📝 摘要原文</a>
@@ -378,6 +390,9 @@ function main() {
       margin-left: 0.5rem;
       display: inline-block;
       font-weight: 600;
+    }
+    .enhanced-video-badge {
+      background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
     }
     .card-title { font-size: 1.1rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.3rem; }
     .card-score { font-size: 0.8rem; color: var(--text-muted); }

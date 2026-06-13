@@ -1081,22 +1081,44 @@ function processPack(packDir: string): { ok: boolean; meta?: any; reason?: strin
   writeFileSync(join(ASSETS, packDir, 'video-prompt.zh.md'), zhMd);
 
   // ---------- file: video-prompt.meta.json ----------
+  // Map priority to recommended_use arrays
+  const RECOMMENDED_USE_MAP: Record<string, string[]> = {
+    'code': ['short-video', 'x-post', 'project-demo', 'launch-clip'],
+    'academic': ['short-video', 'paper-summary', 'concept-animation'],
+    'ai-ecosystem': ['short-video', 'model-demo', 'pipeline-flow', 'capability-card'],
+    'dev-community': ['short-video', 'x-post', 'discussion-clip'],
+    'culture-art': ['short-video', 'museum-clip', 'cinematic-pan', 'motion-graphic'],
+    'context': ['short-video', 'mood-clip', 'ambient', 'social'],
+  };
+  const recommendedUse = RECOMMENDED_USE_MAP[sourceType] || ['short-video'];
+
   const meta = {
-    pack_id: ctx.packId,
-    pack_dir: packDir,
+    // Spec-required top-level fields
     title: ctx.title,
     source_type: sourceType,
     source_label_zh: ctx.sourceLabelZh,
-    strategy: result.rationale,
-    direction: result.intentZh.split('。')[0] || '',
+    prompt_strategy: result.rationale,
+    model_family: result.params.modelFamily,
+    duration: `${result.params.duration}s`,
+    aspect_ratio: result.params.aspectRatio,
+    priority: result.params.priority,
+    recommended_use: recommendedUse,
     facts_used: result.factsUsed,
+    original_prompt_path: 'video-prompt.md',
+    enriched_prompt_path: 'video-prompt.enriched.md',
+    zh_prompt_path: 'video-prompt.zh.md',
+    generation_mode: result.params.generationMode,
+    uncertainty_notes: result.uncertaintyNotes,
+    // Additional metadata
+    pack_id: ctx.packId,
+    pack_dir: packDir,
+    direction: result.intentZh.split('。')[0] || '',
     shots: result.shots,
     style_description: result.styleDescription,
     english_prompt: result.englishPrompt,
     negative_prompt: result.negativePrompt,
     intent_zh: result.intentZh,
     parameters: result.params,
-    uncertainty_notes: result.uncertaintyNotes,
     generated_at: nowIso(),
     generator: 'enhance-video-prompts.ts@phase4h',
     llm_used: false,

@@ -199,24 +199,52 @@ for (const pack of idx.content_packs) {
   test(`meta.json facts_used >= 1 :: ${packDir}`, () =>
     Array.isArray(meta.facts_used) && meta.facts_used.length >= 1
   );
+  // Spec-required top-level fields
+  test(`meta.json top-level model_family === hailuo :: ${packDir}`, () =>
+    meta.model_family === 'hailuo'
+  );
+  test(`meta.json top-level duration in [6s,8s] :: ${packDir}`, () =>
+    meta.duration === '6s' || meta.duration === '8s'
+  );
+  test(`meta.json top-level aspect_ratio === 16:9 :: ${packDir}`, () =>
+    meta.aspect_ratio === '16:9'
+  );
+  test(`meta.json top-level generation_mode === prompt-only :: ${packDir}`, () =>
+    meta.generation_mode === 'prompt-only'
+  );
+  test(`meta.json top-level priority valid :: ${packDir}`, () =>
+    ['high', 'medium', 'low'].includes(meta.priority)
+  );
+  test(`meta.json top-level prompt_strategy non-empty :: ${packDir}`, () =>
+    typeof meta.prompt_strategy === 'string' && meta.prompt_strategy.length > 5
+  );
+  test(`meta.json top-level recommended_use is array :: ${packDir}`, () =>
+    Array.isArray(meta.recommended_use) && meta.recommended_use.length >= 1
+  );
+  test(`meta.json top-level original_prompt_path :: ${packDir}`, () =>
+    meta.original_prompt_path === 'video-prompt.md'
+  );
+  test(`meta.json top-level enriched_prompt_path :: ${packDir}`, () =>
+    meta.enriched_prompt_path === 'video-prompt.enriched.md'
+  );
+  test(`meta.json top-level zh_prompt_path :: ${packDir}`, () =>
+    meta.zh_prompt_path === 'video-prompt.zh.md'
+  );
+  test(`meta.json top-level title :: ${packDir}`, () =>
+    typeof meta.title === 'string' && meta.title.length > 0
+  );
+  test(`meta.json top-level source_type :: ${packDir}`, () =>
+    typeof meta.source_type === 'string' && meta.source_type.length > 0
+  );
+  test(`meta.json top-level source_label_zh :: ${packDir}`, () =>
+    typeof meta.source_label_zh === 'string' && meta.source_label_zh.length > 0
+  );
+  test(`meta.json top-level uncertainty_notes is array :: ${packDir}`, () =>
+    Array.isArray(meta.uncertainty_notes)
+  );
+  // Backwards-compat: parameters{} still present
   test(`meta.json parameters.modelFamily === hailuo :: ${packDir}`, () =>
     meta.parameters?.modelFamily === 'hailuo'
-  );
-  test(`meta.json parameters.duration in [6,8] :: ${packDir}`, () => {
-    const d = meta.parameters?.duration;
-    return d === 6 || d === 8;
-  });
-  test(`meta.json parameters.aspectRatio === 16:9 :: ${packDir}`, () =>
-    meta.parameters?.aspectRatio === '16:9'
-  );
-  test(`meta.json parameters.generationMode === prompt-only :: ${packDir}`, () =>
-    meta.parameters?.generationMode === 'prompt-only'
-  );
-  test(`meta.json priority valid :: ${packDir}`, () =>
-    ['high', 'medium', 'low'].includes(meta.parameters?.priority)
-  );
-  test(`meta.json strategy non-empty :: ${packDir}`, () =>
-    typeof meta.strategy === 'string' && meta.strategy.length > 5
   );
   test(`meta.json no model calls :: ${packDir}`, () =>
     meta.llm_used === false &&
@@ -227,11 +255,15 @@ for (const pack of idx.content_packs) {
   );
   test(`meta.json no API keys :: ${packDir}`, () => {
     const s = JSON.stringify(meta);
-    return !/API_KEY|api_key|sk-|hf_[A-Za-z0-9]{10,}/.test(s);
+    return !/API_KEY|api_key|sk-|hf_[A-Za-z0-9]{10,}|TELEGRAM_BOT_TOKEN|bot_token/i.test(s);
   });
   test(`meta.json no LLM markers :: ${packDir}`, () => {
     const s = JSON.stringify(meta);
     return !LLM_MARKERS.some(re => re.test(s));
+  });
+  test(`meta.json no [truncated] marker :: ${packDir}`, () => {
+    const s = JSON.stringify(meta);
+    return !/\[truncated\]/i.test(s);
   });
   test(`meta.json source_type known :: ${packDir}`, () => {
     const t = meta.source_type;

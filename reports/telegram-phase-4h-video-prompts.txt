@@ -1,61 +1,77 @@
 PHASE 4H COMPLETE
 
 Status: PASS
-Mode: prompt-only
+Mode: prompt-only (NO real video gen)
 Packs enhanced: 25/25
-Source-type coverage: code=5, academic=5, culture-art=5, dev-community=5, ai-ecosystem=5
+Source-type distribution: code=5, academic=5, culture-art=5, dev-community=5, ai-ecosystem=5
 
 What Changed:
-- New scripts/enhance-video-prompts.ts (~770 lines, deterministic, no LLM, no model)
-- New scripts/validate-video-prompt-enhancement.ts (859 checks, 25/25 PASS)
-- New npm scripts: prompts:video:enhance, validate:video-prompt-enhancement
-- Per-pack output: video-prompt.enriched.md, video-prompt.zh.md, video-prompt.meta.json
-- Original video-prompt.md preserved (never overwritten)
+- 3 new output files per pack (75 total): video-prompt.enriched.md, video-prompt.zh.md, video-prompt.meta.json
+- Original video-prompt.md preserved (idempotent, never overwritten)
+- Detail page (build-content-pack-pages.ts): new "增强视频 Prompt" card with strategy / 3 shots / Hailuo prompt / Negative / 推荐参数 / 状态提示
+- Gallery card (build-gallery-from-dedup.ts): 增强视频 Prompt 已就绪 badge + 短视频/动态图形 use chips
+- Gallery still 5 unique topics (dedup unchanged)
+- Validator: 1109/1109 checks PASS
+- New alias: npm run validate:video-prompts
 
-Source-Aware Strategies (6):
+meta.json Top-Level Spec Fields (all present):
+- title, source_type, source_label_zh
+- prompt_strategy (string)
+- model_family: hailuo
+- duration: 8s
+- aspect_ratio: 16:9
+- priority: high/medium/low
+- recommended_use: array
+- facts_used: array
+- original_prompt_path: video-prompt.md
+- enriched_prompt_path: video-prompt.enriched.md
+- zh_prompt_path: video-prompt.zh.md
+- generation_mode: prompt-only
+- uncertainty_notes: array
+
+Source-Type Strategies (6):
 - code → Agent pipeline / launch clip / data flow
 - academic → 论文概念动画 / 数据曲线 / 概念网络
 - ai-ecosystem → pipeline flow (input → model → output)
 - dev-community → 痛点短视频 / 讨论地图
-- culture-art → 博物馆灯光 / 古典重绎 / 慢推
+- culture-art → 博物馆灯光 / cinematic pan / 古典重绎
 - context → daily mood clip / 时间氛围
 
-Each pack gets 3 shots: 3s + 3s + 2s = 8s total
+Each pack: 3 shots (3s+3s+2s=8s), 16:9, model_family=hailuo, prompt-only
 
-Hard Rules Enforced:
-- No MiniMax / image / video / music model calls
-- No external LLM
-- No new media generated
-- No fake company logos, real branding, tiny text
-- No copyrighted characters
-- No distorted hands, rapid cuts, shaky camera
+Validation Results:
+- validate:video-prompts: 1109/1109 PASS
+- validate:content-pack-pages: 260/260 PASS
+- validate:gallery-dedup: 19/19 PASS
+- validate:public-gallery: 30/30 PASS
+- validate:daily-archive: 12/12 PASS
 
-Default params (per pack):
-- model_family: hailuo
-- duration: 8s
-- aspect_ratio: 16:9
-- generation_mode: prompt-only
-- priority: high (ai-ecosystem) / medium (others) / low (context)
+Local Preview (http://127.0.0.1:8766/):
+- Gallery: 增强视频 Prompt, 短视频, 动态图形, 增强图片 Prompt
+- Code detail: 镜头设计, Hailuo Video Prompt, Negative, 推荐参数, 未调用视频模型
+- Academic detail: 镜头设计, Hailuo Video Prompt, prompt-only
+- Culture-art detail: 镜头设计, museum lighting, slow pan, prompt-only
 
-Validation:
-- 859/859 checks PASS
-- 25/25 enriched.md, zh.md, meta.json generated
-- All meta.json: llm_used=false, video_model_called=false, image_model_called=false
-- No LLM markers, no API keys, no secrets in any output
+Public URL: pre-push shows old version; will update on next GitHub Pages rebuild
 
 Boundaries:
 - MiniMax called: No
 - Image model called: No
 - Video model called: No
 - Music generated: No
+- LLM called: No
 - New media generated: No
 - Gateway/timer/.env: untouched
+- Secrets: not committed
+
+GitHub Push:
+- creative-quota-harvester: pending (this phase)
+- creative-quota-assets: pending (this phase)
 
 Next Phase Proposal:
 - Phase 4I: Gallery video card (HTML embed of enriched prompt)
-- Phase 4J: Video prompt scoring
-- Phase 5C: Per-source budget extension
+- Phase 4J: Video prompt scoring (visual density / fact grounding / etc.)
+- Phase 5C: Per-source budget extension to video
 
-Report: docs/PHASE_4H_SOURCE_AWARE_VIDEO_PROMPT_ENHANCEMENT_REPORT.md
-Detail: (no separate report file this phase; everything in the doc above)
-Validation: npm run validate:video-prompt-enhancement → 859/859 PASS
+Report: docs/PHASE_4H_SOURCE_AWARE_VIDEO_PROMPTS_REPORT.md
+Detail: reports/source-aware-video-prompts.md
