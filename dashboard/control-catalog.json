@@ -1,0 +1,425 @@
+{
+  "version": "0.1.0",
+  "phase": "5C-0",
+  "generated_at": "2026-06-13T05:11:00.000Z",
+  "purpose": "Read-only command catalog for Creative Quota Harvester. Displays available control actions, the corresponding shell/npm commands, risk levels, and safety requirements. THIS CATALOG DOES NOT EXECUTE COMMANDS. The control.html page renders this catalog but does not include any executable buttons, fetch POST handlers, WebSockets, or other trigger mechanisms. This is intentional — the public GitHub Pages deployment is read-only by design.",
+  "public_safety_model": "All commands are listed for reference only. The public catalog cannot execute any of them. Real control actions require either a localhost-only control server (Phase 5C-1) or an authenticated dashboard (Phase 5C-2). Both phases are out of scope for Phase 5C-0.",
+  "risk_levels": {
+    "safe": "Read-only / dry-run / validation. No side effects. Safe to run repeatedly.",
+    "medium": "Has observable side effects (file writes, network calls, message sends). Requires confirmation.",
+    "high": "Triggers model calls (image generation) or other expensive operations. Requires CQA_ALLOW_* env flag and explicit confirmation.",
+    "danger": "Modifies system-level state (timer, service). Requires manual intervention and double confirmation."
+  },
+  "command_groups": [
+    {
+      "id": "daily_digest",
+      "label_zh": "📅 Daily Digest",
+      "description_zh": "生成、刷新、发送和验证每日内容 Digest 的命令",
+      "commands": [
+        {
+          "id": "run_manual_digest",
+          "label_zh": "手动跑一次完整 Digest 链路",
+          "description_zh": "执行 collect → briefs → digest → check 全流程",
+          "command": "npm run daily:manual",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯本地处理；不调用 MiniMax / image model / video model / music model。生成 reports/* 而已。"
+        },
+        {
+          "id": "regenerate_digest",
+          "label_zh": "重新生成 Digest 文本",
+          "description_zh": "基于 signals.db 重新渲染 digest:telegram",
+          "command": "npm run digest:telegram",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "只读 signals.db + 写 reports/daily-digest.md 和 reports/telegram-digest.txt。"
+        },
+        {
+          "id": "send_digest_dry_run",
+          "label_zh": "预览 Digest（dry-run）",
+          "description_zh": "渲染一次完整的 Telegram 消息预览，校验长度和 sanitizer",
+          "command": "npm run digest:send:dry-run",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "不发送任何 Telegram 消息。生成 reports/telegram-send-preview.txt。"
+        },
+        {
+          "id": "send_digest_confirmed",
+          "label_zh": "真实发送 Digest（confirmed）",
+          "description_zh": "通过 Telegram Bot API 真实发送当前 Digest",
+          "command": "CQA_ALLOW_TELEGRAM_SEND=1 npm run digest:send:confirmed",
+          "risk_level": "medium",
+          "requires_confirm": true,
+          "requires_env": ["CQA_ALLOW_TELEGRAM_SEND", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": false,
+          "notes": "需要显式 CQA_ALLOW_TELEGRAM_SEND=1 才会真实发送。沙箱状态下不会发。"
+        },
+        {
+          "id": "check_digest_freshness",
+          "label_zh": "检查 Digest 新鲜度",
+          "description_zh": "验证 digest 是否在 24h 内",
+          "command": "npm run validate:digest-freshness",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯检查；不会触发任何外部动作。"
+        }
+      ]
+    },
+    {
+      "id": "source_collection",
+      "label_zh": "🌐 Source Collection",
+      "description_zh": "采集外部 source 的命令（collect / diagnose）",
+      "commands": [
+        {
+          "id": "collect_fast",
+          "label_zh": "采集：fast profile（每日 07:30 默认）",
+          "description_zh": "用 budget-friendly profile 跑所有 source：4 个高价值 query，bounded concurrency",
+          "command": "npm run collect:fresh:fast",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": ["GITHUB_TOKEN (optional)", "HF_TOKEN (optional)"],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "会写 data/signals.db 和 reports/source-health.*。无 token 时仍可工作。"
+        },
+        {
+          "id": "collect_full",
+          "label_zh": "采集：full profile（手动深度刷新）",
+          "description_zh": "跑所有 query / filter，bounded concurrency。耗时长、流量大",
+          "command": "npm run collect:fresh:full",
+          "risk_level": "medium",
+          "requires_confirm": true,
+          "requires_env": ["GITHUB_TOKEN (optional)", "HF_TOKEN (optional)"],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "需要主动确认。生产数据全量刷新，影响下一步 digest。"
+        },
+        {
+          "id": "collect_diagnose",
+          "label_zh": "连通性诊断（只读）",
+          "description_zh": "检查每个 source 是否可达 + 耗时，不生成 signal",
+          "command": "npm run collect:diagnose",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "只读取 source 端点 + 写 reports/source-diagnostics.*。"
+        },
+        {
+          "id": "show_source_health",
+          "label_zh": "查看 Source Health",
+          "description_zh": "从 reports/source-health.json / .md 读取最近一次采集结果",
+          "command": "cat reports/source-health.md",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯读取本地文件。已通过 dashboard/index.html 提供可视化。"
+        }
+      ]
+    },
+    {
+      "id": "asset_generation",
+      "label_zh": "🎨 Asset Generation",
+      "description_zh": "生成图片 / 视频 Prompt / 音乐 Prompt 的命令",
+      "commands": [
+        {
+          "id": "image_dry_run",
+          "label_zh": "图片生成：dry-run（不调用）",
+          "description_zh": "渲染 would-be image generation 流程，不真实调用",
+          "command": "npm run generate:image:dry-run",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "不调用 MiniMax / image model。返回 quota 状态和 would-spend 估算。"
+        },
+        {
+          "id": "image_confirmed_1",
+          "label_zh": "图片生成：confirmed（1 张）",
+          "description_zh": "真实调用 image model 生成 1 张图片",
+          "command": "CQA_ALLOW_GENERATION=1 npx ts-node src/generators/minimax-image-canary.ts --confirm-spend",
+          "risk_level": "high",
+          "requires_confirm": true,
+          "requires_env": ["CQA_ALLOW_GENERATION", "MINIMAX_API_KEY", "MINIMAX_BASE_URL"],
+          "calls_model": true,
+          "generates_media": true,
+          "modifies_timer": false,
+          "public_safe": false,
+          "notes": "HIGH RISK: 调用真实 image model，扣减 quota。必须显式 CQA_ALLOW_GENERATION=1 + --confirm-spend。Token 永远不应该出现在 public Pages / GitHub 中。"
+        },
+        {
+          "id": "image_confirmed_2",
+          "label_zh": "图片生成：批量 confirmed（多张）",
+          "description_zh": "真实调用 image model 生成最多 N 张（受 quota guard 限制）",
+          "command": "CQA_ALLOW_GENERATION=1 npm run generate:controlled:images",
+          "risk_level": "high",
+          "requires_confirm": true,
+          "requires_env": ["CQA_ALLOW_GENERATION", "MINIMAX_API_KEY", "MINIMAX_BASE_URL"],
+          "calls_model": true,
+          "generates_media": true,
+          "modifies_timer": false,
+          "public_safe": false,
+          "notes": "HIGH RISK: 批量调用。每次最大 2 张 (Phase 3A quota guard)。此脚本在内部强制 confirm_spend=true（不像 canary 脚本那样使用 --confirm-spend CLI 标志）；CQA_ALLOW_GENERATION=1 门控作为额外保护。失败的话人工检查 metadata/quota-status.json。"
+        },
+        {
+          "id": "video_prompt_only",
+          "label_zh": "视频 Prompt 增强（不生成视频）",
+          "description_zh": "为所有 Content Pack 生成增强视频 Prompt",
+          "command": "npm run prompts:video:enhance",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯文本生成。不调用 video model。生成 video-prompt.enriched.md 等。Phase 4H 产物。"
+        },
+        {
+          "id": "music_prompt_only",
+          "label_zh": "音乐 Prompt 增强（不生成音乐）",
+          "description_zh": "为所有 Content Pack 生成增强音乐 Prompt",
+          "command": "npm run prompts:music:enhance",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯文本生成。不调用 music model。生成 music-prompt.enriched.md 等。Phase 4I 产物。"
+        }
+      ]
+    },
+    {
+      "id": "validation",
+      "label_zh": "✅ Validation",
+      "description_zh": "静态 / 数据校验脚本（safe，pure check）",
+      "commands": [
+        {
+          "id": "validate_assets",
+          "label_zh": "校验素材库",
+          "description_zh": "校验 Content Pack / Gallery / Daily Archive 一致性",
+          "command": "npm run validate:public-gallery",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯检查；不修改任何文件。"
+        },
+        {
+          "id": "validate_gallery",
+          "label_zh": "校验 Gallery 去重",
+          "description_zh": "校验 Gallery dedup index",
+          "command": "npm run validate:gallery-dedup",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯检查。"
+        },
+        {
+          "id": "validate_daily_archive",
+          "label_zh": "校验 Daily Archive",
+          "description_zh": "校验 daily/calendar-index.json + 每日页",
+          "command": "npm run validate:daily-archive",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯检查。"
+        },
+        {
+          "id": "validate_dashboard",
+          "label_zh": "校验 Dashboard 状态文件",
+          "description_zh": "校验 dashboard/status.json 合法",
+          "command": "npm run dashboard:validate",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯检查。"
+        },
+        {
+          "id": "validate_telegram_sanitizer",
+          "label_zh": "校验 Telegram Sanitizer",
+          "description_zh": "运行 sanitizer self-tests + 检查 digest/preview/md 文件",
+          "command": "npm run validate:telegram-sanitizer",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "纯检查。Phase 4I-1 后包含 12 self-test cases。"
+        }
+      ]
+    },
+    {
+      "id": "timer",
+      "label_zh": "⏰ Timer",
+      "description_zh": "systemd timer 状态 / 日志 / 启停命令",
+      "commands": [
+        {
+          "id": "timer_status",
+          "label_zh": "查看 Timer 状态",
+          "description_zh": "查看 creative-quota-digest.timer 当前状态",
+          "command": "systemctl --user status creative-quota-digest.timer",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "只读 status。"
+        },
+        {
+          "id": "timer_logs",
+          "label_zh": "查看 Timer 最近日志",
+          "description_zh": "查看 daily-scheduled.log 最近 40 行",
+          "command": "tail -n 40 logs/daily-scheduled.log",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "只读。"
+        },
+        {
+          "id": "timer_disable_command",
+          "label_zh": "停用 Timer",
+          "description_zh": "停止每日 07:30 自动运行",
+          "command": "systemctl --user disable creative-quota-digest.timer",
+          "risk_level": "danger",
+          "requires_confirm": true,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": true,
+          "public_safe": false,
+          "notes": "DANGER: 会影响每日 07:30 自动 collect / digest。Phase 5C-0 不会从公开 dashboard 触发。手动执行需双确认。"
+        },
+        {
+          "id": "timer_enable_command",
+          "label_zh": "启用 Timer",
+          "description_zh": "恢复每日 07:30 自动运行",
+          "command": "systemctl --user enable creative-quota-digest.timer",
+          "risk_level": "medium",
+          "requires_confirm": true,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": true,
+          "public_safe": false,
+          "notes": "MEDIUM: 修改系统级状态。Phase 5C-0 不会从公开 dashboard 触发。"
+        }
+      ]
+    },
+    {
+      "id": "reports",
+      "label_zh": "📨 Reports",
+      "description_zh": "项目报告发送相关命令（project sender）",
+      "commands": [
+        {
+          "id": "send_project_report_dry_run",
+          "label_zh": "项目报告：dry-run",
+          "description_zh": "预览项目报告，验证 sanitizer + 长度",
+          "command": "npm run report:send:dry-run",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "不发送任何 Telegram 消息。"
+        },
+        {
+          "id": "send_project_report_confirmed",
+          "label_zh": "项目报告：真实发送",
+          "description_zh": "通过 project sender 真实发送项目报告",
+          "command": "CQA_ALLOW_TELEGRAM_SEND=1 npm run report:send -- --file reports/telegram-phase-XXX.txt --label \"Phase X\"",
+          "risk_level": "medium",
+          "requires_confirm": true,
+          "requires_env": ["CQA_ALLOW_TELEGRAM_SEND", "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": false,
+          "notes": "需要 CQA_ALLOW_TELEGRAM_SEND=1 才会真实发送。OpenClaw final reply 永远 1 句，不通过这里。"
+        }
+      ]
+    }
+  ],
+  "boundaries": {
+    "no_real_execution": true,
+    "no_button_to_run": true,
+    "no_fetch_post": true,
+    "no_websocket": true,
+    "no_child_process": true,
+    "no_secret_in_file": true,
+    "gitignore_targets": [
+      ".env",
+      ".env.local",
+      ".env.telegram.local",
+      "data/*.db",
+      "logs/",
+      "*.log"
+    ],
+    "public_deploy_target": "GitHub Pages (conanxin.github.io/creative-quota-harvester/dashboard/)",
+    "real_execution_coming_in": "Phase 5C-1 (localhost-only) and Phase 5C-2 (authenticated)"
+  }
+}

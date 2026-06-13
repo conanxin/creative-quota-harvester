@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-06-13T03:17:44.381Z",
+  "generated_at": "2026-06-13T03:48:29.925Z",
   "sources": [
     {
       "source": "arXiv AI",
       "type": "academic",
       "reachable": true,
       "status": 200,
-      "durationMs": 1640,
+      "durationMs": 1044,
       "error": null,
       "curlFallback": false
     },
@@ -15,7 +15,7 @@
       "type": "code",
       "reachable": true,
       "status": 200,
-      "durationMs": 981,
+      "durationMs": 1288,
       "error": null,
       "curlFallback": false
     },
@@ -24,17 +24,17 @@
       "type": "dev-community",
       "reachable": true,
       "status": 200,
-      "durationMs": 2866,
+      "durationMs": 1685,
       "error": null,
       "curlFallback": false
     },
     {
       "source": "GDELT",
       "type": "news",
-      "reachable": true,
-      "status": 200,
-      "durationMs": 6203,
-      "error": null,
+      "reachable": false,
+      "status": 429,
+      "durationMs": 17406,
+      "error": "HTTP 429 after 2 attempts",
       "curlFallback": false
     },
     {
@@ -42,7 +42,7 @@
       "type": "ai-ecosystem",
       "reachable": true,
       "status": 200,
-      "durationMs": 2202,
+      "durationMs": 2180,
       "error": null,
       "curlFallback": true
     },
@@ -51,7 +51,7 @@
       "type": "context",
       "reachable": true,
       "status": 200,
-      "durationMs": 1531,
+      "durationMs": 901,
       "error": null,
       "curlFallback": false
     },
@@ -60,7 +60,7 @@
       "type": "culture-art",
       "reachable": true,
       "status": 200,
-      "durationMs": 866,
+      "durationMs": 908,
       "error": null,
       "curlFallback": false
     },
@@ -69,7 +69,7 @@
       "type": "context",
       "reachable": true,
       "status": 200,
-      "durationMs": 0,
+      "durationMs": 1,
       "error": null,
       "curlFallback": false
     },

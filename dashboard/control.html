@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creative Quota 私有控制目录 · 只读</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f5f5f0; color: #333; line-height: 1.6; padding: 0; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+  header { text-align: center; padding: 30px 0; border-bottom: 2px solid #e0e0e0; margin-bottom: 30px; background: #fff; border-radius: 12px; }
+  h1 { font-size: 1.8rem; color: #2c3e50; }
+  .subtitle { color: #7f8c8d; font-size: 0.9rem; margin-top: 8px; }
+  .readonly-badge { display: inline-block; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; margin-top: 12px; font-weight: 600; }
+  /* Critical warning banner */
+  .critical-warning {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    color: #856404;
+    padding: 18px 24px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+  }
+  .critical-warning .warning-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; }
+  .critical-warning ul { margin: 8px 0 0 24px; }
+  .critical-warning li { margin: 4px 0; }
+  /* Group sections */
+  .group { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #e0e0e0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .group h2 { color: #2c3e50; margin-bottom: 8px; font-size: 1.3rem; }
+  .group .group-desc { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 18px; }
+  /* Command cards */
+  .command { background: #fafafa; border: 1px solid #e8e8e8; border-radius: 10px; padding: 18px; margin-bottom: 14px; }
+  .command.risk-high, .command.risk-danger { border-left: 5px solid #ef4444; background: #fff5f5; }
+  .command.risk-medium { border-left: 5px solid #f59e0b; background: #fffbf0; }
+  .command.risk-safe { border-left: 5px solid #22c55e; }
+  .cmd-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .cmd-name { font-size: 1.05rem; font-weight: 600; color: #2c3e50; }
+  .cmd-id { font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace; font-size: 0.75rem; color: #999; }
+  .risk-pill { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .risk-pill.safe { background: #d1fae5; color: #065f46; }
+  .risk-pill.medium { background: #fef3c7; color: #92400e; }
+  .risk-pill.high { background: #fee2e2; color: #991b1b; }
+  .risk-pill.danger { background: #7f1d1d; color: #fff; }
+  .cmd-desc { color: #555; font-size: 0.9rem; margin-bottom: 12px; }
+  .cmd-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .meta-chip { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace; }
+  .meta-chip.calls-model { background: #fef3c7; color: #92400e; }
+  .meta-chip.generates-media { background: #fee2e2; color: #991b1b; }
+  .meta-chip.modifies-timer { background: #fce7f3; color: #9f1239; }
+  .meta-chip.requires-confirm { background: #dbeafe; color: #1e40af; }
+  .meta-chip.requires-env { background: #ede9fe; color: #5b21b6; }
+  .meta-chip.requires-env::before { content: "🔒 "; }
+  .meta-chip.public-safe { background: #d1fae5; color: #065f46; }
+  .meta-chip.not-public { background: #fee2e2; color: #991b1b; }
+  /* Code block (text-only, no <button>) */
+  .cmd-code {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    user-select: all;
+    -webkit-user-select: all;
+  }
+  .cmd-code-hint { font-size: 0.7rem; color: #999; margin-top: 4px; }
+  .cmd-notes { background: #f0f9ff; border-left: 3px solid #3b82f6; padding: 8px 12px; margin-top: 10px; font-size: 0.85rem; color: #1e40af; border-radius: 4px; }
+  /* Footer / final reminder */
+  footer { text-align: center; padding: 30px 0; color: #95a5a6; font-size: 0.85rem; border-top: 1px solid #e0e0e0; margin-top: 30px; }
+  footer .emphasis { color: #856404; font-weight: 600; }
+  @media (max-width: 600px) {
+    .container { padding: 12px; }
+    .group { padding: 16px; }
+    .command { padding: 14px; }
+    .cmd-header { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🔒 Creative Quota 私有控制目录</h1>
+    <div class="subtitle">Phase 5C-0 · Read-only Command Catalog</div>
+    <div class="readonly-badge">📖 只读命令目录 · 不会执行任何命令</div>
+  </header>
+
+  <div class="critical-warning">
+    <div class="warning-title">⚠️ 重要安全说明 / Important Safety Notice</div>
+    <ul>
+      <li><strong>这是只读命令目录，不会执行任何命令。</strong>不要公开部署为可执行控制台。</li>
+      <li>页面没有任何触发命令的按钮、POST 请求、WebSocket、child_process 或 fetch 主动调用。</li>
+      <li>命令文本仅供复制到本地终端手动执行，且高风险命令需显式 CQA_ALLOW_* 环境变量。</li>
+      <li>公开 GitHub Pages 版本仅展示命令，不具备执行能力。真实控制台在 Phase 5C-1 (localhost-only) / Phase 5C-2 (authenticated) 中提供。</li>
+      <li>高风险命令（high / danger）默认需要人工确认。请勿在自动流程中触发。</li>
+    </ul>
+  </div>
+
+  <div id="catalog-root">加载命令目录中…</div>
+
+  <footer>
+    <p>Creative Quota Harvester · Phase 5C-0 · Private Control Command Catalog</p>
+    <p class="emphasis">公开 GitHub Pages 版本仅展示命令，不具备执行能力。</p>
+  </footer>
+</div>
+
+<!--
+  Read-only render: this script ONLY reads ./control-catalog.json via fetch()
+  and renders it as DOM. It contains NO POST requests, NO command execution,
+  NO WebSocket, NO child_process. The buttons are plain <span> / <div>;
+  any attempt to copy is manual (browser native user-select: all on code).
+-->
+<script>
+(function () {
+  'use strict';
+
+  var RISK_LABEL = {
+    safe: 'Safe',
+    medium: 'Medium',
+    high: 'High',
+    danger: 'Danger'
+  };
+
+  var root = document.getElementById('catalog-root');
+  if (!root) return;
+
+  fetch('./control-catalog.json', { method: 'GET', cache: 'no-store' })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (catalog) {
+      render(catalog, root);
+    })
+    .catch(function (err) {
+      root.innerHTML = '<div class="critical-warning"><div class="warning-title">加载失败</div><p>无法读取 control-catalog.json：' + String(err) + '</p></div>';
+    });
+
+  function text(s) {
+    var d = document.createElement('span');
+    d.textContent = String(s == null ? '' : s);
+    return d;
+  }
+
+  function metaChip(cls, label) {
+    var c = document.createElement('span');
+    c.className = 'meta-chip ' + cls;
+    c.textContent = label;
+    return c;
+  }
+
+  function render(catalog, mount) {
+    mount.innerHTML = '';
+    var title = document.createElement('h2');
+    title.style.marginBottom = '4px';
+    title.textContent = catalog.purpose ? catalog.purpose.slice(0, 60) : '命令目录';
+    mount.appendChild(title);
+    if (catalog.purpose) {
+      var p = document.createElement('p');
+      p.style.color = '#7f8c8d';
+      p.style.fontSize = '0.9rem';
+      p.style.marginBottom = '20px';
+      p.textContent = catalog.purpose;
+      mount.appendChild(p);
+    }
+
+    if (catalog.risk_levels) {
+      var riskBox = document.createElement('div');
+      riskBox.style.background = '#f0f9ff';
+      riskBox.style.border = '1px solid #bae6fd';
+      riskBox.style.borderRadius = '8px';
+      riskBox.style.padding = '12px 16px';
+      riskBox.style.marginBottom = '24px';
+      riskBox.style.fontSize = '0.85rem';
+      var rh = document.createElement('div');
+      rh.style.fontWeight = '600';
+      rh.style.marginBottom = '6px';
+      rh.textContent = '📊 风险等级说明';
+      riskBox.appendChild(rh);
+      var ru = document.createElement('ul');
+      ru.style.margin = '0 0 0 18px';
+      var order = ['safe', 'medium', 'high', 'danger'];
+      for (var i = 0; i < order.length; i++) {
+        var k = order[i];
+        if (!catalog.risk_levels[k]) continue;
+        var li = document.createElement('li');
+        li.appendChild(text((RISK_LABEL[k] || k) + '：' + catalog.risk_levels[k]));
+        ru.appendChild(li);
+      }
+      riskBox.appendChild(ru);
+      mount.appendChild(riskBox);
+    }
+
+    var groups = catalog.command_groups || [];
+    for (var g = 0; g < groups.length; g++) {
+      var group = groups[g];
+      var sec = document.createElement('div');
+      sec.className = 'group';
+      var h2 = document.createElement('h2');
+      h2.textContent = group.label_zh || group.id;
+      sec.appendChild(h2);
+      if (group.description_zh) {
+        var gd = document.createElement('p');
+        gd.className = 'group-desc';
+        gd.textContent = group.description_zh;
+        sec.appendChild(gd);
+      }
+      var cmds = group.commands || [];
+      for (var c = 0; c < cmds.length; c++) {
+        sec.appendChild(renderCommand(cmds[c]));
+      }
+      mount.appendChild(sec);
+    }
+  }
+
+  function renderCommand(cmd) {
+    var risk = (cmd.risk_level || 'safe').toLowerCase();
+    var card = document.createElement('div');
+    card.className = 'command risk-' + risk;
+
+    var head = document.createElement('div');
+    head.className = 'cmd-header';
+    var name = document.createElement('div');
+    var nameDiv = document.createElement('div');
+    nameDiv.className = 'cmd-name';
+    nameDiv.textContent = cmd.label_zh || cmd.id;
+    name.appendChild(nameDiv);
+    var idDiv = document.createElement('div');
+    idDiv.className = 'cmd-id';
+    idDiv.textContent = cmd.id;
+    name.appendChild(idDiv);
+    head.appendChild(name);
+    var pill = document.createElement('span');
+    pill.className = 'risk-pill ' + risk;
+    pill.textContent = 'Risk: ' + (RISK_LABEL[risk] || risk);
+    head.appendChild(pill);
+    card.appendChild(head);
+
+    if (cmd.description_zh) {
+      var d = document.createElement('div');
+      d.className = 'cmd-desc';
+      d.textContent = cmd.description_zh;
+      card.appendChild(d);
+    }
+
+    var meta = document.createElement('div');
+    meta.className = 'cmd-meta';
+    if (cmd.calls_model) meta.appendChild(metaChip('calls-model', '⚡ calls_model'));
+    if (cmd.generates_media) meta.appendChild(metaChip('generates-media', '🎨 generates_media'));
+    if (cmd.modifies_timer) meta.appendChild(metaChip('modifies-timer', '⏰ modifies_timer'));
+    if (cmd.requires_confirm) meta.appendChild(metaChip('requires-confirm', '✅ requires_confirm'));
+    if (cmd.public_safe) {
+      meta.appendChild(metaChip('public-safe', '👁 public_safe'));
+    } else {
+      meta.appendChild(metaChip('not-public', '🔒 public_excluded'));
+    }
+    if (Array.isArray(cmd.requires_env)) {
+      for (var e = 0; e < cmd.requires_env.length; e++) {
+        meta.appendChild(metaChip('requires-env', cmd.requires_env[e]));
+      }
+    }
+    if (meta.children.length > 0) card.appendChild(meta);
+
+    var codeWrap = document.createElement('div');
+    var code = document.createElement('div');
+    code.className = 'cmd-code';
+    code.textContent = cmd.command || '';
+    codeWrap.appendChild(code);
+    var hint = document.createElement('div');
+    hint.className = 'cmd-code-hint';
+    hint.textContent = '↑ 选中复制 / Select to copy. 页面不提供执行按钮 / Page does not execute.';
+    codeWrap.appendChild(hint);
+    card.appendChild(codeWrap);
+
+    if (cmd.notes) {
+      var n = document.createElement('div');
+      n.className = 'cmd-notes';
+      n.textContent = '💡 ' + cmd.notes;
+      card.appendChild(n);
+    }
+
+    return card;
+  }
+})();
+</script>
+</body></html>

@@ -21,6 +21,10 @@
 | 0.13.1 | 2026-06-11 | Phase 4B-2 | ✅ COMPLETE — First scheduled run validation (07:30 auto-run, exit 0) |
 | 0.14.0 | 2026-06-12 | Phase 5A | ✅ COMPLETE — Harvester Read-only Dashboard (timer + guard + assets + queue) |
 | 0.15.0 | 2026-06-13 | Phase 4C-5 | ✅ COMPLETE — Adapter parallelization & query reduction (fast profile, 30→86 signals, 5/9→8/9) |
+| 0.16.0 | 2026-06-13 | Phase 4H | ✅ COMPLETE — Source-aware video prompt enhancement (25 packs, 859→1109 checks) |
+| 0.17.0 | 2026-06-13 | Phase 4I | ✅ COMPLETE — Source-aware music prompt enhancement (25 packs, 1009 checks) |
+| 0.17.1 | 2026-06-13 | Phase 4I-1 | ✅ COMPLETE — Sanitizer scope fix (allow public product name "MiniMax") |
+| 0.18.0 | 2026-06-13 | Phase 5C-0 | ✅ COMPLETE — Private Control Command Catalog (read-only, 25 commands × 6 groups) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |
@@ -484,7 +488,14 @@ https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-1
 |-------|-------------|--------|
 | **Phase 4C-6** | Cooldown generalization + 5xx handling | After 4C-5 stable in daily run |
 | **Phase 4C-7** | Per-adapter result cache (Met 7d, HF filter 1h) | Optional |
-| **Phase 5A** | Harvester Read-only Dashboard | Optional |
+| **Phase 4I-2** | Persistent sanitizer test suite (12 self-tests) | After 4I-1 merged |
+| **Phase 4I-3** | Asset-side naming sanity check (`validate:assets-naming`) | After 4I-2 |
+| **Phase 4J** | Audio coupling (video 8s + music 60-90s timeline alignment) | After 4H+4I stable |
+| **Phase 4K** | Music prompt scoring (mood specificity, instrument coverage) | After 4J |
+| **Phase 5C-1** | localhost-only private control server (127.0.0.1 bind, CORS locked) | After 5C-0 |
+| **Phase 5C-2** | Authenticated control actions (2FA for high/danger, per-user audit) | After 5C-1 |
+| **Phase 5C-3** | Auto-generated catalog from package.json scripts | After 5C-2 |
+| **Phase 5D** | Lyrics-aware music prompt variants (when lyrics make sense) | After 4J |
 
 ### Long-term
 - [ ] Multi-provider support (OpenAI, Google, Stability AI as fallbacks)

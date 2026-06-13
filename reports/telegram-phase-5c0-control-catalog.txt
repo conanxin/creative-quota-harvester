@@ -1,0 +1,68 @@
+PHASE 5C-0 COMPLETE
+
+Status: PASS
+Mode: read-only command catalog (NO execution, NO model call)
+
+What Changed:
+- New dashboard/control-catalog.json (25 commands × 6 groups)
+- New dashboard/control.html (read-only UI, no buttons, no POST, no WebSocket)
+- New scripts/validate-control-catalog.ts (15 checks)
+- dashboard/index.html: + 私有控制目录（只读） link
+- package.json: + npm run dashboard:control:validate
+
+Command Groups (6):
+- Daily Digest: 5 (run_manual_digest, regenerate_digest, send_digest_dry_run, send_digest_confirmed, check_digest_freshness)
+- Source Collection: 4 (collect_fast, collect_full, collect_diagnose, show_source_health)
+- Asset Generation: 5 (image_dry_run, image_confirmed_1, image_confirmed_2, video_prompt_only, music_prompt_only)
+- Validation: 5 (validate_assets, validate_gallery, validate_daily_archive, validate_dashboard, validate_telegram_sanitizer)
+- Timer: 4 (timer_status, timer_logs, timer_disable_command, timer_enable_command)
+- Reports: 2 (send_project_report_dry_run, send_project_report_confirmed)
+
+Risk Model:
+- safe=18 (dry-runs, validation, prompt-only, read-only checks)
+- medium=4 (send_digest_confirmed, send_project_report_confirmed, collect_full, timer_enable)
+- high=2 (image_confirmed_1, image_confirmed_2)
+- danger=1 (timer_disable_command)
+- All high/danger commands have requires_confirm=true (validator enforced)
+
+Public Safety Model:
+- control.html has no button elements
+- No fetch POST (only GET for control-catalog.json)
+- No WebSocket, no exec, no child_process, no document.write
+- All command text in code blocks (manual copy only)
+- control-catalog.json: no secrets / tokens / .env contents
+- CQA_ALLOW_GENERATION=1 + --confirm-spend for image_confirmed
+- CQA_ALLOW_TELEGRAM_SEND=1 for telegram confirmed sends
+- modifies_timer=true for timer commands
+- Real execution NOT possible from public Pages
+
+Validation:
+- dashboard:control:validate: 15/15 PASS
+- dashboard:build: PASS (regression)
+- dashboard:validate: 22/22 PASS (regression)
+
+Local Preview (http://127.0.0.1:8767/):
+- /dashboard/control.html: 200, 12177 bytes, contains 私有控制目录 / 只读命令目录 / 风险等级
+- /dashboard/control-catalog.json: 200, valid JSON
+
+Boundaries:
+- MiniMax called: No
+- Image/Video/Music model called: No
+- LLM called: No
+- New media/audio generated: No
+- Gateway/timer/.env: untouched
+- Secrets: not committed
+- Public Pages executable control: not possible
+
+GitHub Push:
+- creative-quota-harvester: pending (this phase)
+- creative-quota-assets: not affected (no asset changes)
+
+Next Phase:
+- Phase 5C-1: localhost-only control server
+- Phase 5C-2: authenticated control actions (2FA for high/danger)
+- Phase 5C-3: auto-generated catalog from package.json
+- Phase 4J: audio coupling (video + music)
+
+Report: docs/PHASE_5C0_PRIVATE_CONTROL_COMMAND_CATALOG_REPORT.md
+Detail: reports/private-control-command-catalog.md

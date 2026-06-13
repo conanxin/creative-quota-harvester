@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-06-13T00:52:31.782Z",
+  "generated_at": "2026-06-13T05:11:03.279Z",
   "phase": "4C-3A",
   "mode": "real-send",
-  "file": "reports/telegram-phase-4c3a-final-report-send-gate.txt",
-  "label": "Phase 4C-3A test",
-  "char_count": 1983,
+  "file": "reports/telegram-phase-4i1-music-sanitizer-fix.txt",
+  "label": "Phase 4I-1",
+  "char_count": 3042,
   "max_allowed": 3500,
   "sanitizer_pass": true,
   "forbidden_hits": [],
   "send_attempted": true,
   "send_result": {
     "ok": true,
-    "message_id": 50036
+    "message_id": 50240
   },
   "reason": "sent successfully"
 }

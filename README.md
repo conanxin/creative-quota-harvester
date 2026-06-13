@@ -44,6 +44,10 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | Phase 3D | ✅ Complete | Controlled image batch with guard |
 | Phase 3E | ✅ Complete | Image quality review & asset scoring (5 dims, 20pts each) |
 | **Phase 5A** | **✅ Complete** | **Harvester Read-only Dashboard (timer + guard + assets)** |
+| **Phase 4H** | **✅ Complete** | **Source-aware video prompt enhancement (25 packs × 3 files)** |
+| **Phase 4I** | **✅ Complete** | **Source-aware music prompt enhancement (25 packs × 3 files)** |
+| **Phase 4I-1** | **✅ Complete** | **Music metadata naming & sanitizer scope fix (MiniMax product name allowed)** |
+| **Phase 5C-0** | **✅ Complete** | **Private Control Command Catalog (read-only, no execution, 25 commands × 6 groups)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 
@@ -101,6 +105,19 @@ See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md#data-model) for entity definit
 | [docs/PHASE_1R_SOURCE_RELIABILITY_REPORT.md](./docs/PHASE_1R_SOURCE_RELIABILITY_REPORT.md) | Source reliability and fallback chains |
 | [docs/PHASE_2A_CREATIVE_BRIEF_ENGINE_REPORT.md](./docs/PHASE_2A_CREATIVE_BRIEF_ENGINE_REPORT.md) | Brief engine documentation |
 | [docs/TELEGRAM_FINAL_REPLY_CONTRACT.md](./docs/TELEGRAM_FINAL_REPLY_CONTRACT.md) | Telegram output specification |
+| [docs/PHASE_5C0_PRIVATE_CONTROL_COMMAND_CATALOG_REPORT.md](./docs/PHASE_5C0_PRIVATE_CONTROL_COMMAND_CATALOG_REPORT.md) | Private control command catalog (Phase 5C-0) |
+
+## Private Control Command Catalog (Phase 5C-0)
+
+The harvester exposes a **read-only command catalog** at `dashboard/control.html`. It documents every control action in the system, the corresponding shell/npm command, risk level, and safety requirements.
+
+**This is documentation only.** The page cannot execute any command:
+- No `<button>` elements
+- No `fetch POST`, no `WebSocket`, no `child_process`
+- Command text is in plain text/code blocks (manual copy only)
+- High/danger commands require `CQA_ALLOW_*` env flags
+
+Public GitHub Pages deployment only **displays** the catalog; it has no execution capability. Real control surfaces (Phase 5C-1 localhost-only server / Phase 5C-2 authenticated dashboard) are out of scope for Phase 5C-0 and will be guarded with additional authentication.
 
 ## GitHub Repos
 
