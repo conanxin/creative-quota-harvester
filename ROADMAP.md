@@ -28,6 +28,7 @@
 | 0.19.0 | 2026-06-13 | Phase 5C-1 | ✅ COMPLETE — localhost-only Private Control Server (127.0.0.1:8788, read-only, no command execution) |
 | 0.20.0 | 2026-06-13 | Phase 5C-2A | ✅ COMPLETE — Authenticated Control Actions Dry-run (auth + confirm + audit, no real execution) |
 | 0.21.0 | 2026-06-13 | Phase 5C-2B | ✅ COMPLETE — Safe Read-only Action Execution (read-only queries, no side effects, no model calls) |
+| 0.22.0 | 2026-06-13 | Phase 5C-3 | ✅ COMPLETE — Auto-generated Control Catalog from package.json scripts (policy-driven, drift-check) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |
@@ -499,7 +500,8 @@ https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-1
 | **Phase 5C-2A** | ✅ **Authenticated control actions dry-run** (auth + confirm + audit, no real execution) | After 5C-1 |
 | **Phase 5C-2B** | ✅ **Safe read-only action execution** (read-only queries, no side effects, no model calls) | After 5C-2A |
 | **Phase 5C-2C** | Confirmed low-risk command execution (with 2FA for high/danger) | After 5C-2B |
-| **Phase 5C-3** | Auto-generated catalog from package.json scripts | After 5C-2 |
+| **Phase 5C-3** | ✅ **Auto-generated control catalog from package.json scripts** (policy-driven, drift-check, 69 scripts mapped) | After 5C-2B |
+| **Phase 5C-4** | Auto-generated safe-readonly action handlers from catalog | After 5C-3 |
 | **Phase 5D** | Lyrics-aware music prompt variants (when lyrics make sense) | After 4J |
 
 ### Long-term
@@ -618,10 +620,9 @@ Regression checks:
 
 ### Next Phase
 
-- **Phase 5C-2A**: Authenticated control actions dry-run (auth + confirm + audit, no real execution) ✅
-- **Phase 5C-2B**: Safe read-only action execution (with auth + audit)
+- **Phase 5C-2B**: Safe read-only action execution (with auth + audit) ✅
+- **Phase 5C-3**: Auto-generated catalog from package.json scripts ✅
 - **Phase 5C-2C**: Confirmed low-risk command execution (with 2FA for high/danger)
-- **Phase 5C-3**: Auto-generated catalog from package.json scripts
 - **Phase 4J**: Audio coupling (video + music)
 - **Phase 6A**: Smart profile selection
 

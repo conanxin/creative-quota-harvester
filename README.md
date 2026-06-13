@@ -51,6 +51,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-1** | **✅ Complete** | **localhost-only Private Control Server (127.0.0.1:8788, read-only, no command execution)** |
 | **Phase 5C-2A** | **✅ Complete** | **Authenticated Control Actions Dry-run (auth + confirm + audit, no real execution)** |
 | **Phase 5C-2B** | **✅ Complete** | **Safe Read-only Action Execution (read-only queries, no side effects, no model calls)** |
+| **Phase 5C-3** | **✅ Complete** | **Auto-generated Control Catalog from package.json scripts (policy-driven, drift-check)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 
