@@ -1,0 +1,67 @@
+PHASE 5C-1 COMPLETE
+
+Status: PASS
+Mode: localhost-only read-only server (NO execution, NO model call)
+
+What Changed:
+- New scripts/control-server.ts (~500 lines, Node.js built-in http)
+- New scripts/validate-control-server.ts (20 checks)
+- package.json: +4 scripts (control:server, control:server:check, control:server:smoke, validate:control-server)
+- docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md (runbook)
+- docs/PHASE_5C1_LOCALHOST_PRIVATE_CONTROL_SERVER_REPORT.md (full report)
+
+Server Routes:
+- GET /: HTML console (Chinese UI, system status, command catalog, links)
+- GET /health: JSON health check
+- GET /api/status: dashboard/status.json
+- GET /api/control-catalog: dashboard/control-catalog.json
+- GET /api/reports: report whitelist + availability index
+- GET /api/report?name=: whitelisted report text (auto-appends .txt)
+- GET /static/dashboard: dashboard/index.html
+
+Security Model:
+- Only binds to 127.0.0.1 (any other host → exit)
+- Only accepts GET (405 for everything else)
+- No POST handler, no WebSocket, no child_process, no exec, no spawn
+- No .env reading, no token reading
+- Path traversal blocked (.. and \0 → 400)
+- Report whitelist enforced (24 named reports)
+- Error handler on server (no unhandled error events)
+
+Validation:
+- validate:control-server: 20/20 PASS
+- dashboard:control:validate: 15/15 PASS (regression)
+- dashboard:build: PASS
+- dashboard:validate: 22/22 PASS (regression)
+
+Smoke Test (http://127.0.0.1:8788):
+- /health: {"status":"ok","mode":"localhost-only-read-only","host":"127.0.0.1","port":8788}
+- /: contains 私有控制台, localhost-only, read-only, 不执行命令, 不触发模型
+- /api/status: valid JSON
+- /api/control-catalog: valid JSON
+- /api/report?name=telegram-digest: returns report text
+- POST /api/control-catalog: 405 Method Not Allowed
+
+Boundaries:
+- MiniMax called: No
+- Image/Video/Music model called: No
+- LLM called: No
+- New media/audio generated: No
+- Gateway/timer/.env: untouched
+- Secrets: not committed
+- Public Pages executable control: not possible
+- Real execution: not possible from this server
+
+GitHub Push:
+- creative-quota-harvester: pending
+- creative-quota-assets: not affected
+
+Next Phase:
+- Phase 5C-2: Authenticated control actions (2FA for high/danger, per-user audit)
+- Phase 5C-3: Auto-generated catalog from package.json scripts
+- Phase 4J: Audio coupling (video + music)
+- Phase 6A: Smart profile selection
+
+Report: docs/PHASE_5C1_LOCALHOST_PRIVATE_CONTROL_SERVER_REPORT.md
+Detail: reports/localhost-private-control-server.md
+Runbook: docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md

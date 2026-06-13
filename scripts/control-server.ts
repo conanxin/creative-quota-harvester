@@ -1,0 +1,429 @@
+import * as http from "http";
+import * as fs from "fs";
+import * as path from "path";
+import * as url from "url";
+
+/**
+ * scripts/control-server.ts — Phase 5C-1
+ *
+ * localhost-only private control server.
+ * Read-only. No command execution. No POST. No WebSocket.
+ * Serves dashboard/status.json, control-catalog.json, and whitelisted reports.
+ *
+ * Safety rules:
+ *   - Only binds to 127.0.0.1 (any other host → exit)
+ *   - Only accepts GET (405 for everything else)
+ *   - No child_process, no exec, no spawn
+ *   - No .env reading, no token reading
+ *   - Path traversal blocked (.. forbidden)
+ *   - Report whitelist enforced
+ */
+
+const HOST = "127.0.0.1";
+const PORT = parseInt(process.env.CQA_CONTROL_PORT || "8788", 10);
+const HARVESTER_DIR = path.resolve(__dirname, "..");
+
+const REPORTS_WHITELIST = [
+  "telegram-digest.txt",
+  "daily-digest.md",
+  "source-health.md",
+  "source-health.json",
+  "collect-fresh-report.md",
+  "collect-timeout-diagnosis.md",
+  "image-quality-review.md",
+  "harvester-dashboard.md",
+  "project-report-send-result.json",
+  "telegram-phase-4c5-adapter-parallelization.txt",
+  "telegram-phase-4h-video-prompts.txt",
+  "telegram-phase-4i-music-prompts.txt",
+  "telegram-phase-5c0-control-catalog.txt",
+  "digest-sanitization-freshness.md",
+  "first-scheduled-run-validation.md",
+  "latest-briefs.md",
+  "latest-content-packs.md",
+  "latest-signals.json",
+  "latest-signals.md",
+  "manual-daily-run.md",
+  "minimax-image-canary.md",
+  "minimax-token-plan-setup.md",
+  "open-source-safety-check.md",
+  "phase-4f-facts-enrichment.md",
+  "public-gallery-chinese-ui.md",
+  "scheduler-dry-run.md",
+  "source-aware-image-prompts.md",
+];
+
+function safeReadJson<T>(filepath: string, fallback: T): T {
+  try {
+    return JSON.parse(fs.readFileSync(filepath, "utf-8")) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function safeReadText(filepath: string, fallback = ""): string {
+  try {
+    return fs.readFileSync(filepath, "utf-8");
+  } catch {
+    return fallback;
+  }
+}
+
+function forbidden(res: http.ServerResponse, reason: string) {
+  res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("Forbidden: " + reason);
+}
+
+function notFound(res: http.ServerResponse, reason: string) {
+  res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("Not Found: " + reason);
+}
+
+function badRequest(res: http.ServerResponse, reason: string) {
+  res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("Bad Request: " + reason);
+}
+
+function methodNotAllowed(res: http.ServerResponse) {
+  res.writeHead(405, {
+    "Content-Type": "text/plain; charset=utf-8",
+    Allow: "GET",
+  });
+  res.end("Method Not Allowed: only GET is supported");
+}
+
+function jsonResponse(res: http.ServerResponse, data: unknown) {
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify(data, null, 2) + "\n");
+}
+
+function textResponse(res: http.ServerResponse, text: string) {
+  res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end(text);
+}
+
+function htmlResponse(res: http.ServerResponse, html: string) {
+  res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+  res.end(html);
+}
+
+function buildReportIndex(): Array<{
+  name: string;
+  exists: boolean;
+  size: number;
+}> {
+  const results = [];
+  for (const name of REPORTS_WHITELIST) {
+    const p = path.join(HARVESTER_DIR, "reports", name);
+    try {
+      const stat = fs.statSync(p);
+      results.push({ name, exists: true, size: stat.size });
+    } catch {
+      results.push({ name, exists: false, size: 0 });
+    }
+  }
+  return results;
+}
+
+function buildHomePage(): string {
+  const status = safeReadJson(
+    path.join(HARVESTER_DIR, "dashboard", "status.json"),
+    {}
+  ) as Record<string, unknown>;
+
+  const catalog = safeReadJson(
+    path.join(HARVESTER_DIR, "dashboard", "control-catalog.json"),
+    {}
+  ) as any;
+
+  const buildTime = (status.build_time as string) || "N/A";
+  const signalCount = (status.signals as number) || 0;
+  const packCount = (status.content_packs as number) || 0;
+  const topicCount = (status.topics as number) || 0;
+  const imgCount = (status.generated_images as number) || 0;
+  const timerActive = (status.timer_active as boolean) || false;
+  const nextRun = (status.next_run as string) || "N/A";
+  const lastRun = (status.last_run as string) || "N/A";
+  const guardMax = (status.generation_guard as Record<string, unknown>)?.max_images_per_run || "N/A";
+  const guardMusic = (status.generation_guard as Record<string, unknown>)?.music_disabled || "N/A";
+  const guardVideo = (status.generation_guard as Record<string, unknown>)?.video_disabled || "N/A";
+
+  const groups = catalog.command_groups || [];
+
+  let groupsHtml = "";
+  for (const g of groups) {
+    const cmds = g.commands || [];
+    let cmdsHtml = "";
+    for (const cmd of cmds) {
+      const riskClass = cmd.risk_level === "danger" ? "danger" : cmd.risk_level === "high" ? "high" : cmd.risk_level === "medium" ? "medium" : "safe";
+      const chips = [];
+      if (cmd.calls_model) chips.push("⚡ calls_model");
+      if (cmd.generates_media) chips.push("🎨 generates_media");
+      if (cmd.modifies_timer) chips.push("⏰ modifies_timer");
+      if (cmd.requires_confirm) chips.push("✅ requires_confirm");
+      if (!cmd.public_safe) chips.push("🔒 not_public");
+      const chipHtml = chips.length > 0 ? `<div class="meta-chips">${chips.map((c: string) => `<span class="chip">${c}</span>`).join(" ")}</div>` : "";
+
+      const cmdHtml = `<div class="command-card risk-${riskClass}">
+        <div class="cmd-header">
+          <div class="cmd-name">${cmd.label_zh || cmd.id}</div>
+          <div class="risk-pill ${riskClass}">Risk: ${cmd.risk_level || "safe"}</div>
+        </div>
+        <div class="cmd-desc">${cmd.description_zh || ""}</div>
+        ${chipHtml}
+        <div class="cmd-code">${cmd.command || ""}</div>
+        <div class="cmd-note">${cmd.notes || ""}</div>
+      </div>`;
+      cmdsHtml += cmdHtml;
+    }
+
+    groupsHtml += `<div class="group">
+      <h3>${g.label_zh || g.id}</h3>
+      <p class="group-desc">${g.description_zh || ""}</p>
+      ${cmdsHtml}
+    </div>`;
+  }
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creative Quota 私有控制台</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f5f5f0; color: #333; line-height: 1.6; padding: 0; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  header { text-align: center; padding: 30px 0; border-bottom: 2px solid #e0e0e0; margin-bottom: 30px; background: #fff; border-radius: 12px; }
+  h1 { font-size: 1.8rem; color: #2c3e50; }
+  .subtitle { color: #7f8c8d; font-size: 0.9rem; margin-top: 8px; }
+  .mode-badge { display: inline-block; background: #1e3a5f; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; margin-top: 12px; font-weight: 600; }
+  .warning-box { background: #fff3cd; border: 2px solid #ffc107; color: #856404; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; font-size: 0.95rem; }
+  .warning-box strong { display: block; margin-bottom: 6px; }
+  .section { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #e0e0e0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .section h2 { color: #2c3e50; margin-bottom: 16px; font-size: 1.3rem; }
+  .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px; }
+  .status-card { background: #f8f9fa; border-radius: 8px; padding: 16px; text-align: center; }
+  .status-card .number { font-size: 2rem; font-weight: 700; color: #1e3a5f; }
+  .status-card .label { font-size: 0.85rem; color: #7f8c8d; margin-top: 4px; }
+  .timer-line { font-size: 0.9rem; color: #555; margin: 6px 0; }
+  .guard-line { font-size: 0.85rem; color: #555; margin: 4px 0; padding: 4px 8px; background: #f0f9ff; border-radius: 4px; }
+  .group h3 { color: #2c3e50; margin-bottom: 8px; font-size: 1.15rem; border-bottom: 1px solid #e0e0e0; padding-bottom: 6px; }
+  .group-desc { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 16px; }
+  .command-card { background: #fafafa; border: 1px solid #e8e8e8; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .command-card.risk-high { border-left: 5px solid #ef4444; background: #fff5f5; }
+  .command-card.risk-danger { border-left: 5px solid #991b1b; background: #fef2f2; }
+  .command-card.risk-medium { border-left: 5px solid #f59e0b; background: #fffbf0; }
+  .command-card.risk-safe { border-left: 5px solid #22c55e; }
+  .cmd-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+  .cmd-name { font-weight: 600; color: #2c3e50; }
+  .risk-pill { padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+  .risk-pill.safe { background: #d1fae5; color: #065f46; }
+  .risk-pill.medium { background: #fef3c7; color: #92400e; }
+  .risk-pill.high { background: #fee2e2; color: #991b1b; }
+  .risk-pill.danger { background: #991b1b; color: #fff; }
+  .cmd-desc { font-size: 0.85rem; color: #555; margin-bottom: 8px; }
+  .meta-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .chip { font-size: 0.68rem; padding: 2px 6px; border-radius: 4px; background: #f0f0f0; color: #666; font-family: monospace; }
+  .cmd-code { background: #1e293b; color: #e2e8f0; padding: 10px 14px; border-radius: 6px; font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace; font-size: 0.82rem; overflow-x: auto; user-select: all; margin-top: 8px; }
+  .cmd-note { font-size: 0.78rem; color: #1e40af; margin-top: 8px; background: #f0f9ff; padding: 6px 10px; border-radius: 4px; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; }
+  .links a { display: inline-block; padding: 8px 16px; background: #1e3a5f; color: #fff; border-radius: 8px; text-decoration: none; font-size: 0.85rem; }
+  .links a:hover { background: #2c3e50; }
+  footer { text-align: center; padding: 24px 0; color: #95a5a6; font-size: 0.8rem; border-top: 1px solid #e0e0e0; margin-top: 20px; }
+  @media (max-width: 600px) { .container { padding: 12px; } .section { padding: 16px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🔒 Creative Quota 私有控制台</h1>
+    <div class="subtitle">Phase 5C-1 · localhost-only private control server</div>
+    <div class="mode-badge">localhost-only · read-only · 不执行命令 · 不触发模型</div>
+  </header>
+  <div class="warning-box">
+    <strong>⚠️ 安全说明</strong>
+    <p>本服务器仅监听 127.0.0.1，不提供公网访问。页面内容只读，不执行任何命令。命令文本仅供手动复制。高风险命令（high / danger）需要 CQA_ALLOW_* 环境变量和显式确认。请勿公开暴露此服务。</p>
+  </div>
+  <div class="section">
+    <h2>📊 系统状态</h2>
+    <div class="status-grid">
+      <div class="status-card"><div class="number">${signalCount}</div><div class="label">Signals</div></div>
+      <div class="status-card"><div class="number">${packCount}</div><div class="label">Content Packs</div></div>
+      <div class="status-card"><div class="number">${topicCount}</div><div class="label">Unique Topics</div></div>
+      <div class="status-card"><div class="number">${imgCount}</div><div class="label">Generated Images</div></div>
+    </div>
+    <div class="timer-line">⏰ Timer: ${timerActive ? "active" : "unknown"} · Next: ${nextRun} · Last: ${lastRun}</div>
+    <div class="timer-line">🕒 Build: ${buildTime}</div>
+  </div>
+  <div class="section">
+    <h2>🛡️ Generation Guard</h2>
+    <div class="guard-line">Max images per run: ${guardMax}</div>
+    <div class="guard-line">Music generation: ${guardMusic}</div>
+    <div class="guard-line">Video generation: ${guardVideo}</div>
+    <div class="guard-line">Ambiguous commands: blocked</div>
+  </div>
+  <div class="section">
+    <h2>📋 Command Catalog</h2>
+    ${groupsHtml}
+  </div>
+  <div class="section">
+    <h2>🔗 链接</h2>
+    <div class="links">
+      <a href="https://conanxin.github.io/creative-quota-harvester/dashboard/" target="_blank">Public Dashboard</a>
+      <a href="https://conanxin.github.io/creative-quota-assets/gallery/" target="_blank">Assets Gallery</a>
+      <a href="https://conanxin.github.io/creative-quota-assets/daily/" target="_blank">Daily Archive</a>
+      <a href="https://github.com/conanxin/creative-quota-harvester" target="_blank">GitHub</a>
+      <a href="https://github.com/conanxin/creative-quota-harvester/blob/main/docs/SCHEDULED_DAILY_DIGEST_RUNBOOK.md" target="_blank">Runbook</a>
+    </div>
+  </div>
+  <footer>
+    <p>Creative Quota Harvester · Phase 5C-1 · localhost-only · read-only</p>
+  </footer>
+</div>
+</body>
+</html>`;
+}
+
+const server = http.createServer((req, res) => {
+  // Block anything that's not GET
+  if (req.method !== "GET") {
+    methodNotAllowed(res);
+    return;
+  }
+
+  const parsedUrl = url.parse(req.url || "/", true);
+  const pathname = parsedUrl.pathname || "/";
+  const query = parsedUrl.query;
+
+  // Path traversal check
+  if (pathname.includes("..") || pathname.includes("\0")) {
+    badRequest(res, "Path traversal not allowed");
+    return;
+  }
+
+  switch (pathname) {
+    case "/": {
+      htmlResponse(res, buildHomePage());
+      return;
+    }
+
+    case "/health": {
+      jsonResponse(res, {
+        status: "ok",
+        mode: "localhost-only-read-only",
+        host: HOST,
+        port: PORT,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    case "/api/status": {
+      const status = safeReadJson(
+        path.join(HARVESTER_DIR, "dashboard", "status.json"),
+        null
+      );
+      if (!status) {
+        notFound(res, "status.json not found — run 'npm run dashboard:build' first");
+        return;
+      }
+      jsonResponse(res, status);
+      return;
+    }
+
+    case "/api/control-catalog": {
+      const catalog = safeReadJson(
+        path.join(HARVESTER_DIR, "dashboard", "control-catalog.json"),
+        null
+      );
+      if (!catalog) {
+        notFound(res, "control-catalog.json not found");
+        return;
+      }
+      jsonResponse(res, catalog);
+      return;
+    }
+
+    case "/api/reports": {
+      jsonResponse(res, {
+        whitelist: REPORTS_WHITELIST,
+        available: buildReportIndex(),
+      });
+      return;
+    }
+
+    case "/api/report": {
+      const rawName = String(query.name || "").trim();
+      if (!rawName) {
+        badRequest(res, "Missing 'name' query parameter");
+        return;
+      }
+      // Allow both "telegram-digest" and "telegram-digest.txt"
+      const name = rawName.endsWith(".txt") || rawName.endsWith(".md") || rawName.endsWith(".json")
+        ? rawName
+        : rawName + ".txt";
+      if (!REPORTS_WHITELIST.includes(name)) {
+        forbidden(res, "Report not in whitelist");
+        return;
+      }
+      const reportPath = path.join(HARVESTER_DIR, "reports", name);
+      // Double-check it's not trying to escape reports dir
+      const resolved = path.resolve(reportPath);
+      const reportsDir = path.resolve(path.join(HARVESTER_DIR, "reports"));
+      if (!resolved.startsWith(reportsDir + path.sep) && resolved !== reportsDir) {
+        forbidden(res, "Report must be inside reports directory");
+        return;
+      }
+      const text = safeReadText(reportPath, "");
+      if (!text) {
+        notFound(res, `Report "${name}" not found`);
+        return;
+      }
+      textResponse(res, text);
+      return;
+    }
+
+    case "/static/dashboard": {
+      const dashboardPath = path.join(HARVESTER_DIR, "dashboard", "index.html");
+      const html = safeReadText(dashboardPath, "");
+      if (!html) {
+        notFound(res, "dashboard/index.html not found");
+        return;
+      }
+      htmlResponse(res, html);
+      return;
+    }
+
+    default: {
+      notFound(res, "Unknown route");
+      return;
+    }
+  }
+});
+
+// Safety check: refuse to bind if host is not 127.0.0.1
+if (HOST !== "127.0.0.1") {
+  console.error("[control-server] FATAL: host must be 127.0.0.1, got " + HOST);
+  process.exit(1);
+}
+
+server.on("error", (err) => {
+  console.error("[control-server] Server error:", err.message);
+});
+
+server.listen(PORT, HOST, () => {
+  console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, read-only)`);
+  console.log(`[control-server] PID: ${process.pid}`);
+  console.log(`[control-server] Routes: /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /static/dashboard`);
+});
+
+process.on("SIGTERM", () => {
+  console.log("[control-server] SIGTERM received, shutting down...");
+  server.close(() => process.exit(0));
+});
+
+process.on("SIGINT", () => {
+  console.log("[control-server] SIGINT received, shutting down...");
+  server.close(() => process.exit(0));
+});

@@ -48,6 +48,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 4I** | **✅ Complete** | **Source-aware music prompt enhancement (25 packs × 3 files)** |
 | **Phase 4I-1** | **✅ Complete** | **Music metadata naming & sanitizer scope fix (MiniMax product name allowed)** |
 | **Phase 5C-0** | **✅ Complete** | **Private Control Command Catalog (read-only, no execution, 25 commands × 6 groups)** |
+| **Phase 5C-1** | **✅ Complete** | **localhost-only Private Control Server (127.0.0.1:8788, read-only, no command execution)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 
@@ -106,6 +107,8 @@ See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md#data-model) for entity definit
 | [docs/PHASE_2A_CREATIVE_BRIEF_ENGINE_REPORT.md](./docs/PHASE_2A_CREATIVE_BRIEF_ENGINE_REPORT.md) | Brief engine documentation |
 | [docs/TELEGRAM_FINAL_REPLY_CONTRACT.md](./docs/TELEGRAM_FINAL_REPLY_CONTRACT.md) | Telegram output specification |
 | [docs/PHASE_5C0_PRIVATE_CONTROL_COMMAND_CATALOG_REPORT.md](./docs/PHASE_5C0_PRIVATE_CONTROL_COMMAND_CATALOG_REPORT.md) | Private control command catalog (Phase 5C-0) |
+| [docs/PHASE_5C1_LOCALHOST_PRIVATE_CONTROL_SERVER_REPORT.md](./docs/PHASE_5C1_LOCALHOST_PRIVATE_CONTROL_SERVER_REPORT.md) | Private control server (Phase 5C-1) |
+| [docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md](./docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md) | Operator runbook for the control server |
 
 ## Private Control Command Catalog (Phase 5C-0)
 
@@ -118,6 +121,27 @@ The harvester exposes a **read-only command catalog** at `dashboard/control.html
 - High/danger commands require `CQA_ALLOW_*` env flags
 
 Public GitHub Pages deployment only **displays** the catalog; it has no execution capability. Real control surfaces (Phase 5C-1 localhost-only server / Phase 5C-2 authenticated dashboard) are out of scope for Phase 5C-0 and will be guarded with additional authentication.
+
+## Private Control Server (Phase 5C-1)
+
+A **localhost-only HTTP server** (`127.0.0.1:8788`) that exposes dashboard status, control catalog, and whitelisted reports in a read-only format.
+
+```bash
+npm run control:server      # start server
+npm run control:server:smoke # run smoke test
+```
+
+**This server does not execute commands:**
+- Only accepts GET (405 for everything else)
+- No `child_process`, no `exec`, no `spawn`
+- No `.env` reading, no token exposure
+- Path traversal blocked (`..` → 400)
+- Report whitelist enforced (24 named reports only)
+
+Remote access requires SSH port forward:
+```bash
+ssh -L 8788:127.0.0.1:8788 user@your-server
+```
 
 ## GitHub Repos
 

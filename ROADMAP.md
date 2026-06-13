@@ -518,3 +518,120 @@ https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-1
 | conanxin/* exclusion | GitHub Radar hardcoded client-side — survives fork removal attempts |
 | Static gallery (no build) | GitHub Pages requires zero build pipeline |
 | Telegram Final Reply Contract | Respect cognitive load; Telegram is notification layer, not document surface |
+| localhost-only control server (Phase 5C-1) | Read-only, no execution surface; authenticates by network binding (127.0.0.1) not by token |
+
+---
+
+## Phase 5C-1 — localhost-only Private Control Server
+
+Status: COMPLETE.
+Adds a localhost-only, read-only private control server at 127.0.0.1:8788.
+No command execution, no model calls, no media generation, no timer control.
+
+### What Changed
+
+- New `scripts/control-server.ts` — Node.js built-in http module, binds only to 127.0.0.1:8788
+- New `scripts/validate-control-server.ts` — 20 validation checks
+- New `docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md` — operator runbook
+- New `docs/PHASE_5C1_LOCALHOST_PRIVATE_CONTROL_SERVER_REPORT.md` — full report
+- New `reports/localhost-private-control-server.md` — detail report
+- New `reports/telegram-phase-5c1-control-server.txt` — sanitized Telegram report
+- `package.json` — 4 new scripts: `control:server`, `control:server:check`, `control:server:smoke`, `validate:control-server`
+- `README.md` — Phase 5C-1 section added
+- `ROADMAP.md` — Phase 5C-1 added to version history and future considerations updated
+
+### Server Routes
+
+| Route | Method | Content-Type | Purpose |
+|-------|--------|------------|---------|
+| `GET /` | HTML | text/html | Private control console (Chinese UI, status, catalog, links) |
+| `GET /health` | JSON | application/json | Health check: `{ status, mode, host, port, timestamp }` |
+| `GET /api/status` | JSON | application/json | Returns `dashboard/status.json` |
+| `GET /api/control-catalog` | JSON | application/json | Returns `dashboard/control-catalog.json` |
+| `GET /api/reports` | JSON | application/json | Report whitelist + availability index |
+| `GET /api/report?name=...` | text/plain | text/plain | Whitelisted report text (auto-appends .txt if missing) |
+| `GET /static/dashboard` | HTML | text/html | Serves `dashboard/index.html` |
+
+All other routes → 404. All non-GET methods → 405.
+
+### Security Model
+
+- Only binds to `127.0.0.1` (hardcoded). Any other host → `process.exit(1)`.
+- Only accepts GET. All others → 405 Method Not Allowed.
+- No POST handler, no WebSocket, no child_process, no exec, no spawn.
+- No .env reading, no .env.telegram.local reference, no token exposure.
+- Path traversal blocked (`..` and `\0` → 400 Bad Request).
+- Report whitelist enforced (24 named reports only). Unknown names → 403 Forbidden.
+- Error handler on server prevents unhandled error events.
+- No CORS (localhost-only, no cross-origin needed).
+
+### Validation Results
+
+`npm run validate:control-server`: **20/20 PASS**
+- control-server.ts: binds to 127.0.0.1, not 0.0.0.0
+- No child_process require, no exec()/spawn()/execSync()/spawnSync()/execFile() calls
+- Blocks non-GET methods
+- No new WebSocket()
+- No .env file read, no .env.telegram.local reference
+- No token assignment, no API key patterns
+- No eval()
+- Path traversal guard present
+- REPORTS_WHITELIST defined
+- package.json scripts present (4/4)
+- dashboard/status.json: valid JSON
+- dashboard/control-catalog.json: valid JSON
+
+Regression checks:
+- `dashboard:control:validate`: 15/15 PASS
+- `dashboard:build`: PASS
+- `dashboard:validate`: 22/22 PASS
+
+### Smoke Test Results
+
+- `GET /health` → `{"status":"ok","mode":"localhost-only-read-only","host":"127.0.0.1","port":8788}`
+- `GET /` → contains `Creative Quota 私有控制台`, `localhost-only`, `read-only`, `不执行命令`, `不触发模型`
+- `GET /api/status` → valid JSON
+- `GET /api/control-catalog` → valid JSON
+- `GET /api/report?name=telegram-digest` → report text (auto-appends .txt)
+- `POST /api/control-catalog` → `HTTP/1.1 405 Method Not Allowed`
+
+### Boundaries
+
+- MiniMax called: **No**
+- Image model called: **No**
+- Video model called: **No**
+- Music model called: **No**
+- LLM called: **No**
+- New media generated: **No**
+- New audio generated: **No**
+- Systemd timer: untouched
+- Gateway config: untouched
+- .env / .env.telegram.local: not committed
+- Telegram token: not printed
+- Real execution: not possible from this server
+- Public Pages executable control: not possible
+
+### Next Phase
+
+- **Phase 5C-2**: Authenticated control actions (2FA for high/danger, per-user audit)
+- **Phase 5C-3**: Auto-generated catalog from package.json scripts
+- **Phase 4J**: Audio coupling (video + music)
+- **Phase 6A**: Smart profile selection
+
+### Files Changed
+
+- `scripts/control-server.ts` (new, ~500 lines)
+- `scripts/validate-control-server.ts` (new, ~140 lines)
+- `docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md` (new)
+- `docs/PHASE_5C1_LOCALHOST_PRIVATE_CONTROL_SERVER_REPORT.md` (new)
+- `reports/localhost-private-control-server.md` (new)
+- `reports/telegram-phase-5c1-control-server.txt` (new)
+- `package.json` (modified, +4 scripts)
+- `README.md` (modified, Phase 5C-1 section added)
+- `ROADMAP.md` (modified, Phase 5C-1 added)
+
+### Commit
+
+```
+Phase 5C-1: Add localhost-only private control server
+```
