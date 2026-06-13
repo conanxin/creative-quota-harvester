@@ -1,0 +1,41 @@
+{
+  "version": "0.1.0",
+  "phase": "5C-2C-A",
+  "mode": "confirmed-low-risk-canary",
+  "purpose": "First real execution canary. Only 5 safe validation commands allowed. All others remain blocked.",
+  "allowed_scripts": [
+    "dashboard:policy:validate",
+    "dashboard:control:drift-check",
+    "validate:control-readonly-actions",
+    "validate:control-actions-dry-run",
+    "validate:control-server"
+  ],
+  "blocked_patterns": [
+    "generate",
+    "send",
+    "timer",
+    "collect",
+    "git",
+    "push",
+    "pull",
+    "deploy",
+    "model",
+    "music",
+    "video",
+    "image",
+    "digest:send",
+    "report:send"
+  ],
+  "max_runtime_ms": 60000,
+  "max_output_chars": 12000,
+  "safety_rules": {
+    "shell": false,
+    "command_only": "npm",
+    "args_only": ["run", "SCRIPT_NAME"],
+    "cwd_only": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester",
+    "no_secrets_in_env": true,
+    "timeout_enforced": true,
+    "output_truncated": true,
+    "audit_required": true
+  }
+}

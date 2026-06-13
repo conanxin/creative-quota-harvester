@@ -2,18 +2,20 @@ import * as http from "http";
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
+import { executeLowRiskAction } from "./control-action-runner";
 
 /**
- * scripts/control-server.ts — Phase 5C-1
+ * scripts/control-server.ts — Phase 5C-1 + 5C-2A + 5C-2B + 5C-2C-A
  *
  * localhost-only private control server.
- * Read-only. No command execution. No POST. No WebSocket.
- * Serves dashboard/status.json, control-catalog.json, and whitelisted reports.
+ * Phase 5C-2C-A: Confirmed low-risk execution canary for 5 safe validation commands.
  *
  * Safety rules:
  *   - Only binds to 127.0.0.1 (any other host → exit)
- *   - Only accepts GET (405 for everything else)
- *   - No child_process, no exec, no spawn
+ *   - Only accepts GET (405 for everything else except POST /api/action/*)
+ *   - No shell, no arbitrary command execution
+ *   - Only npm run <script> via control-action-runner
+ *   - Only scripts in control-execution-allowlist.json
  *   - No .env reading, no token reading
  *   - Path traversal blocked (.. forbidden)
  *   - Report whitelist enforced
@@ -309,16 +311,21 @@ function buildHomePage(): string {
 <div class="container">
   <header>
     <h1>🔒 Creative Quota 私有控制台</h1>
-    <div class="subtitle">Phase 5C-2B · localhost-only private control server · dry-run + safe-readonly</div>
-    <div class="mode-badge">localhost-only · dry-run · safe-readonly · 不执行命令 · 不触发模型</div>
+    <div class="subtitle">Phase 5C-2C-A · localhost-only private control server · dry-run + safe-readonly + confirmed-low-risk-canary</div>
+    <div class="mode-badge">localhost-only · dry-run · safe-readonly · confirmed-low-risk-canary (5 scripts) · 不执行模型/媒体/发送</div>
   </header>
   <div class="warning-box">
     <strong>⚠️ 安全说明</strong>
-    <p>本服务器仅监听 127.0.0.1，不提供公网访问。Phase 5C-2B 支持 dry-run 模拟和 safe-readonly 只读查询，不执行任何命令。命令文本仅供手动复制或只读查询。高风险命令（high / danger）未启用真实执行。请勿公开暴露此服务。</p>
+    <p>本服务器仅监听 127.0.0.1，不提供公网访问。Phase 5C-2C-A 支持 confirmed low-risk 真实执行（仅限 5 个安全验证脚本），dry-run 模拟和 safe-readonly 只读查询。高风险命令（high / danger）未启用真实执行。请勿公开暴露此服务。</p>
   </div>
   <div class="warning-box" style="background:#f0f9ff;border-color:#3b82f6;color:#1e40af;">
-    <strong>🧪 Phase 5C-2B 功能说明</strong>
-    <p><b>Dry-run:</b> POST /api/action/dry-run — 模拟将要执行什么命令，不执行。<br><b>Safe-readonly:</b> POST /api/action/read-only — 读取现有系统状态，不执行命令、不调用模型、不修改文件。<br>所有 real_execution=false，side_effects=false。</p>
+    <strong>🧪 Phase 5C-2C-A 功能说明</strong>
+    <p><b>Confirmed Low-risk:</b> POST /api/action/execute-low-risk — 真实执行 5 个安全验证脚本（npm run），通过 control-action-runner 调用，shell=false，超时 60 秒，输出截断 12000 字符。<br><b>Dry-run:</b> POST /api/action/dry-run — 模拟将要执行什么命令，不执行。<br><b>Safe-readonly:</b> POST /api/action/read-only — 读取现有系统状态，不执行命令、不调用模型、不修改文件。</p>
+  </div>
+  <div class="warning-box" style="background:#d1fae5;border-color:#22c55e;color:#065f46;">
+    <strong>✅ Canary 5 个允许脚本</strong>
+    <p>validate:control-server · validate:control-readonly-actions · validate:control-actions-dry-run · dashboard:control:drift-check · dashboard:policy:validate</p>
+    <p style="font-size:0.8rem;margin-top:4px;">所有脚本 risk_level=safe, calls_model=false, generates_media=false, modifies_timer=false, requires_confirm=true, confirmation_phrase="EXECUTE LOW RISK"</p>
   </div>
   <div class="section">
     <h2>📊 系统状态</h2>
@@ -356,7 +363,7 @@ function buildHomePage(): string {
     </div>
   </div>
   <footer>
-    <p>Creative Quota Harvester · Phase 5C-2B · localhost-only · dry-run + safe-readonly · no real execution</p>
+    <p>Creative Quota Harvester · Phase 5C-2C-A · localhost-only · dry-run + safe-readonly + confirmed-low-risk-canary</p>
   </footer>
 </div>
 </body>
@@ -386,6 +393,12 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-A: confirmed low-risk execution handler ---
+  if (pathname === "/api/action/execute-low-risk" && req.method === "POST") {
+    handleExecuteLowRisk(req, res);
+    return;
+  }
+
   // Block anything that's not GET (for all other routes)
   if (req.method !== "GET") {
     methodNotAllowed(res);
@@ -401,11 +414,24 @@ const server = http.createServer((req, res) => {
     case "/health": {
       jsonResponse(res, {
         status: "ok",
-        mode: "localhost-only-dry-run-safe-readonly",
+        mode: "localhost-only-dry-run-safe-readonly-confirmed-low-risk-canary",
+        phase: "5C-2C-A",
         host: HOST,
         port: PORT,
         actions_enabled: CONTROL_CONFIG.actionsEnabled,
         token_configured: !!CONTROL_CONFIG.token,
+        confirmed_low_risk_canary: {
+          enabled: true,
+          allowed_scripts: [
+            "validate:control-server",
+            "validate:control-readonly-actions",
+            "validate:control-actions-dry-run",
+            "dashboard:control:drift-check",
+            "dashboard:policy:validate"
+          ],
+          max_runtime_ms: 60000,
+          max_output_chars: 12000,
+        },
         timestamp: new Date().toISOString(),
       });
       return;
@@ -518,11 +544,12 @@ server.on("error", (err) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly)`);
+  console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk)`);
   console.log(`[control-server] PID: ${process.pid}`);
   console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
+  console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution canary, 5 scripts only)`);
   console.log(`[control-server] Actions enabled: ${CONTROL_CONFIG.actionsEnabled}, Token configured: ${!!CONTROL_CONFIG.token}`);
 });
 
@@ -932,4 +959,291 @@ function writeAuditLogReadOnly(entry: AuditEntryReadOnly) {
   } catch (err: any) {
     console.error("[control-server] Audit log write failed:", err.message);
   }
+}
+
+interface AuditEntryLowRisk {
+  action_id: string;
+  script_name: string;
+  risk_level: string;
+  confirm_ok: boolean;
+  real_execution: boolean;
+  result: string;
+  reason: string;
+  exit_code?: number;
+  timed_out?: boolean;
+  duration_ms?: number;
+}
+
+function writeAuditLogLowRisk(entry: AuditEntryLowRisk) {
+  const line = JSON.stringify({
+    ts: new Date().toISOString(),
+    mode: "confirmed_low_risk",
+    phase: "5C-2C-A",
+    action_id: entry.action_id,
+    script_name: entry.script_name,
+    risk_level: entry.risk_level,
+    confirm_ok: entry.confirm_ok,
+    real_execution: entry.real_execution,
+    result: entry.result,
+    reason: entry.reason,
+    exit_code: entry.exit_code,
+    timed_out: entry.timed_out,
+    duration_ms: entry.duration_ms,
+  }) + "\n";
+  try {
+    fs.appendFileSync(AUDIT_LOG_PATH, line);
+  } catch (err: any) {
+    console.error("[control-server] Audit log write failed:", err.message);
+  }
+}
+
+// --- Phase 5C-2C-A: Confirmed low-risk execution handler ---
+function handleExecuteLowRisk(req: http.IncomingMessage, res: http.ServerResponse) {
+  let body = "";
+  req.on("data", (chunk) => { body += chunk; });
+  req.on("end", async () => {
+    let payload: any = {};
+    try {
+      payload = JSON.parse(body);
+    } catch {
+      badRequest(res, "Invalid JSON body");
+      return;
+    }
+
+    const actionId = String(payload.action_id || "").trim();
+    const confirmPhrase = String(payload.confirm_phrase || "").trim();
+    const token = String(payload.token || "").trim();
+
+    if (!actionId) {
+      badRequest(res, "Missing 'action_id' field");
+      return;
+    }
+
+    // Load catalog to find action metadata
+    const catalog = safeReadJson(path.join(HARVESTER_DIR, "dashboard", "control-catalog.json"), null) as any;
+    if (!catalog) {
+      notFound(res, "control-catalog.json not found");
+      return;
+    }
+
+    let foundCommand: any = null;
+    for (const g of catalog.command_groups || []) {
+      for (const cmd of g.commands || []) {
+        if (cmd.id === actionId || cmd.action_id === actionId) {
+          foundCommand = cmd;
+          break;
+        }
+      }
+      if (foundCommand) break;
+    }
+
+    if (!foundCommand) {
+      notFound(res, `Action "${actionId}" not found in catalog`);
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: "",
+        risk_level: "unknown",
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "action_id_not_found",
+      });
+      return;
+    }
+
+    const riskLevel = (foundCommand.risk_level || "safe").toLowerCase();
+    const scriptName = foundCommand.script_name || foundCommand.id?.replace(/_/g, ":") || actionId;
+
+    // Must be confirmed_low_risk execution mode
+    if (foundCommand.execution_mode !== "confirmed_low_risk") {
+      forbidden(res, `Action "${actionId}" is not confirmed_low_risk. Execution mode: ${foundCommand.execution_mode || "disabled"}`);
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "not_confirmed_low_risk",
+      });
+      return;
+    }
+
+    // Must have real_execution_supported=true
+    if (!foundCommand.real_execution_supported) {
+      forbidden(res, `Action "${actionId}" does not support real execution.`);
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "real_execution_not_supported",
+      });
+      return;
+    }
+
+    // Must be safe risk level
+    if (riskLevel !== "safe") {
+      forbidden(res, `Action "${actionId}" risk level is not safe: ${riskLevel}`);
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "risk_level_not_safe",
+      });
+      return;
+    }
+
+    // Must not call model
+    if (foundCommand.calls_model) {
+      forbidden(res, `Action "${actionId}" calls_model=true, blocked for low-risk execution.`);
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "calls_model_blocked",
+      });
+      return;
+    }
+
+    // Must not generate media
+    if (foundCommand.generates_media) {
+      forbidden(res, `Action "${actionId}" generates_media=true, blocked for low-risk execution.`);
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "generates_media_blocked",
+      });
+      return;
+    }
+
+    // Must not modify timer
+    if (foundCommand.modifies_timer) {
+      forbidden(res, `Action "${actionId}" modifies_timer=true, blocked for low-risk execution.`);
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "modifies_timer_blocked",
+      });
+      return;
+    }
+
+    // Check token if configured
+    if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+      forbidden(res, "Invalid or missing control token");
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "invalid_token",
+      });
+      return;
+    }
+
+    // Check confirmation phrase
+    const expectedPhrase = foundCommand.confirmation_phrase || "EXECUTE LOW RISK";
+    const confirmOk = confirmPhrase === expectedPhrase;
+
+    if (!confirmOk) {
+      jsonResponse(res, {
+        action_id: actionId,
+        label_zh: foundCommand.label_zh || actionId,
+        risk_level: riskLevel,
+        script_name: scriptName,
+        would_run_command: foundCommand.command || null,
+        requires_confirm: !!foundCommand.requires_confirm,
+        confirmation_phrase_expected: expectedPhrase,
+        confirmation_status: "mismatch",
+        real_execution: false,
+        message: `Execution blocked: confirmation phrase mismatch. Expected: "${expectedPhrase}"`,
+      });
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: false,
+        real_execution: false,
+        result: "blocked",
+        reason: "confirm_phrase_mismatch",
+      });
+      return;
+    }
+
+    // All safety checks passed — execute via runner
+    try {
+      const result = await executeLowRiskAction(scriptName, actionId);
+
+      jsonResponse(res, {
+        action_id: actionId,
+        label_zh: foundCommand.label_zh || actionId,
+        risk_level: riskLevel,
+        script_name: scriptName,
+        command: foundCommand.command || null,
+        confirmation_phrase_expected: expectedPhrase,
+        confirmation_status: "matched",
+        real_execution: true,
+        execution_result: {
+          exit_code: result.exitCode,
+          timed_out: result.timedOut,
+          duration_ms: result.duration_ms,
+          stdout_tail: result.stdout_tail,
+          stderr_tail: result.stderr_tail,
+        },
+        message: result.exitCode === 0 ? "Execution completed successfully." : `Execution failed with exit code ${result.exitCode}.`,
+      });
+
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: true,
+        real_execution: true,
+        result: result.exitCode === 0 ? "success" : "failed",
+        reason: result.timedOut ? "timed_out" : "executed",
+        exit_code: result.exitCode,
+        timed_out: result.timedOut,
+        duration_ms: result.duration_ms,
+      });
+    } catch (err: any) {
+      jsonResponse(res, {
+        action_id: actionId,
+        label_zh: foundCommand.label_zh || actionId,
+        risk_level: riskLevel,
+        script_name: scriptName,
+        confirmation_status: "matched",
+        real_execution: true,
+        execution_result: null,
+        error: err.message || "unknown",
+        message: "Execution failed with an unexpected error.",
+      });
+      writeAuditLogLowRisk({
+        action_id: actionId,
+        script_name: scriptName,
+        risk_level: riskLevel,
+        confirm_ok: true,
+        real_execution: true,
+        result: "failed",
+        reason: err.message || "unknown",
+      });
+    }
+  });
 }

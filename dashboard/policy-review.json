@@ -1,7 +1,7 @@
 {
   "version": "0.4.0",
   "phase": "5C-4",
-  "generated_at": "2026-06-13T11:58:39Z",
+  "generated_at": "2026-06-13T12:46:40Z",
   "total_commands": 79,
   "classified": 79,
   "needs_policy_review": 0,
@@ -13,8 +13,8 @@
   },
   "execution_mode_counts": {
     "safe_readonly": 7,
-    "dry_run_only": 71,
-    "disabled": 1
+    "dry_run_only": 66,
+    "disabled": 6
   },
   "source_counts": {
     "package-script": 72,
@@ -62,13 +62,13 @@
     },
     {
       "mode": "dry_run_only",
-      "count": 71,
+      "count": 66,
       "can_real_execute": false,
       "description": "Dry-run only. Simulation without execution."
     },
     {
       "mode": "disabled",
-      "count": 1,
+      "count": 6,
       "can_real_execute": false,
       "description": "Disabled. Cannot execute in any mode."
     }
@@ -348,43 +348,8 @@
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
     },
     {
-      "id": "dashboard_control_drift-check",
-      "label_zh": "Dashboard: Control: Drift-check",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
       "id": "dashboard_control_validate",
       "label_zh": "Dashboard: Control: Validate",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "dashboard_policy_validate",
-      "label_zh": "Dashboard: Policy: Validate",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "validate_control-server",
-      "label_zh": "Validate: Control-server",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "validate_control-readonly-actions",
-      "label_zh": "Validate: Control-readonly-actions",
-      "risk": "safe",
-      "execution_mode": "dry_run_only",
-      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
-    },
-    {
-      "id": "validate_control-actions-dry-run",
-      "label_zh": "Validate: Control-actions-dry-run",
       "risk": "safe",
       "execution_mode": "dry_run_only",
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"

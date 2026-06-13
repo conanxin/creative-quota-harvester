@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * scripts/validate-control-catalog-generated.ts — Phase 5C-3
+ * scripts/validate-control-catalog-generated.ts — Phase 5C-3 + 5C-2C-A
  *
  * Validates the auto-generated control catalog:
  *   - All package.json scripts appear in generated catalog
@@ -15,6 +15,8 @@
  *   - All commands have execution_mode
  *   - All commands have audit_required
  *   - Drift check: generated vs final catalog match
+ *   - 5C-2C-A canary: 5 safe commands allowed real_execution_supported=true
+ *     with execution_mode=confirmed_low_risk
  *
  * Usage: npm run dashboard:control:drift-check
  */
@@ -232,17 +234,28 @@ if (generatedJson === finalJson) {
   if (!drift) pass("Generated and final catalogs match (no drift)");
 }
 
-// 16. All commands have real_execution_supported=false
+// 16. All commands have real_execution_supported=false, except confirmed_low_risk canary
+const canaryIds = [
+  "validate_control-server",
+  "validate_control-readonly-actions",
+  "validate_control-actions-dry-run",
+  "dashboard_control_drift-check",
+  "dashboard_policy_validate",
+];
 let allFalse = true;
 for (const g of generated.command_groups || []) {
   for (const c of g.commands || []) {
-    if (c.real_execution_supported !== false) {
+    if (c.real_execution_supported !== false && !canaryIds.includes(c.id)) {
       fail(`Command ${c.id} has real_execution_supported=${c.real_execution_supported}`);
+      allFalse = false;
+    }
+    if (c.real_execution_supported === true && canaryIds.includes(c.id) && c.execution_mode !== "confirmed_low_risk") {
+      fail(`Command ${c.id} is canary but execution_mode != confirmed_low_risk: ${c.execution_mode}`);
       allFalse = false;
     }
   }
 }
-if (allFalse) pass("All commands have real_execution_supported=false");
+if (allFalse) pass("All commands have real_execution_supported=false, except 5C-2C-A canary (5 commands)");
 
 // 17. Catalog version matches phase
 if (generated.version && generated.phase === "5C-3") {
