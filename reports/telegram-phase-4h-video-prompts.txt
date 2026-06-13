@@ -1,0 +1,61 @@
+PHASE 4H COMPLETE
+
+Status: PASS
+Mode: prompt-only
+Packs enhanced: 25/25
+Source-type coverage: code=5, academic=5, culture-art=5, dev-community=5, ai-ecosystem=5
+
+What Changed:
+- New scripts/enhance-video-prompts.ts (~770 lines, deterministic, no LLM, no model)
+- New scripts/validate-video-prompt-enhancement.ts (859 checks, 25/25 PASS)
+- New npm scripts: prompts:video:enhance, validate:video-prompt-enhancement
+- Per-pack output: video-prompt.enriched.md, video-prompt.zh.md, video-prompt.meta.json
+- Original video-prompt.md preserved (never overwritten)
+
+Source-Aware Strategies (6):
+- code → Agent pipeline / launch clip / data flow
+- academic → 论文概念动画 / 数据曲线 / 概念网络
+- ai-ecosystem → pipeline flow (input → model → output)
+- dev-community → 痛点短视频 / 讨论地图
+- culture-art → 博物馆灯光 / 古典重绎 / 慢推
+- context → daily mood clip / 时间氛围
+
+Each pack gets 3 shots: 3s + 3s + 2s = 8s total
+
+Hard Rules Enforced:
+- No MiniMax / image / video / music model calls
+- No external LLM
+- No new media generated
+- No fake company logos, real branding, tiny text
+- No copyrighted characters
+- No distorted hands, rapid cuts, shaky camera
+
+Default params (per pack):
+- model_family: hailuo
+- duration: 8s
+- aspect_ratio: 16:9
+- generation_mode: prompt-only
+- priority: high (ai-ecosystem) / medium (others) / low (context)
+
+Validation:
+- 859/859 checks PASS
+- 25/25 enriched.md, zh.md, meta.json generated
+- All meta.json: llm_used=false, video_model_called=false, image_model_called=false
+- No LLM markers, no API keys, no secrets in any output
+
+Boundaries:
+- MiniMax called: No
+- Image model called: No
+- Video model called: No
+- Music generated: No
+- New media generated: No
+- Gateway/timer/.env: untouched
+
+Next Phase Proposal:
+- Phase 4I: Gallery video card (HTML embed of enriched prompt)
+- Phase 4J: Video prompt scoring
+- Phase 5C: Per-source budget extension
+
+Report: docs/PHASE_4H_SOURCE_AWARE_VIDEO_PROMPT_ENHANCEMENT_REPORT.md
+Detail: (no separate report file this phase; everything in the doc above)
+Validation: npm run validate:video-prompt-enhancement → 859/859 PASS
