@@ -1,0 +1,89 @@
+PHASE 4C-5 COMPLETE
+
+Status: PASS
+Run ID: run-mqbtfpdo
+Profile: fast
+Collect: PASS, 86 signals, 8/9 success + 1 skipped_cooldown
+Source-health: 8/9 success (target ≥6/9 met, 7/9 target met)
+
+Root Cause From 4C-4:
+- GitHub Radar: 12 queries x 7s gap > 35s timeout
+- Hugging Face: 11 filters x 5s gap > 35s timeout
+- Hacker News: 0 signals, sequential fetch
+- GDELT: HTTP 429, no cooldown
+
+Query Reduction (fast profile):
+- GitHub: 12 -> 4 high-value queries
+- Hugging Face models: 8 -> 4 filters
+- Hugging Face datasets: 3 -> 0 (skipped on fast)
+- Hacker News: 30 sequential -> 40 with 5 concurrent
+
+Parallelization:
+- runWithPool(tasks, limit) bounded async pool
+- GitHub concurrency=2, rate-limit header awareness (stop if remaining<3)
+- Hugging Face concurrency=2, partial returns
+- Hacker News concurrency=5, per-item 4s timeout, no batch break
+
+Source Budgets (config/source-budgets.example.json):
+- default_source_timeout_ms: 35000
+- overall_collect_warning_ms: 240000
+- daily_profile: fast
+- concurrency: github=2, hf=2, hn=5, default=2
+- cooldown: gdelt=6h on 429
+- profiles: fast, full, diagnose
+
+Before/After Source Health:
+- GitHub: timeout 35003ms -> success 2105ms (16.6x faster), 0->20 signals
+- Hugging Face: timeout 35003ms -> success 8698ms (4x faster), 0->20 signals
+- Hacker News: partial 0 signals -> success 16 signals
+- GDELT: partial 0 signals (429) -> skipped_cooldown (no HTTP call)
+- Total: 30 signals 5/9 -> 86 signals 8/9 + 1 cooldown (+187%)
+
+Collect Diagnose Result:
+8/9 reachable (GDELT 429 expected — cooldown active)
+
+Collect Fast Result:
+Profile=fast, Status=PASS, Signals=86, Sources=8/9 + 1 cooldown
+
+GDELT Cooldown Status:
+- HTTP 429 detected during run-mqbt3ifl
+- Cooldown set: 6h, until 2026-06-13T09:39:46Z
+- reports/source-cooldowns.json written
+- fast profile skips without HTTP call (verified)
+- next_allowed_at present in source-health.json
+
+Digest Freshness Status:
+- digest:telegram: PASS, 1736 chars, freshness 0h
+- digest:telegram:check: PASS (7/7 sections)
+- validate:digest-freshness: PASS (16/16)
+- validate:telegram-sanitizer: PASS (6/6)
+
+Validation Results:
+- collect:diagnose: 8/9 reachable PASS
+- collect:fresh:fast: PASS, 86 signals
+- digest chain: PASS PASS PASS PASS
+
+Boundaries:
+- MiniMax called: No
+- Image model called: No
+- New media generated: No
+- Gateway config changed: No
+- .env committed: No
+- Telegram token printed: No
+- systemd timer changed: No
+
+Limitations:
+- 5xx failures do not enter cooldown (only 429)
+- HN fallback not yet scoring-boosted
+- Met Collection ~30s, could benefit from cache
+
+Next Phase Proposal:
+- 4C-6: Cooldown generalization + 5xx handling
+- 5C: Per-adapter result cache
+- 6A: Smart profile selection by time-of-day + failure history
+
+Report: docs/PHASE_4C5_ADAPTER_PARALLELIZATION_QUERY_REDUCTION_REPORT.md
+Detail: reports/adapter-parallelization-query-reduction.md
+Source health: reports/source-health.json / .md
+Telegram digest: reports/telegram-digest.txt
+Daily digest: reports/daily-digest.md

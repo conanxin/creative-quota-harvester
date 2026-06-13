@@ -1,9 +1,9 @@
 # Scheduled Daily Digest Runbook
 
-**Version:** 2.0 (Phase 4C-2 update)
+**Version:** 2.1 (Phase 4C-5 update)
 **Created:** 2026-06-11
 **Updated:** 2026-06-13
-**Phase:** 4C-2
+**Phase:** 4C-5 (with 4C-2 send-gate context)
 
 ---
 
@@ -332,7 +332,25 @@ Both runs exited 0 with no errors.
 1. **Phase 4B-3**: Long-term monitoring (1 week run observation)
 2. **Phase 4B-4**: Telegram auto-send integration (if desired)
 3. **Phase 4H**: Video Prompt Enhancement
+4. **Phase 4C-6**: Cooldown generalization + 5xx handling (after 4C-5 stable)
 
 ---
 
-_Runbook v1.1 — Phase 4B-2 (first scheduled run validated)_
+## Phase 4C-5 Update — Fast Profile Default
+
+**Effective 2026-06-13:** `daily-scheduled.sh` and `daily-manual.ts` default to `collect:fresh:fast` (4 high-value queries/filters, bounded concurrency, accepts partial). The full profile is reserved for manual deep refresh.
+
+**Profile scripts:**
+- `npm run collect:fresh:fast` — daily 07:30 fit
+- `npm run collect:fresh:full` — manual deep refresh
+- `npm run collect:diagnose:connectivity` — connectivity only, no signal collection
+
+**Source budgets:** see `config/source-budgets.example.json` (template) and `src/sources/profile.ts` (loader).
+
+**Cooldown behavior:** GDELT enters 6h cooldown on HTTP 429 (file: `reports/source-cooldowns.json`). Fast profile skips GDELT during cooldown without HTTP call. `next_allowed_at` field in `reports/source-health.json` shows when GDELT will be retried.
+
+**Result (2026-06-13, run-mqbtfpdo):** 86 signals (was 30), 8/9 sources success + 1 skipped_cooldown. GitHub 2.1s (was 35s timeout), Hugging Face 8.7s (was 35s timeout), Hacker News 16 signals (was 0). All digest validations PASS.
+
+---
+
+_Runbook v2.1 — Phase 4C-5 (fast profile default)_

@@ -2,11 +2,11 @@ Creative Quota Daily Digest — 2026-06-13
 STATUS: WARN
 
 今日输入
-Signals: 457 (code(165) / ai-ecosystem(96) / academic(80) / dev-community(57) / culture-art(42) / context(17))
+Signals: 715 (code(225) / ai-ecosystem(156) / academic(140) / dev-community(105) / culture-art(63) / context(26))
 Content Packs: 25 (25 with image prompt)
 Generated Assets: 5 (5 img / 0 music / 0 video)
 Signal freshness: PASS — signals last collected 0h ago
-Source health: arXiv: ✅ / GitHub: ⏱️ / Hacker: ⚠️ / GDELT: ⚠️ / Hugging: ⏱️ / Open-Meteo: ✅ / Date: ✅ / Solar: ✅ / The: ✅
+Source health: arXiv: ✅ / GitHub: ✅ / Hacker: ✅ / GDELT: skipped_cooldown / Hugging: ✅ / Open-Meteo: ✅ / Date: ✅ / Solar: ✅ / The: ✅
 
 Top 5 Signals (deduplicated, by score)
 1. SamurAIGPT/Generative-Media-Skills

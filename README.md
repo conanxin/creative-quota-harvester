@@ -37,6 +37,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | Phase 4D | ✅ Complete | Content pack detail enrichment (summary + facts) |
 | **Phase 4D-1** | **✅ Complete** | **Content Pack human-readable detail pages (index.html)** |
 | Phase 4D-2 | ✅ Complete | Gallery dedup (25 packs → 5 unique topics) |
+| **Phase 4C-5** | **✅ Complete** | **Adapter parallelization & query reduction (fast profile, 30→86 signals)** |
 | Phase 4E | ✅ Complete | Daily calendar archive |
 | Phase 4F | ✅ Complete | Facts enrichment from public sources |
 | Phase 4G | ✅ Complete | Source-aware image prompt enhancement |

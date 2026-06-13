@@ -20,6 +20,7 @@
 | 0.13.0 | 2026-06-11 | Phase 3E | ✅ COMPLETE — Image quality review & asset scoring (5 dims, 20pts each, 5 images) |
 | 0.13.1 | 2026-06-11 | Phase 4B-2 | ✅ COMPLETE — First scheduled run validation (07:30 auto-run, exit 0) |
 | 0.14.0 | 2026-06-12 | Phase 5A | ✅ COMPLETE — Harvester Read-only Dashboard (timer + guard + assets + queue) |
+| 0.15.0 | 2026-06-13 | Phase 4C-5 | ✅ COMPLETE — Adapter parallelization & query reduction (fast profile, 30→86 signals, 5/9→8/9) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |
@@ -434,13 +435,55 @@ https://conanxin.github.io/creative-quota-assets/content-packs/2026/06/2026-06-1
 
 ---
 
+## Phase 4C-5 — Adapter Parallelization & Query Reduction ✅
+
+**Status:** Complete (2026-06-13)
+
+**Scope:**
+- [x] `config/source-budgets.example.json` — fast/full/diagnose profiles with concurrency, max results, cooldown specs
+- [x] `src/sources/profile.ts` — budget loader, `runWithPool`, `setCooldown/getCooldown` API, baked-in defaults
+- [x] GitHub Radar: 4 high-value queries (fast), concurrency 2, rate-limit awareness (stop if remaining<3)
+- [x] Hugging Face: 4 filters (fast), concurrency 2, no fixed serial wait, partial returns
+- [x] Hacker News: 5 concurrent item fetches, 4s per-item timeout, keyword fallback (3)
+- [x] GDELT: 6h cooldown on 429, fast profile skips without HTTP call
+- [x] Source health: profile, query_count, success_count, partial_count, timeout_count, failed_count, skipped_cooldown_count, next_allowed_at
+- [x] New scripts: `collect:fresh:fast`, `collect:fresh:full`, `collect:diagnose:connectivity`
+- [x] `daily-scheduled.sh` defaults to fast profile
+- [x] `daily-manual.ts` uses fast profile
+- [x] `.gitignore` updated to track `*.example.json` in config/
+
+**Before / After (run-mqbscv61 vs run-mqbtfpdo):**
+| Source | Before | After |
+|--------|--------|-------|
+| GitHub Radar | timeout 35s | success 2.1s (16.6x faster) |
+| Hugging Face | timeout 35s | success 8.7s (4x faster) |
+| Hacker News | 0 signals | 16 signals |
+| GDELT | partial 0 (429) | skipped_cooldown (no HTTP) |
+| **Total** | **30 / 5 of 9** | **86 / 8 of 9 + 1 cooldown** |
+
+**Validation:**
+- `collect:diagnose` 8/9 reachable
+- `collect:fresh:fast` PASS, 86 signals
+- `digest:telegram` PASS, 1736 chars, freshness 0h
+- `digest:telegram:check` PASS (7/7)
+- `validate:digest-freshness` PASS (16/16)
+- `validate:telegram-sanitizer` PASS (6/6)
+- TypeScript clean for new files
+
+**Boundaries:** No MiniMax call, no new media, no gateway/.env/timer change.
+
+**Next:** Phase 4C-6 — Cooldown generalization + 5xx handling.
+
+---
+
 ## Future Considerations (Backlog)
 
 ### Short-term (Next Phases)
 
 | Phase | Description | Trigger |
 |-------|-------------|--------|
-| **Phase 4B-2** | First Scheduled Run Validation | After tomorrow 07:30 |
+| **Phase 4C-6** | Cooldown generalization + 5xx handling | After 4C-5 stable in daily run |
+| **Phase 4C-7** | Per-adapter result cache (Met 7d, HF filter 1h) | Optional |
 | **Phase 5A** | Harvester Read-only Dashboard | Optional |
 
 ### Long-term
