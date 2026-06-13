@@ -1,79 +1,35 @@
 PHASE 5C-3 COMPLETE
 
 Status: PASS
-Mode: Auto-generated Control Catalog from package.json scripts (policy-driven, no model call, no media generation, no command execution)
+Mode: Auto-generated Control Catalog (policy-driven, no model call, no media generation)
 
 What Changed:
-- New dashboard/control-policy.json (risk policy file, 68 rules, 1 default policy)
-- New scripts/generate-control-catalog.ts (auto-generator from package.json + policy)
-- New scripts/validate-control-catalog-generated.ts (drift checker, 18 checks)
-- dashboard/control-catalog.json: auto-generated from 69 package.json scripts + 7 safe_readonly manual commands
-- dashboard/control-catalog.generated.json: generated output
-- package.json: +dashboard:control:generate, +dashboard:control:drift-check scripts
-- README.md: Phase 5C-3 added
-- ROADMAP.md: Phase 5C-3 added to version history
+- dashboard/control-policy.json: 68 risk policy rules + default policy
+- scripts/generate-control-catalog.ts: auto-generator from package.json + policy
+- scripts/validate-control-catalog-generated.ts: drift checker (18 checks)
+- dashboard/control-catalog.json: 69 auto-generated scripts + 7 safe_readonly manual
+- package.json: +dashboard:control:generate, +dashboard:control:drift-check
 
-Auto-generation:
-- Reads package.json scripts (69 scripts)
-- Reads dashboard/control-policy.json (68 rules + default policy)
-- Matches scripts against rules using wildcard patterns (e.g., validate:*, build:*)
-- Generates action metadata: id, label_zh, description_zh, command, risk_level, requires_confirm, requires_env, calls_model, generates_media, modifies_timer, public_safe, dry_run_supported, real_execution_supported, execution_mode, confirmation_phrase, audit_required
-- Groups commands into: Daily Digest, Source Collection, Asset Generation, Validation, Timer, Reports, Dashboard & Control, Prompt Enhancement, Development, Other
-- Merges with manual safe_readonly queries (7 commands from Phase 5C-2B)
-- Writes final catalog to dashboard/control-catalog.json
+Auto-generation: package.json scripts → policy rules → generate-control-catalog.ts → control-catalog.generated.json → merge safe_readonly → control-catalog.json (final)
 
-Policy Rules:
-- 68 explicit rules covering all package.json scripts
-- Default policy: medium risk, requires_confirm, no real execution, execution_mode=disabled
-- Wildcard rules: validate:* (safe), dashboard:* (safe), build:* (safe), enrich:facts:* (medium), prompts:* (safe), generate:* (high for confirmed), control:* (safe), digest:* (safe/medium), report:* (safe/medium), collect:* (medium), gallery:* (safe)
-- All high/danger: real_execution_supported=false, requires_confirm=true
-- All generates_media=true: calls_model=true or detailed notes
-- All timer commands: modifies_timer=true
-- All send confirmed: requires_env includes CQA_ALLOW_TELEGRAM_SEND
-- All image confirmed: requires_env includes CQA_ALLOW_GENERATION
+Policy Rules: validate:* safe, dashboard:* safe, build:* safe, collect:* medium, generate:* high for confirmed, digest:send:confirmed medium, report:send* medium, prompts:* safe, enrich:* medium. Default: medium, disabled, needs review.
 
-Drift Check (18/18 PASS):
-- All 69 package.json scripts appear in generated catalog
-- All high/danger commands have requires_confirm=true
-- All high/danger commands have real_execution_supported=false
-- generates_media=true commands have calls_model or detailed notes
-- Timer group commands have modifies_timer=true
-- Send confirmed commands have CQA_ALLOW_TELEGRAM_SEND in requires_env
-- Image confirmed commands have CQA_ALLOW_GENERATION in requires_env
-- No API key value patterns in catalog
-- No .env file paths or token assignments in commands
-- All commands have execution_mode
-- All commands have audit_required
-- Generated and final catalogs are identical (no drift)
-- All commands have real_execution_supported=false
-- Catalog version and phase set (5C-3)
+Drift Check 18/18 PASS:
+- All 69 scripts mapped ✅
+- high/danger: requires_confirm=true ✅
+- high/danger: real_execution_supported=false ✅
+- generates_media → calls_model or notes ✅
+- No API keys, no .env paths ✅
+- All have execution_mode, audit_required ✅
+- Generated = final (no drift) ✅
 
-Validation Results:
-- validate:control-server: 20/20 PASS (regression)
-- validate:control-actions-dry-run: 19/19 PASS (regression)
-- validate:control-readonly-actions: 21/21 PASS (regression)
-- dashboard:control:drift-check: 18/18 PASS (new)
+Validation: 20/20 + 19/19 + 21/21 + 18/18 all PASS
 
-Boundaries:
-- MiniMax called: No
-- Image/Video/Music model called: No
-- LLM called: No
-- New media generated: No
-- New audio generated: No
-- Systemd timer: untouched
-- Gateway config: untouched
-- .env / .env.telegram.local: not committed
-- Telegram token: not printed
-- Real execution: not possible
-- Public Pages executable control: not possible
+Boundaries: No model calls, no media, no timer change, no secrets committed, no real execution
 
-GitHub Push: creative-quota-harvester updated (master)
+GitHub: creative-quota-harvester 051dcfd → origin/master
 
-Next Phase:
-- Phase 5C-2C: Confirmed low-risk command execution (2FA for high/danger)
-- Phase 5C-4: Auto-generated safe-readonly action handlers from catalog
-- Phase 4J: Audio coupling (video + music)
+Next: Phase 5C-2C (confirmed execution), Phase 5C-4 (auto handlers), Phase 4J (audio)
 
-Full Report: docs/PHASE_5C3_AUTO_GENERATED_CONTROL_CATALOG_REPORT.md
-Detail Report: reports/auto-generated-control-catalog.md
-Runbook: docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md
+Full: docs/PHASE_5C3_AUTO_GENERATED_CONTROL_CATALOG_REPORT.md
+Detail: reports/auto-generated-control-catalog.md

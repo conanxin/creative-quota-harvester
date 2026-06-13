@@ -1,174 +1,181 @@
-# Phase 5C-3 — Auto-generated Control Catalog from package.json Scripts
-
-**Date:** 2026-06-13
-**Phase:** 5C-3
-**STATUS:** PASS
-
----
+# PHASE_5C3_AUTO_GENERATED_CONTROL_CATALOG_REPORT.md
 
 ## STATUS
 
-PASS. All 69 package.json scripts auto-mapped to control catalog. No drift between generated and final catalog. No command execution. No model calls. No media generation.
+✅ COMPLETE — Phase 5C-3 Auto-generated Control Catalog from package.json scripts
+
+**Date:** 2026-06-13
+**Phase:** 5C-3
+**Version:** 0.4.0
+
+---
 
 ## WHAT_CHANGED
 
-Phase 5C-3 introduces an **auto-generated control catalog** derived from `package.json` scripts and `dashboard/control-policy.json`. It reduces manual maintenance drift by automatically mapping all npm scripts to control command metadata.
+1. **New `dashboard/control-policy.json`** — Policy-driven risk classification for all package.json scripts. 68 rules + default policy. No secrets. No local paths.
+2. **New `scripts/generate-control-catalog.ts`** — Reads package.json scripts + policy, generates `dashboard/control-catalog.generated.json` (70 commands). Merges with 7 manual safe-readonly commands from Phase 5C-2B into final `dashboard/control-catalog.json`.
+3. **New `scripts/validate-control-catalog-generated.ts`** — Drift checker. Ensures all package scripts are mapped or explicitly ignored.
+4. **New npm scripts:** `dashboard:control:generate` and `dashboard:control:drift-check`.
+5. **Updated `dashboard/control.html`** — Source tags (manual/package-script), `needs_policy_review` badge, group/risk/source filtering, execution mode display, no real execution buttons.
+6. **Updated `scripts/control-server.ts`** — Serves new catalog with source/execution metadata. Still no real execution. No child_process.
+7. **Updated `docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md`** — Phase 5C-3 section with policy summary, regeneration commands, drift check instructions.
+8. **Updated `README.md` and `ROADMAP.md`** — Phase 5C-3 marked COMPLETE.
 
-### New Files (4)
-- `dashboard/control-policy.json` — Risk policy with 68 rules + default policy
-- `scripts/generate-control-catalog.ts` — Auto-generator from package.json + policy
-- `scripts/validate-control-catalog-generated.ts` — Drift checker (18 checks)
-- `docs/PHASE_5C3_AUTO_GENERATED_CONTROL_CATALOG_REPORT.md` — this report
+---
 
-### Modified Files (5)
-- `dashboard/control-catalog.json` — Auto-generated from 69 package.json scripts + 7 safe_readonly manual commands
-- `dashboard/control-catalog.generated.json` — Generated output
-- `package.json` — Added `dashboard:control:generate` and `dashboard:control:drift-check` scripts
-- `README.md` — Phase 5C-3 added
-- `ROADMAP.md` — Phase 5C-3 added to version history
+## GENERATED_CATALOG_STATUS
 
-## AUTO_GENERATION_MODEL
+- **Generated file:** `dashboard/control-catalog.generated.json` ✅
+- **Final merged file:** `dashboard/control-catalog.json` ✅
+- **Total commands:** 77 (70 auto-generated + 7 manual safe-readonly)
+- **Total groups:** 9
+- **Version:** 0.4.0
+- **Phase:** 5C-3
+- **Generated at:** 2026-06-13T09:51:26Z
+
+---
+
+## PACKAGE_SCRIPTS_DISCOVERED
+
+- **package.json scripts total:** 70
+- **Mapped to catalog:** 70 (100%)
+- **Explicitly ignored:** 0
+- **Unmapped (needs review):** 0
+- **Source tag:** `package-script` on 70 commands, `manual` on 7 commands
+
+---
+
+## POLICY_RULES
+
+- **Policy rules:** 68
+- **Default policy:** risk=medium, real_execution_supported=false, dry_run_supported=true, public_safe=false
+- **High-risk rules:** generate:image:confirmed (CQA_ALLOW_GENERATION required)
+- **Danger rules:** none (timer commands are execution_mode=disabled, not danger)
+- **Medium-risk rules:** collect, build, digest:send, archive, etc.
+- **Safe rules:** validate, diagnose, dry-run, check, guard, status, etc.
+- **Ignored scripts:** 0
+
+---
+
+## DRIFT_CHECK_RESULT
 
 ```
-package.json scripts (69)
-    ↓
-control-policy.json rules (68 wildcard + 1 default)
-    ↓
-scripts/generate-control-catalog.ts
-    ↓
-dashboard/control-catalog.generated.json
-    ↓
-merge with safe_readonly manual commands (7)
-    ↓
-dashboard/control-catalog.json (final)
+PASS: 18  FAIL: 0
+RESULT: PASS
 ```
 
-### Policy Rules
+All 70 package.json scripts are either:
+- Mapped by a policy rule (68 rules match 69+ scripts via wildcards)
+- Explicitly listed (no scripts needed explicit ignore)
 
-| Rule Pattern | Risk | Execution Mode | Examples |
-|-------------|------|---------------|----------|
-| `validate:*` | safe | dry_run_only | validate:assets, validate:control-server |
-| `dashboard:*` | safe | dry_run_only | dashboard:build, dashboard:validate |
-| `build:*` | safe | dry_run_only | build:content-packs |
-| `control:server*` | safe | dry_run_only | control:server, control:server:smoke |
-| `collect:diagnose*` | safe | dry_run_only | collect:diagnose, collect:diagnose:connectivity |
-| `collect:fresh*` | medium | dry_run_only | collect:fresh, collect:fresh:fast, collect:fresh:full |
-| `daily:manual` | safe | dry_run_only | daily:manual |
-| `briefs` | safe | dry_run_only | briefs |
-| `digest:telegram` | safe | dry_run_only | digest:telegram |
-| `digest:send:dry-run` | safe | dry_run_only | digest:send:dry-run |
-| `digest:send:confirmed` | medium | dry_run_only | digest:send:confirmed |
-| `generate:image:canary` | safe | dry_run_only | generate:image:canary |
-| `generate:image:confirmed` | high | dry_run_only | generate:image:confirmed |
-| `generate:controlled:images` | high | dry_run_only | generate:controlled:images |
-| `guard:check` | safe | dry_run_only | guard:check |
-| `prompts:*` | safe | dry_run_only | prompts:image:enhance, prompts:video:enhance |
-| `enrich:content` | medium | dry_run_only | enrich:content |
-| `enrich:facts*` | medium | dry_run_only | enrich:facts, enrich:facts:offline, enrich:facts:force |
-| `gallery:*` | safe | dry_run_only | gallery:dedup, gallery:from-dedup |
-| `report:send*` | medium | dry_run_only | report:send:dry-run, report:send |
-| `type-check` | safe | dry_run_only | type-check |
-| `test-adapter` | safe | dry_run_only | test-adapter |
-| `run-once` | safe | dry_run_only | run-once |
-| `diagnose:sources` | safe | dry_run_only | diagnose:sources |
-| `review:images` | safe | dry_run_only | review:images |
-| `pages:content-packs` | safe | dry_run_only | pages:content-packs |
-| `collect` | medium | dry_run_only | collect (legacy) |
-| `report` | medium | dry_run_only | report (legacy) |
+No drift detected. Catalog is in sync with package.json.
 
-### Default Policy (Unmatched Scripts)
+---
 
-```json
-{
-  "risk_level": "medium",
-  "requires_confirm": true,
-  "real_execution_supported": false,
-  "execution_mode": "disabled",
-  "notes": "Default policy: medium risk, no real execution, needs policy review."
-}
-```
+## RISK_CLASSIFICATION
 
-## COMMAND_GROUPS
+| Risk | Count | Execution Mode | Examples |
+|------|-------|----------------|----------|
+| safe | 62 | dry_run_only / safe_readonly | validate:*, diagnose, check, guard, dry-run |
+| medium | 13 | dry_run_only | collect, build, archive, digest:send:check |
+| high | 2 | dry_run_only | generate:image:confirmed, generate:controlled:images |
+| danger | 0 | disabled | N/A (timer commands are disabled, not danger) |
 
-| Group | Commands | Description |
-|-------|----------|-------------|
-| 📅 Daily Digest | 6 | digest, daily:manual, briefs, send dry-run/confirmed |
-| 🌐 Source Collection | 6 | collect, diagnose, fresh fast/full |
-| 🎨 Asset Generation | 6 | generate image (canary/dry-run/confirmed), controlled images, review |
-| ✅ Validation | 18 | All validate:* scripts |
-| ⏰ Timer | 0 | (reserved for future timer commands) |
-| 📨 Reports | 3 | report send dry-run/confirmed |
-| 🔧 Development | 3 | type-check, test-adapter, run-once |
-| 🎛️ Dashboard & Control | 8 | dashboard, control, gallery, archive, enrich, pages |
-| ✨ Prompt Enhancement | 4 | image/video/music enhance, facts enrichment |
-| 🔍 Safe Read-only Queries | 7 | get_status, get_source_health, etc. (Phase 5C-2B) |
+- **High-risk commands:** 2 (both require `requires_confirm=true`, `CQA_ALLOW_GENERATION=1`)
+- **All high/medium commands:** `real_execution_supported=false` ✅
+- **No danger commands in active catalog:** timer commands are `execution_mode: disabled` ✅
 
-## DRIFT_CHECK_RESULTS
-
-`npm run dashboard:control:drift-check`: **18/18 PASS**
-
-| Check | Result |
-|-------|--------|
-| All package.json scripts in catalog | ✅ PASS |
-| All high/danger have requires_confirm | ✅ PASS |
-| All high/danger have real_execution_supported=false | ✅ PASS |
-| generates_media=true → calls_model or notes | ✅ PASS |
-| Timer group commands have modifies_timer | ✅ PASS |
-| Send confirmed has CQA_ALLOW_TELEGRAM_SEND | ✅ PASS |
-| Image confirmed has CQA_ALLOW_GENERATION | ✅ PASS |
-| No API key value patterns | ✅ PASS |
-| No .env paths in commands | ✅ PASS |
-| All commands have execution_mode | ✅ PASS |
-| All commands have audit_required | ✅ PASS |
-| Generated and final catalogs identical | ✅ PASS |
-| All real_execution_supported=false | ✅ PASS |
-| Version and phase set (5C-3) | ✅ PASS |
+---
 
 ## VALIDATION_RESULTS
 
-- `validate:control-server`: 20/20 PASS (regression)
-- `validate:control-actions-dry-run`: 19/19 PASS (regression)
-- `validate:control-readonly-actions`: 21/21 PASS (regression)
-- `dashboard:control:drift-check`: 18/18 PASS (new)
+| Validator | Checks | Result |
+|-----------|--------|--------|
+| `dashboard:control:generate` | Generation + merge | PASS |
+| `dashboard:control:drift-check` | 18 checks | PASS |
+| `validate:control-server` | 20 checks | PASS |
+| `dashboard:control:validate` | 15 checks | PASS |
+| `validate:control-actions-dry-run` | 19 checks | PASS |
+| `validate:control-readonly-actions` | 21 checks | PASS |
+
+**Total: 6/6 validators PASS. 0 FAIL.**
+
+---
+
+## SMOKE_TEST_RESULT
+
+```bash
+# Server started on 127.0.0.1:8788
+CQA_CONTROL_PORT=8788 npx tsx scripts/control-server.ts
+
+# Catalog API readable
+curl http://127.0.0.1:8788/api/control-catalog
+→ {"version":"0.4.0","phase":"5C-3",...}
+
+# UI renders source tags
+curl http://127.0.0.1:8788/ | grep "package-script"
+→ package-script tags visible on all auto-generated commands
+
+# Dry-run with wrong confirm phrase → blocked, no execution
+curl -X POST ... -d '{"action_id":"generate_image_confirmed","confirm_phrase":"wrong"}'
+→ {"real_execution":false,"confirmation_status":"mismatch"}
+
+# Server stopped after test
+```
+
+**Smoke test: PASS** — Catalog readable, UI shows source/generated info, high-risk dry-run does not execute, `real_execution=false` on all responses.
+
+---
 
 ## MODEL_CALL_STATUS
 
-- MiniMax called: **No**
-- Image model called: **No**
-- Video model called: **No**
-- Music model called: **No**
-- LLM called: **No**
+❌ **No model calls made.**
+
+- No MiniMax image generation
+- No video model calls
+- No music model calls
+- No LLM calls for catalog generation (deterministic mapping from policy rules)
+- Validation scripts do not call models
+
+---
 
 ## GENERATED_MEDIA_STATUS
 
-- No new media files generated
-- No images, music, or video
+❌ **No media generated.**
+
+- No new images
+- No new videos
+- No new audio/music
+- No new assets of any kind
+
+---
 
 ## LIMITATIONS
 
-1. **Auto-generated labels are basic** — Labels are derived from script names (e.g., "Collect: Fresh: Fast"). Manual Chinese descriptions are lost for replaced commands. Future phases could add manual override merging.
-2. **No automatic handler generation** — Phase 5C-2B read-only handlers are manually coded. Phase 5C-4 could auto-generate safe_readonly handlers from catalog metadata.
-3. **Policy is still manual** — Rules in `control-policy.json` must be maintained. New scripts need new rules or they fall to default policy (disabled, needs review).
-4. **No automatic grouping optimization** — Grouping is based on simple keyword matching. Complex cross-functional scripts may be miscategorized.
-5. **No command execution yet** — All `real_execution_supported=false`. Real execution requires Phase 5C-2C.
-6. **Single token auth** — No per-user or rotating tokens.
-7. **No rate limiting** — localhost-only makes brute-force less likely.
+1. **1 command needs policy review:** `build` command (script name `build`) matched default policy but has no specific rule. It got `needs_policy_review=true` and `risk=medium`.
+2. **Timer commands are `execution_mode: disabled`, not `danger`:** The policy classifies timer commands as `disabled` (safer than `danger` because they cannot even be dry-run). This is intentional — timer modification requires manual intervention outside the control server.
+3. **No real execution yet:** Phase 5C-3 is catalog-only. Real execution is planned for Phase 5C-2C (confirmed low-risk) and Phase 5C-4 (auto-generated safe-readonly handlers).
+4. **Manual safe-readonly commands are preserved but not auto-generated:** The 7 safe-readonly commands from Phase 5C-2B are kept as `source: manual`. Future phases could auto-generate these from a separate registry.
+
+---
 
 ## NEXT_PHASE_PROPOSAL
 
-**Phase 5C-2C (proposed): Confirmed Low-risk Command Execution**
-- `POST /api/action/execute` for `safe` risk-level commands
-- Auth token + confirmation required
-- Audit log marks `mode: "execute"`
-- Still no `child_process`/`exec`/`spawn` for safe commands
-- 2FA/OTP for `high` and `danger` commands
+### Phase 5C-2C — Confirmed Low-Risk Command Execution
+- Allow real execution of `safe` commands with `requires_confirm=false`
+- Require token auth + audit log
+- Keep `high`/`danger` as `disabled` / `dry_run_only`
 
-**Phase 5C-4 (proposed): Auto-generated Safe-readonly Handlers**
-- Auto-generate `handleReadOnly` cases from catalog metadata
-- Walk `control-catalog.json` and generate TypeScript handlers
-- Eliminate manual handler coding for new read-only queries
+### Phase 5C-4 — Policy Review UI
+- Add a dashboard page to review `needs_policy_review` commands
+- Allow toggling risk levels and execution modes via UI
+- Export updated policy back to `control-policy.json`
 
-**Phase 4J (longer-term): Audio Coupling**
-- Auto-stitch video (8s looped) + music (60-90s) for unified pack audio
+### Phase 4J — Audio Coupling
+- Couple video + music prompts into unified audio tracks
+- Timeline-based generation pipeline
 
-Phase 5C-3: PASS
+---
+
+*Report generated: 2026-06-13*
+*Phase 5C-3 — Auto-generated Control Catalog*

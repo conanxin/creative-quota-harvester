@@ -176,6 +176,8 @@ function generateCommand(scriptName: string, scriptCmd: string, policy: Policy):
     confirmation_phrase: confirmationPhrase,
     audit_required: auditRequired,
     execution_mode: executionMode,
+    source: "package-script",
+    needs_policy_review: !matched,
   };
 }
 
@@ -289,6 +291,10 @@ function main() {
   // Merge: auto-generated groups + manual safe_readonly group only
   const mergedGroups = [...autoGroups];
   if (safeReadonlyGroup) {
+    // Tag manual safe_readonly commands with source
+    for (const cmd of safeReadonlyGroup.commands || []) {
+      (cmd as any).source = (cmd as any).source || "manual";
+    }
     mergedGroups.push(safeReadonlyGroup);
   }
 

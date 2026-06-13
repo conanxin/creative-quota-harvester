@@ -71,10 +71,12 @@ Before starting the server, verify:
 
 ## Next Phase
 
-- **Phase 5C-2A (current)** introduces authenticated dry-run actions. See below.
-- **Phase 5C-2B** will allow real execution of safe (read-only) commands with auth + audit.
+- **Phase 5C-2A** ✅ introduces authenticated dry-run actions. See below.
+- **Phase 5C-2B** ✅ allows real execution of safe (read-only) commands with auth + audit.
+- **Phase 5C-3** ✅ auto-generates the catalog from `package.json` scripts to avoid drift. See below.
+- **Phase 5C-4** will auto-generate safe-readonly action handlers from catalog.
 - **Phase 5C-2C** will add 2FA for high/danger commands.
-- **Phase 5C-3** will auto-generate the catalog from `package.json` scripts to avoid drift.
+- **Phase 4J** Audio coupling.
 
 ---
 
@@ -195,4 +197,83 @@ wc -l reports/control-action-audit.jsonl
 
 ---
 
-*Runbook v2.0 — Phase 5C-2A*
+## Phase 5C-3 — Auto-generated Control Catalog
+
+Phase 5C-3 auto-generates the control catalog from `package.json` scripts using `dashboard/control-policy.json`. This eliminates manual drift between package scripts and the catalog.
+
+### What Changed
+
+- New `dashboard/control-policy.json` — policy-driven risk classification for all scripts.
+- New `scripts/generate-control-catalog.ts` — reads `package.json` scripts + policy, generates `dashboard/control-catalog.generated.json`.
+- New `scripts/validate-control-catalog-generated.ts` — drift checker (all scripts mapped or explicitly ignored).
+- New npm scripts:
+  - `npm run dashboard:control:generate` — regenerate catalog
+  - `npm run dashboard:control:drift-check` — validate all scripts are covered
+- `dashboard/control-catalog.json` now contains:
+  - 70 auto-generated commands from package scripts
+  - 7 manual safe-readonly commands (Phase 5C-2B)
+  - `source` field: `package-script` | `manual` | `generated`
+  - `needs_policy_review` flag for unmapped scripts
+- `control.html` updated with:
+  - Source tag display (manual / package-script / generated)
+  - `needs_policy_review` warning badge
+  - Group / risk / source filtering
+  - Execution mode display (dry_run_only | safe_readonly | disabled)
+- `control-server.ts` updated to serve the new catalog with source/execution metadata.
+
+### Risk Policy Summary
+
+| Match Pattern | Risk | Execution Mode | Notes |
+|---|---|---|---|
+| `validate:*` | safe | safe_readonly_or_local_validate | No side effects |
+| `*dry-run*` | safe | dry_run_only | No side effects |
+| `collect:*` | medium | dry_run_only | Network calls, file writes |
+| `digest:send:confirmed` | medium | dry_run_only | Requires CQA_ALLOW_TELEGRAM_SEND |
+| `generate:image:confirmed` | high | dry_run_only | Requires CQA_ALLOW_GENERATION, calls model |
+| `timer:*` | danger | disabled | Modifies system timer |
+| `build:*` | medium | dry_run_only | File writes |
+| `deploy:*` | danger | disabled | System modification |
+
+All high/danger commands have `real_execution_supported=false` and `requires_confirm=true`.
+
+### How to Regenerate Catalog
+
+```bash
+cd ~/.openclaw/workspace/projects/creative-quota-harvester
+npm run dashboard:control:generate
+```
+
+This creates `dashboard/control-catalog.generated.json` and merges it with manual safe-readonly commands into `dashboard/control-catalog.json`.
+
+### How to Check Drift
+
+```bash
+npm run dashboard:control:drift-check
+```
+
+PASS means all `package.json` scripts are either mapped in the policy or explicitly listed in `ignored_scripts`. FAIL means a new script was added without a policy rule.
+
+### Why Real Execution is Still Disabled
+
+Phase 5C-3 is **catalog generation only**:
+- No `child_process`, `exec`, or `spawn` calls in the server
+- No `/api/action/execute` endpoint exists
+- `real_execution_supported=false` on all 77 commands
+- High/danger commands are `execution_mode: disabled` (not just `dry_run_only`)
+- The server only serves `dry-run` and `read-only` endpoints
+
+Real execution is planned for Phase 5C-2C (confirmed low-risk) and Phase 5C-4 (auto-generated safe-readonly handlers).
+
+### Files
+
+- `dashboard/control-policy.json` — policy rules (new)
+- `scripts/generate-control-catalog.ts` — generator (new)
+- `scripts/validate-control-catalog-generated.ts` — drift checker (new)
+- `dashboard/control-catalog.generated.json` — auto-generated (new, git-tracked)
+- `dashboard/control-catalog.json` — merged final catalog (updated)
+- `dashboard/control.html` — updated UI with source/review tags (updated)
+- `scripts/control-server.ts` — serves new catalog (updated)
+
+---
+
+*Runbook v3.0 — Phase 5C-3*

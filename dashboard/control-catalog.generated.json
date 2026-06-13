@@ -1,7 +1,7 @@
 {
   "version": "0.4.0",
   "phase": "5C-3",
-  "generated_at": "2026-06-13T09:33:35Z",
+  "generated_at": "2026-06-13T09:58:25Z",
   "purpose": "Auto-generated command catalog from package.json scripts + control-policy.json. Merged with manual safe_readonly queries from Phase 5C-2B. All commands have real_execution_supported=false.",
   "public_safety_model": "All commands are listed for reference only. The public catalog cannot execute any of them. Real control actions require either a localhost-only control server (Phase 5C-1) or an authenticated dashboard (Phase 5C-2).",
   "risk_levels": {
@@ -35,7 +35,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "digest_telegram",
@@ -56,7 +58,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "digest_telegram_check",
@@ -77,7 +81,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "archive_daily",
@@ -98,7 +104,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_daily-archive",
@@ -119,7 +127,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "digest_send_dry-run",
@@ -140,7 +150,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "digest_send_check",
@@ -161,7 +173,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "digest_send_confirmed",
@@ -186,7 +200,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_digest-freshness",
@@ -207,7 +223,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         }
       ]
     },
@@ -238,7 +256,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "collect_diagnose",
@@ -259,7 +279,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "collect_fresh",
@@ -283,7 +305,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "collect_fresh_fast",
@@ -307,7 +331,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "collect_fresh_full",
@@ -331,7 +357,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "collect_diagnose_connectivity",
@@ -352,7 +380,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "diagnose_sources",
@@ -373,7 +403,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         }
       ]
     },
@@ -401,7 +433,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "generate_image_dry-run",
@@ -422,7 +456,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "generate_image_confirmed",
@@ -447,7 +483,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-high",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "prompts_image_enhance",
@@ -468,7 +506,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "prompts_video_enhance",
@@ -489,7 +529,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_video-prompt-enhancement",
@@ -510,7 +552,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_video-prompts",
@@ -531,7 +575,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "prompts_music_enhance",
@@ -552,7 +598,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_music-prompt-enhancement",
@@ -573,7 +621,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_music-prompts",
@@ -594,7 +644,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "generate_controlled_images",
@@ -619,7 +671,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-high",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "review_images",
@@ -640,7 +694,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_image-reviews",
@@ -661,7 +717,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_image-prompts",
@@ -682,7 +740,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "dashboard_control_generate",
@@ -703,7 +763,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         }
       ]
     },
@@ -731,7 +793,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "guard_check",
@@ -752,7 +816,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "type-check",
@@ -773,7 +839,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_enrichment",
@@ -794,7 +862,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_public-gallery",
@@ -815,7 +885,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_gallery-dedup",
@@ -836,7 +908,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_content-pack-pages",
@@ -857,7 +931,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_mobile-gallery",
@@ -878,7 +954,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_facts-enrichment",
@@ -899,7 +977,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "dashboard_validate",
@@ -920,7 +1000,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "dashboard_control_drift-check",
@@ -941,7 +1023,32 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
+        },
+        {
+          "id": "dashboard_control_validate",
+          "label_zh": "Dashboard: Control: Validate",
+          "description_zh": "Dashboard 构建和验证，只写 dashboard/ 目录。",
+          "command": "tsx scripts/validate-control-catalog.ts",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "Dashboard 构建和验证，只写 dashboard/ 目录。",
+          "action_id": "dashboard_control_validate",
+          "dry_run_supported": true,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-3-auto-generated",
+          "confirmation_phrase": "dry-run-safe",
+          "audit_required": true,
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_control-server",
@@ -962,7 +1069,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_control-readonly-actions",
@@ -983,7 +1092,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_control-actions-dry-run",
@@ -1004,7 +1115,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "control_server_check",
@@ -1025,7 +1138,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "dashboard_pages_validate",
@@ -1046,7 +1161,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_telegram-send",
@@ -1067,7 +1184,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_telegram-auto-send",
@@ -1088,7 +1207,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_telegram-sanitizer",
@@ -1109,7 +1230,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "validate_project-report-send",
@@ -1130,7 +1253,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         }
       ]
     },
@@ -1158,7 +1283,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "report_send_dry-run",
@@ -1179,7 +1306,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "report_send",
@@ -1202,7 +1331,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         }
       ]
     },
@@ -1230,7 +1361,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "test-adapter",
@@ -1251,7 +1384,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         }
       ]
     },
@@ -1279,7 +1414,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "build",
@@ -1300,7 +1437,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "disabled"
+          "execution_mode": "disabled",
+          "source": "package-script",
+          "needs_policy_review": true
         },
         {
           "id": "briefs",
@@ -1321,7 +1460,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "enrich_content",
@@ -1342,7 +1483,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "gallery_from-dedup",
@@ -1363,7 +1506,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "gallery_dedup",
@@ -1384,7 +1529,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "enrich_facts",
@@ -1405,7 +1552,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "enrich_facts_offline",
@@ -1426,7 +1575,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "enrich_facts_force",
@@ -1447,7 +1598,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-medium",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "dashboard_build",
@@ -1468,7 +1621,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "control_server",
@@ -1489,7 +1644,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         },
         {
           "id": "control_server_smoke",
@@ -1510,7 +1667,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         }
       ]
     },
@@ -1538,7 +1697,9 @@
           "allowed_in_phase": "5C-3-auto-generated",
           "confirmation_phrase": "dry-run-safe",
           "audit_required": true,
-          "execution_mode": "dry_run_only"
+          "execution_mode": "dry_run_only",
+          "source": "package-script",
+          "needs_policy_review": false
         }
       ]
     },
@@ -1566,7 +1727,8 @@
           "allowed_in_phase": "5C-2B-safe-readonly",
           "confirmation_phrase": "",
           "audit_required": true,
-          "execution_mode": "safe_readonly"
+          "execution_mode": "safe_readonly",
+          "source": "manual"
         },
         {
           "id": "get_source_health",
@@ -1587,7 +1749,8 @@
           "allowed_in_phase": "5C-2B-safe-readonly",
           "confirmation_phrase": "",
           "audit_required": true,
-          "execution_mode": "safe_readonly"
+          "execution_mode": "safe_readonly",
+          "source": "manual"
         },
         {
           "id": "get_latest_digest",
@@ -1608,7 +1771,8 @@
           "allowed_in_phase": "5C-2B-safe-readonly",
           "confirmation_phrase": "",
           "audit_required": true,
-          "execution_mode": "safe_readonly"
+          "execution_mode": "safe_readonly",
+          "source": "manual"
         },
         {
           "id": "get_generation_queue",
@@ -1629,7 +1793,8 @@
           "allowed_in_phase": "5C-2B-safe-readonly",
           "confirmation_phrase": "",
           "audit_required": true,
-          "execution_mode": "safe_readonly"
+          "execution_mode": "safe_readonly",
+          "source": "manual"
         },
         {
           "id": "get_asset_summary",
@@ -1650,7 +1815,8 @@
           "allowed_in_phase": "5C-2B-safe-readonly",
           "confirmation_phrase": "",
           "audit_required": true,
-          "execution_mode": "safe_readonly"
+          "execution_mode": "safe_readonly",
+          "source": "manual"
         },
         {
           "id": "get_timer_snapshot",
@@ -1671,7 +1837,8 @@
           "allowed_in_phase": "5C-2B-safe-readonly",
           "confirmation_phrase": "",
           "audit_required": true,
-          "execution_mode": "safe_readonly"
+          "execution_mode": "safe_readonly",
+          "source": "manual"
         },
         {
           "id": "get_dashboard_links",
@@ -1692,7 +1859,8 @@
           "allowed_in_phase": "5C-2B-safe-readonly",
           "confirmation_phrase": "",
           "audit_required": true,
-          "execution_mode": "safe_readonly"
+          "execution_mode": "safe_readonly",
+          "source": "manual"
         }
       ]
     }

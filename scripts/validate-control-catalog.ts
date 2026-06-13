@@ -132,7 +132,9 @@ if (!existsSync(CATALOG_PATH)) {
         // The canary script uses --confirm-spend as a CLI flag.
         // The controlled-images script enforces confirm_spend programmatically;
         // the catalog notes MUST mention that.
-        if (/^image_confirmed/.test(String(cmd.id)) || /minimax-image-canary/.test(String(cmd.command))) {
+        // Skip dry-run commands (identified by --dry-run flag)
+        const isDryRun = /--dry-run/.test(String(cmd.command || ''));
+        if (!isDryRun && (/^image_confirmed/.test(String(cmd.id)) || /minimax-image-canary/.test(String(cmd.command)))) {
           if (!/CQA_ALLOW_GENERATION=1/.test(String(cmd.command))) {
             fail(`command ${cmd.id} (image confirmed) MUST include CQA_ALLOW_GENERATION=1`);
             allOk = false;

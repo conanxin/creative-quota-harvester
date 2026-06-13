@@ -25,6 +25,32 @@
   .critical-warning .warning-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; }
   .critical-warning ul { margin: 8px 0 0 24px; }
   .critical-warning li { margin: 4px 0; }
+  /* Filter bar */
+  .filter-bar {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    border: 1px solid #e0e0e0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .filter-bar label { font-size: 0.85rem; color: #555; font-weight: 600; }
+  .filter-bar select {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #d0d0d0;
+    font-size: 0.85rem;
+    background: #f8f9fa;
+    cursor: pointer;
+  }
+  .filter-bar .filter-count {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin-left: auto;
+  }
   /* Group sections */
   .group { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #e0e0e0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
   .group h2 { color: #2c3e50; margin-bottom: 8px; font-size: 1.3rem; }
@@ -34,6 +60,7 @@
   .command.risk-high, .command.risk-danger { border-left: 5px solid #ef4444; background: #fff5f5; }
   .command.risk-medium { border-left: 5px solid #f59e0b; background: #fffbf0; }
   .command.risk-safe { border-left: 5px solid #22c55e; }
+  .command.hidden { display: none; }
   .cmd-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
   .cmd-name { font-size: 1.05rem; font-weight: 600; color: #2c3e50; }
   .cmd-id { font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace; font-size: 0.75rem; color: #999; }
@@ -42,6 +69,11 @@
   .risk-pill.medium { background: #fef3c7; color: #92400e; }
   .risk-pill.high { background: #fee2e2; color: #991b1b; }
   .risk-pill.danger { background: #7f1d1d; color: #fff; }
+  .source-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.68rem; font-family: monospace; margin-right: 6px; }
+  .source-tag.manual { background: #dbeafe; color: #1e40af; }
+  .source-tag.package-script { background: #f0fdf4; color: #166534; }
+  .source-tag.generated { background: #fef3c7; color: #92400e; }
+  .needs-review { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.68rem; background: #fee2e2; color: #991b1b; font-weight: 600; margin-left: 4px; }
   .cmd-desc { color: #555; font-size: 0.9rem; margin-bottom: 12px; }
   .cmd-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
   .meta-chip { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace; }
@@ -53,6 +85,9 @@
   .meta-chip.requires-env::before { content: "🔒 "; }
   .meta-chip.public-safe { background: #d1fae5; color: #065f46; }
   .meta-chip.not-public { background: #fee2e2; color: #991b1b; }
+  .meta-chip.dry-run { background: #f0f9ff; color: #1e40af; }
+  .meta-chip.readonly { background: #f0fdf4; color: #166534; }
+  .meta-chip.execution-mode { background: #f1f5f9; color: #475569; }
   /* Code block (text-only, no <button>) */
   .cmd-code {
     background: #1e293b;
@@ -75,6 +110,8 @@
     .group { padding: 16px; }
     .command { padding: 14px; }
     .cmd-header { flex-direction: column; }
+    .filter-bar { flex-direction: column; align-items: stretch; }
+    .filter-bar .filter-count { margin-left: 0; }
   }
 </style>
 </head>
@@ -82,8 +119,8 @@
 <div class="container">
   <header>
     <h1>🔒 Creative Quota 私有控制目录</h1>
-    <div class="subtitle">Phase 5C-0 · Read-only Command Catalog</div>
-    <div class="readonly-badge">📖 只读命令目录 · 不会执行任何命令</div>
+    <div class="subtitle">Phase 5C-3 · Auto-generated Command Catalog</div>
+    <div class="readonly-badge">📖 只读命令目录 · 不会执行任何命令 · 自动生成</div>
   </header>
 
   <div class="critical-warning">
@@ -97,10 +134,30 @@
     </ul>
   </div>
 
+  <div class="filter-bar">
+    <label>📂 Group</label>
+    <select id="group-filter"><option value="all">All Groups</option></select>
+    <label>⚡ Risk</label>
+    <select id="risk-filter">
+      <option value="all">All Risk</option>
+      <option value="safe">Safe</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+      <option value="danger">Danger</option>
+    </select>
+    <label>🏷️ Source</label>
+    <select id="source-filter">
+      <option value="all">All Sources</option>
+      <option value="package-script">Package Script</option>
+      <option value="manual">Manual</option>
+    </select>
+    <span class="filter-count" id="filter-count"></span>
+  </div>
+
   <div id="catalog-root">加载命令目录中…</div>
 
   <footer>
-    <p>Creative Quota Harvester · Phase 5C-0 · Private Control Command Catalog</p>
+    <p>Creative Quota Harvester · Phase 5C-3 · Auto-generated Control Catalog</p>
     <p class="emphasis">公开 GitHub Pages 版本仅展示命令，不具备执行能力。</p>
   </footer>
 </div>
@@ -122,8 +179,54 @@
     danger: 'Danger'
   };
 
+  var SOURCE_LABEL = {
+    'package-script': 'package-script',
+    'manual': 'manual',
+    'generated': 'generated'
+  };
+
   var root = document.getElementById('catalog-root');
   if (!root) return;
+
+  var catalogData = null;
+  var allCommands = [];
+
+  var groupFilter = document.getElementById('group-filter');
+  var riskFilter = document.getElementById('risk-filter');
+  var sourceFilter = document.getElementById('source-filter');
+  var countSpan = document.getElementById('filter-count');
+
+  function updateFilterCount() {
+    var visible = 0;
+    for (var i = 0; i < allCommands.length; i++) {
+      if (!allCommands[i].classList.contains('hidden')) visible++;
+    }
+    if (countSpan) countSpan.textContent = '显示 ' + visible + ' / ' + allCommands.length + ' 命令';
+  }
+
+  function applyFilters() {
+    var groupVal = groupFilter ? groupFilter.value : 'all';
+    var riskVal = riskFilter ? riskFilter.value : 'all';
+    var sourceVal = sourceFilter ? sourceFilter.value : 'all';
+
+    for (var i = 0; i < allCommands.length; i++) {
+      var el = allCommands[i];
+      var data = el._cmdData || {};
+      var groupMatch = groupVal === 'all' || (data.groupId || '') === groupVal;
+      var riskMatch = riskVal === 'all' || (data.risk || '') === riskVal;
+      var sourceMatch = sourceVal === 'all' || (data.source || '') === sourceVal;
+      if (groupMatch && riskMatch && sourceMatch) {
+        el.classList.remove('hidden');
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+    updateFilterCount();
+  }
+
+  if (groupFilter) groupFilter.addEventListener('change', applyFilters);
+  if (riskFilter) riskFilter.addEventListener('change', applyFilters);
+  if (sourceFilter) sourceFilter.addEventListener('change', applyFilters);
 
   fetch('./control-catalog.json', { method: 'GET', cache: 'no-store' })
     .then(function (r) {
@@ -131,7 +234,9 @@
       return r.json();
     })
     .then(function (catalog) {
+      catalogData = catalog;
       render(catalog, root);
+      updateFilterCount();
     })
     .catch(function (err) {
       root.innerHTML = '<div class="critical-warning"><div class="warning-title">加载失败</div><p>无法读取 control-catalog.json：' + String(err) + '</p></div>';
@@ -154,15 +259,26 @@
     mount.innerHTML = '';
     var title = document.createElement('h2');
     title.style.marginBottom = '4px';
-    title.textContent = catalog.purpose ? catalog.purpose.slice(0, 60) : '命令目录';
+    title.textContent = '命令目录';
     mount.appendChild(title);
-    if (catalog.purpose) {
-      var p = document.createElement('p');
-      p.style.color = '#7f8c8d';
-      p.style.fontSize = '0.9rem';
-      p.style.marginBottom = '20px';
-      p.textContent = catalog.purpose;
-      mount.appendChild(p);
+
+    var p = document.createElement('p');
+    p.style.color = '#7f8c8d';
+    p.style.fontSize = '0.9rem';
+    p.style.marginBottom = '20px';
+    p.textContent = (catalog.purpose || 'Command Catalog').slice(0, 120);
+    mount.appendChild(p);
+
+    // Populate group filter
+    if (groupFilter) {
+      var groups = catalog.command_groups || [];
+      for (var gi = 0; gi < groups.length; gi++) {
+        var g = groups[gi];
+        var opt = document.createElement('option');
+        opt.value = g.id;
+        opt.textContent = (g.label_zh || g.id) + ' (' + (g.commands || []).length + ')';
+        groupFilter.appendChild(opt);
+      }
     }
 
     if (catalog.risk_levels) {
@@ -197,6 +313,7 @@
       var group = groups[g];
       var sec = document.createElement('div');
       sec.className = 'group';
+      sec.dataset.groupId = group.id;
       var h2 = document.createElement('h2');
       h2.textContent = group.label_zh || group.id;
       sec.appendChild(h2);
@@ -208,23 +325,42 @@
       }
       var cmds = group.commands || [];
       for (var c = 0; c < cmds.length; c++) {
-        sec.appendChild(renderCommand(cmds[c]));
+        var cmdEl = renderCommand(cmds[c], group.id);
+        sec.appendChild(cmdEl);
+        allCommands.push(cmdEl);
       }
       mount.appendChild(sec);
     }
   }
 
-  function renderCommand(cmd) {
+  function renderCommand(cmd, groupId) {
     var risk = (cmd.risk_level || 'safe').toLowerCase();
+    var source = (cmd.source || 'unknown').toLowerCase();
     var card = document.createElement('div');
     card.className = 'command risk-' + risk;
+    card._cmdData = { risk: risk, groupId: groupId, source: source };
 
     var head = document.createElement('div');
     head.className = 'cmd-header';
     var name = document.createElement('div');
     var nameDiv = document.createElement('div');
     nameDiv.className = 'cmd-name';
-    nameDiv.textContent = cmd.label_zh || cmd.id;
+
+    // Source tag before name
+    var sourceTag = document.createElement('span');
+    sourceTag.className = 'source-tag ' + source;
+    sourceTag.textContent = SOURCE_LABEL[source] || source;
+    nameDiv.appendChild(sourceTag);
+
+    // Needs policy review badge
+    if (cmd.needs_policy_review) {
+      var reviewBadge = document.createElement('span');
+      reviewBadge.className = 'needs-review';
+      reviewBadge.textContent = 'needs_policy_review';
+      nameDiv.appendChild(reviewBadge);
+    }
+
+    nameDiv.appendChild(document.createTextNode(cmd.label_zh || cmd.id));
     name.appendChild(nameDiv);
     var idDiv = document.createElement('div');
     idDiv.className = 'cmd-id';
@@ -255,6 +391,9 @@
     } else {
       meta.appendChild(metaChip('not-public', '🔒 public_excluded'));
     }
+    if (cmd.execution_mode) meta.appendChild(metaChip('execution-mode', 'mode: ' + cmd.execution_mode));
+    if (cmd.dry_run_supported) meta.appendChild(metaChip('dry-run', '🧪 dry_run'));
+    if (cmd.source === 'manual') meta.appendChild(metaChip('readonly', '🔍 read-only'));
     if (Array.isArray(cmd.requires_env)) {
       for (var e = 0; e < cmd.requires_env.length; e++) {
         meta.appendChild(metaChip('requires-env', cmd.requires_env[e]));

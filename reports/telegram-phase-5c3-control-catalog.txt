@@ -1,0 +1,46 @@
+Phase 5C-3 — Auto-generated Control Catalog
+
+STATUS: ✅ COMPLETE
+
+WHAT_CHANGED:
+• Auto-generate control catalog from package.json scripts
+• New control-policy.json with 68 risk rules
+• New generate-control-catalog.ts + drift-check validator
+• New npm scripts: dashboard:control:generate + drift-check
+• control.html updated: source tags, needs_policy_review badge, filtering
+• control-server.ts updated: serves new catalog, still no real execution
+
+CATALOG_STATUS:
+• Total commands: 77 (70 auto-generated + 7 manual safe-readonly)
+• Source: package-script=70, manual=7
+• Needs policy review: 1 (build command)
+• Risk: safe=62, medium=13, high=2, danger=0
+• All real_execution_supported=false
+
+DRIFT_CHECK: PASS (18/18)
+All 70 package scripts mapped by policy. No drift.
+
+VALIDATION: 6/6 PASS
+✅ generate ✅ drift-check ✅ control-server ✅ catalog validate ✅ dry-run ✅ readonly-actions
+
+SMOKE_TEST: PASS
+• Server on 127.0.0.1:8788
+• Catalog API readable
+• UI shows package-script tags
+• Dry-run blocked with wrong confirm phrase
+• real_execution=false on all responses
+
+MODEL_CALL: ❌ None
+MEDIA_GEN: ❌ None
+
+LIMITATIONS:
+• 1 command needs policy review (build)
+• Timer commands are disabled (not danger)
+• No real execution yet (catalog only)
+
+NEXT:
+• Phase 5C-2C: Confirmed low-risk execution
+• Phase 5C-4: Policy review UI
+• Phase 4J: Audio coupling
+
+Full report: reports/auto-generated-control-catalog.md

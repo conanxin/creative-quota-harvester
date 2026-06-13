@@ -1,96 +1,98 @@
-Phase 5C-3: Auto-generated Control Catalog from package.json Scripts
+# Auto-generated Control Catalog Report
 
-**Date:** 2026-06-13
+**Status:** ✅ COMPLETE
 **Phase:** 5C-3
-**Status:** PASS
+**Date:** 2026-06-13
 
 ---
 
 ## What Changed
 
-Phase 5C-3 adds an auto-generated control catalog derived from package.json scripts + control-policy.json:
-- New dashboard/control-policy.json (68 rules + default policy)
-- New scripts/generate-control-catalog.ts (auto-generator)
-- New scripts/validate-control-catalog-generated.ts (drift checker, 18 checks)
-- dashboard/control-catalog.json: auto-generated from 69 package.json scripts + 7 safe_readonly manual commands
-- dashboard/control-catalog.generated.json: generated output
-- package.json: +dashboard:control:generate, +dashboard:control:drift-check
+Phase 5C-3 auto-generates the control catalog from `package.json` scripts using `dashboard/control-policy.json`. This eliminates manual drift between package scripts and the catalog.
 
-## Auto-generation Model
+### New Files
+- `dashboard/control-policy.json` — policy-driven risk classification (68 rules)
+- `scripts/generate-control-catalog.ts` — catalog generator
+- `scripts/validate-control-catalog-generated.ts` — drift checker
+- `dashboard/control-catalog.generated.json` — auto-generated catalog (70 commands)
 
-package.json scripts (69)
-    ↓
-control-policy.json rules (68 wildcard + 1 default)
-    ↓
-scripts/generate-control-catalog.ts
-    ↓
-dashboard/control-catalog.generated.json
-    ↓
-merge with safe_readonly manual commands (7)
-    ↓
-dashboard/control-catalog.json (final, 76 commands, 9 groups)
+### Updated Files
+- `dashboard/control-catalog.json` — merged final catalog (77 commands: 70 auto + 7 manual)
+- `dashboard/control.html` — source tags, needs_policy_review badge, filtering
+- `scripts/control-server.ts` — serves new catalog with metadata
+- `docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md` — Phase 5C-3 section
+- `README.md` / `ROADMAP.md` — Phase 5C-3 marked COMPLETE
 
-## Policy Rules
+### New npm Scripts
+- `npm run dashboard:control:generate` — regenerate catalog
+- `npm run dashboard:control:drift-check` — validate all scripts covered
 
-Key rules:
-- validate:* → safe, dry_run_only
-- dashboard:* → safe, dry_run_only
-- build:* → safe, dry_run_only
-- control:server* → safe, dry_run_only
-- collect:fresh* → medium, dry_run_only
-- generate:image:confirmed → high, dry_run_only
-- generate:controlled:images → high, dry_run_only
-- digest:send:confirmed → medium, dry_run_only
-- report:send* → medium, dry_run_only
-- prompts:* → safe, dry_run_only
-- enrich:* → medium, dry_run_only
-- Default: medium, disabled, needs_policy_review
+---
 
-## Drift Check (18/18 PASS)
+## Generated Catalog Status
 
-- All 69 package.json scripts in catalog ✅
-- All high/danger have requires_confirm ✅
-- All high/danger have real_execution_supported=false ✅
-- generates_media=true → calls_model or notes ✅
-- Timer group commands have modifies_timer ✅
-- Send confirmed has CQA_ALLOW_TELEGRAM_SEND ✅
-- Image confirmed has CQA_ALLOW_GENERATION ✅
-- No API key value patterns ✅
-- No .env paths in commands ✅
-- All commands have execution_mode ✅
-- All commands have audit_required ✅
-- Generated and final catalogs identical ✅
-- All real_execution_supported=false ✅
-- Version and phase set (5C-3) ✅
+- **Total commands:** 77
+- **Auto-generated:** 70 (from package.json scripts)
+- **Manual safe-readonly:** 7 (from Phase 5C-2B)
+- **Source tags:** `package-script` (70) + `manual` (7)
+- **Needs review:** 1 (build command, matched default policy)
+
+## Risk Classification
+
+| Risk | Count | Mode | Examples |
+|------|-------|------|----------|
+| safe | 62 | dry_run_only / safe_readonly | validate, diagnose, check |
+| medium | 13 | dry_run_only | collect, build, archive |
+| high | 2 | dry_run_only | generate:image:confirmed |
+| danger | 0 | disabled | N/A |
+
+All commands have `real_execution_supported=false`. High commands require `requires_confirm=true`.
+
+## Drift Check Result
+
+```
+PASS: 18  FAIL: 0
+```
+
+All 70 package.json scripts are mapped by policy rules. No drift.
 
 ## Validation Results
 
-- validate:control-server: 20/20 PASS (regression)
-- validate:control-actions-dry-run: 19/19 PASS (regression)
-- validate:control-readonly-actions: 21/21 PASS (regression)
-- dashboard:control:drift-check: 18/18 PASS (new)
+| Validator | Result |
+|-----------|--------|
+| dashboard:control:generate | PASS |
+| dashboard:control:drift-check | PASS |
+| validate:control-server | PASS |
+| dashboard:control:validate | PASS |
+| validate:control-actions-dry-run | PASS |
+| validate:control-readonly-actions | PASS |
 
-## Boundaries
+**6/6 PASS**
 
-- MiniMax called: No
-- Image/Video/Music model called: No
-- LLM called: No
-- New media generated: No
-- New audio generated: No
-- Systemd timer: untouched
-- Gateway config: untouched
-- .env / .env.telegram.local: not committed
-- Telegram token: not printed
-- Real execution: not possible
-- Public Pages executable control: not possible
+## Smoke Test Result
 
-## GitHub Push
+- Server started on 127.0.0.1:8788
+- Catalog API readable
+- UI shows package-script tags and needs_policy_review badges
+- Dry-run with wrong confirm phrase → blocked (real_execution=false)
+- **Smoke test: PASS**
 
-- creative-quota-harvester: updated (master)
-- creative-quota-assets: not affected
+## Model Call Status
 
-## Next Phase
+❌ No model calls made. No image/video/music generation.
 
-- Phase 5C-2C: Confirmed low-risk command execution (2FA for high/danger)
-- Phase 5C-4: Auto-generated safe-readonly action handlers from catalog
-- Phase 4J: Audio coupling (video + music)
+## Limitations
+
+1. 1 command (build) needs policy review — matched default policy, no specific rule.
+2. Timer commands are execution_mode=disabled (safer than danger).
+3. No real execution yet — catalog generation only.
+
+## Next Phases
+
+- **Phase 5C-2C** — Confirmed low-risk command execution
+- **Phase 5C-4** — Policy review UI
+- **Phase 4J** — Audio coupling
+
+---
+
+*Report: reports/auto-generated-control-catalog.md*

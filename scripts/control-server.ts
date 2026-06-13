@@ -198,9 +198,12 @@ function buildHomePage(): string {
       chips.push(cmd.real_execution_supported ? "❌ real_exec=true" : "✅ real_exec=false");
       const chipHtml = chips.length > 0 ? `<div class="meta-chips">${chips.map((c: string) => `<span class="chip">${c}</span>`).join(" ")}</div>` : "";
 
+      const sourceTag = cmd.source ? `<span style="background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:4px;font-size:0.68rem;font-family:monospace;margin-right:6px;">${cmd.source}</span>` : "";
+      const reviewTag = cmd.needs_policy_review ? `<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:4px;font-size:0.68rem;font-weight:600;margin-right:4px;">needs_policy_review</span>` : "";
+
       const cmdHtml = `<div class="command-card risk-${riskClass}">
         <div class="cmd-header">
-          <div class="cmd-name">${cmd.label_zh || cmd.id}</div>
+          <div class="cmd-name">${sourceTag}${reviewTag}${cmd.label_zh || cmd.id}</div>
           <div class="risk-pill ${riskClass}">Risk: ${cmd.risk_level || "safe"}</div>
         </div>
         <div class="cmd-desc">${cmd.description_zh || ""}</div>
