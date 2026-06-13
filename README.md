@@ -50,6 +50,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-0** | **✅ Complete** | **Private Control Command Catalog (read-only, no execution, 25 commands × 6 groups)** |
 | **Phase 5C-1** | **✅ Complete** | **localhost-only Private Control Server (127.0.0.1:8788, read-only, no command execution)** |
 | **Phase 5C-2A** | **✅ Complete** | **Authenticated Control Actions Dry-run (auth + confirm + audit, no real execution)** |
+| **Phase 5C-2B** | **✅ Complete** | **Safe Read-only Action Execution (read-only queries, no side effects, no model calls)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 
@@ -110,6 +111,7 @@ See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md#data-model) for entity definit
 | [docs/PHASE_5C0_PRIVATE_CONTROL_COMMAND_CATALOG_REPORT.md](./docs/PHASE_5C0_PRIVATE_CONTROL_COMMAND_CATALOG_REPORT.md) | Private control command catalog (Phase 5C-0) |
 | [docs/PHASE_5C1_LOCALHOST_PRIVATE_CONTROL_SERVER_REPORT.md](./docs/PHASE_5C1_LOCALHOST_PRIVATE_CONTROL_SERVER_REPORT.md) | Private control server (Phase 5C-1) |
 | [docs/PHASE_5C2A_AUTH_CONTROL_DRY_RUN_REPORT.md](./docs/PHASE_5C2A_AUTH_CONTROL_DRY_RUN_REPORT.md) | Authenticated control actions dry-run (Phase 5C-2A) |
+| [docs/PHASE_5C2B_SAFE_READONLY_ACTIONS_REPORT.md](./docs/PHASE_5C2B_SAFE_READONLY_ACTIONS_REPORT.md) | Safe read-only action execution (Phase 5C-2B) |
 | [docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md](./docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md) | Operator runbook for the control server |
 
 ## Private Control Command Catalog (Phase 5C-0)
@@ -167,7 +169,37 @@ curl -s -X POST http://127.0.0.1:8788/api/action/dry-run \
 
 **All responses have `real_execution: false`.** No `child_process`, no `exec`, no `spawn`. Audit logs go to `reports/control-action-audit.jsonl` (git-ignored, no secrets).
 
-Real execution is planned for Phase 5C-2B (safe commands) and Phase 5C-2C (confirmed high/danger commands).
+Real execution is planned for Phase 5C-2B (safe read-only queries) and Phase 5C-2C (confirmed high/danger commands).
+
+## Safe Read-only Action Execution (Phase 5C-2B)
+
+Phase 5C-2B adds **safe read-only queries** to the localhost-only control server. These endpoints read existing system state data without executing commands, calling models, or modifying files.
+
+```bash
+# Query system status (reads dashboard/status.json)
+curl -s -X POST http://127.0.0.1:8788/api/action/read-only \
+  -H "Content-Type: application/json" \
+  -d '{"action_id":"get_status","token":"your-secret-token"}'
+
+# Query source health (reads reports/source-health.*)
+curl -s -X POST http://127.0.0.1:8788/api/action/read-only \
+  -H "Content-Type: application/json" \
+  -d '{"action_id":"get_source_health","token":"your-secret-token"}'
+
+# Query timer snapshot (reads dashboard/status.json timer fields)
+curl -s -X POST http://127.0.0.1:8788/api/action/read-only \
+  -H "Content-Type: application/json" \
+  -d '{"action_id":"get_timer_snapshot","token":"your-secret-token"}'
+
+# Query dashboard links (static data, no file read)
+curl -s -X POST http://127.0.0.1:8788/api/action/read-only \
+  -H "Content-Type: application/json" \
+  -d '{"action_id":"get_dashboard_links","token":"your-secret-token"}'
+```
+
+**All responses have `real_execution: false` and `side_effects: false`.** No `child_process`, no `exec`, no `spawn`, no file writes, no network calls. Only `safeReadJson` and `safeReadText` are used.
+
+Available read-only actions: `get_status`, `get_source_health`, `get_latest_digest`, `get_generation_queue`, `get_asset_summary`, `get_timer_snapshot`, `get_dashboard_links`.
 
 ## GitHub Repos
 

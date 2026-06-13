@@ -1,0 +1,81 @@
+PHASE 5C-2B COMPLETE
+
+Status: PASS
+Mode: Safe Read-only Action Execution (no real execution, no model call, no media generation, no side effects)
+
+What Changed:
+- scripts/control-server.ts: POST /api/action/read-only endpoint (7 read-only actions)
+- scripts/validate-control-readonly-actions.ts: 21 validation checks (all PASS)
+- dashboard/control-catalog.json: v0.3.0, new "Safe Read-only Queries" group (7 commands)
+- package.json: +validate:control-readonly-actions script
+- README.md: Phase 5C-2B section added
+- ROADMAP.md: Phase 5C-2B added to version history
+- docs/PHASE_5C2B_SAFE_READONLY_ACTIONS_REPORT.md: full report
+- reports/safe-readonly-actions.md: detail report
+
+Read-only Actions (all real_execution=false, side_effects=false):
+- get_status: read dashboard/status.json
+- get_source_health: read reports/source-health.json/.md
+- get_latest_digest: read reports/telegram-digest.txt/daily-digest.md
+- get_generation_queue: extract from status.json
+- get_asset_summary: read creative-quota-assets/metadata/
+- get_timer_snapshot: extract timer from status.json
+- get_dashboard_links: static links (no file read)
+
+Security:
+- No child_process, no exec, no spawn
+- No file writes (except audit log)
+- No network calls (http.request, fetch, axios)
+- Only safeReadJson and safeReadText used
+- All responses: real_execution=false, side_effects=false
+- Bad token → Forbidden
+- dry_run_only action via read-only → Forbidden (not safe_readonly)
+
+Auth Model:
+- Host: 127.0.0.1 only
+- Auth file: .control.local (git-ignored)
+- Token: CQA_CONTROL_TOKEN
+
+Audit Log: two modes
+- dry-run: mode="dry-run", action_id, risk_level, confirm_ok, real_execution, result, reason
+- safe_readonly: mode="safe_readonly", action_id, real_execution=false, side_effects=false, result, reason
+- No token, no secrets in audit log
+
+Validation:
+- validate:control-server: 20/20 PASS (regression)
+- dashboard:control:validate: 15/15 PASS (regression)
+- validate:control-actions-dry-run: 19/19 PASS (regression)
+- validate:control-readonly-actions: 21/21 PASS (new)
+
+Smoke Test:
+- /health: mode=localhost-only-dry-run-safe-readonly ✅
+- get_status: returns status.json, real_execution=false, side_effects=false ✅
+- get_source_health: returns source health data ✅
+- get_timer_snapshot: returns timer fields ✅
+- get_dashboard_links: returns static links ✅
+- Bad token: Forbidden ✅
+- dry_run_only action via read-only: blocked ✅
+- Dry-run regression: still works ✅
+
+Boundaries:
+- MiniMax called: No
+- Image/Video/Music model called: No
+- LLM called: No
+- New media/audio generated: No
+- Systemd timer: untouched
+- Gateway config: untouched
+- .env / .env.telegram.local: not committed
+- Telegram token: not printed
+- Real execution: not possible
+- Public Pages executable control: not possible
+
+GitHub Push: creative-quota-harvester updated (master)
+
+Next Phase:
+- Phase 5C-2C: Confirmed low-risk command execution (2FA for high/danger)
+- Phase 5C-3: Auto-generated catalog from package.json scripts
+- Phase 4J: Audio coupling (video + music)
+
+Full Report: docs/PHASE_5C2B_SAFE_READONLY_ACTIONS_REPORT.md
+Detail Report: reports/safe-readonly-actions.md
+Runbook: docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md

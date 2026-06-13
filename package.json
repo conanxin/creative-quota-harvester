@@ -56,6 +56,7 @@
     "dashboard:validate": "tsx scripts/validate-dashboard.ts",
         "dashboard:control:validate": "tsx scripts/validate-control-catalog.ts",
     "validate:control-server": "tsx scripts/validate-control-server.ts",
+    "validate:control-readonly-actions": "tsx scripts/validate-control-readonly-actions.ts",
     "validate:control-actions-dry-run": "tsx scripts/validate-control-actions-dry-run.ts",
     "control:server": "tsx scripts/control-server.ts",
     "control:server:check": "tsx scripts/validate-control-server.ts",

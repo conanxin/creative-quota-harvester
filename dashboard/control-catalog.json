@@ -1,7 +1,7 @@
 {
-  "version": "0.2.0",
-  "phase": "5C-2A",
-  "generated_at": "2026-06-13T08:27:44Z",
+  "version": "0.3.0",
+  "phase": "5C-2B",
+  "generated_at": "2026-06-13T08:53:46Z",
   "purpose": "Read-only command catalog for Creative Quota Harvester. Displays available control actions, the corresponding shell/npm commands, risk levels, and safety requirements. THIS CATALOG DOES NOT EXECUTE COMMANDS. The control.html page renders this catalog but does not include any executable buttons, fetch POST handlers, WebSockets, or other trigger mechanisms. This is intentional — the public GitHub Pages deployment is read-only by design.",
   "public_safety_model": "All commands are listed for reference only. The public catalog cannot execute any of them. Real control actions require either a localhost-only control server (Phase 5C-1) or an authenticated dashboard (Phase 5C-2). Both phases are out of scope for Phase 5C-0.",
   "risk_levels": {
@@ -34,7 +34,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "regenerate_digest",
@@ -54,7 +55,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "send_digest_dry_run",
@@ -74,7 +76,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "send_digest_confirmed",
@@ -98,7 +101,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-medium",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "check_digest_freshness",
@@ -118,7 +122,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         }
       ]
     },
@@ -148,7 +153,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "collect_full",
@@ -171,7 +177,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-medium",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "collect_diagnose",
@@ -191,7 +198,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "show_source_health",
@@ -211,7 +219,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         }
       ]
     },
@@ -238,7 +247,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "image_confirmed_1",
@@ -262,7 +272,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-high",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "image_confirmed_2",
@@ -286,7 +297,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-high",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "video_prompt_only",
@@ -306,7 +318,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "music_prompt_only",
@@ -326,7 +339,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         }
       ]
     },
@@ -353,7 +367,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "validate_gallery",
@@ -373,7 +388,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "validate_daily_archive",
@@ -393,7 +409,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "validate_dashboard",
@@ -413,7 +430,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "validate_telegram_sanitizer",
@@ -433,7 +451,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         }
       ]
     },
@@ -460,7 +479,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "timer_logs",
@@ -480,7 +500,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "timer_disable_command",
@@ -500,7 +521,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-danger",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "timer_enable_command",
@@ -520,7 +542,162 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-medium",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
+        }
+      ]
+    },
+    {
+      "id": "safe_readonly_queries",
+      "label_zh": "🔍 Safe Read-only Queries",
+      "description_zh": "Phase 5C-2B: 安全只读查询，不执行命令、不调用模型、不修改文件、不修改 timer",
+      "commands": [
+        {
+          "id": "get_status",
+          "label_zh": "查询系统状态",
+          "description_zh": "读取 dashboard/status.json 返回系统状态快照",
+          "command": "GET /api/status (internal read-only)",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "Phase 5C-2B: 只读 dashboard/status.json。不执行命令。",
+          "action_id": "get_status",
+          "dry_run_supported": false,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2B-safe-readonly",
+          "confirmation_phrase": "",
+          "audit_required": true,
+          "execution_mode": "safe_readonly"
+        },
+        {
+          "id": "get_source_health",
+          "label_zh": "查询 Source Health",
+          "description_zh": "读取 reports/source-health.json 和 reports/source-health.md",
+          "command": "read reports/source-health.json / .md",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "Phase 5C-2B: 只读现有报告文件。不执行 source adapter。",
+          "action_id": "get_source_health",
+          "dry_run_supported": false,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2B-safe-readonly",
+          "confirmation_phrase": "",
+          "audit_required": true,
+          "execution_mode": "safe_readonly"
+        },
+        {
+          "id": "get_latest_digest",
+          "label_zh": "查询最新 Digest",
+          "description_zh": "读取 reports/telegram-digest.txt 和 reports/daily-digest.md",
+          "command": "read reports/telegram-digest.txt / daily-digest.md",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "Phase 5C-2B: 只读现有 digest 文件。不生成新 digest。",
+          "action_id": "get_latest_digest",
+          "dry_run_supported": false,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2B-safe-readonly",
+          "confirmation_phrase": "",
+          "audit_required": true,
+          "execution_mode": "safe_readonly"
+        },
+        {
+          "id": "get_generation_queue",
+          "label_zh": "查询生成队列",
+          "description_zh": "从 dashboard/status.json 提取 recommended_generation_queue",
+          "command": "read dashboard/status.json → extract recommended_generation_queue",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "Phase 5C-2B: 只读提取。不调用 model。不生成 media。",
+          "action_id": "get_generation_queue",
+          "dry_run_supported": false,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2B-safe-readonly",
+          "confirmation_phrase": "",
+          "audit_required": true,
+          "execution_mode": "safe_readonly"
+        },
+        {
+          "id": "get_asset_summary",
+          "label_zh": "查询 Asset 汇总",
+          "description_zh": "读取 creative-quota-assets/metadata 下的索引文件",
+          "command": "read creative-quota-assets/metadata/content-pack-index.json, generated-assets.json, gallery-dedup-index.json",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "Phase 5C-2B: 只读 metadata 索引。不修改 asset repo。",
+          "action_id": "get_asset_summary",
+          "dry_run_supported": false,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2B-safe-readonly",
+          "confirmation_phrase": "",
+          "audit_required": true,
+          "execution_mode": "safe_readonly"
+        },
+        {
+          "id": "get_timer_snapshot",
+          "label_zh": "查询 Timer 快照",
+          "description_zh": "从 dashboard/status.json 读取 timer_active / next_run / last_run",
+          "command": "read dashboard/status.json → extract timer fields",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "Phase 5C-2B: 只读 status.json 中已有 timer 字段。不调用 systemctl。",
+          "action_id": "get_timer_snapshot",
+          "dry_run_supported": false,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2B-safe-readonly",
+          "confirmation_phrase": "",
+          "audit_required": true,
+          "execution_mode": "safe_readonly"
+        },
+        {
+          "id": "get_dashboard_links",
+          "label_zh": "查询 Dashboard 链接",
+          "description_zh": "返回 Gallery / Daily Archive / Dashboard / GitHub 链接列表",
+          "command": "return static links (no file read)",
+          "risk_level": "safe",
+          "requires_confirm": false,
+          "requires_env": [],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "public_safe": true,
+          "notes": "Phase 5C-2B: 纯静态数据返回。不读取文件。",
+          "action_id": "get_dashboard_links",
+          "dry_run_supported": false,
+          "real_execution_supported": false,
+          "allowed_in_phase": "5C-2B-safe-readonly",
+          "confirmation_phrase": "",
+          "audit_required": true,
+          "execution_mode": "safe_readonly"
         }
       ]
     },
@@ -547,7 +724,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-safe",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         },
         {
           "id": "send_project_report_confirmed",
@@ -571,7 +749,8 @@
           "real_execution_supported": false,
           "allowed_in_phase": "5C-2A-dry-run-only",
           "confirmation_phrase": "dry-run-medium",
-          "audit_required": true
+          "audit_required": true,
+          "execution_mode": "dry_run_only"
         }
       ]
     }
@@ -592,6 +771,6 @@
       "*.log"
     ],
     "public_deploy_target": "GitHub Pages (conanxin.github.io/creative-quota-harvester/dashboard/)",
-    "real_execution_coming_in": "Phase 5C-1 (localhost-only) and Phase 5C-2 (authenticated)"
+    "real_execution_coming_in": "Phase 5C-2C (authenticated execution)"
   }
 }

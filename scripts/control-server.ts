@@ -188,7 +188,13 @@ function buildHomePage(): string {
       if (cmd.modifies_timer) chips.push("⏰ modifies_timer");
       if (cmd.requires_confirm) chips.push("✅ requires_confirm");
       if (!cmd.public_safe) chips.push("🔒 not_public");
-      chips.push("🧪 dry_run_only");
+      if (cmd.execution_mode === "safe_readonly") {
+        chips.push("🔍 safe_readonly");
+      } else if (cmd.execution_mode === "dry_run_only") {
+        chips.push("🧪 dry_run_only");
+      } else {
+        chips.push("❌ disabled");
+      }
       chips.push(cmd.real_execution_supported ? "❌ real_exec=true" : "✅ real_exec=false");
       const chipHtml = chips.length > 0 ? `<div class="meta-chips">${chips.map((c: string) => `<span class="chip">${c}</span>`).join(" ")}</div>` : "";
 
@@ -266,16 +272,16 @@ function buildHomePage(): string {
 <div class="container">
   <header>
     <h1>🔒 Creative Quota 私有控制台</h1>
-    <div class="subtitle">Phase 5C-2A · localhost-only private control server · dry-run only</div>
-    <div class="mode-badge">localhost-only · read-only · dry-run only · 不执行命令 · 不触发模型</div>
+    <div class="subtitle">Phase 5C-2B · localhost-only private control server · dry-run + safe-readonly</div>
+    <div class="mode-badge">localhost-only · dry-run · safe-readonly · 不执行命令 · 不触发模型</div>
   </header>
   <div class="warning-box">
     <strong>⚠️ 安全说明</strong>
-    <p>本服务器仅监听 127.0.0.1，不提供公网访问。Phase 5C-2A 仅支持 dry-run 模拟，不执行任何命令。命令文本仅供手动复制或 dry-run 验证。高风险命令（high / danger）需要确认短语和配置 token。请勿公开暴露此服务。</p>
+    <p>本服务器仅监听 127.0.0.1，不提供公网访问。Phase 5C-2B 支持 dry-run 模拟和 safe-readonly 只读查询，不执行任何命令。命令文本仅供手动复制或只读查询。高风险命令（high / danger）未启用真实执行。请勿公开暴露此服务。</p>
   </div>
   <div class="warning-box" style="background:#f0f9ff;border-color:#3b82f6;color:#1e40af;">
-    <strong>🧪 Phase 5C-2A 仅模拟，不执行任何命令</strong>
-    <p>Dry-run endpoint: POST /api/action/dry-run<br>所有 real_execution_supported=false。没有 /api/action/execute。</p>
+    <strong>🧪 Phase 5C-2B 功能说明</strong>
+    <p><b>Dry-run:</b> POST /api/action/dry-run — 模拟将要执行什么命令，不执行。<br><b>Safe-readonly:</b> POST /api/action/read-only — 读取现有系统状态，不执行命令、不调用模型、不修改文件。<br>所有 real_execution=false，side_effects=false。</p>
   </div>
   <div class="section">
     <h2>📊 系统状态</h2>
@@ -310,7 +316,7 @@ function buildHomePage(): string {
     </div>
   </div>
   <footer>
-    <p>Creative Quota Harvester · Phase 5C-2A · localhost-only · dry-run only · no real execution</p>
+    <p>Creative Quota Harvester · Phase 5C-2B · localhost-only · dry-run + safe-readonly · no real execution</p>
   </footer>
 </div>
 </body>
@@ -334,6 +340,12 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2B: safe read-only POST handler ---
+  if (pathname === "/api/action/read-only" && req.method === "POST") {
+    handleReadOnly(req, res);
+    return;
+  }
+
   // Block anything that's not GET (for all other routes)
   if (req.method !== "GET") {
     methodNotAllowed(res);
@@ -349,7 +361,7 @@ const server = http.createServer((req, res) => {
     case "/health": {
       jsonResponse(res, {
         status: "ok",
-        mode: "localhost-only-dry-run-only",
+        mode: "localhost-only-dry-run-safe-readonly",
         host: HOST,
         port: PORT,
         actions_enabled: CONTROL_CONFIG.actionsEnabled,
@@ -453,10 +465,11 @@ server.on("error", (err) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run only)`);
+  console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly)`);
   console.log(`[control-server] PID: ${process.pid}`);
   console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
+  console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] Actions enabled: ${CONTROL_CONFIG.actionsEnabled}, Token configured: ${!!CONTROL_CONFIG.token}`);
 });
 
@@ -617,11 +630,218 @@ function handleDryRun(req: http.IncomingMessage, res: http.ServerResponse) {
   });
 }
 
+// --- Phase 5C-2B: Safe read-only handler (no command execution, no child_process, no exec/spawn) ---
+function handleReadOnly(req: http.IncomingMessage, res: http.ServerResponse) {
+  let body = "";
+  req.on("data", (chunk) => { body += chunk; });
+  req.on("end", () => {
+    let payload: any = {};
+    try {
+      payload = JSON.parse(body);
+    } catch {
+      badRequest(res, "Invalid JSON body");
+      return;
+    }
+
+    const actionId = String(payload.action_id || "").trim();
+    const token = String(payload.token || "").trim();
+
+    if (!actionId) {
+      badRequest(res, "Missing 'action_id' field");
+      return;
+    }
+
+    // Load catalog to find action metadata
+    const catalog = safeReadJson(path.join(HARVESTER_DIR, "dashboard", "control-catalog.json"), null) as any;
+    if (!catalog) {
+      notFound(res, "control-catalog.json not found");
+      return;
+    }
+
+    let foundCommand: any = null;
+    for (const g of catalog.command_groups || []) {
+      for (const cmd of g.commands || []) {
+        if (cmd.id === actionId || cmd.action_id === actionId) {
+          foundCommand = cmd;
+          break;
+        }
+      }
+      if (foundCommand) break;
+    }
+
+    if (!foundCommand) {
+      notFound(res, `Action "${actionId}" not found in catalog`);
+      writeAuditLogReadOnly({
+        action_id: actionId,
+        result: "blocked",
+        reason: "action_id_not_found",
+      });
+      return;
+    }
+
+    // Must be execution_mode === "safe_readonly"
+    if (foundCommand.execution_mode !== "safe_readonly") {
+      forbidden(res, `Action "${actionId}" is not safe_readonly. Execution mode: ${foundCommand.execution_mode || "disabled"}`);
+      writeAuditLogReadOnly({
+        action_id: actionId,
+        result: "blocked",
+        reason: "not_safe_readonly",
+      });
+      return;
+    }
+
+    // Check token if configured
+    if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+      forbidden(res, "Invalid or missing control token");
+      writeAuditLogReadOnly({
+        action_id: actionId,
+        result: "blocked",
+        reason: "invalid_token",
+      });
+      return;
+    }
+
+    // Execute the read-only query (pure data read, no shell, no child_process, no exec, no spawn)
+    let resultData: any = null;
+    let sourceFiles: string[] = [];
+    let statusText = "";
+
+    try {
+      switch (actionId) {
+        case "get_status": {
+          const statusPath = path.join(HARVESTER_DIR, "dashboard", "status.json");
+          sourceFiles = [statusPath];
+          resultData = safeReadJson(statusPath, null);
+          statusText = resultData ? "status_loaded" : "status_not_found";
+          break;
+        }
+        case "get_source_health": {
+          const jsonPath = path.join(HARVESTER_DIR, "reports", "source-health.json");
+          const mdPath = path.join(HARVESTER_DIR, "reports", "source-health.md");
+          sourceFiles = [jsonPath, mdPath];
+          resultData = {
+            json: safeReadJson(jsonPath, null),
+            md_available: !!safeReadText(mdPath, ""),
+          };
+          statusText = "source_health_loaded";
+          break;
+        }
+        case "get_latest_digest": {
+          const txtPath = path.join(HARVESTER_DIR, "reports", "telegram-digest.txt");
+          const mdPath = path.join(HARVESTER_DIR, "reports", "daily-digest.md");
+          sourceFiles = [txtPath, mdPath];
+          resultData = {
+            telegram_digest_available: !!safeReadText(txtPath, ""),
+            daily_digest_available: !!safeReadText(mdPath, ""),
+          };
+          statusText = "digest_loaded";
+          break;
+        }
+        case "get_generation_queue": {
+          const statusPath = path.join(HARVESTER_DIR, "dashboard", "status.json");
+          sourceFiles = [statusPath];
+          const status = safeReadJson(statusPath, null) as any;
+          resultData = status?.recommended_generation_queue || null;
+          statusText = resultData ? "queue_loaded" : "queue_not_found";
+          break;
+        }
+        case "get_asset_summary": {
+          const assetsDir = path.join(HARVESTER_DIR, "..", "creative-quota-assets", "metadata");
+          const cpPath = path.join(assetsDir, "content-pack-index.json");
+          const gaPath = path.join(assetsDir, "generated-assets.json");
+          const gdPath = path.join(assetsDir, "gallery-dedup-index.json");
+          sourceFiles = [cpPath, gaPath, gdPath];
+          resultData = {
+            content_pack_index: safeReadJson(cpPath, null),
+            generated_assets: safeReadJson(gaPath, null),
+            gallery_dedup_index: safeReadJson(gdPath, null),
+          };
+          statusText = "assets_loaded";
+          break;
+        }
+        case "get_timer_snapshot": {
+          const statusPath = path.join(HARVESTER_DIR, "dashboard", "status.json");
+          sourceFiles = [statusPath];
+          const status = safeReadJson(statusPath, null) as any;
+          resultData = {
+            timer_active: status?.timer_active || false,
+            next_run: status?.next_run || "N/A",
+            last_run: status?.last_run || "N/A",
+          };
+          statusText = "timer_loaded";
+          break;
+        }
+        case "get_dashboard_links": {
+          sourceFiles = [];
+          resultData = {
+            public_dashboard: "https://conanxin.github.io/creative-quota-harvester/dashboard/",
+            assets_gallery: "https://conanxin.github.io/creative-quota-assets/gallery/",
+            daily_archive: "https://conanxin.github.io/creative-quota-assets/daily/",
+            github_repo: "https://github.com/conanxin/creative-quota-harvester",
+            runbook: "https://github.com/conanxin/creative-quota-harvester/blob/main/docs/SCHEDULED_DAILY_DIGEST_RUNBOOK.md",
+          };
+          statusText = "links_returned";
+          break;
+        }
+        default: {
+          notFound(res, `Read-only handler for "${actionId}" not implemented`);
+          writeAuditLogReadOnly({
+            action_id: actionId,
+            result: "blocked",
+            reason: "handler_not_implemented",
+          });
+          return;
+        }
+      }
+
+      jsonResponse(res, {
+        action_id: actionId,
+        label_zh: foundCommand.label_zh || actionId,
+        mode: "safe_readonly",
+        real_execution: false,
+        side_effects: false,
+        result: resultData,
+        source_files: sourceFiles.map((f) => path.relative(HARVESTER_DIR, f)),
+        status: statusText,
+        timestamp: new Date().toISOString(),
+      });
+      writeAuditLogReadOnly({
+        action_id: actionId,
+        result: "success",
+        reason: statusText,
+      });
+    } catch (err: any) {
+      jsonResponse(res, {
+        action_id: actionId,
+        label_zh: foundCommand.label_zh || actionId,
+        mode: "safe_readonly",
+        real_execution: false,
+        side_effects: false,
+        result: null,
+        error: err.message || "unknown",
+        status: "failed",
+        timestamp: new Date().toISOString(),
+      });
+      writeAuditLogReadOnly({
+        action_id: actionId,
+        result: "failed",
+        reason: err.message || "unknown",
+      });
+    }
+  });
+}
+
 interface AuditEntry {
   action_id: string;
   risk_level: string;
   confirm_ok: boolean;
   real_execution: boolean;
+  result: string;
+  reason: string;
+}
+
+interface AuditEntryReadOnly {
+  action_id: string;
   result: string;
   reason: string;
 }
@@ -634,6 +854,23 @@ function writeAuditLog(entry: AuditEntry) {
     risk_level: entry.risk_level,
     confirm_ok: entry.confirm_ok,
     real_execution: entry.real_execution,
+    result: entry.result,
+    reason: entry.reason,
+  }) + "\n";
+  try {
+    fs.appendFileSync(AUDIT_LOG_PATH, line);
+  } catch (err: any) {
+    console.error("[control-server] Audit log write failed:", err.message);
+  }
+}
+
+function writeAuditLogReadOnly(entry: AuditEntryReadOnly) {
+  const line = JSON.stringify({
+    ts: new Date().toISOString(),
+    mode: "safe_readonly",
+    action_id: entry.action_id,
+    real_execution: false,
+    side_effects: false,
     result: entry.result,
     reason: entry.reason,
   }) + "\n";
