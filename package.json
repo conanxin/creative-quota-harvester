@@ -77,7 +77,8 @@
     "report:send:dry-run": "tsx scripts/send-project-report.ts",
     "report:send": "tsx scripts/send-project-report.ts",
     "validate:project-report-send": "tsx scripts/validate-project-report-send.ts",
-    "validate:sanitizer-false-positives": "tsx scripts/validate-sanitizer-false-positives.ts"
+    "validate:sanitizer-false-positives": "tsx scripts/validate-sanitizer-false-positives.ts",
+    "validate:sanitizer-secret-completeness": "tsx scripts/validate-sanitizer-secret-completeness.ts"
   },
   "keywords": [
     "ai",

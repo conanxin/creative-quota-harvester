@@ -48,11 +48,16 @@ const FORBIDDEN_PATTERNS: Array<{ id: string; regex: RegExp; desc: string }> = [
   { id: 'openai_proj_key',    regex: /(?<![A-Za-z0-9_-])sk-(cp|proj)-[A-Za-z0-9_-]{20,}/g, desc: 'OpenAI project key' },
   { id: 'github_token',       regex: /ghp_[A-Za-z0-9]{20,}/g, desc: 'GitHub personal token' },
   { id: 'slack_token',        regex: /xox[baprs]-[A-Za-z0-9-]{8,}/g, desc: 'Slack token' },
+  // Phase 5C-2C-A3: Use [\w-:]+ to match full token values including colons (Telegram bot token)
+  { id: 'telegram_bot_token', regex: /TELEGRAM_BOT_TOKEN\s*=\s*[\w-:]+/g, desc: 'Telegram bot token assignment' },
+  // Standalone Telegram bot token (numeric:alphanumeric, at least 35 chars after colon)
+  { id: 'telegram_bot_token_standalone', regex: /\b\d+:[A-Za-z0-9_-]{35,}\b/g, desc: 'Telegram bot token (standalone)' },
+  // CQA control token (from .control.local)
+  { id: 'cqa_control_token',  regex: /CQA_CONTROL_TOKEN\s*=\s*[\w-:]+/g, desc: 'CQA control token' },
   // Secrets — require actual assignment with value (avoids false positives on the word itself)
-  { id: 'telegram_bot_token', regex: /TELEGRAM_BOT_TOKEN\s*=\s*[\w-]{8,}/g, desc: 'Telegram bot token assignment' },
-  { id: 'minimax_key',        regex: /MINIMAX_API_KEY\s*=\s*[\w-]{8,}/g, desc: 'MiniMax API key assignment' },
-  { id: 'generic_key',        regex: /[A-Z_]+_API_KEY\s*=\s*[\w-]{8,}/g, desc: 'Generic API key assignment' },
-  { id: 'bearer',             regex: /Authorization:\s*Bearer\s+[\w-]{10,}/gi, desc: 'Authorization header' },
+  { id: 'minimax_key',        regex: /MINIMAX_API_KEY\s*=\s*[\w-:]+/g, desc: 'MiniMax API key assignment' },
+  { id: 'generic_key',        regex: /[A-Z_]+_API_KEY\s*=\s*[\w-:]+/g, desc: 'Generic API key assignment' },
+  { id: 'bearer',             regex: /Authorization:\s*Bearer\s+[\w-:]+/gi, desc: 'Authorization header' },
   { id: 'env_secret',         regex: /\.env\s+(?:contains|holds|has|leaks?)\s+.{0,80}secret/gi, desc: 'env secret leak' },
   // Truncated markers
   { id: 'truncated_marker',   regex: /\[truncated\]/gi, desc: 'Truncated marker' },
@@ -78,12 +83,16 @@ function redactSecrets(text: string): string {
   out = out.replace(/(?<![A-Za-z0-9_-])sk-(cp|proj)-[A-Za-z0-9_-]{20,}/g, '[REDACTED-API-KEY]');
   out = out.replace(/ghp_[A-Za-z0-9]{20,}/g, '[REDACTED-GITHUB-TOKEN]');
   out = out.replace(/xox[baprs]-[A-Za-z0-9-]{8,}/g, '[REDACTED-SLACK-TOKEN]');
-  // TELEGRAM_BOT_TOKEN=... (with value)
-  out = out.replace(/TELEGRAM_BOT_TOKEN\s*=\s*[\w-]{8,}/g, 'TELEGRAM_BOT_TOKEN=[REDACTED]');
-  out = out.replace(/MINIMAX_API_KEY\s*=\s*[\w-]{8,}/g, 'MINIMAX_API_KEY=[REDACTED]');
-  // Generic patterns (require value with at least 8 word/dash chars)
-  out = out.replace(/[A-Z_]+_API_KEY\s*=\s*[\w-]{8,}/g, (m) => m.split('=')[0] + '=[REDACTED]');
-  out = out.replace(/Authorization:\s*Bearer\s+[\w-]{10,}/gi, 'Authorization: Bearer [REDACTED]');
+  // TELEGRAM_BOT_TOKEN=... (with value) — Phase 5C-2C-A3: use [\w-:]+ to match full token including colon
+  out = out.replace(/TELEGRAM_BOT_TOKEN\s*=\s*[\w-:]+/g, 'TELEGRAM_BOT_TOKEN=[REDACTED]');
+  // Standalone Telegram bot token (numeric:alphanumeric, at least 35 chars after colon)
+  out = out.replace(/\b\d+:[A-Za-z0-9_-]{35,}\b/g, '[REDACTED-TELEGRAM-BOT-TOKEN]');
+  // CQA control token (from .control.local)
+  out = out.replace(/CQA_CONTROL_TOKEN\s*=\s*[\w-:]+/g, 'CQA_CONTROL_TOKEN=[REDACTED]');
+  out = out.replace(/MINIMAX_API_KEY\s*=\s*[\w-:]+/g, 'MINIMAX_API_KEY=[REDACTED]');
+  // Generic patterns (require value with at least 8 word/dash/colon chars)
+  out = out.replace(/[A-Z_]+_API_KEY\s*=\s*[\w-:]+/g, (m) => m.split('=')[0] + '=[REDACTED]');
+  out = out.replace(/Authorization:\s*Bearer\s+[\w-:]+/gi, 'Authorization: Bearer [REDACTED]');
   return out;
 }
 
