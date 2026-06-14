@@ -1394,3 +1394,99 @@ Expected: All PASS.
 
 ---
 *Runbook v5.10 — Phase 5C-2C-C5D*
+
+## Phase 5C-2C-C5E — Pilot Sandbox Digest Build Execution
+
+Phase 5C-2C-C5E executes the **pilot builder** (`telegram-daily-digest.ts`) in sandbox mode for the first time. It creates a sandbox run, runs the builder with all required flags, verifies production paths are untouched, and writes build artifacts to the sandbox directory only.
+
+### What Changed
+
+- New `scripts/daily-digest-sandbox-build-pilot.ts` — pilot sandbox build runner (create sandbox, record path hashes, execute builder, verify no production writes)
+- New `POST /api/daily-digest/sandbox/build-pilot` endpoint — confirmed execution with token + confirmation phrase + execution lock + audit log
+- New `GET /api/daily-digest/sandbox/latest-build` endpoint — read-only latest build summary
+- Updated `dashboard/control.html` — pilot sandbox build panel with build button and latest build status
+- New `scripts/validate-daily-digest-sandbox-build-pilot.ts` — pilot validator (47 checks)
+- Updated `package.json` — added `validate:daily-digest-sandbox-build-pilot` script
+
+### Sandbox Build Runner
+
+| Step | Action |
+|------|--------|
+| 1. Create sandbox | `createSandboxRun()` from `daily-digest-sandbox-manager.ts` |
+| 2. Record pre-hashes | SHA-256 + mtime + size of all protected paths |
+| 3. Execute builder | `spawn("npx", ["tsx", builderPath, ...flags], {shell: false})` |
+| 4. Record post-hashes | Compare with pre-hashes |
+| 5. Verify outputs | List files in `outputs/` directory |
+| 6. Write summary | `reports/build-summary.json` + `logs/build.log` |
+
+### Safety Invariants
+
+- `shell: false` — no shell string construction
+- Fixed args array — no dynamic command injection
+- `CQA_ALLOW_TELEGRAM_SEND=0` and `CQA_ALLOW_GENERATION=0` in env
+- Protected paths checked before/after with hash comparison
+- If any protected path changes, build fails with `PRODUCTION_VIOLATION`
+- Output redaction before logging (no token leakage)
+
+### How to Execute
+
+```bash
+# CLI
+cd ~/.openclaw/workspace/projects/creative-quota-harvester
+npx tsx scripts/daily-digest-sandbox-build-pilot.ts
+
+# Via control server
+curl -s -X POST http://127.0.0.1:8788/api/daily-digest/sandbox/build-pilot \
+  -H "Content-Type: application/json" \
+  -d '{"confirm_phrase":"BUILD DAILY SANDBOX PILOT","token":"***"}'
+```
+
+### Expected Output
+
+```json
+{
+  "success": true,
+  "run_id": "sandbox-2026-06-14-06-50-12",
+  "exit_code": 0,
+  "duration_ms": 497,
+  "protected_paths_changed": false,
+  "output_files": [
+    ".../outputs/daily-digest.md",
+    ".../outputs/telegram-digest.txt"
+  ],
+  "build_summary_path": ".../reports/build-summary.json",
+  "log_path": ".../logs/build.log"
+}
+```
+
+### How to Validate
+
+```bash
+npm run validate:daily-digest-sandbox-build-pilot
+npm run validate:daily-digest-builder-sandbox-refactor
+npm run validate:daily-digest-sandbox-interface
+npm run validate:daily-digest-sandbox-guards
+npm run audit:daily-digest-build-readiness
+npm run validate:daily-digest-build-readiness
+npm run validate:daily-digest-sandbox-manager
+npm run validate:daily-digest-build-sandbox-plan
+npm run validate:daily-digest-staged-plan
+npm run validate:daily-digest-stage-execution
+npm run validate:digest-freshness
+npm run validate:dashboard:policy:validate
+npm run validate:sanitizer-secret-completeness
+npm run validate:sanitizer-false-positives
+npm run validate:telegram-sanitizer
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+### Files
+
+- `scripts/daily-digest-sandbox-build-pilot.ts` — pilot sandbox build runner
+- `scripts/validate-daily-digest-sandbox-build-pilot.ts` — pilot validator (47 checks)
+- `dashboard/control.html` — updated with pilot build panel
+
+---
+*Runbook v5.11 — Phase 5C-2C-C5E*

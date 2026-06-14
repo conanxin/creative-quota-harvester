@@ -1173,6 +1173,136 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5E: Pilot sandbox build execution ---
+  if (pathname === "/api/daily-digest/sandbox/build-pilot" && req.method === "POST") {
+    if (!CONTROL_CONFIG.actionsEnabled) {
+      forbidden(res, "Actions are disabled via CQA_CONTROL_ENABLE_ACTIONS");
+      return;
+    }
+    if (isRateLimited("execute_low_risk_per_minute")) {
+      tooManyRequests(res, "Rate limit exceeded for sandbox build.");
+      return;
+    }
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", async () => {
+      try {
+        const payload = JSON.parse(body);
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_sandbox_build_pilot",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "BUILD DAILY SANDBOX PILOT";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_sandbox_build_pilot",
+            confirmation_status: "mismatch",
+            real_execution: false,
+            message: `Sandbox build blocked: confirmation phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_sandbox_build_pilot",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const { runSandboxBuildPilot } = require("./daily-digest-sandbox-build-pilot");
+        const result = await runSandboxBuildPilot();
+
+        if (result.success) {
+          jsonResponse(res, {
+            action_id: "daily_digest_sandbox_build_pilot",
+            confirmation_status: "matched",
+            real_execution: true,
+            production_write_allowed: false,
+            production_write_detected: result.protected_paths_changed,
+            result: "success",
+            run_id: result.run_id,
+            sandbox_path: result.sandbox_path,
+            output_files: result.output_files,
+            exit_code: result.exit_code,
+            duration_ms: result.duration_ms,
+            message: `Pilot sandbox build succeeded: ${result.run_id}`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_sandbox_build_pilot",
+            risk_level: "low",
+            confirm_ok: true,
+            real_execution: true,
+            result: "success",
+            reason: "sandbox_build_pilot_success",
+            run_id: result.run_id,
+          });
+        } else {
+          jsonResponse(res, {
+            action_id: "daily_digest_sandbox_build_pilot",
+            confirmation_status: "matched",
+            real_execution: true,
+            production_write_allowed: false,
+            production_write_detected: result.protected_paths_changed,
+            result: "failed",
+            error: result.error,
+            run_id: result.run_id,
+            changed_files: result.changed_files,
+            message: `Pilot sandbox build failed: ${result.error || "unknown"}`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_sandbox_build_pilot",
+            risk_level: "low",
+            confirm_ok: true,
+            real_execution: true,
+            result: "failed",
+            reason: result.error || "unknown",
+            run_id: result.run_id,
+          });
+        }
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_sandbox_build_pilot",
+          confirmation_status: "matched",
+          real_execution: true,
+          result: "failed",
+          error: err.message || "unknown",
+          message: "Sandbox build failed with an unexpected error.",
+        });
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_sandbox_build_pilot",
+          risk_level: "low",
+          confirm_ok: true,
+          real_execution: true,
+          result: "failed",
+          reason: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // Block anything that's not GET (for all other routes)
   if (req.method !== "GET") {
     methodNotAllowed(res);
@@ -1527,6 +1657,34 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/sandbox/latest-build": {
+      // Phase 5C-2C-C5E: Read latest sandbox build summary (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { readSandboxStatus } = require("./daily-digest-sandbox-manager");
+      const status = readSandboxStatus();
+      let latestBuild = null;
+      if (status.latest && status.latest.latest_run_path) {
+        const summaryPath = path.join(status.latest.latest_run_path, "reports", "build-summary.json");
+        if (fs.existsSync(summaryPath)) {
+          try {
+            latestBuild = JSON.parse(fs.readFileSync(summaryPath, "utf-8"));
+          } catch {
+            latestBuild = null;
+          }
+        }
+      }
+      jsonResponse(res, {
+        latest_run: status.latest || null,
+        latest_build: latestBuild,
+        sandbox_root: status.sandbox_root,
+        total_runs: status.total_runs,
+      });
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;
@@ -1547,12 +1705,13 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);
   console.log(`[control-server] POST /api/daily-digest/execute-validation-stage (confirmed low-risk stage execution, rate limited, execution locked)`);
   console.log(`[control-server] POST /api/daily-digest/sandbox/create (confirmed sandbox directory creation, rate limited, execution locked)`);
+console.log(`[control-server] POST /api/daily-digest/sandbox/build-pilot (confirmed pilot sandbox build execution, rate limited, execution locked)`);
   console.log(`[control-server] Actions enabled: ${CONTROL_CONFIG.actionsEnabled}, Token configured: ${!!CONTROL_CONFIG.token}`);
 });
 

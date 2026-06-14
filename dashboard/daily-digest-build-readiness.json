@@ -1,7 +1,7 @@
 {
-  "phase": "5C-2C-C5B",
-  "mode": "readiness_check_only",
-  "ready_for_sandbox_build": "partial",
+  "phase": "5C-2C-C5E",
+  "mode": "pilot_sandbox_build_executed",
+  "ready_for_sandbox_build": "partial-pilot",
   "builders_detected": [
     {
       "file": "scripts/build-content-pack-pages.ts",
@@ -1435,5 +1435,16 @@
   ],
   "safe_next_step": "Complete required refactors (output-dir param, sandbox mode flag) then re-run readiness audit",
   "audit_timestamp": "2026-06-14T06:24:23.542Z",
-  "files_scanned": 126
+  "files_scanned": 126,
+  "sandbox_interface_contract": true,
+  "sandbox_runtime_config": true,
+  "pilot_builder_refactored": true,
+  "pilot_sandbox_build_executed": true,
+  "pilot_sandbox_build_run_id": "sandbox-2026-06-14-06-50-12",
+  "pilot_sandbox_build_outputs": [
+    "reports/sandbox/daily-digest/sandbox-2026-06-14-06-50-12/outputs/daily-digest.md",
+    "reports/sandbox/daily-digest/sandbox-2026-06-14-06-50-12/outputs/telegram-digest.txt"
+  ],
+  "pilot_sandbox_build_duration_ms": 497,
+  "pilot_sandbox_build_production_write_detected": false
 }

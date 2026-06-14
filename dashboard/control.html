@@ -1114,6 +1114,21 @@
     </div>
   </div>
 
+<!-- Phase 5C-2C-C5E: Pilot Sandbox Build Panel -->
+<div id="sandbox-build-pilot-panel" class="sandbox-build-pilot-panel" style="display:none;">
+  <div class="section" style="background:#f0f9ff;border:1px solid #3b82f6;">
+    <h2>🚀 Pilot Sandbox Build / 沙盒日报构建</h2>
+    <div id="sandbox-build-pilot-status" style="margin-bottom:12px;"></div>
+    <div style="margin-top:10px;">
+      <button id="btn-build-pilot" style="background:#3b82f6;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;" onclick="buildPilotSandbox()">执行 Pilot 构建</button>
+    </div>
+    <div id="sandbox-build-pilot-result" style="margin-top:12px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      ⚠️ 本阶段只执行 pilot builder 的 sandbox build，不写 production、不采集、不发送 Telegram。
+    </div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5: Create sandbox directory
     function createSandbox() {
@@ -1167,8 +1182,60 @@
         });
     }
 
+    // Phase 5C-2C-C5E: Build pilot sandbox
+    function buildPilotSandbox() {
+      var resultDiv = document.getElementById('sandbox-build-pilot-result');
+      if (resultDiv) resultDiv.innerHTML = 'Building pilot sandbox...';
+      var base = location.protocol + '//' + location.host;
+      fetch(base + '/api/daily-digest/sandbox/build-pilot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirm_phrase: 'BUILD DAILY SANDBOX PILOT', token: 'dummy' })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.real_execution && data.result === 'success') {
+          if (resultDiv) resultDiv.innerHTML = '<span style="color:#22c55e;">✅ Build succeeded: ' + data.run_id + '</span><br>Output files: ' + (data.output_files ? data.output_files.join(', ') : 'none') + '<br>Duration: ' + data.duration_ms + 'ms';
+          loadLatestBuildStatus();
+        } else {
+          if (resultDiv) resultDiv.innerHTML = '<span style="color:#ef4444;">❌ ' + (data.message || data.error || 'Blocked') + '</span>';
+        }
+      })
+      .catch(function(e) {
+        if (resultDiv) resultDiv.innerHTML = '<span style="color:#ef4444;">Error: ' + e.message + '</span>';
+      });
+    }
+
+    // Phase 5C-2C-C5E: Load latest sandbox build status
+    function loadLatestBuildStatus() {
+      var base = location.protocol + '//' + location.host;
+      fetch(base + '/api/daily-digest/sandbox/latest-build')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var panel = document.getElementById('sandbox-build-pilot-panel');
+          if (panel) panel.style.display = 'block';
+          var statusDiv = document.getElementById('sandbox-build-pilot-status');
+          if (statusDiv && data.latest_build) {
+            var b = data.latest_build;
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:10px;">';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.3rem;font-weight:700;color:#1e3a5f;">' + (b.exit_code !== null ? b.exit_code : 'N/A') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Exit Code</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.3rem;font-weight:700;color:#22c55e;">' + (b.duration_ms || 0) + 'ms</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Duration</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (b.production_write_detected ? '❌ YES' : '✅ NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Production Write</div></div>';
+            html += '</div>';
+            if (b.output_files && b.output_files.length > 0) {
+              html += '<div style="margin-top:12px;font-size:0.8rem;color:#555;">Outputs: ' + b.output_files.join(', ') + '</div>';
+            }
+            statusDiv.innerHTML = html;
+          }
+        })
+        .catch(function(e) {
+          console.log('Latest build status load failed:', e);
+        });
+    }
+
     // Load on page init
     loadSandboxStatus();
+    loadLatestBuildStatus();
   </script>
 
   <script>
