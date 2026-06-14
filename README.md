@@ -59,6 +59,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-2C-A3** | **✅ Complete** | **Secret Redaction Completeness Check (colon fix, CQA_CONTROL_TOKEN, standalone Telegram token, 36/36 PASS)** |
 | **Phase 5C-2C-B** | **✅ Complete** | **More Low-risk Validation Executions (17 commands, expanded allowlist, no model calls, no media generation)** |
 | **Phase 5C-5A** | **✅ Complete** | **Control Server Hardening & Audit Viewer (rate limits, execution lock, audit log viewer, security status, runner output redaction)** |
+| **Phase 5C-2C-C0** | **✅ Complete** | **End-to-end Workflow Dry-run Orchestrator (3 workflows, dry-run planner, no real collect/send/generate/timer/git execution)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 
@@ -122,6 +123,7 @@ See [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md#data-model) for entity definit
 | [docs/PHASE_5C2B_SAFE_READONLY_ACTIONS_REPORT.md](./docs/PHASE_5C2B_SAFE_READONLY_ACTIONS_REPORT.md) | Safe read-only action execution (Phase 5C-2B) |
 | [docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md](./docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md) | Operator runbook for the control server |
 | [docs/PHASE_5C5A_CONTROL_HARDENING_AUDIT_VIEWER_REPORT.md](./docs/PHASE_5C5A_CONTROL_HARDENING_AUDIT_VIEWER_REPORT.md) | Control server hardening & audit viewer (Phase 5C-5A) |
+| [docs/PHASE_5C2C_C0_WORKFLOW_DRY_RUN_ORCHESTRATOR_REPORT.md](./docs/PHASE_5C2C_C0_WORKFLOW_DRY_RUN_ORCHESTRATOR_REPORT.md) | Workflow dry-run orchestrator (Phase 5C-2C-C0) |
 
 ## Private Control Command Catalog (Phase 5C-0)
 

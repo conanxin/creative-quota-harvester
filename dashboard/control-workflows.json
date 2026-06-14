@@ -1,0 +1,261 @@
+{
+  "version": "0.1.0",
+  "phase": "5C-2C-C0",
+  "mode": "dry_run_only",
+  "real_execution_supported": false,
+  "workflows": [
+    {
+      "workflow_id": "daily_digest_dry_run",
+      "label_zh": "日常摘要干跑",
+      "description_zh": "模拟完整的日常摘要工作流：收集信号 → 生成摘要 → 验证存档 → 发送。此阶段仅模拟，不执行真实的收集或发送操作。",
+      "mode": "dry_run_only",
+      "real_execution_supported": false,
+      "steps": [
+        {
+          "step_id": "collect_fast",
+          "action_id": "collect_fast",
+          "script_name": "collect:fast",
+          "risk_level": "danger",
+          "would_execute": false,
+          "blocked_reason": "collect 被阻断，本阶段仅模拟工作流",
+          "blocked_category": "collect",
+          "requires_confirm": false
+        },
+        {
+          "step_id": "run_manual_digest",
+          "action_id": "run_manual_digest",
+          "script_name": "digest:manual",
+          "risk_level": "danger",
+          "would_execute": false,
+          "blocked_reason": "send 被阻断，本阶段仅模拟工作流",
+          "blocked_category": "send",
+          "requires_confirm": false
+        },
+        {
+          "step_id": "validate_daily_archive",
+          "action_id": "validate_daily_archive",
+          "script_name": "validate:daily-archive",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "validate_dashboard",
+          "action_id": "validate_dashboard",
+          "script_name": "validate:dashboard",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "send_digest_confirmed",
+          "action_id": "send_digest_confirmed",
+          "script_name": "digest:send:confirmed",
+          "risk_level": "danger",
+          "would_execute": false,
+          "blocked_reason": "send 被阻断，本阶段仅模拟工作流",
+          "blocked_category": "send",
+          "requires_confirm": false
+        }
+      ],
+      "risk_summary": {
+        "total_steps": 5,
+        "safe_steps": 2,
+        "danger_steps": 3,
+        "blocked_steps": 3,
+        "allowed_low_risk_steps": 2,
+        "model_calls": 0,
+        "media_generation": 0,
+        "telegram_send": 1,
+        "timer_modification": 0,
+        "git_operations": 0,
+        "collect_operations": 1
+      },
+      "blocked_categories": ["collect", "send", "generate", "timer", "git"]
+    },
+    {
+      "workflow_id": "asset_validation_sweep",
+      "label_zh": "资产验证扫描",
+      "description_zh": "对创意配额收割器的资产进行全面验证扫描，包括公开画廊、每日存档、去重检查、内容包页面、音乐和视频提示。所有步骤都是安全的验证操作。",
+      "mode": "dry_run_only",
+      "real_execution_supported": false,
+      "steps": [
+        {
+          "step_id": "validate_public_gallery",
+          "action_id": "validate_public_gallery",
+          "script_name": "validate:public-gallery",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "validate_daily_archive",
+          "action_id": "validate_daily_archive",
+          "script_name": "validate:daily-archive",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "validate_gallery_dedup",
+          "action_id": "validate_gallery_dedup",
+          "script_name": "validate:gallery-dedup",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "validate_content_pack_pages",
+          "action_id": "validate_content_pack_pages",
+          "script_name": "validate:content-pack-pages",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "validate_music_prompts",
+          "action_id": "validate_music_prompts",
+          "script_name": "validate:music-prompts",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "validate_video_prompts",
+          "action_id": "validate_video_prompts",
+          "script_name": "validate:video-prompts",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        }
+      ],
+      "risk_summary": {
+        "total_steps": 6,
+        "safe_steps": 6,
+        "danger_steps": 0,
+        "blocked_steps": 0,
+        "allowed_low_risk_steps": 6,
+        "model_calls": 0,
+        "media_generation": 0,
+        "telegram_send": 0,
+        "timer_modification": 0,
+        "git_operations": 0,
+        "collect_operations": 0
+      },
+      "blocked_categories": ["collect", "send", "generate", "timer", "git"]
+    },
+    {
+      "workflow_id": "control_health_sweep",
+      "label_zh": "控制台健康扫描",
+      "description_zh": "对 localhost-only 控制台进行全面的健康检查，包括验证服务器、只读动作、干跑动作、策略漂移检查、策略验证和加固验证。",
+      "mode": "dry_run_only",
+      "real_execution_supported": false,
+      "steps": [
+        {
+          "step_id": "validate_control_server",
+          "action_id": "validate_control_server",
+          "script_name": "validate:control-server",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "validate_control_readonly_actions",
+          "action_id": "validate_control_readonly_actions",
+          "script_name": "validate:control-readonly-actions",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "validate_control_actions_dry_run",
+          "action_id": "validate_control_actions_dry_run",
+          "script_name": "validate:control-actions-dry-run",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "dashboard_control_drift_check",
+          "action_id": "dashboard_control_drift_check",
+          "script_name": "dashboard:control:drift-check",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "dashboard_policy_validate",
+          "action_id": "dashboard_policy_validate",
+          "script_name": "dashboard:policy:validate",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        },
+        {
+          "step_id": "validate_control_hardening",
+          "action_id": "validate_control_hardening",
+          "script_name": "validate:control-hardening",
+          "risk_level": "safe",
+          "would_execute": true,
+          "allowed_for_low_risk_execution": true,
+          "blocked_reason": null,
+          "blocked_category": null,
+          "requires_confirm": true
+        }
+      ],
+      "risk_summary": {
+        "total_steps": 6,
+        "safe_steps": 6,
+        "danger_steps": 0,
+        "blocked_steps": 0,
+        "allowed_low_risk_steps": 6,
+        "model_calls": 0,
+        "media_generation": 0,
+        "telegram_send": 0,
+        "timer_modification": 0,
+        "git_operations": 0,
+        "collect_operations": 0
+      },
+      "blocked_categories": ["collect", "send", "generate", "timer", "git"]
+    }
+  ]
+}

@@ -804,4 +804,82 @@
 })();
 </script>
 
+  <!-- Phase 5C-2C-C0: Workflow Dry-run Module -->
+  <div id="workflow-panel" class="workflow-panel" style="display:none;">
+    <div class="section" style="background:#f0fdf4;border:1px solid #86efac;">
+      <h2>🔄 Workflow Dry-run / 工作流干跑</h2>
+      <div id="workflow-status" style="margin-bottom:12px;"></div>
+      <div style="margin-top:10px;background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+        ⚠️ 此阶段只模拟工作流，不执行 collect/send/generate/timer/git。
+      </div>
+      <div id="workflow-list" style="margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <script>
+    // Phase 5C-2C-C0: Load workflows
+    (function() {
+      var base = location.protocol + '//' + location.host;
+      fetch(base + '/api/workflows')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var panel = document.getElementById('workflow-panel');
+          if (panel) panel.style.display = 'block';
+          var listDiv = document.getElementById('workflow-list');
+          if (listDiv && data.workflows) {
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;">';
+            data.workflows.forEach(function(w) {
+              html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
+              html += '<div style="font-weight:700;font-size:1.1rem;color:#1e3a5f;">' + w.label_zh + '</div>';
+              html += '<div style="font-size:0.8rem;color:#7f8c8d;margin-top:4px;">' + w.workflow_id + '</div>';
+              html += '<div style="font-size:0.85rem;color:#555;margin-top:8px;">' + w.description_zh + '</div>';
+              html += '<div style="margin-top:10px;"><button class="button" onclick="simulateWorkflow(\'' + w.workflow_id + '\')">模拟工作流</button></div>';
+              html += '</div>';
+            });
+            html += '</div>';
+            listDiv.innerHTML = html;
+          }
+        })
+        .catch(function(e) {
+          console.log('Workflows load failed:', e);
+        });
+
+      window.simulateWorkflow = function(workflowId) {
+        var base = location.protocol + '//' + location.host;
+        fetch(base + '/api/workflow/dry-run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ workflow_id: workflowId, token: '' })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var statusDiv = document.getElementById('workflow-status');
+          if (statusDiv) {
+            var html = '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;margin-top:10px;">';
+            html += '<div style="font-weight:700;font-size:1.1rem;color:#1e3a5f;">' + data.workflow_id + '</div>';
+            html += '<div style="font-size:0.85rem;color:#555;margin-top:6px;">Mode: ' + data.mode + ' | Real execution: ' + data.real_execution + '</div>';
+            html += '<div style="font-size:0.85rem;color:#555;margin-top:4px;">Total steps: ' + data.summary.total_steps + ' | Allowed low-risk: ' + data.summary.allowed_low_risk_steps + ' | Blocked: ' + data.summary.blocked_steps + '</div>';
+            if (data.steps && data.steps.length > 0) {
+              html += '<div style="margin-top:8px;">';
+              data.steps.forEach(function(s) {
+                var status = s.allowed_for_low_risk_execution ? '✅' : (s.would_execute ? '⚠️' : '❌');
+                html += '<div style="font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f0f0f0;">' + status + ' ' + s.step_id + ' (' + s.risk_level + ')';
+                if (s.blocked_reason) {
+                  html += ' — <span style="color:#dc3545;">' + s.blocked_reason + '</span>';
+                }
+                html += '</div>';
+              });
+              html += '</div>';
+            }
+            html += '</div>';
+            statusDiv.innerHTML = html;
+          }
+        })
+        .catch(function(e) {
+          console.log('Workflow simulation failed:', e);
+        });
+      };
+    })();
+  </script>
+
 </body></html>

@@ -697,3 +697,45 @@ Expected: All PASS.
 ---
 
 *Runbook v5.2 — Phase 5C-5A*
+
+---
+
+## Phase 5C-2C-C0: Workflow Dry-run Orchestrator
+
+### What's New
+
+- **Workflow Definitions**: `dashboard/control-workflows.json` with 3 workflows:
+  - `daily_digest_dry_run`: 5 steps (collect/send blocked, 2 validation allowed)
+  - `asset_validation_sweep`: 6 steps (all validation)
+  - `control_health_sweep`: 6 steps (all validation)
+- **Workflow Planner**: `scripts/control-workflow-planner.ts` — generates dry-run plans without executing commands
+- **API Endpoints**: `GET /api/workflows`, `POST /api/workflow/dry-run`
+- **Control Catalog UI**: Workflow Dry-run module with simulate buttons
+- **Workflow Validator**: `npm run validate:control-workflows` — 10 checks, all PASS
+
+### Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/workflows` | GET | List all workflows (read-only) |
+| `/api/workflow/dry-run` | POST | Generate dry-run plan for a workflow (no execution) |
+
+### Safety Invariants
+
+- All workflows have `real_execution_supported=false` and `mode=dry_run_only`
+- collect/send/generate/timer/git steps blocked in all workflows
+- Planner does not use child_process/exec/spawn/network
+- `/api/workflow/dry-run` does not call runner
+- Workflow audit log does not record token
+
+### Validation
+
+```bash
+npm run validate:control-workflows
+```
+
+Expected: PASS.
+
+---
+
+*Runbook v5.3 — Phase 5C-2C-C0*

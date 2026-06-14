@@ -36,6 +36,7 @@
 | 0.23.3 | 2026-06-13 | Phase 5C-2C-A3 | ✅ COMPLETE — Secret Redaction Completeness Check (colon fix, CQA_CONTROL_TOKEN, standalone Telegram token, 36/36 PASS) |
 | 0.23.4 | 2026-06-13 | Phase 5C-2C-B | ✅ COMPLETE — More Low-risk Validation Executions (17 commands, expanded allowlist, no model calls, no media generation) |
 | 0.24.0 | 2026-06-14 | Phase 5C-5A | ✅ COMPLETE — Control Server Hardening & Audit Viewer (rate limits, execution lock, audit log viewer, security status, runner output redaction) |
+| 0.24.1 | 2026-06-14 | Phase 5C-2C-C0 | ✅ COMPLETE — End-to-end Workflow Dry-run Orchestrator (3 workflows, dry-run planner, no real collect/send/generate/timer/git execution) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |

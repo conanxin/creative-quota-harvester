@@ -463,6 +463,73 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C0: workflow dry-run POST handler ---
+  if (pathname === "/api/workflow/dry-run" && req.method === "POST") {
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      let payload: any = {};
+      try {
+        payload = JSON.parse(body);
+      } catch {
+        badRequest(res, "Invalid JSON body");
+        return;
+      }
+
+      const workflowId = String(payload.workflow_id || "").trim();
+      const token = String(payload.token || "").trim();
+
+      if (!workflowId) {
+        badRequest(res, "Missing 'workflow_id' field");
+        return;
+      }
+
+      if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+        forbidden(res, "Invalid or missing control token");
+        writeAuditLog({
+          action_id: "workflow_dry_run",
+          risk_level: "safe",
+          confirm_ok: false,
+          real_execution: false,
+          result: "blocked",
+          reason: "invalid_token",
+        });
+        return;
+      }
+
+      const { planWorkflow } = require("./control-workflow-planner");
+      const plan = planWorkflow(workflowId);
+
+      if (!plan) {
+        notFound(res, `Workflow "${workflowId}" not found`);
+        writeAuditLog({
+          action_id: "workflow_dry_run",
+          risk_level: "safe",
+          confirm_ok: false,
+          real_execution: false,
+          result: "blocked",
+          reason: "workflow_not_found",
+        });
+        return;
+      }
+
+      writeAuditLog({
+        action_id: "workflow_dry_run",
+        risk_level: "safe",
+        confirm_ok: true,
+        real_execution: false,
+        result: "success",
+        reason: "dry_run_plan_generated",
+        workflow_id: workflowId,
+        blocked_steps: plan.summary.blocked_steps,
+        allowed_low_risk_steps: plan.summary.allowed_low_risk_steps,
+      });
+
+      jsonResponse(res, plan);
+    });
+    return;
+  }
+
   // Block anything that's not GET (for all other routes)
   if (req.method !== "GET") {
     methodNotAllowed(res);
@@ -654,6 +721,93 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/workflows": {
+      // Phase 5C-2C-C0: List all workflows
+      const { listWorkflows } = require("./control-workflow-planner");
+      const workflows = listWorkflows();
+      jsonResponse(res, {
+        workflows,
+        count: workflows.length,
+        mode: "dry_run_only",
+        real_execution_supported: false,
+        timestamp: new Date().toISOString(),
+      });
+      return;
+    }
+
+    case "/api/workflow/dry-run": {
+      // Phase 5C-2C-C0: Workflow dry-run planner
+      if (req.method !== "POST") {
+        methodNotAllowed(res, "POST");
+        return;
+      }
+      let body = "";
+      req.on("data", (chunk) => { body += chunk; });
+      req.on("end", () => {
+        let payload: any = {};
+        try {
+          payload = JSON.parse(body);
+        } catch {
+          badRequest(res, "Invalid JSON body");
+          return;
+        }
+
+        const workflowId = String(payload.workflow_id || "").trim();
+        const token = String(payload.token || "").trim();
+
+        if (!workflowId) {
+          badRequest(res, "Missing 'workflow_id' field");
+          return;
+        }
+
+        // Check token if configured
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLog({
+            action_id: "workflow_dry_run",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          return;
+        }
+
+        const { planWorkflow } = require("./control-workflow-planner");
+        const plan = planWorkflow(workflowId);
+
+        if (!plan) {
+          notFound(res, `Workflow "${workflowId}" not found`);
+          writeAuditLog({
+            action_id: "workflow_dry_run",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "workflow_not_found",
+          });
+          return;
+        }
+
+        // Write audit log
+        writeAuditLog({
+          action_id: "workflow_dry_run",
+          risk_level: "safe",
+          confirm_ok: true,
+          real_execution: false,
+          result: "success",
+          reason: "dry_run_plan_generated",
+          workflow_id: workflowId,
+          blocked_steps: plan.summary.blocked_steps,
+          allowed_low_risk_steps: plan.summary.allowed_low_risk_steps,
+        });
+
+        jsonResponse(res, plan);
+      });
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;
@@ -674,7 +828,7 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);
