@@ -1,0 +1,95 @@
+Phase 5C-2C-C5 Daily Digest Sandbox Directory — COMPLETE ✅
+
+Status: All files present, all validations PASS, smoke test PASS.
+Date: 2026-06-14
+
+---
+
+What Changed:
+- Created: scripts/daily-digest-sandbox-manager.ts
+- Created: scripts/validate-daily-digest-sandbox-manager.ts
+- Created: reports/sandbox/README.md
+- Created: reports/sandbox/daily-digest/.gitkeep
+- Modified: package.json (+validate:daily-digest-sandbox-manager script)
+- Modified: scripts/control-server.ts (+sandbox endpoints, +helper functions)
+- Modified: dashboard/control.html (+sandbox UI module)
+- Modified: .gitignore (+sandbox runtime ignore rules)
+
+Bug Fixes During Resume:
+- Added missing tooManyRequests/conflict helpers to control-server.ts
+- Extended methodNotAllowed to accept optional allowedMethod parameter
+- Moved sandbox/create handler before global GET check (was being blocked)
+- Fixed validation script hasWriteFileSyncToPath helper (false positive on protected_paths array)
+- Updated validation script to support both case and if patterns for endpoint detection
+
+---
+
+Sandbox Directory Structure:
+reports/sandbox/daily-digest/
+├── .gitkeep
+├── latest.json
+└── sandbox-<YYYYMMDD_HHMMSS>/
+    ├── manifest.json
+    ├── inputs/
+    ├── outputs/
+    ├── reports/
+    ├── diffs/
+    └── logs/
+
+---
+
+API Endpoints:
+POST /api/daily-digest/sandbox/create — Create sandbox run (token + "CREATE DAILY SANDBOX" required)
+GET /api/daily-digest/sandbox-status — Read sandbox status
+
+---
+
+Validation Results (11/11 PASS):
+✅ validate:daily-digest-sandbox-manager (63/63)
+✅ validate:daily-digest-build-sandbox-plan (40/40)
+✅ validate:daily-digest-stage-execution (30/30)
+✅ validate:daily-digest-staged-plan (21/21)
+✅ validate:control-hardening (all)
+✅ validate:control-low-risk-execution (176/176)
+✅ dashboard:policy:validate (35/35)
+✅ validate:sanitizer-secret-completeness (36/36)
+✅ validate:sanitizer-false-positives (25/25)
+✅ validate:telegram-sanitizer (43/43)
+✅ validate:project-report-send (11/11)
+
+---
+
+Smoke Test Results:
+✅ GET /api/daily-digest/sandbox-status — returns empty status
+✅ POST wrong phrase → blocked (confirmation_status: mismatch)
+✅ POST correct phrase → success (creates run with 5 dirs + manifest + latest.json)
+✅ GET status shows latest run (total_runs: 1)
+✅ Production paths protected (daily-digest.md, telegram-digest.txt, status.json unchanged)
+✅ Audit log no token leak (no token: key in sandbox entries)
+
+---
+
+Safety Invariants Verified:
+✅ Only writes to reports/sandbox/daily-digest/
+✅ No child_process/exec/spawn
+✅ No network calls
+✅ No .env/.control.local reading
+✅ No production path writes
+✅ manifest: real_digest_build=false, collect_allowed=false, telegram_send_allowed=false, production_write_allowed=false
+✅ Rate limited (5/min)
+✅ Execution locked (1 concurrent)
+✅ Confirmation phrase required
+
+---
+
+Next Phase Proposal:
+5C-2C-C6: Sandbox Digest Build (Read-only Plan)
+- Define sandbox digest build pipeline
+- Continue blocking: collect, send, timer, production write
+- Allow: read-only validation within sandbox directory
+
+---
+
+C5_COMMIT_READY=yes
+C5_VALIDATION_PASS=11/11
+C5_SMOKE_TEST_PASS=6/6

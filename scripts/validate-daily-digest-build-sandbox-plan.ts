@@ -94,10 +94,13 @@ function main() {
 
   // 8. Server endpoint - check that build-sandbox-plan block doesn't call runner
   const serverText = loadText(SERVER_PATH);
-  const buildSandboxBlockStart = serverText.indexOf('/api/daily-digest/build-sandbox-plan');
-  const buildSandboxBlockEnd = serverText.indexOf('default:', buildSandboxBlockStart);
-  const buildSandboxBlock = serverText.substring(buildSandboxBlockStart, buildSandboxBlockEnd > 0 ? buildSandboxBlockEnd : serverText.length);
-  check("server: has /api/daily-digest/build-sandbox-plan", buildSandboxBlockStart > 0);
+  // Find the exact case block for build-sandbox-plan
+  const blockStart = serverText.indexOf('case "/api/daily-digest/build-sandbox-plan": {');
+  const nextCase = serverText.indexOf('case "/api/daily-digest/sandbox', blockStart + 1);
+  const defaultCase = serverText.indexOf('default:', blockStart + 1);
+  const blockEnd = nextCase > 0 ? nextCase : (defaultCase > 0 ? defaultCase : serverText.length);
+  const buildSandboxBlock = serverText.substring(blockStart, blockEnd);
+  check("server: has /api/daily-digest/build-sandbox-plan", blockStart > 0);
   check("server: endpoint is GET only", buildSandboxBlock.includes('req.method !== "GET"') || buildSandboxBlock.includes('methodNotAllowed'));
   check("server: endpoint does not call runner", !buildSandboxBlock.includes("executeLowRiskAction") && !buildSandboxBlock.includes("executeLowRiskAction") && !buildSandboxBlock.includes("executeStage"));
   check("server: no token in endpoint", !buildSandboxBlock.includes("token") || buildSandboxBlock.includes("redact"));

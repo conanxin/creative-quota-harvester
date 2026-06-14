@@ -1,3 +1,8 @@
+# Sandbox runtime outputs (local only, never commit)
+reports/sandbox/daily-digest/*
+!reports/sandbox/daily-digest/.gitkeep
+!reports/sandbox/README.md
+
 # Local control auth config (never commit real token)
 .control.local
 

@@ -176,12 +176,22 @@ function badRequest(res: http.ServerResponse, reason: string) {
   res.end("Bad Request: " + reason);
 }
 
-function methodNotAllowed(res: http.ServerResponse) {
+function methodNotAllowed(res: http.ServerResponse, allowedMethod?: string) {
   res.writeHead(405, {
     "Content-Type": "text/plain; charset=utf-8",
-    Allow: "GET",
+    Allow: allowedMethod || "GET",
   });
-  res.end("Method Not Allowed: only GET is supported");
+  res.end("Method Not Allowed: only " + (allowedMethod || "GET") + " is supported");
+}
+
+function tooManyRequests(res: http.ServerResponse, reason: string) {
+  res.writeHead(429, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("Too Many Requests: " + reason);
+}
+
+function conflict(res: http.ServerResponse, reason: string) {
+  res.writeHead(409, { "Content-Type": "text/plain; charset=utf-8" });
+  res.end("Conflict: " + reason);
 }
 
 function jsonResponse(res: http.ServerResponse, data: unknown) {
@@ -432,6 +442,21 @@ function buildHomePage(): string {
 </div>
 </body>
 </html>`;
+}
+
+// --- Phase 5C-2C-C5: Read body JSON helper ---
+function readBodyJson(req: http.IncomingMessage, callback: (body: any) => void) {
+  let body = "";
+  req.on("data", (chunk: string) => { body += chunk; });
+  req.on("end", () => {
+    let payload: any = {};
+    try {
+      payload = JSON.parse(body);
+    } catch {
+      // ignore parse error, callback gets empty object
+    }
+    callback(payload);
+  });
 }
 
 const server = http.createServer((req, res) => {
@@ -1023,6 +1048,131 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5: Daily digest sandbox creation handler ---
+  if (pathname === "/api/daily-digest/sandbox/create" && req.method === "POST") {
+    // Phase 5C-2C-C5: Create sandbox directory (real execution, but only writes to sandbox)
+    if (!CONTROL_CONFIG.actionsEnabled) {
+      forbidden(res, "Actions are disabled via CQA_CONTROL_ENABLE_ACTIONS");
+      return;
+    }
+    if (isRateLimited("execute_low_risk_per_minute")) {
+      tooManyRequests(res, "Rate limit exceeded for sandbox creation.");
+      return;
+    }
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_sandbox_create",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "CREATE DAILY SANDBOX";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_sandbox_create",
+            confirmation_status: "mismatch",
+            real_execution: false,
+            message: `Sandbox creation blocked: confirmation phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_sandbox_create",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const { createSandboxRun } = require("./daily-digest-sandbox-manager");
+        const result = createSandboxRun();
+
+        if (result.success) {
+          jsonResponse(res, {
+            action_id: "daily_digest_sandbox_create",
+            confirmation_status: "matched",
+            real_execution: true,
+            production_write_allowed: false,
+            result: "success",
+            run_id: result.run_id,
+            sandbox_path: result.sandbox_path,
+            created_dirs: result.created_dirs,
+            manifest_written: result.manifest_written,
+            latest_json_updated: result.latest_json_updated,
+            message: `Sandbox directory created: ${result.run_id}`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_sandbox_create",
+            risk_level: "low",
+            confirm_ok: true,
+            real_execution: true,
+            result: "success",
+            reason: "sandbox_created",
+            run_id: result.run_id,
+          });
+        } else {
+          jsonResponse(res, {
+            action_id: "daily_digest_sandbox_create",
+            confirmation_status: "matched",
+            real_execution: true,
+            result: "failed",
+            error: result.error,
+            message: `Sandbox creation failed: ${result.error}`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_sandbox_create",
+            risk_level: "low",
+            confirm_ok: true,
+            real_execution: true,
+            result: "failed",
+            reason: result.error,
+          });
+        }
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_sandbox_create",
+          confirmation_status: "matched",
+          real_execution: true,
+          result: "failed",
+          error: err.message || "unknown",
+          message: "Sandbox creation failed with an unexpected error.",
+        });
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_sandbox_create",
+          risk_level: "low",
+          confirm_ok: true,
+          real_execution: true,
+          result: "failed",
+          reason: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // Block anything that's not GET (for all other routes)
   if (req.method !== "GET") {
     methodNotAllowed(res);
@@ -1333,6 +1483,18 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/sandbox-status": {
+      // Phase 5C-2C-C5: Read sandbox status (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { readSandboxStatus } = require("./daily-digest-sandbox-manager");
+      const status = readSandboxStatus();
+      jsonResponse(res, status);
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;
@@ -1353,10 +1515,12 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-status, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);
+  console.log(`[control-server] POST /api/daily-digest/execute-validation-stage (confirmed low-risk stage execution, rate limited, execution locked)`);
+  console.log(`[control-server] POST /api/daily-digest/sandbox/create (confirmed sandbox directory creation, rate limited, execution locked)`);
   console.log(`[control-server] Actions enabled: ${CONTROL_CONFIG.actionsEnabled}, Token configured: ${!!CONTROL_CONFIG.token}`);
 });
 
