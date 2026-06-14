@@ -39,6 +39,7 @@
 | 0.24.1 | 2026-06-14 | Phase 5C-2C-C0 | ✅ COMPLETE — End-to-end Workflow Dry-run Orchestrator (3 workflows, dry-run planner, no real collect/send/generate/timer/git execution) |
 | 0.24.2 | 2026-06-14 | Phase 5C-2C-C1 | ✅ COMPLETE — Validation Workflow Execution (2 workflows: asset_validation_sweep + control_health_sweep, real execution with confirm phrase, daily_digest blocked) |
 | 0.24.3 | 2026-06-14 | Phase 5C-2C-C2 | ✅ COMPLETE — Daily Digest Staged Plan (5 stages: collect blocked, build candidate, validate executable, send blocked, timer blocked) |
+| 0.24.4 | 2026-06-14 | Phase 5C-2C-C3 | ✅ COMPLETE — Daily Digest Validate Stage Execution (stage_3_validate_outputs real execution, 3 scripts, confirmation phrase, other stages blocked) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |

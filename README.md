@@ -62,6 +62,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-2C-C0** | **✅ Complete** | **End-to-end Workflow Dry-run Orchestrator (3 workflows, dry-run planner, no real collect/send/generate/timer/git execution)** |
 | **Phase 5C-2C-C1** | **✅ Complete** | **Validation Workflow Execution (2 workflows: asset_validation_sweep + control_health_sweep, real execution with confirm phrase, daily_digest blocked)** |
 | **Phase 5C-2C-C2** | **✅ Complete** | **Daily Digest Staged Plan (5 stages: collect blocked, build candidate, validate executable, send blocked, timer blocked)** |
+| **Phase 5C-2C-C3** | **✅ Complete** | **Daily Digest Validate Stage Execution (stage_3_validate_outputs real execution, 3 scripts, confirmation phrase, other stages blocked)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

@@ -864,4 +864,104 @@ Expected: All PASS (398/398 checks).
 
 ---
 
-*Runbook v5.5 — Phase 5C-2C-C2*
+## Phase 5C-2C-C3: Daily Digest Validate Stage Execution
+
+### What's New
+
+- **Real Execution for Validation Stage**: `stage_3_validate_outputs` from the daily digest staged plan can now be executed for real through the control server.
+- **Stage Executor**: `scripts/daily-digest-stage-executor.ts` — executes the 3 validation scripts via `control-action-runner.ts`.
+- **Stage Allowlist**: Only `stage_3_validate_outputs` is allowed; all other stages (collect, build, send, timer) are blocked (403).
+- **Confirmation Phrase**: `EXECUTE DAILY VALIDATION` required for stage execution.
+- **Stop on Failure**: `stop_on_failure=true` — any step failure stops the stage execution.
+- **Stage Execution Validator**: `npm run validate:daily-digest-stage-execution` — 30 checks, all PASS.
+
+### Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `POST /api/daily-digest/execute-validation-stage` | POST | Execute the daily digest validation stage (only stage_3_validate_outputs) |
+
+### Stage Status
+
+| Stage | Mode | Real Execution | Allowed |
+|-------|------|--------------|---------|
+| `stage_1_collect_fast` | `blocked_real_execution` | ❌ | ❌ |
+| `stage_2_build_digest` | `dry_run_only_or_candidate` | ❌ | ❌ |
+| `stage_3_validate_outputs` | `confirmed_low_risk_stage` | ✅ | ✅ |
+| `stage_4_send_telegram` | `blocked_real_execution` | ❌ | ❌ |
+| `stage_5_timer_integration` | `blocked_real_execution` | ❌ | ❌ |
+
+### How to Execute the Validation Stage
+
+```bash
+# Start server
+cd ~/.openclaw/workspace/projects/creative-quota-harvester
+npm run control:server
+
+# Execute validation stage
+curl -s -X POST http://127.0.0.1:8788/api/daily-digest/execute-validation-stage \
+  -H "Content-Type: application/json" \
+  -d '{"stage_id":"stage_3_validate_outputs","confirm_phrase":"EXECUTE DAILY VALIDATION","token":"***"}'
+```
+
+Expected response (success):
+```json
+{
+  "stage_id": "stage_3_validate_outputs",
+  "real_execution": true,
+  "steps_total": 3,
+  "steps_completed": 3,
+  "steps_failed": 0,
+  "results": [
+    {
+      "step_id": "stage_3_validate_outputs:validate:daily-archive",
+      "script_name": "validate:daily-archive",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 374,
+      "stdout_tail": "...",
+      "stderr_tail": ""
+    }
+  ],
+  "message": "Stage stage_3_validate_outputs executed successfully. 3/3 scripts completed."
+}
+```
+
+### Safety Invariants
+
+- Only 1 stage in explicit allowlist (`stage_3_validate_outputs`)
+- Other stages blocked at server level with `stage_not_allowed`
+- All stage scripts validated against allowlist before execution
+- `stop_on_failure=true` — any step failure stops the stage
+- Audit log records stage execution with no token
+- No shell execution, no exec/spawnSync/execFile
+
+### Validation
+
+```bash
+npm run validate:daily-digest-stage-execution
+npm run validate:daily-digest-staged-plan
+npm run validate:control-workflow-execution
+npm run validate:control-workflows
+npm run validate:control-hardening
+npm run validate:control-low-risk-execution
+npm run dashboard:policy:validate
+npm run validate:telegram-sanitizer
+npm run validate:sanitizer-false-positives
+npm run validate:sanitizer-secret-completeness
+npm run validate:project-report-send
+```
+
+Expected: All PASS (428/428 checks).
+
+### Files
+
+- `dashboard/daily-digest-staged-plan.json` — stage modes updated
+- `scripts/daily-digest-stage-executor.ts` — stage executor (NEW)
+- `scripts/control-server.ts` — execute-validation-stage endpoint (updated)
+- `dashboard/control.html` — stage execution UI (updated)
+- `scripts/validate-daily-digest-stage-execution.ts` — stage execution validator (NEW)
+
+---
+
+*Runbook v5.6 — Phase 5C-2C-C3*

@@ -778,6 +778,251 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C3: Daily digest validation stage execution handler ---
+  if (pathname === "/api/daily-digest/execute-validation-stage" && req.method === "POST") {
+    // Phase 5C-5A: Rate limit (uses execute-low-risk category)
+    if (isRateLimited("execute_low_risk_per_minute")) {
+      rateLimitResponse(res, "execute_low_risk_per_minute", RATE_LIMITS.execute_low_risk_per_minute);
+      return;
+    }
+    // Phase 5C-5A: Execution lock (shared with execute-low-risk)
+    if (!acquireExecutionLock()) {
+      res.writeHead(409, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({
+        error: "Execution lock busy",
+        message: "Another execute-low-risk or workflow is already in progress. Try again later.",
+        max_concurrent: 1,
+      }) + "\n");
+      return;
+    }
+
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", async () => {
+      let stage_id = "";
+      let confirm_phrase = "";
+      let token = "";
+      try {
+        let payload: any = {};
+        try {
+          payload = JSON.parse(body);
+        } catch {
+          badRequest(res, "Invalid JSON body");
+          return;
+        }
+
+        stage_id = String(payload.stage_id || "").trim();
+        confirm_phrase = String(payload.confirm_phrase || "").trim();
+        token = String(payload.token || "").trim();
+
+        if (!stage_id) {
+          badRequest(res, "Missing 'stage_id' field");
+          return;
+        }
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLog({
+            action_id: "daily_digest_execute_validation_stage",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+            stage_id,
+          });
+          return;
+        }
+
+        // Load staged plan definition
+        const stagedPlan = safeReadJson(path.join(HARVESTER_DIR, "dashboard", "daily-digest-staged-plan.json"), null) as any;
+        if (!stagedPlan || !stagedPlan.workflows) {
+          notFound(res, "Staged plan definitions not found");
+          writeAuditLog({
+            action_id: "daily_digest_execute_validation_stage",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "staged_plan_not_found",
+            stage_id,
+          });
+          return;
+        }
+
+        const workflow = stagedPlan.workflows[0];
+        const stage = workflow.stages.find((s: any) => s.stage_id === stage_id);
+        if (!stage) {
+          notFound(res, `Stage "${stage_id}" not found in staged plan`);
+          writeAuditLog({
+            action_id: "daily_digest_execute_validation_stage",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "stage_not_found",
+            stage_id,
+          });
+          return;
+        }
+
+        // Only stage_3_validate_outputs is allowed
+        if (stage_id !== "stage_3_validate_outputs") {
+          forbidden(res, `Stage "${stage_id}" is not allowed for execution. Only "stage_3_validate_outputs" can be executed.`);
+          writeAuditLog({
+            action_id: "daily_digest_execute_validation_stage",
+            risk_level: stage.risk_level || "unknown",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "stage_not_allowed",
+            stage_id,
+          });
+          return;
+        }
+
+        // Must be confirmed_low_risk_stage mode
+        if (stage.mode !== "confirmed_low_risk_stage") {
+          forbidden(res, `Stage "${stage_id}" is not confirmed_low_risk_stage. Mode: ${stage.mode}`);
+          writeAuditLog({
+            action_id: "daily_digest_execute_validation_stage",
+            risk_level: stage.risk_level,
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "not_confirmed_low_risk_stage",
+            stage_id,
+          });
+          return;
+        }
+
+        // Must have real_execution_supported=true
+        if (!stage.real_execution_supported) {
+          forbidden(res, `Stage "${stage_id}" does not support real execution.`);
+          writeAuditLog({
+            action_id: "daily_digest_execute_validation_stage",
+            risk_level: stage.risk_level,
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "real_execution_not_supported",
+            stage_id,
+          });
+          return;
+        }
+
+        // Must be allowed for execution
+        if (stage.allowed_for_execution === false) {
+          forbidden(res, `Stage "${stage_id}" is not allowed for execution: ${stage.blocked_reason || "blocked"}`);
+          writeAuditLog({
+            action_id: "daily_digest_execute_validation_stage",
+            risk_level: stage.risk_level,
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "stage_not_allowed_for_execution",
+            stage_id,
+          });
+          return;
+        }
+
+        // Check confirmation phrase
+        const expectedPhrase = stage.confirmation_phrase || "EXECUTE DAILY VALIDATION";
+        if (confirm_phrase !== expectedPhrase) {
+          jsonResponse(res, {
+            stage_id,
+            confirmation_phrase_expected: expectedPhrase,
+            confirmation_status: "mismatch",
+            real_execution: false,
+            message: `Execution blocked: confirmation phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLog({
+            action_id: "daily_digest_execute_validation_stage",
+            risk_level: stage.risk_level,
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+            stage_id,
+          });
+          return;
+        }
+
+        // Execute stage via executor
+        const { executeStage } = require("./daily-digest-stage-executor");
+        const result = await executeStage(stage_id, confirm_phrase);
+
+        if (result.error) {
+          jsonResponse(res, {
+            stage_id: result.stage_id,
+            real_execution: result.real_execution,
+            steps_total: result.steps_total,
+            steps_completed: result.steps_completed,
+            steps_failed: result.steps_failed,
+            results: result.results,
+            error: result.error,
+            message: result.message,
+          });
+          writeAuditLog({
+            action_id: "daily_digest_execute_validation_stage",
+            risk_level: stage.risk_level,
+            confirm_ok: true,
+            real_execution: result.real_execution,
+            result: result.steps_failed === 0 ? "success" : "failed",
+            reason: result.error || "stage_executed",
+            stage_id,
+            steps_total: result.steps_total,
+            steps_completed: result.steps_completed,
+            steps_failed: result.steps_failed,
+          });
+          return;
+        }
+
+        jsonResponse(res, {
+          stage_id: result.stage_id,
+          real_execution: result.real_execution,
+          steps_total: result.steps_total,
+          steps_completed: result.steps_completed,
+          steps_failed: result.steps_failed,
+          results: result.results,
+          message: result.message,
+        });
+
+        writeAuditLog({
+          action_id: "daily_digest_execute_validation_stage",
+          risk_level: stage.risk_level,
+          confirm_ok: true,
+          real_execution: result.real_execution,
+          result: result.steps_failed === 0 ? "success" : "failed",
+          reason: "stage_executed",
+          stage_id,
+          steps_total: result.steps_total,
+          steps_completed: result.steps_completed,
+          steps_failed: result.steps_failed,
+        });
+      } catch (err: any) {
+        jsonResponse(res, {
+          stage_id,
+          real_execution: true,
+          error: err.message || "unknown",
+          message: "Stage execution failed with an unexpected error.",
+        });
+        writeAuditLog({
+          action_id: "daily_digest_execute_validation_stage",
+          risk_level: "safe",
+          confirm_ok: true,
+          real_execution: true,
+          result: "failed",
+          reason: err.message || "unknown",
+          stage_id,
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // Block anything that's not GET (for all other routes)
   if (req.method !== "GET") {
     methodNotAllowed(res);
