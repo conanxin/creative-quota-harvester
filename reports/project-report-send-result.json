@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T04:49:54.288Z",
+  "generated_at": "2026-06-14T05:07:43.659Z",
   "phase": "4C-3A",
   "mode": "real-send",
   "file": "reports/telegram-phase-5c2c-c5-daily-digest-sandbox-directory.txt",
@@ -11,7 +11,7 @@
   "send_attempted": true,
   "send_result": {
     "ok": true,
-    "message_id": 50449
+    "message_id": 50452
   },
   "reason": "sent successfully"
 }
