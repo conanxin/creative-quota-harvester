@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-06-14T03:05:22.715Z",
+  "generated_at": "2026-06-14T03:31:50.173Z",
   "phase": "4C-3A",
   "mode": "real-send",
-  "file": "reports/telegram-phase-5c2c-c3-daily-digest-validate-stage.txt",
-  "label": "Phase 5C-2C-C3",
-  "char_count": 280,
+  "file": "reports/telegram-phase-5c2c-c4-daily-digest-build-sandbox-plan.txt",
+  "label": "Phase 5C-2C-C4",
+  "char_count": 482,
   "max_allowed": 3500,
   "sanitizer_pass": true,
   "forbidden_hits": [],
   "send_attempted": true,
   "send_result": {
     "ok": true,
-    "message_id": 50427
+    "message_id": 50434
   },
   "reason": "sent successfully"
 }
