@@ -1894,3 +1894,66 @@ Phase 5C-2C-C5K establishes the **promote execution design review** that evaluat
 
 ---
 *Runbook v5.17 — Phase 5C-2C-C5K*
+
+## Phase 5C-2C-C5L — Promote Execution Disabled Scaffold
+
+Phase 5C-2C-C5L implements the **disabled promote execution scaffold**. It provides the entry point, parameters, audit, gate checks, and error returns for future promote, but always returns disabled_design_only. No files are copied to production.
+
+### What Changed
+
+- New `dashboard/daily-digest-promote-execution-disabled.json` — disabled scaffold configuration
+- New `scripts/daily-digest-promote-executor-disabled.ts` — disabled executor scaffold
+- New `scripts/validate-daily-digest-promote-executor-disabled.ts` — disabled executor validator (39 checks)
+- New `GET /api/daily-digest/promote-execution-disabled` endpoint — read-only disabled status
+- New `POST /api/daily-digest/promote/execute` endpoint — always returns 403 disabled_design_only
+- Updated `dashboard/control.html` — promote execution disabled panel
+- Updated `package.json` — added validate + check scripts
+
+### Required Gates (5 keys)
+
+| Gate | Source |
+|------|--------|
+| promote_gate_pass | `dashboard/daily-digest-promote-gate.json` |
+| shadow_copy_pass | `promote-shadow/` |
+| rollback_manifest_exists | `promote-shadow/rollback-manifest.json` |
+| protected_paths_snapshot_exists | `promote-shadow/production-backup-preview/` |
+| human_approval_required | policy |
+
+### Safety Invariants
+
+- real_promote_allowed=false (always in C5L)
+- production_write_allowed=false (always in C5L)
+- telegram_send_allowed=false (always in C5L)
+- POST /api/daily-digest/promote/execute returns 403 disabled_design_only
+- No files are copied to production
+
+### How to Validate
+
+```bash
+npm run check:daily-digest-promote-executor-disabled
+npm run validate:daily-digest-promote-executor-disabled
+npm run validate:daily-digest-promote-execution-review
+npm run validate:daily-digest-promote-gate
+npm run validate:daily-digest-promote-shadow-copy
+npm run validate:daily-digest-promote-dry-run
+npm run validate:daily-digest-promote-readiness
+npm run validate:daily-digest-sandbox-output-tools
+npm run validate:daily-digest-sandbox-build-pilot
+npm run validate:daily-digest-sandbox-manager
+npm run validate:sanitizer-secret-completeness
+npm run validate:sanitizer-false-positives
+npm run validate:telegram-sanitizer
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+### Files
+
+- `dashboard/daily-digest-promote-execution-disabled.json` — disabled scaffold config
+- `scripts/daily-digest-promote-executor-disabled.ts` — disabled executor scaffold
+- `scripts/validate-daily-digest-promote-executor-disabled.ts` — disabled executor validator (39 checks)
+- `dashboard/daily-digest-promote-execution-disabled.json` — generated disabled output
+
+---
+*Runbook v5.18 — Phase 5C-2C-C5L*

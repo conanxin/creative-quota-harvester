@@ -1189,6 +1189,18 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5L: Promote Execution Disabled Panel -->
+<div id="promote-execution-disabled-panel" class="promote-execution-disabled-panel" style="display:none;">
+  <div class="section" style="background:#fef2f2;border:2px solid #dc2626;">
+    <h2>🚫 Promote Execution Disabled / 推送执行未启用</h2>
+    <div id="promote-execution-disabled-status" style="margin-bottom:12px;"></div>
+    <div id="promote-execution-disabled-details" style="margin-top:10px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#dc2626;color:#fff;padding:12px 16px;border-radius:8px;font-size:0.9rem;font-weight:600;">
+      ⚠️ 本阶段即使命令和确认短语正确，也不会覆盖 production。
+    </div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5G: Load promote readiness
     function loadPromoteReadiness() {
@@ -1470,6 +1482,42 @@
         });
     }
 
+    // Phase 5C-2C-C5L: Load promote execution disabled
+    function loadPromoteExecutionDisabled() {
+      var base = location.protocol + '//' + location.host;
+      fetch(base + '/api/daily-digest/promote-execution-disabled')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var panel = document.getElementById('promote-execution-disabled-panel');
+          if (panel) panel.style.display = 'block';
+          var statusDiv = document.getElementById('promote-execution-disabled-status');
+          if (statusDiv) {
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:10px;">';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.3rem;font-weight:700;color:#dc2626;">DISABLED</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Execution</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.latest_run_id || 'N/A') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Latest Run</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:' + (data.all_gates_met ? '#22c55e' : '#f59e0b') + ';">' + (data.all_gates_met ? 'ALL MET' : 'PENDING') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Gate Checks</div></div>';
+            html += '</div>';
+            statusDiv.innerHTML = html;
+          }
+          var detailsDiv = document.getElementById('promote-execution-disabled-details');
+          if (detailsDiv && data.gate_checks) {
+            var evHtml = '<div style="margin-top:10px;"><strong>Gate Checks:</strong></div>';
+            evHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:8px;">';
+            for (var key in data.gate_checks) {
+              var p = data.gate_checks[key];
+              evHtml += '<div style="background:#fff;border-radius:6px;padding:8px;border:1px solid ' + (p.met ? '#22c55e' : '#ef4444') + ';"><div style="font-size:0.75rem;color:#7f8c8d;">' + key + '</div><div style="font-size:0.75rem;color:' + (p.met ? '#22c55e' : '#ef4444') + ';">' + (p.met ? '✅' : '❌') + ' ' + p.message + '</div></div>';
+            }
+            evHtml += '</div>';
+            evHtml += '<div style="margin-top:10px;font-size:0.8rem;color:#dc2626;"><strong>Blocked reason:</strong> ' + (data.blocked_reason || '') + '</div>';
+            evHtml += '<div style="margin-top:10px;font-size:0.8rem;color:#555;"><strong>Next step:</strong> ' + (data.safe_next_step || '') + '</div>';
+            detailsDiv.innerHTML = evHtml;
+          }
+        })
+        .catch(function(e) {
+          console.log('Promote execution disabled load failed:', e);
+        });
+    }
+
     // Load on page init
     loadSandboxStatus();
     loadLatestBuildStatus();
@@ -1478,6 +1526,7 @@
     loadPromoteShadow();
     loadPromoteGate();
     loadPromoteExecutionReview();
+    loadPromoteExecutionDisabled();
   </script>
 
   <script>

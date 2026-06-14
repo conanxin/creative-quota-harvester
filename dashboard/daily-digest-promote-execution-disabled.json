@@ -1,0 +1,63 @@
+{
+  "phase": "5C-2C-C5L",
+  "mode": "execution_scaffold_disabled",
+  "version": "0.1.0",
+  "updated_at": "2026-06-14T14:00:00Z",
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "required_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "disabled_reason": "Design-only scaffold. Production promote is not enabled in this phase.",
+  "required_gates": {
+    "promote_gate_pass": {
+      "description": "Promote gate must show pass status",
+      "required": true,
+      "source": "dashboard/daily-digest-promote-gate.json"
+    },
+    "shadow_copy_pass": {
+      "description": "Shadow copy must be created successfully",
+      "required": true,
+      "source": "promote-shadow/"
+    },
+    "rollback_manifest_exists": {
+      "description": "Rollback manifest must exist",
+      "required": true,
+      "source": "promote-shadow/rollback-manifest.json"
+    },
+    "protected_paths_snapshot_exists": {
+      "description": "Protected paths snapshot must exist",
+      "required": true,
+      "source": "promote-shadow/production-backup-preview/"
+    },
+    "human_approval_required": {
+      "description": "Human approval required before any promote",
+      "required": true,
+      "source": "policy"
+    }
+  },
+  "future_execution_steps": [
+    "acquire promote lock",
+    "recheck gate",
+    "backup production",
+    "copy sandbox outputs",
+    "verify hashes",
+    "run validations",
+    "write audit",
+    "release lock"
+  ],
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "collect",
+    "timer",
+    "git",
+    "promote"
+  ],
+  "safety_invariants": [
+    "real_promote_allowed=false (always in C5L)",
+    "production_write_allowed=false (always in C5L)",
+    "telegram_send_allowed=false (always in C5L)",
+    "POST /api/daily-digest/promote/execute returns 403 disabled_design_only",
+    "No files are copied to production"
+  ]
+}

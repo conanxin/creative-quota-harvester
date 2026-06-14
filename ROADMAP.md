@@ -52,6 +52,7 @@
 | 0.25.6 | 2026-06-14 | Phase 5C-2C-C5I | ✅ COMPLETE — Promote Shadow Copy / Backup Plan (shadow copy, candidate preview, rollback manifest, promote checklist) |
 | 0.25.7 | 2026-06-14 | Phase 5C-2C-C5J | ✅ COMPLETE — Promote Commit Gate (13/13 evidence met, gate_status=pass) |
 | 0.25.8 | 2026-06-14 | Phase 5C-2C-C5K | ✅ COMPLETE — Promote Execution Design Review (6/6 evidence met, recommendation=allow_next_phase_design_only) |
+| 0.25.9 | 2026-06-14 | Phase 5C-2C-C5L | ✅ COMPLETE — Promote Execution Disabled Scaffold (5/5 gate checks, always 403 disabled) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |

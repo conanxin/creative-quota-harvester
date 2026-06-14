@@ -1303,6 +1303,92 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5L: Promote execute endpoint (always returns 403 disabled) ---
+  if (pathname === "/api/daily-digest/promote/execute" && req.method === "POST") {
+    if (!CONTROL_CONFIG.actionsEnabled) {
+      forbidden(res, "Actions are disabled via CQA_CONTROL_ENABLE_ACTIONS");
+      return;
+    }
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_promote_execute_blocked",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "PROMOTE DAILY DIGEST FROM SANDBOX";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_promote_execute_blocked",
+            confirmation_status: "mismatch",
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+            message: `Promote execute blocked: confirmation phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_promote_execute_blocked",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        // Even with correct token and phrase, always return 403 disabled_design_only
+        jsonResponse(res, {
+          action_id: "daily_digest_promote_execute_blocked",
+          confirmation_status: "matched",
+          real_execution: false,
+          production_write_allowed: false,
+          result: "blocked",
+          blocked_reason: "disabled_design_only",
+          message: "Promote execution is disabled in Phase 5C-2C-C5L (design-only scaffold). Production is NOT modified.",
+        });
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_promote_execute_blocked",
+          risk_level: "low",
+          confirm_ok: true,
+          real_execution: false,
+          result: "blocked",
+          reason: "disabled_design_only",
+        });
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_promote_execute_blocked",
+          result: "blocked",
+          blocked_reason: "invalid_request",
+          error: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // Block anything that's not GET (for all other routes)
   if (req.method !== "GET") {
     methodNotAllowed(res);
@@ -1808,6 +1894,18 @@ const server = http.createServer((req, res) => {
       const { reviewPromoteExecution } = require("./daily-digest-promote-execution-review");
       const review = reviewPromoteExecution();
       jsonResponse(res, review);
+      return;
+    }
+
+    case "/api/daily-digest/promote-execution-disabled": {
+      // Phase 5C-2C-C5L: Read promote execution disabled status (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { runDisabledExecutor } = require("./daily-digest-promote-executor-disabled");
+      const result = runDisabledExecutor();
+      jsonResponse(res, result);
       return;
     }
 
