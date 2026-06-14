@@ -236,6 +236,7 @@ if (!existsSync(HTML_PATH)) {
   const cssAndWarning = htmlNoWarning.replace(/<script>[\s\S]*?<\/script>/i, '');
 
   const FORBIDDEN_CODE = [
+    // No <button ... onclick|data-action|data-execute> anywhere (DOM + JS string sources)
     /<button[^>]*\s(onclick|data-action|data-execute)/i,
     /fetch\s*\(\s*['"`][^'"`]*['"`]\s*,\s*\{\s*method\s*:\s*['"`]\s*POST/i,
     /new\s+WebSocket\s*\(/i,
@@ -259,6 +260,52 @@ if (!existsSync(HTML_PATH)) {
     fail(`control.html: contains <button> tag in DOM (spec forbids)`);
   } else {
     pass(`control.html: no <button> tags in DOM`);
+  }
+
+  // 6b. Interactive triggers on non-button elements must declare data-safety
+  // (Phase 5C-2C-C5M1A: explicit safety marker is the documented escape hatch
+  //  for safe localhost + confirm-phrase-gated actions. The allow-list is
+  //  intentionally small; production writes, collect, send, generate, timer,
+  //  git, build, deploy, model, media, telegram-send are all forbidden.)
+  const ALLOWED_SAFETY = new Set([
+    'safe-localhost',
+    'safe-localhost-confirm-phrase-gated',
+    'safe-localhost-dry-run',
+    'read-only',
+    'dry-run',
+    'simulation',
+  ]);
+  const FORBIDDEN_SAFETY_HINTS = [
+    'production-write', 'production-promote', 'high-risk', 'telegram-send',
+    'collect', 'generate', 'timer', 'git', 'build', 'deploy', 'model',
+    'media', 'unrestricted', 'remote', 'arbitrary',
+  ];
+  const elementOpenRe = /<(a|span|div|li|p)\b[^>]*>/gi;
+  const triggerAttrRe = /\s(onclick|data-action|data-execute)\s*=\s*['"][^'"]*['"]/i;
+  const safetyAttrRe = /\sdata-safety\s*=\s*["']([^"']+)["']/i;
+  let m: RegExpExecArray | null;
+  const safetyIssues: string[] = [];
+  while ((m = elementOpenRe.exec(cssAndWarning)) !== null) {
+    const element = m[0];
+    if (!triggerAttrRe.test(element)) continue;
+    const safetyMatch = element.match(safetyAttrRe);
+    if (!safetyMatch) {
+      safetyIssues.push(`<${m[1]}> has trigger attribute (onclick/data-action/data-execute) but no data-safety declaration`);
+      continue;
+    }
+    const value = safetyMatch[1].toLowerCase();
+    if (FORBIDDEN_SAFETY_HINTS.some(h => value.includes(h))) {
+      safetyIssues.push(`<${m[1]}> declares forbidden data-safety="${safetyMatch[1]}" (matches: ${FORBIDDEN_SAFETY_HINTS.filter(h => value.includes(h)).join(',')})`);
+      continue;
+    }
+    if (!ALLOWED_SAFETY.has(value)) {
+      safetyIssues.push(`<${m[1]}> declares unknown data-safety="${safetyMatch[1]}" (allowed: ${[...ALLOWED_SAFETY].join(', ')})`);
+    }
+  }
+  if (safetyIssues.length === 0) {
+    pass(`control.html: all interactive triggers declare safe data-safety (allow-list: ${[...ALLOWED_SAFETY].join(', ')})`);
+  } else {
+    for (const issue of safetyIssues) fail(`control.html: ${issue}`);
   }
 
   // 7. No secrets / tokens in HTML

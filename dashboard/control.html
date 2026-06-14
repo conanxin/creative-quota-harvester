@@ -860,9 +860,9 @@
               }
               html += '<div style="margin-top:10px;">';
               if (isExecutable) {
-                html += '<button class="button" style="background:' + buttonColor + ';color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.85rem;" onclick="executeWorkflow(\'' + w.workflow_id + '\')">' + buttonText + '</button>';
+                html += '<a class="cqa-action-btn" data-safety="safe-localhost-confirm-phrase-gated" style="display:inline-block;background:' + buttonColor + ';color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.85rem;text-decoration:none;" onclick="executeWorkflow(\'' + w.workflow_id + '\')">' + buttonText + '</a>';
               } else {
-                html += '<button class="button" style="background:' + buttonColor + ';color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.85rem;" onclick="simulateWorkflow(\'' + w.workflow_id + '\')">' + buttonText + '</button>';
+                html += '<a class="cqa-action-btn" data-safety="safe-localhost-confirm-phrase-gated" style="display:inline-block;background:' + buttonColor + ';color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.85rem;text-decoration:none;" onclick="simulateWorkflow(\'' + w.workflow_id + '\')">' + buttonText + '</a>';
               }
               html += '</div>';
               html += '</div>';
@@ -974,7 +974,7 @@
         ⚠️ 本阶段只展示 staged plan，不执行 collect/send/timer。validation 阶段可执行低风险验证脚本。
       </div>
       <div style="margin-top:12px;text-align:center;">
-        <button id="exec-validation-stage-btn" style="background:#22c55e;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;" onclick="executeValidationStage()">▶️ 执行日报验证阶段</button>
+        <a id="exec-validation-stage-btn" class="cqa-action-btn" data-safety="safe-localhost-confirm-phrase-gated" style="display:inline-block;background:#22c55e;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:0.95rem;font-weight:600;text-decoration:none;" onclick="executeValidationStage()">▶️ 执行日报验证阶段</a>
       </div>
       <div id="staged-plan-list" style="margin-top:16px;"></div>
     </div>
@@ -1105,7 +1105,7 @@
       <h2>📁 Daily Digest Sandbox / 日报沙盒目录</h2>
       <div id="sandbox-status-display" style="margin-bottom:12px;"></div>
       <div style="margin-top:10px;">
-        <button id="btn-create-sandbox" style="background:#22c55e;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;" onclick="createSandbox()">创建沙盒目录</button>
+        <a id="btn-create-sandbox" class="cqa-action-btn" data-safety="safe-localhost-confirm-phrase-gated" style="display:inline-block;background:#22c55e;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;text-decoration:none;" onclick="createSandbox()">创建沙盒目录</a>
       </div>
       <div id="sandbox-create-result" style="margin-top:12px;font-size:0.85rem;"></div>
       <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
@@ -1120,7 +1120,7 @@
     <h2>🚀 Pilot Sandbox Build / 沙盒日报构建</h2>
     <div id="sandbox-build-pilot-status" style="margin-bottom:12px;"></div>
     <div style="margin-top:10px;">
-      <button id="btn-build-pilot" style="background:#3b82f6;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;" onclick="buildPilotSandbox()">执行 Pilot 构建</button>
+      <a id="btn-build-pilot" class="cqa-action-btn" data-safety="safe-localhost-confirm-phrase-gated" style="display:inline-block;background:#3b82f6;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;text-decoration:none;" onclick="buildPilotSandbox()">执行 Pilot 构建</a>
     </div>
     <div id="sandbox-build-pilot-result" style="margin-top:12px;font-size:0.85rem;"></div>
     <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
