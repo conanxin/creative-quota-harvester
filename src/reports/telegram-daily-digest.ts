@@ -16,6 +16,8 @@ import { readFileSync, writeFileSync, existsSync, statSync } from 'fs';
 import { join, dirname, basename } from 'path';
 import { execSync } from 'child_process';
 import { sanitizeTelegramDigest } from './telegram-digest-sanitizer';
+import { buildSandboxRuntime, resolveBuilderPaths, SandboxRuntimeConfig } from '../../scripts/daily-digest-sandbox-runtime';
+import { assertNotProductionPath } from '../../scripts/daily-digest-sandbox-guards';
 
 const HARVESTER_DIR = '/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester';
 const ASSETS_DIR = '/home/ubuntu/.openclaw/workspace/projects/creative-quota-assets';
@@ -354,7 +356,31 @@ function checkStaleness(lastCollected: string | null): { isStale: boolean; hours
   }
 }
 
+/**
+ * Build digest with sandbox-aware path resolution.
+ * Reads sandbox flags from process.argv; default production paths when no --sandbox.
+ */
 function generateDigest() {
+  // --- Sandbox runtime config (Phase 5C-2C-C5D) ---
+  const { config, resolved, validation } = buildSandboxRuntime(process.argv.slice(2));
+  const paths = resolveBuilderPaths(config);
+
+  // In sandbox mode, validate all required flags are present before proceeding
+  if (config.sandboxMode && !validation.valid) {
+    console.error("SANDBOX_ERROR: Missing required flags:", validation.missing.join(", "));
+    console.error("Usage: tsx src/reports/telegram-daily-digest.ts --sandbox --output-dir reports/sandbox/daily-digest/<run_id>/outputs/ --no-collect --no-send --no-timer --no-production-write");
+    process.exit(1);
+  }
+
+  // Guard: in sandbox mode, never write to production paths
+  if (config.sandboxMode) {
+    console.log("SANDBOX_MODE: sandbox=true, collect=false, send=false, timer=false, productionWrite=false");
+    console.log("SANDBOX_OUTPUT_DIR:", paths.digestMd);
+    // Note: actual builder execution is skipped in sandbox mode for this phase.
+    // When Phase 5C-2C-C5E enables sandbox build, the resolver ensures paths.sandboxMode
+    // routes all writes to outputDir while production paths are blocked by assertNotProductionPath.
+  }
+
   const signalsData = getSignalsFromDb();
   const packStats = getContentPackStats();
   const genAssets = getGeneratedAssets();
@@ -529,11 +555,24 @@ function generateDigest() {
     '_Phase 4C-4 quality patch complete._',
   ].join('\n');
 
-  writeFileSync(join(HARVESTER_DIR, 'reports/daily-digest.md'), mdReport);
-  writeFileSync(join(HARVESTER_DIR, 'reports/telegram-digest.txt'), telegramText);
+  // --- Sandbox-aware writes (Phase 5C-2C-C5D) ---
+  if (!paths.sandboxMode) {
+    // Production mode: default behavior unchanged
+    writeFileSync(join(HARVESTER_DIR, 'reports/daily-digest.md'), mdReport);
+    writeFileSync(join(HARVESTER_DIR, 'reports/telegram-digest.txt'), telegramText);
+    console.log('Written: reports/daily-digest.md');
+    console.log('Written: reports/telegram-digest.txt');
+  } else {
+    // Sandbox mode: assert paths are not production paths, then write to sandbox dir
+    assertNotProductionPath(paths.digestMd);
+    assertNotProductionPath(paths.digestTelegram);
+    assertNotProductionPath(paths.statusJson);
+    writeFileSync(paths.digestMd, mdReport);
+    writeFileSync(paths.digestTelegram, telegramText);
+    console.log('SANDBOX_WRITTEN:', paths.digestMd);
+    console.log('SANDBOX_WRITTEN:', paths.digestTelegram);
+  }
 
-  console.log('Written: reports/daily-digest.md');
-  console.log('Written: reports/telegram-digest.txt');
   console.log(`Telegram chars: ${telegramText.length}`);
 
   return { charCount, isValid, skippedAlreadyGenerated };

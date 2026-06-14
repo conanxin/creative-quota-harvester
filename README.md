@@ -67,6 +67,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-2C-C5** | **✅ Complete** | **Daily Digest Sandbox Directory Creation (sandbox runs, manifest, protected paths)** |
 | **Phase 5C-2C-C5B** | **✅ Complete** | **Daily Digest Build Readiness Audit (118 files, 62 builders, partial readiness)** |
 | **Phase 5C-2C-C5C** | **✅ Complete** | **Digest Builder Sandbox Interface (guard functions + contract, no execution)** |
+| **Phase 5C-2C-C5D** | **✅ Complete** | **Digest Builder Sandbox Refactor (runtime config, pilot builder refactor, path resolver)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

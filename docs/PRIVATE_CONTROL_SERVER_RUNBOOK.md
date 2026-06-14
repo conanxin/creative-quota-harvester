@@ -1298,3 +1298,99 @@ Expected: All PASS (35 + 46 = 81 checks).
 
 ---
 *Runbook v5.9 — Phase 5C-2C-C5C*
+
+## Phase 5C-2C-C5D — Digest Builder Sandbox Refactor Implementation
+
+Phase 5C-2C-C5D implements the **sandbox runtime config scaffold** and **pilot builder refactor** that wires the guard functions into actual builder code. It does not execute builders or write production files.
+
+### What Changed
+
+- New `scripts/daily-digest-sandbox-runtime.ts` — sandbox runtime config resolver (parse flags, resolve paths, enforce production path rejection)
+- Refactored `src/reports/telegram-daily-digest.ts` — pilot builder now imports sandbox guards/runtime, uses `resolveBuilderPaths`, routes writes to sandbox dir when `--sandbox` is present
+- New `scripts/validate-daily-digest-builder-sandbox-refactor.ts` — refactor validator (50 checks)
+- Updated `package.json` — added `validate:daily-digest-builder-sandbox-refactor` script
+- Updated `dashboard/daily-digest-build-readiness.json` — added `sandbox_interface_contract=true`, `sandbox_runtime_config=true`, `pilot_builder_refactored=true`, `ready_for_sandbox_build` remains `partial`
+
+### Sandbox Runtime Config
+
+| Function | Purpose |
+|----------|---------|
+| `buildSandboxRuntime(argv)` | Parse argv → config + resolved paths + validation |
+| `resolveSandboxPaths(config)` | Resolve outputDir, digestMd, digestTelegram, statusJson, runId |
+| `getProductionPaths()` | Return standard production paths (fallback) |
+| `resolveBuilderPaths(config)` | Unified resolver: sandbox paths when sandboxMode=true, production paths otherwise |
+
+### How to Use in a Builder
+
+```typescript
+import { buildSandboxRuntime, resolveBuilderPaths } from "../../scripts/daily-digest-sandbox-runtime";
+import { assertNotProductionPath } from "../../scripts/daily-digest-sandbox-guards";
+
+const { config, validation } = buildSandboxRuntime(process.argv.slice(2));
+if (config.sandboxMode && !validation.valid) {
+  console.error("Missing required flags:", validation.missing);
+  process.exit(1);
+}
+const paths = resolveBuilderPaths(config);
+
+if (!paths.sandboxMode) {
+  // Production mode — unchanged behavior
+  writeFileSync(paths.digestMd, mdReport);
+} else {
+  // Sandbox mode — paths routed to outputDir, production paths blocked
+  assertNotProductionPath(paths.digestMd);
+  writeFileSync(paths.digestMd, mdReport);
+}
+```
+
+### Required Flags
+
+When `--sandbox` is used, all of the following must be present:
+
+```bash
+--sandbox
+--output-dir reports/sandbox/daily-digest/<run_id>/outputs/
+--no-collect
+--no-send
+--no-timer
+--no-production-write
+```
+
+### Protected Paths (Rejected in Sandbox Mode)
+
+- `reports/daily-digest.md`
+- `reports/telegram-digest.txt`
+- `dashboard/status.json`
+- `reports/daily/`
+
+### How to Validate
+
+```bash
+npm run validate:daily-digest-builder-sandbox-refactor
+npm run validate:daily-digest-sandbox-interface
+npm run validate:daily-digest-sandbox-guards
+npm run audit:daily-digest-build-readiness
+npm run validate:daily-digest-build-readiness
+npm run validate:daily-digest-sandbox-manager
+npm run validate:daily-digest-build-sandbox-plan
+npm run validate:daily-digest-staged-plan
+npm run validate:daily-digest-stage-execution
+npm run validate:digest-freshness
+npm run validate:dashboard:policy:validate
+npm run validate:sanitizer-secret-completeness
+npm run validate:sanitizer-false-positives
+npm run validate:telegram-sanitizer
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+### Files
+
+- `scripts/daily-digest-sandbox-runtime.ts` — sandbox runtime config resolver
+- `src/reports/telegram-daily-digest.ts` — pilot builder (refactored)
+- `scripts/validate-daily-digest-builder-sandbox-refactor.ts` — refactor validator (50 checks)
+- `dashboard/daily-digest-build-readiness.json` — updated readiness audit
+
+---
+*Runbook v5.10 — Phase 5C-2C-C5D*

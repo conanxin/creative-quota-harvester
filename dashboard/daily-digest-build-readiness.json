@@ -247,6 +247,36 @@
       ]
     },
     {
+      "file": "scripts/daily-digest-sandbox-guards.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": true,
+      "has_sandbox_mode": true,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json",
+        "reports/daily/"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "telegram-digest",
+        "dashboard/status.json",
+        "status.json",
+        "collect",
+        "timer",
+        "output-dir",
+        "outputDir",
+        "sandbox",
+        "SANDBOX"
+      ]
+    },
+    {
       "file": "scripts/daily-digest-sandbox-manager.ts",
       "type": "script",
       "writes_production_paths": false,
@@ -274,6 +304,34 @@
         "SANDBOX",
         "writeFile",
         "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/daily-digest-sandbox-runtime.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": true,
+      "has_sandbox_mode": true,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json",
+        "reports/daily/"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "telegram-digest",
+        "dashboard/status.json",
+        "status.json",
+        "collect",
+        "timer",
+        "outputDir",
+        "sandbox"
       ]
     },
     {
@@ -741,8 +799,8 @@
       "file": "src/reports/telegram-daily-digest.ts",
       "type": "script",
       "writes_production_paths": true,
-      "has_output_dir_param": false,
-      "has_sandbox_mode": false,
+      "has_output_dir_param": true,
+      "has_sandbox_mode": true,
       "collects_data": true,
       "sends_telegram": false,
       "calls_model": true,
@@ -759,6 +817,11 @@
         "timer",
         "systemd",
         "generate",
+        "output-dir",
+        "outputDir",
+        "OUTPUT_DIR",
+        "sandbox",
+        "SANDBOX",
         "writeFile"
       ]
     },
@@ -1150,6 +1213,50 @@
       ]
     },
     {
+      "file": "dashboard/daily-digest-build-readiness.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": true,
+      "has_sandbox_mode": true,
+      "collects_data": true,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json",
+        "reports/daily/"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "daily_digest",
+        "telegram-digest",
+        "dashboard/status.json",
+        "status.json",
+        "collect",
+        "CQA_PROFILE",
+        "collect-fresh",
+        "CQA_ALLOW_TELEGRAM_SEND",
+        "send-telegram",
+        "telegram-send",
+        "timer",
+        "systemd",
+        "cron",
+        "minimax",
+        "openai",
+        "completion",
+        "generate",
+        "output-dir",
+        "outputDir",
+        "sandbox",
+        "SANDBOX",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
       "file": "dashboard/daily-digest-build-sandbox-plan.json",
       "type": "config",
       "writes_production_paths": false,
@@ -1177,6 +1284,34 @@
         "generate",
         "sandbox",
         "SANDBOX"
+      ]
+    },
+    {
+      "file": "dashboard/daily-digest-sandbox-interface.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": true,
+      "has_sandbox_mode": true,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json",
+        "reports/daily/"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "telegram-digest",
+        "dashboard/status.json",
+        "status.json",
+        "collect",
+        "timer",
+        "output-dir",
+        "sandbox"
       ]
     },
     {
@@ -1299,6 +1434,6 @@
     "Ensure timer modification is disabled in sandbox mode"
   ],
   "safe_next_step": "Complete required refactors (output-dir param, sandbox mode flag) then re-run readiness audit",
-  "audit_timestamp": "2026-06-14T05:25:05.920Z",
-  "files_scanned": 118
+  "audit_timestamp": "2026-06-14T06:24:23.542Z",
+  "files_scanned": 126
 }
