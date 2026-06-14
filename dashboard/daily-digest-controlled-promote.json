@@ -1,0 +1,59 @@
+{
+  "phase": "5C-2C-C5M-1",
+  "mode": "one_shot_controlled_promote",
+  "version": "0.1.0",
+  "generated_at": "2026-06-15T06:28:00+08:00",
+  "real_promote_allowed": true,
+  "production_write_allowed": true,
+  "telegram_send_allowed": false,
+  "collect_allowed": false,
+  "timer_allowed": false,
+  "model_call_allowed": false,
+  "media_generation_allowed": false,
+  "backup_required": true,
+  "rollback_required": true,
+  "required_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "required_human_approval": true,
+  "allowed_targets": [
+    "reports/daily-digest.md",
+    "reports/telegram-digest.txt"
+  ],
+  "forbidden_targets": [
+    "dashboard/status.json",
+    "reports/daily/",
+    "systemd timer",
+    "Telegram send"
+  ],
+  "sandbox_source_root": "reports/sandbox/daily-digest",
+  "sandbox_outputs_subdir": "outputs",
+  "production_targets": {
+    "daily-digest.md": "reports/daily-digest.md",
+    "telegram-digest.txt": "reports/telegram-digest.txt"
+  },
+  "backup_root": "reports/promote-backups/daily-digest",
+  "history_root": "reports/promote-history",
+  "audit_log": "reports/control-action-audit.jsonl",
+  "safety_constraints": {
+    "no_child_process": true,
+    "no_exec_spawn": true,
+    "no_env_read": true,
+    "no_control_local_read": true,
+    "no_network_calls": true,
+    "output_redacted": true
+  },
+  "expected_run_id": "sandbox-2026-06-14-06-50-12",
+  "approval_pack_ref": "dashboard/daily-digest-promote-approval-pack.json",
+  "blocked_actions": [
+    "collect",
+    "timer",
+    "model_call",
+    "media_generation",
+    "telegram_send",
+    "dashboard_status_overwrite",
+    "reports_daily_write",
+    "systemd_timer_modify",
+    "env_file_read",
+    "control_local_read"
+  ],
+  "future_proposal": "C5N: continuous controlled promote workflow with manual gating"
+}

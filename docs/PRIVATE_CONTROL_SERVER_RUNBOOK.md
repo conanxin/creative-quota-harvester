@@ -2034,3 +2034,64 @@ Expected: All PASS.
 
 ---
 *Runbook v5.19 — Phase 5C-2C-C5M-0*
+
+## Phase 5C-2C-C5M-1 — One-shot Controlled Promote
+
+Phase 5C-2C-C5M-1 implements the **one-shot controlled promote** that copies the
+two specific sandbox daily-digest outputs into the two specific production
+targets, under a strict human-phrase authorization and SHA-256 hash
+verification. It is bounded: only `reports/daily-digest.md` and
+`reports/telegram-digest.txt` may be written; no `dashboard/status.json`, no
+`reports/daily/`, no timer, no Telegram send, no model call, no media
+generation.
+
+### Endpoints
+
+- `POST /api/daily-digest/promote/controlled`
+  - Body: `{ "token": "...", "confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX" }`
+  - Requires the same `CQA_CONTROL_TOKEN` (or unset to disable token check) and the exact confirm phrase.
+  - On success: returns `result=success`, hash verification, backup path, history paths.
+  - On failure: returns `result=blocked` with `blocked_reason`.
+  - Acquires the same execution lock used by other confirmed actions.
+  - Writes audit log with `mode=daily_digest_controlled_promote`, `real_execution` reflects the result. Token is NOT recorded.
+
+- `GET /api/daily-digest/promote/history`
+  - Read-only; returns up to 20 most recent promote history records, with secrets stripped.
+
+### Script entry points
+
+```bash
+# Validator (must pass before promote)
+npm run validate:daily-digest-controlled-promote
+
+# Direct promote (use exactly this phrase)
+npx tsx scripts/daily-digest-controlled-promote.ts --confirm-phrase "PROMOTE DAILY DIGEST FROM SANDBOX"
+
+# Rollback plan (dry-run only; never auto-rolls back)
+npx tsx scripts/daily-digest-controlled-rollback.ts
+```
+
+### Safety constraints (enforced by validator + executor)
+
+- Only writes `reports/daily-digest.md` and `reports/telegram-digest.txt`.
+- Creates a backup under `reports/promote-backups/daily-digest/<run-id>-<ts>/` BEFORE copying.
+- Verifies SHA-256 of production target matches sandbox candidate after copy.
+- No `child_process` / `exec` / `spawn`.
+- No `.env` / `.control.local` reads.
+- No network calls.
+- No `process.env.*` references.
+- Output is redacted (token patterns stripped).
+- `telegram_send_allowed=false`, `collect_allowed=false`, `timer_allowed=false`, `model_call_allowed=false`, `media_generation_allowed=false`.
+- Audit log records `real_execution` and `production_write_allowed`; never the token.
+
+### Files
+
+- `dashboard/daily-digest-controlled-promote.json` — controlled promote config
+- `scripts/daily-digest-controlled-promote.ts` — executor
+- `scripts/daily-digest-controlled-rollback.ts` — rollback plan (dry-run only)
+- `scripts/validate-daily-digest-controlled-promote.ts` — 23-check validator
+- `reports/promote-backups/daily-digest/<run-id>-<ts>/backup-manifest.json` — backup
+- `reports/promote-history/daily-digest-promote-<run-id>-<ts>.{json,md}` — history
+
+---
+*Runbook v5.20 — Phase 5C-2C-C5M-1*

@@ -1389,6 +1389,101 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5M-1: Controlled promote endpoint ---
+  if (pathname === "/api/daily-digest/promote/controlled" && req.method === "POST") {
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_controlled_promote",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const { runControlledPromote } = require("./daily-digest-controlled-promote");
+        const result = runControlledPromote({ confirmPhrase, dryRun: false });
+
+        // Audit (no token recorded)
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_controlled_promote",
+          risk_level: "low",
+          confirm_ok: result.confirm_phrase_matched,
+          real_execution: result.promoted,
+          result: result.audit_summary.result,
+          reason: result.blocked_reason || undefined,
+        });
+
+        if (!result.confirm_phrase_matched) {
+          jsonResponse(res, {
+            action_id: "daily_digest_controlled_promote",
+            result: "blocked",
+            blocked_reason: "confirm_phrase_mismatch",
+            message: "Confirmation phrase mismatch. Expected: \"PROMOTE DAILY DIGEST FROM SANDBOX\"",
+          });
+        } else if (!result.promoted) {
+          jsonResponse(res, {
+            action_id: "daily_digest_controlled_promote",
+            result: "blocked",
+            blocked_reason: result.blocked_reason || "not_all_gates_met",
+            latest_run_id: result.latest_run_id,
+            gate_checks: result.gate_checks,
+            targets: result.targets,
+          });
+        } else {
+          jsonResponse(res, {
+            action_id: "daily_digest_controlled_promote",
+            result: "success",
+            real_execution: true,
+            production_write_allowed: true,
+            latest_run_id: result.latest_run_id,
+            promoted_files: Object.values({
+              "daily-digest.md": "reports/daily-digest.md",
+              "telegram-digest.txt": "reports/telegram-digest.txt",
+            }),
+            backup_path: result.backup_path,
+            hash_verification: Object.fromEntries(
+              Object.entries(result.targets).map(([k, v]) => [k, {
+                sandbox: v.sandbox?.hash_short,
+                production: v.after?.hash_short,
+                verified: v.hash_verified,
+              }])
+            ),
+            history_json: result.history_json,
+            history_md: result.history_md,
+            audit_summary: result.audit_summary,
+          });
+        }
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_controlled_promote",
+          result: "failed",
+          blocked_reason: "invalid_request",
+          error: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // Block anything that's not GET (for all other routes)
   if (req.method !== "GET") {
     methodNotAllowed(res);
@@ -1869,6 +1964,55 @@ const server = http.createServer((req, res) => {
         promote_checklist: result.promote_checklist,
         output_files: result.output_files,
         safe_next_step: result.safe_next_step,
+      });
+      return;
+    }
+
+    case "/api/daily-digest/promote/history": {
+      // Phase 5C-2C-C5M-1: Read promote history (read-only, no secrets)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const historyDir = path.join(HARVESTER_DIR, "reports/promote-history");
+      let files: string[] = [];
+      try {
+        if (fs.existsSync(historyDir)) {
+          files = fs.readdirSync(historyDir)
+            .filter(f => f.startsWith("daily-digest-promote-") && f.endsWith(".json"))
+            .sort()
+            .reverse()
+            .slice(0, 20);
+        }
+      } catch { /* ignore */ }
+      const records: any[] = [];
+      for (const f of files) {
+        try {
+          const rec = JSON.parse(fs.readFileSync(path.join(historyDir, f), "utf-8"));
+          // Strip any keys that could contain tokens
+          const safe = {
+            phase: rec.phase,
+            mode: rec.mode,
+            run_id: rec.run_id,
+            promoted_at: rec.promoted_at,
+            promoted_files: rec.promoted_files,
+            backup_path: rec.backup_path,
+            rollback_supported: rec.rollback_supported,
+            rollback_command: rec.rollback_command,
+            hash_verification: rec.hash_verification,
+            forbidden_paths_check: rec.forbidden_paths_check,
+            audit_summary: rec.audit_summary,
+          };
+          records.push(safe);
+        } catch { /* skip */ }
+      }
+      jsonResponse(res, {
+        phase: "5C-2C-C5M-1",
+        mode: "history_readonly",
+        real_execution: false,
+        production_write_allowed: false,
+        total: records.length,
+        records,
       });
       return;
     }

@@ -5,7 +5,7 @@ STATUS: WARN
 Signals: 793 (code(265) / academic(160) / ai-ecosystem(156) / dev-community(120) / culture-art(63) / context(29))
 Content Packs: 25 (25 with image prompt)
 Generated Assets: 5 (5 img / 0 music / 0 video)
-Signal freshness: PASS — signals last collected 0h ago
+Signal freshness: PASS — signals last collected 7h ago
 Source health: arXiv: ✅ / GitHub: ✅ / Hacker: ✅ / GDELT: ⚠️ / Hugging: ⏱️ / Open-Meteo: ✅ / Date: ✅ / Solar: ✅ / The: ⏱️
 
 Top 5 Signals (deduplicated, by score)

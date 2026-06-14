@@ -3,6 +3,13 @@ reports/sandbox/daily-digest/*
 !reports/sandbox/daily-digest/.gitkeep
 !reports/sandbox/README.md
 
+# Promote backups (local only, never commit; large + can be regenerated from history)
+reports/promote-backups/
+
+# Phase checkpoints (local-only session state, never commit)
+.phase-*.json
+.phase-*-checkpoint.json
+
 # Local control auth config (never commit real token)
 .control.local
 

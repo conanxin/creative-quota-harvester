@@ -1,0 +1,25 @@
+PHASE-5C-2C-C5M1-CONTROLLED-PROMOTE COMPLETE
+
+状态：SUCCESS
+
+- LATEST_RUN_ID: sandbox-2026-06-14-06-50-12
+- PROMOTED_FILES: reports/daily-digest.md, reports/telegram-digest.txt
+- BACKUP_PATH: reports/promote-backups/daily-digest/sandbox-2026-06-14-06-50-12-20260614-223423/
+- HASH_VERIFICATION: daily-digest.md c43bc22fe5e75e26 ↔ sandbox c43bc22fe5e75e26 ✅
+                     telegram-digest.txt de89425d568ecb8d ↔ sandbox de89425d568ecb8d ✅
+- FORBIDDEN_PATH_CHECK: dashboard/status.json UNCHANGED (mtime=2026-06-13) ✅
+                        reports/daily/ NOT PRESENT ✅
+                        systemd/timer NOT TOUCHED ✅
+- TELEGRAM_SEND_STATUS: BLOCKED (config + validator) — only stage report was sent via report:send
+- TIMER_STATUS: NOT TRIGGERED (executor has no timer code)
+- VALIDATION_RESULTS: pre 15/15 PASS, post 5/6 PASS (1 pre-existing dashboard:control:validate button-tag FAIL, not introduced by this phase)
+- ROLLBACK_STATUS: SUPPORTED (manifest verified, 2/2 files match) — auto-rollback NOT enabled
+- MODEL_CALL_STATUS: NONE (executor uses fs + crypto only)
+- GENERATED_MEDIA_STATUS: NONE
+- AUDIT: mode=daily_digest_controlled_promote real_execution=true result=success (token not recorded)
+- LIMITATIONS: (1) dashboard:control:validate pre-existing button-tag FAIL, unrelated. (2) Auto-rollback not wired. (3) One-shot per phase run.
+- NEXT_PHASE_PROPOSAL: C5N — continuous controlled promote workflow (human-phrase gated, env-gated auto-rollback, 7-day backup retention)
+
+报告路径：
+~/.openclaw/workspace/projects/creative-quota-harvester/reports/one-shot-controlled-promote.md
+~/.openclaw/workspace/projects/creative-quota-harvester/docs/PHASE_5C2C_C5M1_ONE_SHOT_CONTROLLED_PROMOTE_REPORT.md

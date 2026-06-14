@@ -54,6 +54,7 @@
 | 0.25.8 | 2026-06-14 | Phase 5C-2C-C5K | ✅ COMPLETE — Promote Execution Design Review (6/6 evidence met, recommendation=allow_next_phase_design_only) |
 | 0.25.9 | 2026-06-14 | Phase 5C-2C-C5L | ✅ COMPLETE — Promote Execution Disabled Scaffold (5/5 gate checks, always 403 disabled) |
 | 0.25.10 | 2026-06-14 | Phase 5C-2C-C5M-0 | ✅ COMPLETE — Promote Human Approval Pack (4/4 validation evidence, human checklist 8 items) |
+| 0.25.11 | 2026-06-15 | Phase 5C-2C-C5M-1 | ✅ COMPLETE — One-shot Controlled Promote (15/15 pre-promote PASS, 2 files promoted & hash-verified, backup+history written; only 2 prod targets; no Telegram, no timer, no model, no media) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |

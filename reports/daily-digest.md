@@ -1,5 +1,5 @@
 # Creative Quota Daily Digest
-**Generated:** 2026-06-13T23:32:50.162Z
+**Generated:** 2026-06-14T06:50:13.311Z
 **STATUS:** WARN
 
 ## 今日输入
@@ -12,7 +12,7 @@
 | Images | 5 |
 | Music | 0 |
 | Video | 0 |
-| Signal freshness | PASS — signals last collected 0h ago |
+| Signal freshness | PASS — signals last collected 7h ago |
 | Source health | arXiv: ✅ / GitHub: ✅ / Hacker: ✅ / GDELT: ⚠️ / Hugging: ⏱️ / Open-Meteo: ✅ / Date: ✅ / Solar: ✅ / The: ⏱️ |
 
 ### Signal Sources
