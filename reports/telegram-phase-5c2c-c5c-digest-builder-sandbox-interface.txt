@@ -26,7 +26,7 @@ Interface Contract:
 - production_write_allowed: false
 - required_flags: --sandbox, --output-dir, --no-collect, --no-send, --no-timer, --no-production-write
 - protected_paths: reports/daily-digest.md, reports/telegram-digest.txt, dashboard/status.json, reports/daily/
-- allowed_output_root: reports/sandbox/daily-digest/<run_id>/outputs/
+- allowed_output_root: reports/sandbox/daily-digest/RUN_ID/outputs/
 
 ---
 
