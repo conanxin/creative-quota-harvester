@@ -1,0 +1,34 @@
+Phase 5C-2C-C5D complete. READY_FOR_SANDBOX_BUILD=partial. message_id=50475.
+
+📋 Digest Builder Sandbox Refactor Implementation
+
+STATUS: ✅ COMPLETE
+Commit: 004adcb (pushed to master)
+
+WHAT_CHANGED:
+• scripts/daily-digest-sandbox-runtime.ts — sandbox runtime config resolver
+• src/reports/telegram-daily-digest.ts — pilot builder refactored with sandbox guards/runtime
+• scripts/validate-daily-digest-builder-sandbox-refactor.ts — 50-check validator
+• package.json, dashboard/daily-digest-build-readiness.json, docs updated
+
+PILOT_BUILDER: src/reports/telegram-daily-digest.ts
+• Production mode: unchanged behavior
+• Sandbox mode: routes writes to outputDir, asserts assertNotProductionPath
+
+REQUIRED_FLAGS (all with --sandbox):
+--sandbox --output-dir reports/sandbox/daily-digest/<run_id>/outputs/ --no-collect --no-send --no-timer --no-production-write
+
+PROTECTED_PATHS:
+reports/daily-digest.md | reports/telegram-digest.txt | dashboard/status.json | reports/daily/
+
+VALIDATION: 14 suites / 540+ checks — ALL PASS ✅
+
+MODEL_CALL: NONE
+MEDIA_GEN: NONE
+PRODUCTION_WRITE: NONE
+
+LIMITATION: Only pilot builder refactored. Other builders still hardcoded. ready_for_sandbox_build stays partial.
+
+NEXT_PHASE: 5C-2C-C5E — Sandbox Digest Build Execution (Pilot Only)
+
+Report: reports/digest-builder-sandbox-refactor.md
