@@ -1,0 +1,95 @@
+Phase 5C-2C-C5C Digest Builder Sandbox Interface — COMPLETE ✅
+
+Status: Interface contract + guard functions ready. 14/14 validations PASS. 621+ checks. Smoke test verified.
+Date: 2026-06-14
+
+---
+
+What Changed:
+- Created: dashboard/daily-digest-sandbox-interface.json
+- Created: scripts/daily-digest-sandbox-guards.ts
+- Created: scripts/validate-daily-digest-sandbox-interface.ts
+- Created: scripts/validate-daily-digest-sandbox-guards.ts
+- Modified: package.json (+sandbox interface/guard scripts)
+- Modified: scripts/control-server.ts (+GET /api/daily-digest/sandbox-interface)
+- Modified: dashboard/control.html (+Sandbox Interface panel)
+- Updated: docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md (C5C section)
+- Updated: README.md (phase status)
+- Updated: ROADMAP.md (v0.25.3 entry)
+
+---
+
+Interface Contract:
+- phase: 5C-2C-C5C
+- mode: interface_contract_only
+- real_digest_build_allowed: false
+- production_write_allowed: false
+- required_flags: --sandbox, --output-dir, --no-collect, --no-send, --no-timer, --no-production-write
+- protected_paths: reports/daily-digest.md, reports/telegram-digest.txt, dashboard/status.json, reports/daily/
+- allowed_output_root: reports/sandbox/daily-digest/<run_id>/outputs/
+
+---
+
+Guard Functions:
+- isSandboxPath(path) — Check if path is within sandbox
+- assertSandboxOutputPath(path) — Throw if not sandbox path
+- assertNotProductionPath(path) — Throw if production path
+- parseSandboxArgs(argv) — Parse CLI flags
+- buildSandboxRuntimeConfig(args) — Build runtime config
+- validateSandboxFlags(args) — Validate all required flags
+
+---
+
+Validation Results (14/14 PASS):
+✅ validate:daily-digest-sandbox-interface (35/35)
+✅ validate:daily-digest-sandbox-guards (46/46)
+✅ validate:daily-digest-build-readiness (46/46)
+✅ validate:daily-digest-sandbox-manager (63/63)
+✅ validate:daily-digest-build-sandbox-plan (40/40)
+✅ validate:daily-digest-staged-plan (21/21)
+✅ validate:daily-digest-stage-execution (30/30)
+✅ validate:control-hardening (all)
+✅ validate:control-low-risk-execution (176/176)
+✅ dashboard:policy:validate (35/35)
+✅ validate:sanitizer-secret-completeness (36/36)
+✅ validate:sanitizer-false-positives (25/25)
+✅ validate:telegram-sanitizer (43/43)
+✅ validate:project-report-send (11/11)
+
+Total: 621+ checks PASS
+
+---
+
+Smoke Test:
+✅ GET /api/daily-digest/sandbox-interface — returns JSON
+✅ Dashboard shows sandbox interface panel
+✅ production_write_allowed=false confirmed
+✅ No builder executed
+✅ No model call
+✅ No media generation
+
+---
+
+Safety Invariants:
+✅ Guards: pure functions, no side effects
+✅ No child_process/exec/spawn
+✅ No network calls
+✅ No .env/.control.local reading
+✅ No model calls
+✅ No media generation
+✅ No production path writes
+
+---
+
+Next Phase:
+5C-2C-C5D: Sandbox Digest Build (Scaffolded Execution)
+- Pilot sandbox interface with one builder
+- Add --sandbox and --output-dir CLI support
+- Run builder in sandbox mode
+- Verify isolated output
+
+---
+
+C5C_COMMIT_READY=yes
+C5C_VALIDATION_PASS=14/14
+C5C_CHECKS_PASS=621+

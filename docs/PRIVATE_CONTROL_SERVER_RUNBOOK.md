@@ -1212,4 +1212,89 @@ Expected: All PASS (46/46 checks).
 - `dashboard/daily-digest-build-readiness.json` — audit output
 
 ---
-*Runbook v5.8 — Phase 5C-2C-C5 + C5B*
+*Runbook v5.8 — Phase 5C-2C-C5 + C5B + C5C*
+
+---
+
+## Phase 5C-2C-C5C — Digest Builder Sandbox Interface Refactor
+
+Phase 5C-2C-C5C defines the **sandbox interface contract** and **guard functions** that builders must use before executing in sandbox mode. It does not execute builders or modify production paths.
+
+### What Changed
+
+- New `dashboard/daily-digest-sandbox-interface.json` — interface contract (required flags, protected paths, blocked side effects)
+- New `scripts/daily-digest-sandbox-guards.ts` — pure guard functions (no side effects, no network, no file writes)
+- New `scripts/validate-daily-digest-sandbox-interface.ts` — interface validator (35 checks)
+- New `scripts/validate-daily-digest-sandbox-guards.ts` — guards validator (46 checks)
+- New `GET /api/daily-digest/sandbox-interface` endpoint — serves interface contract JSON
+- Updated `dashboard/control.html` — Sandbox Interface Contract panel
+
+### Interface Contract
+
+```json
+{
+  "phase": "5C-2C-C5C",
+  "mode": "interface_contract_only",
+  "real_digest_build_allowed": false,
+  "production_write_allowed": false,
+  "required_flags": {
+    "--sandbox": { "description": "Enable sandbox mode", "required": true },
+    "--output-dir": { "description": "Specify sandbox output directory", "required": true },
+    "--no-collect": { "description": "Disable data collection", "required": true },
+    "--no-send": { "description": "Disable Telegram sending", "required": true },
+    "--no-timer": { "description": "Disable timer modification", "required": true },
+    "--no-production-write": { "description": "Block production writes", "required": true }
+  },
+  "protected_paths": [
+    "reports/daily-digest.md",
+    "reports/telegram-digest.txt",
+    "dashboard/status.json",
+    "reports/daily/"
+  ],
+  "allowed_output_root": "reports/sandbox/daily-digest/<run_id>/outputs/"
+}
+```
+
+### Guard Functions
+
+| Function | Purpose |
+|----------|---------|
+| `isSandboxPath(path)` | Check if path is within sandbox |
+| `assertSandboxOutputPath(path)` | Throw if not sandbox path |
+| `assertNotProductionPath(path)` | Throw if production path |
+| `parseSandboxArgs(argv)` | Parse CLI flags |
+| `buildSandboxRuntimeConfig(args)` | Build runtime config |
+| `validateSandboxFlags(args)` | Validate all required flags |
+
+### How to Use Guards in a Builder
+
+```typescript
+import { parseSandboxArgs, buildSandboxRuntimeConfig, assertNotProductionPath } from "../daily-digest-sandbox-guards";
+
+const args = parseSandboxArgs(process.argv.slice(2));
+const config = buildSandboxRuntimeConfig(args);
+
+if (config.sandboxMode) {
+  assertNotProductionPath(outputPath);
+  // Write to config.outputDir instead of production path
+}
+```
+
+### How to Validate
+
+```bash
+npm run validate:daily-digest-sandbox-interface
+npm run validate:daily-digest-sandbox-guards
+```
+
+Expected: All PASS (35 + 46 = 81 checks).
+
+### Files
+
+- `dashboard/daily-digest-sandbox-interface.json` — interface contract
+- `scripts/daily-digest-sandbox-guards.ts` — pure guard functions
+- `scripts/validate-daily-digest-sandbox-interface.ts` — interface validator (35 checks)
+- `scripts/validate-daily-digest-sandbox-guards.ts` — guards validator (46 checks)
+
+---
+*Runbook v5.9 — Phase 5C-2C-C5C*

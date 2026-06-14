@@ -1,0 +1,57 @@
+{
+  "phase": "5C-2C-C5C",
+  "mode": "interface_contract_only",
+  "real_digest_build_allowed": false,
+  "production_write_allowed": false,
+  "required_flags": {
+    "--sandbox": {
+      "description": "Enable sandbox mode: restricts all writes to sandbox directory",
+      "required": true,
+      "type": "boolean"
+    },
+    "--output-dir": {
+      "description": "Specify sandbox output directory (must be under reports/sandbox/daily-digest/<run_id>/outputs/)",
+      "required": true,
+      "type": "string"
+    },
+    "--no-collect": {
+      "description": "Disable data collection in sandbox mode",
+      "required": true,
+      "type": "boolean"
+    },
+    "--no-send": {
+      "description": "Disable Telegram sending in sandbox mode",
+      "required": true,
+      "type": "boolean"
+    },
+    "--no-timer": {
+      "description": "Disable timer modification in sandbox mode",
+      "required": true,
+      "type": "boolean"
+    },
+    "--no-production-write": {
+      "description": "Block all writes to production paths",
+      "required": true,
+      "type": "boolean"
+    }
+  },
+  "protected_paths": [
+    "reports/daily-digest.md",
+    "reports/telegram-digest.txt",
+    "dashboard/status.json",
+    "reports/daily/"
+  ],
+  "allowed_output_root": "reports/sandbox/daily-digest/<run_id>/outputs/",
+  "blocked_side_effects": {
+    "collect": true,
+    "telegram_send": true,
+    "timer": true,
+    "model_call": true,
+    "media_generation": true,
+    "production_write": true
+  },
+  "interface_version": "1.0.0",
+  "contract_date": "2026-06-14",
+  "next_phase": "5C-2C-C5D: Sandbox Digest Build (Scaffolded Execution)",
+  "notes": "This is a read-only interface contract. No builder execution. No production writes."
+}

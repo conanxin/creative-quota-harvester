@@ -43,6 +43,7 @@
 | 0.24.5 | 2026-06-14 | Phase 5C-2C-C4 | ✅ COMPLETE — Daily Digest Build Sandbox Plan (6 stages, protected paths, sandbox paths, no real execution, no production write) |
 | 0.24.6 | 2026-06-14 | Phase 5C-2C-C5 | ✅ COMPLETE — Daily Digest Sandbox Directory Creation (sandbox run directories, manifest.json, protected paths, no production write) |
 | 0.24.7 | 2026-06-14 | Phase 5C-2C-C5B | ✅ COMPLETE — Daily Digest Build Readiness Audit (118 files scanned, 62 builders detected, partial readiness, 4 refactors required) |
+| 0.25.3 | 2026-06-14 | Phase 5C-2C-C5C | ✅ COMPLETE — Digest Builder Sandbox Interface (guard functions + contract, 14 validations, 621+ checks, no execution) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |

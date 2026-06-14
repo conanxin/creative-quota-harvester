@@ -1247,6 +1247,90 @@
     })();
   </script>
 
+  <!-- Phase 5C-2C-C5C: Sandbox Interface Contract Panel -->
+  <div id="sandbox-interface-panel" class="sandbox-interface-panel" style="display:none;">
+    <div class="section" style="background:#f0fdf4;border:1px solid #86efac;">
+      <h2>📋 Sandbox Interface / 沙盒接口契约</h2>
+      <div id="sandbox-interface-status" style="margin-bottom:12px;"></div>
+      <div style="margin-top:10px;background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+        ⚠️ 本阶段只定义接口契约，不执行 builder，不构建日报，不覆盖 production。
+      </div>
+      <div id="sandbox-interface-details" style="margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <script>
+    // Phase 5C-2C-C5C: Load sandbox interface contract
+    (function() {
+      var base = location.protocol + '//' + location.host;
+      fetch(base + '/api/daily-digest/sandbox-interface')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var panel = document.getElementById('sandbox-interface-panel');
+          if (panel) panel.style.display = 'block';
+          var statusDiv = document.getElementById('sandbox-interface-status');
+          if (statusDiv) {
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:10px;">';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#1e3a5f;">' + (data.phase || 'N/A') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Phase</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#22c55e;">' + (data.mode || 'N/A') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Mode</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#ef4444;">' + (data.production_write_allowed ? '❌' : '✅') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Production Write</div></div>';
+            html += '</div>';
+            statusDiv.innerHTML = html;
+          }
+          var detailsDiv = document.getElementById('sandbox-interface-details');
+          if (detailsDiv) {
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:10px;">';
+            // Required flags
+            if (data.required_flags) {
+              html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
+              html += '<div style="font-weight:700;font-size:1rem;color:#1e3a5f;margin-bottom:8px;">🚩 Required Flags</div>';
+              html += '<div style="font-size:0.85rem;color:#555;">';
+              for (var flag in data.required_flags) {
+                var f = data.required_flags[flag];
+                html += '<div style="margin-bottom:6px;"><strong>' + flag + '</strong> (' + (f.required ? 'required' : 'optional') + ')<br><span style="color:#7f8c8d;font-size:0.75rem;">' + f.description + '</span></div>';
+              }
+              html += '</div></div>';
+            }
+            // Protected paths
+            if (data.protected_paths && data.protected_paths.length > 0) {
+              html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
+              html += '<div style="font-weight:700;font-size:1rem;color:#ef4444;margin-bottom:8px;">🛡️ Protected Paths</div>';
+              html += '<div style="font-size:0.8rem;color:#555;">' + data.protected_paths.join('<br>') + '</div>';
+              html += '</div>';
+            }
+            // Allowed output
+            if (data.allowed_output_root) {
+              html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
+              html += '<div style="font-weight:700;font-size:1rem;color:#22c55e;margin-bottom:8px;">📁 Allowed Output</div>';
+              html += '<div style="font-size:0.8rem;color:#555;">' + data.allowed_output_root + '</div>';
+              html += '</div>';
+            }
+            // Blocked side effects
+            if (data.blocked_side_effects) {
+              html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
+              html += '<div style="font-weight:700;font-size:1rem;color:#1e3a5f;margin-bottom:8px;">🚫 Blocked Side Effects</div>';
+              html += '<div style="font-size:0.85rem;color:#555;">';
+              for (var key in data.blocked_side_effects) {
+                html += key + ': ' + (data.blocked_side_effects[key] ? '❌ blocked' : '✅ allowed') + '<br>';
+              }
+              html += '</div></div>';
+            }
+            html += '</div>';
+            // Next phase
+            if (data.next_phase) {
+              html += '<div style="margin-top:16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px 16px;font-size:0.85rem;color:#1e40af;">';
+              html += '<strong>Next Phase:</strong> ' + data.next_phase;
+              html += '</div>';
+            }
+            detailsDiv.innerHTML = html;
+          }
+        })
+        .catch(function(e) {
+          console.log('Sandbox interface load failed:', e);
+        });
+    })();
+  </script>
+
   <!-- Phase 5C-2C-C5B: Digest Build Readiness Panel -->
   <div id="build-readiness-panel" class="build-readiness-panel" style="display:none;">
     <div class="section" style="background:#f0f9ff;border:1px solid #3b82f6;">
