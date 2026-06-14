@@ -50,6 +50,7 @@
 | 0.25.4 | 2026-06-14 | Phase 5C-2C-C5G | ✅ COMPLETE — Sandbox Promote Readiness Plan (promote readiness checker, preconditions, blocked actions, future confirm phrase) |
 | 0.25.5 | 2026-06-14 | Phase 5C-2C-C5H | ✅ COMPLETE — Sandbox Promote Dry-run / Copy Plan (dry-run plan, copy map, backup/rollback, human approval) |
 | 0.25.6 | 2026-06-14 | Phase 5C-2C-C5I | ✅ COMPLETE — Promote Shadow Copy / Backup Plan (shadow copy, candidate preview, rollback manifest, promote checklist) |
+| 0.25.7 | 2026-06-14 | Phase 5C-2C-C5J | ✅ COMPLETE — Promote Commit Gate (13/13 evidence met, gate_status=pass) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |

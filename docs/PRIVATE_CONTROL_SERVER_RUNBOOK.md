@@ -1782,3 +1782,77 @@ Expected: All PASS.
 
 ---
 *Runbook v5.15 — Phase 5C-2C-C5I*
+
+## Phase 5C-2C-C5J — Promote Commit Gate
+
+Phase 5C-2C-C5J establishes the **promote commit gate** that checks all preconditions for future promote. It reads latest sandbox run, readiness, dry-run, shadow copy, validation, and diff, and outputs a gate report. No actual promote, no production write, no send.
+
+### What Changed
+
+- New `dashboard/daily-digest-promote-gate.json` — gate configuration
+- New `scripts/daily-digest-promote-gate.ts` — promote gate checker
+- New `scripts/validate-daily-digest-promote-gate.ts` — gate validator (38 checks)
+- New `GET /api/daily-digest/promote-gate` endpoint — read-only promote gate
+- Updated `dashboard/control.html` — promote gate panel
+- Updated `package.json` — added validate + check scripts
+
+### Required Evidence (13 keys)
+
+| Evidence | Source |
+|----------|--------|
+| latest_sandbox_run_exists | `reports/sandbox/daily-digest/latest.json` |
+| sandbox_build_success | `build-summary.json` |
+| sandbox_output_validation_pass | `validate-daily-digest-sandbox-output.ts` |
+| secret_scan_pass | `validate-daily-digest-sandbox-output.ts` |
+| tool_residue_scan_pass | `validate-daily-digest-sandbox-output.ts` |
+| diff_summary_exists | `daily-digest-sandbox-diff.ts` |
+| promote_readiness_ready | `daily-digest-promote-readiness.ts` |
+| promote_dry_run_pass | `daily-digest-promote-dry-run.ts` |
+| shadow_copy_pass | `daily-digest-promote-shadow-copy.ts` |
+| rollback_manifest_exists | `promote-shadow/rollback-manifest.json` |
+| promote_checklist_exists | `promote-shadow/promote-checklist.md` |
+| protected_paths_unchanged | `build-summary.json` |
+| human_approval_required | policy |
+
+### Safety Invariants
+
+- real_promote_allowed=false
+- future_confirm_phrase_enabled=false
+- human_approval_required=true
+- Only writes to dashboard/ and sandbox reports/
+- Does not copy files to production
+- Does not send Telegram
+
+### How to Validate
+
+```bash
+npm run check:daily-digest-promote-gate
+npm run validate:daily-digest-promote-gate
+npm run validate:daily-digest-promote-shadow-copy
+npm run validate:daily-digest-promote-dry-run
+npm run validate:daily-digest-promote-readiness
+npm run validate:daily-digest-sandbox-output-tools
+npm run validate:daily-digest-sandbox-build-pilot
+npm run validate:daily-digest-builder-sandbox-refactor
+npm run validate:daily-digest-sandbox-interface
+npm run validate:daily-digest-sandbox-guards
+npm run validate:daily-digest-build-readiness
+npm run validate:daily-digest-sandbox-manager
+npm run validate:dashboard:policy:validate
+npm run validate:sanitizer-secret-completeness
+npm run validate:sanitizer-false-positives
+npm run validate:telegram-sanitizer
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+### Files
+
+- `dashboard/daily-digest-promote-gate.json` — gate config
+- `scripts/daily-digest-promote-gate.ts` — promote gate checker
+- `scripts/validate-daily-digest-promote-gate.ts` — gate validator (38 checks)
+- `dashboard/daily-digest-promote-gate.json` — generated gate output
+
+---
+*Runbook v5.16 — Phase 5C-2C-C5J*

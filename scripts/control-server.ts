@@ -1787,6 +1787,18 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/promote-gate": {
+      // Phase 5C-2C-C5J: Read promote gate (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { checkPromoteGate } = require("./daily-digest-promote-gate");
+      const gate = checkPromoteGate();
+      jsonResponse(res, gate);
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;
