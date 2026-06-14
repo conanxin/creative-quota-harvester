@@ -1723,6 +1723,18 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/promote-readiness": {
+      // Phase 5C-2C-C5G: Read promote readiness (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { checkPromoteReadiness } = require("./daily-digest-promote-readiness");
+      const readiness = checkPromoteReadiness();
+      jsonResponse(res, readiness);
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;

@@ -1558,3 +1558,91 @@ Expected: All PASS.
 
 ---
 *Runbook v5.12 — Phase 5C-2C-C5F*
+
+## Phase 5C-2C-C5G — Sandbox Promote Readiness Plan
+
+Phase 5C-2C-C5G establishes the **promote readiness plan** for sandbox digest outputs. It checks if all preconditions are met for future promotion (copying sandbox outputs to production). Does not execute promotion, does not copy files, does not send Telegram.
+
+### What Changed
+
+- New `dashboard/daily-digest-promote-readiness-plan.json` — promote readiness configuration (preconditions, blocked actions, future confirm phrase)
+- New `scripts/daily-digest-promote-readiness.ts` — promote readiness checker (reads latest sandbox, validates preconditions, outputs readiness JSON)
+- New `scripts/validate-daily-digest-promote-readiness.ts` — promote readiness validator (40 checks)
+- New `GET /api/daily-digest/promote-readiness` endpoint — read-only promote readiness
+- Updated `dashboard/control.html` — promote readiness panel with preconditions display
+- Updated `package.json` — added `validate:daily-digest-promote-readiness` and `check:daily-digest-promote-readiness` scripts
+
+### Promote Readiness Preconditions
+
+| Check | Required | Source |
+|-------|----------|--------|
+| Sandbox outputs exist | ✅ | `outputs/daily-digest.md` + `outputs/telegram-digest.txt` |
+| Secret scan pass | ✅ | `validate-daily-digest-sandbox-output.ts` |
+| Tool residue scan pass | ✅ | `validate-daily-digest-sandbox-output.ts` |
+| Diff summary exists | ✅ | `daily-digest-sandbox-diff.ts` |
+| Pilot build executed | ✅ | `daily-digest-sandbox-build-pilot.ts` build summary |
+| Manifest flags correct | ✅ | `manifest.json` collect=false, send=false, write=false |
+| Protected paths unchanged | ✅ | Build summary production_write_detected=false |
+| Human approval required | ✅ | Policy requirement |
+
+### Promote Readiness Result
+
+```json
+{
+  "phase": "5C-2C-C5G",
+  "mode": "promote_readiness_only",
+  "ready_for_future_promote": true,
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "future_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "future_confirm_phrase_enabled": false,
+  "blocked_actions": ["production_write", "telegram_send", "collect", "timer", "git", "promote", "model_call", "media_generation"]
+}
+```
+
+### Safety Invariants
+
+- `real_promote_allowed=false` — promotion is not enabled
+- `future_confirm_phrase_enabled=false` — confirm phrase is defined but not active
+- `human_approval_required=true` — human approval required before any promotion
+- Only writes to `dashboard/daily-digest-promote-readiness.json`
+- Does not copy sandbox outputs to production
+- Does not send Telegram
+- Does not call model or generate media
+
+### How to Validate
+
+```bash
+npm run validate:daily-digest-promote-readiness
+npm run check:daily-digest-promote-readiness
+npm run validate:daily-digest-sandbox-output-tools
+npm run validate:daily-digest-sandbox-build-pilot
+npm run validate:daily-digest-builder-sandbox-refactor
+npm run validate:daily-digest-sandbox-interface
+npm run validate:daily-digest-sandbox-guards
+npm run audit:daily-digest-build-readiness
+npm run validate:daily-digest-build-readiness
+npm run validate:daily-digest-sandbox-manager
+npm run validate:daily-digest-build-sandbox-plan
+npm run validate:daily-digest-staged-plan
+npm run validate:daily-digest-stage-execution
+npm run validate:digest-freshness
+npm run validate:dashboard:policy:validate
+npm run validate:sanitizer-secret-completeness
+npm run validate:sanitizer-false-positives
+npm run validate:telegram-sanitizer
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+### Files
+
+- `dashboard/daily-digest-promote-readiness-plan.json` — promote readiness config
+- `scripts/daily-digest-promote-readiness.ts` — promote readiness checker
+- `scripts/validate-daily-digest-promote-readiness.ts` — promote readiness validator (40 checks)
+- `dashboard/daily-digest-promote-readiness.json` — generated readiness output
+
+---
+*Runbook v5.13 — Phase 5C-2C-C5G*

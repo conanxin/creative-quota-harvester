@@ -1,0 +1,79 @@
+{
+  "phase": "5C-2C-C5G",
+  "mode": "promote_readiness_only",
+  "version": "0.1.0",
+  "updated_at": "2026-06-14T08:05:00Z",
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "collect_allowed": false,
+  "timer_allowed": false,
+  "human_approval_required": true,
+  "required_preconditions": {
+    "sandbox_output_validation_pass": {
+      "description": "Sandbox output validation must pass (11/11 checks)",
+      "required": true,
+      "source": "validate-daily-digest-sandbox-output.ts"
+    },
+    "secret_scan_pass": {
+      "description": "No secrets found in sandbox outputs",
+      "required": true,
+      "source": "validate-daily-digest-sandbox-output.ts"
+    },
+    "tool_residue_scan_pass": {
+      "description": "No tool residues found in sandbox outputs",
+      "required": true,
+      "source": "validate-daily-digest-sandbox-output.ts"
+    },
+    "diff_summary_exists": {
+      "description": "Diff summary must exist for sandbox vs production comparison",
+      "required": true,
+      "source": "daily-digest-sandbox-diff.ts"
+    },
+    "protected_paths_unchanged": {
+      "description": "Production protected paths must be unchanged since last build",
+      "required": true,
+      "source": "daily-digest-sandbox-build-pilot.ts"
+    },
+    "pilot_build_executed": {
+      "description": "Pilot sandbox build must have been executed successfully",
+      "required": true,
+      "source": "daily-digest-sandbox-build-pilot.ts"
+    },
+    "sandbox_interface_contract": {
+      "description": "Sandbox interface contract must be defined",
+      "required": true,
+      "source": "dashboard/daily-digest-sandbox-interface.json"
+    },
+    "sandbox_runtime_config": {
+      "description": "Sandbox runtime config must be defined",
+      "required": true,
+      "source": "scripts/daily-digest-sandbox-runtime.ts"
+    },
+    "human_approval_required": {
+      "description": "Human approval required before any promote",
+      "required": true,
+      "source": "policy"
+    }
+  },
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "collect",
+    "timer",
+    "git",
+    "promote",
+    "model_call",
+    "media_generation"
+  ],
+  "future_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "future_confirm_phrase_enabled": false,
+  "promote_flow": {
+    "step_1_validate": "Run validate-daily-digest-sandbox-output.ts",
+    "step_2_review_diff": "Review diff-summary.md",
+    "step_3_human_approve": "Human approval required",
+    "step_4_confirm_phrase": "Use future confirm phrase (not yet enabled)",
+    "step_5_copy_to_production": "Copy sandbox outputs to production paths (not yet implemented)"
+  },
+  "safe_next_step": "All preconditions met. When ready to enable promote, set future_confirm_phrase_enabled=true and implement step_5 copy logic."
+}

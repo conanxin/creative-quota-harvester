@@ -1129,6 +1129,57 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5G: Promote Readiness Panel -->
+<div id="promote-readiness-panel" class="promote-readiness-panel" style="display:none;">
+  <div class="section" style="background:#faf5ff;border:1px solid #a855f7;">
+    <h2>📋 Promote Readiness / 推送就绪度</h2>
+    <div id="promote-readiness-status" style="margin-bottom:12px;"></div>
+    <div id="promote-readiness-preconditions" style="margin-top:10px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      ⚠️ 本阶段只检查 promote readiness，不覆盖 production、不发送 Telegram。
+    </div>
+  </div>
+</div>
+
+  <script>
+    // Phase 5C-2C-C5G: Load promote readiness
+    function loadPromoteReadiness() {
+      var base = location.protocol + '//' + location.host;
+      fetch(base + '/api/daily-digest/promote-readiness')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var panel = document.getElementById('promote-readiness-panel');
+          if (panel) panel.style.display = 'block';
+          var statusDiv = document.getElementById('promote-readiness-status');
+          if (statusDiv) {
+            var ready = data.ready_for_future_promote;
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:10px;">';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.3rem;font-weight:700;color:' + (ready ? '#22c55e' : '#ef4444') + ';">' + (ready ? '✅ YES' : '❌ NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Ready for Promote</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.latest_run_id || 'N/A') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Latest Run</div></div>';
+            html += '</div>';
+            statusDiv.innerHTML = html;
+          }
+          var preconditionsDiv = document.getElementById('promote-readiness-preconditions');
+          if (preconditionsDiv && data.preconditions) {
+            var preHtml = '<div style="margin-top:10px;"><strong>Preconditions:</strong></div>';
+            preHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:8px;">';
+            for (var key in data.preconditions) {
+              var p = data.preconditions[key];
+              preHtml += '<div style="background:#fff;border-radius:6px;padding:8px;border:1px solid ' + (p.met ? '#22c55e' : '#ef4444') + ';"><div style="font-size:0.75rem;color:#7f8c8d;">' + key + '</div><div style="font-size:0.8rem;color:' + (p.met ? '#22c55e' : '#ef4444') + ';">' + (p.met ? '✅' : '❌') + ' ' + p.message + '</div></div>';
+            }
+            preHtml += '</div>';
+            if (data.missing_requirements && data.missing_requirements.length > 0) {
+              preHtml += '<div style="margin-top:10px;color:#ef4444;"><strong>Missing:</strong> ' + data.missing_requirements.join(', ') + '</div>';
+            }
+            preHtml += '<div style="margin-top:10px;font-size:0.8rem;color:#555;"><strong>Next step:</strong> ' + data.safe_next_step + '</div>';
+            preconditionsDiv.innerHTML = preHtml;
+          }
+        })
+        .catch(function(e) {
+          console.log('Promote readiness load failed:', e);
+        });
+    }
+
   <script>
     // Phase 5C-2C-C5: Create sandbox directory
     function createSandbox() {
@@ -1236,6 +1287,7 @@
     // Load on page init
     loadSandboxStatus();
     loadLatestBuildStatus();
+    loadPromoteReadiness();
   </script>
 
   <script>

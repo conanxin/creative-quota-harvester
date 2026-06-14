@@ -1,0 +1,62 @@
+{
+  "phase": "5C-2C-C5G",
+  "mode": "promote_readiness_only",
+  "version": "0.1.0",
+  "generated_at": "2026-06-14T08:10:09.502Z",
+  "latest_run_id": "sandbox-2026-06-14-06-50-12",
+  "ready_for_future_promote": true,
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "collect_allowed": false,
+  "timer_allowed": false,
+  "human_approval_required": true,
+  "preconditions": {
+    "sandbox_outputs_exist": {
+      "met": true,
+      "message": "Both outputs exist"
+    },
+    "secret_scan_pass": {
+      "met": true,
+      "message": "No secrets found"
+    },
+    "tool_residue_scan_pass": {
+      "met": true,
+      "message": "No tool residues found"
+    },
+    "diff_summary_exists": {
+      "met": true,
+      "message": "Diff summary exists"
+    },
+    "pilot_build_executed": {
+      "met": true,
+      "message": "Build summary exists (pilot executed)"
+    },
+    "manifest_flags_correct": {
+      "met": true,
+      "message": "collect=false, send=false, write=false"
+    },
+    "protected_paths_unchanged": {
+      "met": true,
+      "message": "Production paths unchanged"
+    },
+    "human_approval_required": {
+      "met": true,
+      "message": "Human approval required before any promote"
+    }
+  },
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "collect",
+    "timer",
+    "git",
+    "promote",
+    "model_call",
+    "media_generation"
+  ],
+  "missing_requirements": [],
+  "safe_next_step": "All preconditions met. When ready to enable promote, set future_confirm_phrase_enabled=true and implement copy-to-production logic.",
+  "future_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "future_confirm_phrase_enabled": false
+}
