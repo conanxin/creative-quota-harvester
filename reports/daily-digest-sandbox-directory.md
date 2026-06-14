@@ -34,7 +34,7 @@ Daily digest sandbox directory creation phase completed. All files present, all 
 reports/sandbox/daily-digest/
 ├── .gitkeep
 ├── latest.json
-└── sandbox-<YYYYMMDD_HHMMSS>/
+└── sandbox-YYYYMMDD_HHMMSS/
     ├── manifest.json
     ├── inputs/
     ├── outputs/

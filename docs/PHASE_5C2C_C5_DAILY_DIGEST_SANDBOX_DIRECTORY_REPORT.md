@@ -53,7 +53,7 @@ COMPLETE. All C5 necessary files present, validated, and smoke-tested. No produc
 reports/sandbox/daily-digest/
 ├── .gitkeep                          # Committed (directory structure)
 ├── latest.json                       # Points to latest run
-└── sandbox-<YYYYMMDD_HHMMSS>/        # Per-run directory (ignored)
+└── sandbox-YYYYMMDD_HHMMSS/        # Per-run directory (ignored)
     ├── manifest.json                   # Run metadata
     ├── inputs/                         # Input data
     ├── outputs/                        # Output artifacts
