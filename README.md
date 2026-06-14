@@ -80,6 +80,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-2C-C5M-1** | **✅ Complete** | **One-shot Controlled Promote (15/15 pre-promote validations PASS, both files promoted, hash-verified, backup+history written; only `reports/daily-digest.md` + `reports/telegram-digest.txt`; no Telegram send, no timer, no model call, no media)** |
 | **Phase 5C-2C-C5M1A** | **✅ Complete** | **Post-Promote Validation Gap Fix (14/14 post-promote validations PASS; replaced 5 pre-existing `<button>` triggers with `<a data-safety="safe-localhost-confirm-phrase-gated">`; added new validator check 6b for explicit data-safety allow-list)** |
 | **Phase 5C-2C-C5M1B** | **✅ Complete** | **Dashboard Safety Hardening v2 (12/12 standalone safety checks PASS + all existing validators PASS; new policy file `dashboard/control-safety-policy.json` is single source of truth; new standalone validator; inline validator now reads policy file with hard-coded fallback for defense in depth; explicitly codified the inline-handler escape hatch)** |
+| **Phase 5C-2C-C5N-0** | **✅ Complete** | **Continuous Controlled Promote Workflow Plan (plan-only, NOT enabled; 16/16 validations PASS; new config `dashboard/daily-digest-continuous-promote-workflow.json` with 10 stages; new planner + 27-check validator; new GET/POST endpoints; auto-rollback DISABLED; manual-rollback supported; no new timer/cron/systemd)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

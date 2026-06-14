@@ -2159,3 +2159,73 @@ npm run validate:dashboard-control-safety
 
 ---
 *Runbook v5.21 — Phase 5C-2C-C5M1B*
+
+## Phase 5C-2C-C5N-0 — Continuous Controlled Promote Workflow Plan
+
+Phase 5C-2C-C5N-0 **designs** the continuous controlled promote workflow but
+**does not enable it**. Every real-execution stage is intentionally
+`allowed_now=false`; the env gate `CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1`
+would be required to even consider flipping that, and even then a human
+confirm phrase is required per run.
+
+### Configuration: `dashboard/daily-digest-continuous-promote-workflow.json`
+
+- `continuous_promote_enabled`: `false`
+- `real_promote_allowed`: `false`
+- `production_write_allowed`: `false`
+- `telegram_send_allowed`: `false`
+- `timer_allowed`: `false`
+- `required_env_gate`: `CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1`
+- `required_confirm_phrase`: `PROMOTE DAILY DIGEST FROM SANDBOX`
+- `required_plan_phrase`: `PLAN DAILY CONTINUOUS PROMOTE`
+- `backup_retention_days`: `7`
+- `auto_rollback_enabled`: `false`
+- `manual_rollback_supported`: `true`
+- `scheduler_allowed` / `new_systemd_timer_allowed` / `new_cron_allowed`: all `false`
+
+### Workflow stages (10)
+
+| stage_id | label_zh | writes_production | allowed_now |
+|---|---|---|---|
+| `detect_candidate_sandbox_run` | 检测候选沙盒运行 | no | true (read-only) |
+| `run_output_validation` | 运行沙盒输出校验 | no | true (read-only) |
+| `run_diff_check` | 运行 diff 检查 | no | true (read-only) |
+| `run_promote_readiness` | 运行推送就绪度 | no | true (read-only) |
+| `run_promote_gate` | 运行推送门禁 | no | true (read-only) |
+| `build_human_approval_pack` | 生成人工审批包 | no | true (read-only) |
+| `wait_for_human_approval` | 等待人工审批 | no | false (no UI yet) |
+| `one_shot_promote` | 受控推送（一次性） | **yes** | **false** (env gate + phrase) |
+| `post_promote_validation` | 推送后校验 | no | true (read-only) |
+| `rollback_if_human_approved` | 人工授权后回滚 | **yes** | **false** (env gate + phrase) |
+
+### Endpoints
+
+- `GET /api/daily-digest/continuous-promote-workflow` — read-only, returns the planner status JSON.
+- `POST /api/daily-digest/continuous-promote-workflow/plan` — token + plan-phrase gated; regenerates the plan only. **Never** executes promote, **never** writes to production, **never** sends Telegram.
+
+### Script entry points
+
+```bash
+# Generate plan + status
+npm run check:daily-digest-continuous-promote-workflow
+
+# Validate config + planner safety
+npm run validate:daily-digest-continuous-promote-workflow
+```
+
+### Files
+
+- `dashboard/daily-digest-continuous-promote-workflow.json` — workflow config
+- `dashboard/daily-digest-continuous-promote-workflow-status.json` — generated plan status
+- `scripts/daily-digest-continuous-promote-planner.ts` — planner (plan-only, no env reads)
+- `scripts/validate-daily-digest-continuous-promote-workflow.ts` — 27-check validator
+- `reports/continuous-promote-workflow-plan.md` — human-readable plan
+
+### Why this is plan-only
+
+- Per the strict boundaries of this phase: no model calls, no media generation, no sandbox rebuild, no `collect:*`, no `digest:send:*`, no `timer:*`, no new systemd timer, no new cron, no `generate:*`, no git push/pull except commit/push, no build/deploy/release.
+- The workflow is **designed** so a future phase (e.g. C5N-1) can manually enable it with explicit human approval and proper UI.
+- Every production-touching stage is gated by **both** an env var (off by default) and a human confirm phrase; auto-rollback is similarly opt-in.
+
+---
+*Runbook v5.22 — Phase 5C-2C-C5N-0*

@@ -57,6 +57,7 @@
 | 0.25.11 | 2026-06-15 | Phase 5C-2C-C5M-1 | ✅ COMPLETE — One-shot Controlled Promote (15/15 pre-promote PASS, 2 files promoted & hash-verified, backup+history written; only 2 prod targets; no Telegram, no timer, no model, no media) |
 | 0.25.12 | 2026-06-15 | Phase 5C-2C-C5M1A | ✅ COMPLETE — Post-Promote Validation Gap Fix (14/14 post-promote PASS; 5 `<button>`→`<a data-safety="safe-localhost-confirm-phrase-gated">`; new validator check 6b for data-safety allow-list; protected paths md5-verified unchanged) |
 | 0.25.13 | 2026-06-15 | Phase 5C-2C-C5M1B | ✅ COMPLETE — Dashboard Safety Hardening v2 (new policy file `dashboard/control-safety-policy.json`; new standalone 12-check validator; inline validator now reads policy; 11/11 validations PASS; protected paths md5-verified unchanged) |
+| 0.25.14 | 2026-06-15 | Phase 5C-2C-C5N-0 | ✅ COMPLETE — Continuous Controlled Promote Workflow Plan (plan-only, NOT enabled; new config + planner + 27-check validator + GET/POST endpoints; auto-rollback DISABLED; manual-rollback supported; no new timer/cron/systemd; 16/16 validations PASS; smoke-tested GET + POST; protected paths md5-verified unchanged) |
 | 0.9.3 | 2026-06-11 | Phase 4A | ✅ COMPLETE — Manual daily digest runbook |
 | 0.9.4 | 2026-06-11 | Phase 4B-1 | ✅ COMPLETE — Timer enabled, daily 07:30 CST |
 | 0.9.5 | 2026-06-11 | Phase 4B-1a | ✅ COMPLETE — Timer persistence and safety check (Linger=yes, PASS) |

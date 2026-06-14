@@ -1246,6 +1246,47 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5N-0: Continuous Controlled Promote Workflow Panel -->
+<div id="continuous-promote-workflow-panel" class="continuous-promote-workflow-panel" style="display:none;">
+  <div class="section" style="background:#ecfeff;border:1px solid #06b6d4;">
+    <h2>♾️ Continuous Controlled Promote / 持续受控推送</h2>
+    <div id="continuous-promote-workflow-status" style="margin-bottom:12px;"></div>
+    <div id="continuous-promote-workflow-details" style="margin-top:10px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#dc2626;color:#fff;padding:12px 16px;border-radius:8px;font-size:0.9rem;font-weight:600;">
+      ⚠️ 本阶段只设计持续受控推送工作流，不启用自动 promote，不发送 Telegram，不新增 timer。
+    </div>
+    <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;">
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Enabled?</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;" id="cwf-enabled">DISABLED (plan only)</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Env gate</div>
+        <div style="font-size:0.8rem;color:#1e3a5f;" id="cwf-env-gate">CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Confirm phrase</div>
+        <div style="font-size:0.8rem;color:#1e3a5f;">PROMOTE DAILY DIGEST FROM SANDBOX</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Backup retention</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="cwf-backup-retention">7 days</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Auto-rollback</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;" id="cwf-auto-rollback">DISABLED (manual only)</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Manual rollback</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#16a34a;">SUPPORTED</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Blocked actions:</strong> automatic_production_write, telegram_send, timer, collect, generate, git, unattended_promote, auto_rollback, media_generation, model_call
+    </div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5G: Load promote readiness
     function loadPromoteReadiness() {
@@ -1648,6 +1689,39 @@
       });
     }
 
+    // Phase 5C-2C-C5N-0: Load continuous promote workflow (read-only)
+    function loadContinuousPromoteWorkflow() {
+      var base = location.protocol + '//' + location.host;
+      var panel = document.getElementById('continuous-promote-workflow-panel');
+      if (panel) panel.style.display = 'block';
+      var statusDiv = document.getElementById('continuous-promote-workflow-status');
+      var detailsDiv = document.getElementById('continuous-promote-workflow-details');
+      if (!statusDiv) return;
+      fetch(base + '/api/daily-digest/continuous-promote-workflow')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var sHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:10px;">';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#dc2626;">' + (data.continuous_promote_enabled ? 'ENABLED' : 'DISABLED') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Continuous promote</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#dc2626;">' + (data.production_write_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Production write</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#dc2626;">' + (data.telegram_send_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Telegram send</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#1e3a5f;">' + (data.stages ? data.stages.length : 0) + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Workflow stages</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#1e3a5f;">' + (data.blocked_stages ? data.blocked_stages.length : 0) + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Blocked stages</div></div>';
+          sHtml += '</div>';
+          statusDiv.innerHTML = sHtml;
+          var dHtml = '<div style="margin-top:10px;font-size:0.85rem;color:#555;">';
+          dHtml += '<div><strong>Mode:</strong> ' + data.mode + ' (Phase 5C-2C-C5N-0)</div>';
+          dHtml += '<div><strong>Required env gate:</strong> <code>' + data.env_gate + '</code></div>';
+          dHtml += '<div><strong>Required confirm phrase:</strong> <code>' + data.confirm_phrase + '</code></div>';
+          dHtml += '<div><strong>Backup retention:</strong> ' + data.backup_retention_days + ' days</div>';
+          dHtml += '<div><strong>Auto-rollback:</strong> ' + (data.auto_rollback_enabled ? 'ENABLED' : 'DISABLED') + '</div>';
+          dHtml += '<div><strong>Next eligible stage:</strong> ' + (data.next_eligible_stage || 'NONE') + '</div>';
+          dHtml += '<div style="margin-top:6px;"><strong>Recommendation:</strong> ' + data.recommendation + '</div>';
+          dHtml += '</div>';
+          if (detailsDiv) detailsDiv.innerHTML = dHtml;
+        })
+        .catch(function(e) { console.log('Continuous promote workflow load failed:', e); });
+    }
+
     // Load on page init
     loadSandboxStatus();
     loadLatestBuildStatus();
@@ -1659,6 +1733,7 @@
     loadPromoteExecutionDisabled();
     loadPromoteApprovalPack();
     loadControlledPromoteStatus();
+    loadContinuousPromoteWorkflow();
   </script>
 
   <script>

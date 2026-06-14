@@ -1,0 +1,41 @@
+PHASE-5C-2C-C5N0-CONTINUOUS-CONTROLLED-PROMOTE-WORKFLOW-PLAN COMPLETE
+
+状态：plan_only (NOT enabled)
+
+- WHAT_CHANGED:
+  * dashboard/daily-digest-continuous-promote-workflow.json (NEW): 10-stage config
+  * dashboard/daily-digest-continuous-promote-workflow-status.json (NEW): planner output
+  * scripts/daily-digest-continuous-promote-planner.ts (NEW): plan-only planner
+  * scripts/validate-daily-digest-continuous-promote-workflow.ts (NEW): 27-check validator
+  * scripts/control-server.ts: +2 endpoints (GET plan, POST plan-regen)
+  * dashboard/control.html: +1 panel + JS loader
+  * package.json: +2 scripts (check, validate)
+  * docs/README/ROADMAP: updated
+- WORKFLOW_STAGES (10):
+  * 7 read-only: detect_candidate_sandbox_run, run_output_validation, run_diff_check, run_promote_readiness, run_promote_gate, build_human_approval_pack, post_promote_validation
+  * 3 blocked: wait_for_human_approval (no UI), one_shot_promote (env+phrase), rollback_if_human_approved (auto-rollback off)
+  * next_eligible: detect_candidate_sandbox_run
+- ENV_GATE: CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1 (planner does NOT read process.env)
+- HUMAN_APPROVAL: required_confirm=PROMOTE DAILY DIGEST FROM SANDBOX (reuses C5M1); plan_phrase=PLAN DAILY CONTINUOUS PROMOTE (new); rollback_phrase=ROLLBACK DAILY DIGEST PROMOTE
+- BACKUP_RETENTION: 7 days, max 3 per run_id, cleanup=manual
+- ROLLBACK: auto=disabled, manual=supported (reuses C5M1)
+- BLOCKED_ACTIONS: auto_production_write, telegram_send, timer, collect, generate, git, unattended_promote, auto_rollback, media_generation, model_call
+- API_ENDPOINTS:
+  * GET /api/daily-digest/continuous-promote-workflow: read-only status
+  * POST /api/daily-digest/continuous-promote-workflow/plan: token+plan_phrase, regenerates plan only
+- VALIDATION_RESULTS: 16/16 PASS (27/27 workflow, 12/12 dashboard safety, 16/16 control catalog, +C5M1)
+- SMOKE_TEST: server 127.0.0.1:18791; GET 200 OK; POST wrong phrase blocked; POST PLAN DAILY CONTINUOUS PROMOTE → success (real_execution=false); audit log no-token; server shutdown clean
+- MODEL_CALL_STATUS: NONE
+- GENERATED_MEDIA_STATUS: NONE
+- PROTECTED_PATH_CHECK (md5 unchanged): daily-digest.md=735002a3969746aefabc57c75b5220e8, telegram-digest.txt=53c2a73d440eb32967d1a9185763a6b3, status.json=d98c500cb52c78f57edd941cdedc7b49
+- LIMITATIONS:
+  (1) Planner does not read process.env; env_gate_satisfied conservatively false
+  (2) wait_for_human_approval is conceptual only (no UI/CLI yet)
+  (3) one_shot_promote + rollback stages gated but not wired to a loop
+  (4) Validator regex precise to avoid false positives on property names
+  (5) GET endpoint auto-generates status; production should run planner first
+- NEXT_PHASE_PROPOSAL: C5N-1 — continuous loop scaffolding with human-in-loop UI (per-stage confirm-phrase, retention-cleanup command, all transitions manual-merge gated)
+
+报告路径：
+~/.openclaw/workspace/projects/creative-quota-harvester/reports/continuous-controlled-promote-workflow.md
+~/.openclaw/workspace/projects/creative-quota-harvester/reports/continuous-promote-workflow-plan.md

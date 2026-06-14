@@ -82,6 +82,8 @@
     "validate:daily-digest-promote-approval-pack": "tsx scripts/validate-daily-digest-promote-approval-pack.ts",
     "validate:daily-digest-controlled-promote": "tsx scripts/validate-daily-digest-controlled-promote.ts",
     "validate:dashboard-control-safety": "tsx scripts/validate-dashboard-control-safety.ts",
+    "check:daily-digest-continuous-promote-workflow": "tsx scripts/daily-digest-continuous-promote-planner.ts",
+    "validate:daily-digest-continuous-promote-workflow": "tsx scripts/validate-daily-digest-continuous-promote-workflow.ts",
     "promote:daily-digest:controlled": "tsx scripts/daily-digest-controlled-promote.ts",
     "promote:daily-digest:rollback-plan": "tsx scripts/daily-digest-controlled-rollback.ts",
     "check:daily-digest-promote-approval-pack": "tsx scripts/daily-digest-promote-approval-pack.ts",

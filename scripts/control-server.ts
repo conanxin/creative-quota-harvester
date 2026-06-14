@@ -1389,6 +1389,86 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5N-0: Continuous promote workflow plan endpoint (POST, plan-only) ---
+  if (pathname === "/api/daily-digest/continuous-promote-workflow/plan" && req.method === "POST") {
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_continuous_promote_plan",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "PLAN DAILY CONTINUOUS PROMOTE";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_continuous_promote_plan",
+            result: "blocked",
+            blocked_reason: "confirm_phrase_mismatch",
+            message: `Plan endpoint blocked: phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_continuous_promote_plan",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        // Re-generate plan
+        const { planContinuousPromote } = require("./daily-digest-continuous-promote-planner");
+        const status = planContinuousPromote();
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_continuous_promote_plan",
+          risk_level: "low",
+          confirm_ok: true,
+          real_execution: false,
+          result: "success",
+          reason: "plan_regenerated",
+        });
+        jsonResponse(res, {
+          action_id: "daily_digest_continuous_promote_plan",
+          result: "success",
+          real_execution: false,
+          production_write_allowed: false,
+          status,
+        });
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_continuous_promote_plan",
+          result: "failed",
+          blocked_reason: "invalid_request",
+          error: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // --- Phase 5C-2C-C5M-1: Controlled promote endpoint ---
   if (pathname === "/api/daily-digest/promote/controlled" && req.method === "POST") {
     if (!acquireExecutionLock()) {
@@ -2014,6 +2094,29 @@ const server = http.createServer((req, res) => {
         total: records.length,
         records,
       });
+      return;
+    }
+
+    case "/api/daily-digest/continuous-promote-workflow": {
+      // Phase 5C-2C-C5N-0: Continuous Controlled Promote Workflow (read-only, plan only)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const statusPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-continuous-promote-workflow-status.json");
+      if (!fs.existsSync(statusPath)) {
+        // Try to generate on-the-fly
+        try {
+          const { planContinuousPromote } = require("./daily-digest-continuous-promote-planner");
+          const s = planContinuousPromote();
+          jsonResponse(res, s);
+        } catch (e: any) {
+          notFound(res, `workflow status not generated and planner failed: ${e.message}`);
+        }
+        return;
+      }
+      const status = JSON.parse(fs.readFileSync(statusPath, "utf-8"));
+      jsonResponse(res, status);
       return;
     }
 
