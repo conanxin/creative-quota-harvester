@@ -1,0 +1,25 @@
+Phase 5C-2C-C5M-0 complete. APPROVAL_PACK=ready. message_id=xxxxxx.
+
+📋 Promote Human Approval Pack
+
+STATUS: ✅ COMPLETE
+LATEST_RUN: sandbox-2026-06-14-06-50-12
+
+NO PRODUCTION WRITE WAS PERFORMED. This is a human approval pack only.
+
+VALIDATION:
+- Promote gate: ✅
+- Shadow copy: ✅
+- Sandbox output: ✅
+- Diff summary: ✅
+- Rollback manifest: ✅
+
+COPY_MAP:
+- sandbox/outputs/daily-digest.md → reports/daily-digest.md
+- sandbox/outputs/telegram-digest.txt → reports/telegram-digest.txt
+
+CONFIRM: "PROMOTE DAILY DIGEST FROM SANDBOX"
+
+HUMAN_CHECKLIST: 8 items
+
+LIMITATION: Approval pack only. No actual promote.

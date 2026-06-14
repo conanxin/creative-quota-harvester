@@ -1957,3 +1957,80 @@ Expected: All PASS.
 
 ---
 *Runbook v5.18 — Phase 5C-2C-C5L*
+
+## Phase 5C-2C-C5M-0 — Promote Human Approval Pack
+
+Phase 5C-2C-C5M-0 generates the **human approval pack** for future one-shot controlled promote. It provides all the information a human needs to approve or reject the promote action. No actual promote, no production write, no send.
+
+### What Changed
+
+- New `dashboard/daily-digest-promote-approval-pack.json` — approval pack configuration
+- New `scripts/daily-digest-promote-approval-pack.ts` — approval pack generator
+- New `scripts/validate-daily-digest-promote-approval-pack.ts` — approval pack validator (44 checks)
+- New `GET /api/daily-digest/promote-approval-pack` endpoint — read-only approval pack
+- Updated `dashboard/control.html` — approval pack panel
+- Updated `package.json` — added validate + check scripts
+
+### Approval Pack Contents
+
+- latest_run_id
+- sandbox source files (hash, size, mtime)
+- future production target files (current state)
+- backup status (backup preview + rollback manifest)
+- validation evidence (gate, shadow, output, diff)
+- diff summary
+- human checklist (8 items)
+- required confirm phrase
+- explicit no-production-write statement
+
+### Human Checklist
+
+1. I have reviewed the latest sandbox run outputs
+2. I have reviewed the diff summary between sandbox and production
+3. I have reviewed the rollback manifest
+4. I have confirmed production backup preview is valid
+5. I have confirmed all validation evidence passes
+6. I understand this is a one-shot controlled promote
+7. I will provide the required confirm phrase at execution time
+8. I accept responsibility for the production write
+
+### Safety Invariants
+
+- real_promote_allowed=false (always in C5M-0)
+- production_write_allowed=false (always in C5M-0)
+- telegram_send_allowed=false (always in C5M-0)
+- approval_decision=not_requested
+- No production write performed
+
+### How to Validate
+
+```bash
+npm run check:daily-digest-promote-approval-pack
+npm run validate:daily-digest-promote-approval-pack
+npm run validate:daily-digest-promote-executor-disabled
+npm run validate:daily-digest-promote-execution-review
+npm run validate:daily-digest-promote-gate
+npm run validate:daily-digest-promote-shadow-copy
+npm run validate:daily-digest-promote-dry-run
+npm run validate:daily-digest-promote-readiness
+npm run validate:daily-digest-sandbox-output-tools
+npm run validate:daily-digest-sandbox-build-pilot
+npm run validate:daily-digest-sandbox-manager
+npm run validate:sanitizer-secret-completeness
+npm run validate:sanitizer-false-positives
+npm run validate:telegram-sanitizer
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+### Files
+
+- `dashboard/daily-digest-promote-approval-pack.json` — approval pack config
+- `scripts/daily-digest-promote-approval-pack.ts` — approval pack generator
+- `scripts/validate-daily-digest-promote-approval-pack.ts` — approval pack validator (44 checks)
+- `dashboard/daily-digest-promote-approval-pack.json` — generated approval pack output
+- `reports/promote-human-approval-pack.md` — human-readable approval pack
+
+---
+*Runbook v5.19 — Phase 5C-2C-C5M-0*

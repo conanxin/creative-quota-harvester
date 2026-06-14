@@ -1,0 +1,85 @@
+{
+  "phase": "5C-2C-C5M-0",
+  "mode": "human_approval_pack_only",
+  "version": "0.1.0",
+  "generated_at": "2026-06-14T14:16:04.448Z",
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "required_human_approval": true,
+  "required_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "approval_decision": "not_requested",
+  "future_allowed_operation": "one-shot controlled promote",
+  "latest_run_id": "sandbox-2026-06-14-06-50-12",
+  "sandbox_source_files": {
+    "daily-digest.md": {
+      "file": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/sandbox/daily-digest/sandbox-2026-06-14-06-50-12/outputs/daily-digest.md",
+      "exists": true,
+      "size": 2970,
+      "mtime": 1781419813308.549,
+      "hash": "c43bc22fe5e75e26"
+    },
+    "telegram-digest.txt": {
+      "file": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/sandbox/daily-digest/sandbox-2026-06-14-06-50-12/outputs/telegram-digest.txt",
+      "exists": true,
+      "size": 1763,
+      "mtime": 1781419813308.549,
+      "hash": "de89425d568ecb8d"
+    }
+  },
+  "future_production_target_files": {
+    "daily-digest.md": {
+      "file": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/daily-digest.md",
+      "exists": true,
+      "size": 2970,
+      "mtime": 1781393570163.2952,
+      "hash": "40aeed2d1905e6cf"
+    },
+    "telegram-digest.txt": {
+      "file": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/telegram-digest.txt",
+      "exists": true,
+      "size": 1763,
+      "mtime": 1781393570163.2952,
+      "hash": "cd5e5d3d1005ac36"
+    }
+  },
+  "backup_status": {
+    "backup_preview_exists": true,
+    "backup_preview_files": [
+      "daily-digest.md",
+      "telegram-digest.txt"
+    ],
+    "rollback_manifest_exists": true
+  },
+  "validation_evidence": {
+    "promote_gate_pass": true,
+    "shadow_copy_pass": true,
+    "sandbox_output_validation_pass": true,
+    "diff_summary_exists": true
+  },
+  "diff_summary": {
+    "exists": true,
+    "files_compared": 2
+  },
+  "human_checklist": [
+    "I have reviewed the latest sandbox run outputs",
+    "I have reviewed the diff summary between sandbox and production",
+    "I have reviewed the rollback manifest",
+    "I have confirmed production backup preview is valid",
+    "I have confirmed all validation evidence passes",
+    "I understand this is a one-shot controlled promote",
+    "I will provide the required confirm phrase at execution time",
+    "I accept responsibility for the production write"
+  ],
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "collect",
+    "timer",
+    "git",
+    "promote"
+  ],
+  "explicit_no_production_write": "NO PRODUCTION WRITE WAS PERFORMED. This is a human approval pack only.",
+  "output_files": [],
+  "safe_next_step": "All evidence met. Approval pack is ready. Human review and confirm phrase required for actual promote execution."
+}

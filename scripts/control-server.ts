@@ -1909,6 +1909,18 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/promote-approval-pack": {
+      // Phase 5C-2C-C5M-0: Read promote approval pack (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { generateApprovalPack } = require("./daily-digest-promote-approval-pack");
+      const pack = generateApprovalPack();
+      jsonResponse(res, pack);
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;

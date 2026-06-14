@@ -1201,6 +1201,18 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5M-0: Promote Approval Pack Panel -->
+<div id="promote-approval-pack-panel" class="promote-approval-pack-panel" style="display:none;">
+  <div class="section" style="background:#f0fdf4;border:1px solid #16a34a;">
+    <h2>📋 Promote Approval Pack / 推送人工审批包</h2>
+    <div id="promote-approval-pack-status" style="margin-bottom:12px;"></div>
+    <div id="promote-approval-pack-details" style="margin-top:10px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      ⚠️ 本阶段只生成审批包，不覆盖 production、不发送 Telegram。
+    </div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5G: Load promote readiness
     function loadPromoteReadiness() {
@@ -1518,6 +1530,56 @@
         });
     }
 
+    // Phase 5C-2C-C5M-0: Load promote approval pack
+    function loadPromoteApprovalPack() {
+      var base = location.protocol + '//' + location.host;
+      fetch(base + '/api/daily-digest/promote-approval-pack')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var panel = document.getElementById('promote-approval-pack-panel');
+          if (panel) panel.style.display = 'block';
+          var statusDiv = document.getElementById('promote-approval-pack-status');
+          if (statusDiv) {
+            var allEvidence = data.validation_evidence && Object.values(data.validation_evidence).every(function(v) { return v; });
+            var ready = allEvidence && data.backup_status && data.backup_status.rollback_manifest_exists;
+            var statusColor = ready ? '#22c55e' : '#f59e0b';
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:10px;">';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.1rem;font-weight:700;color:' + statusColor + ';">' + (ready ? 'READY' : 'PENDING') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Pack Status</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.latest_run_id || 'N/A') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Latest Run</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">NOT_REQUESTED</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Decision</div></div>';
+            html += '</div>';
+            statusDiv.innerHTML = html;
+          }
+          var detailsDiv = document.getElementById('promote-approval-pack-details');
+          if (detailsDiv) {
+            var evHtml = '<div style="margin-top:10px;"><strong>Validation Evidence:</strong></div>';
+            evHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:8px;">';
+            if (data.validation_evidence) {
+              for (var key in data.validation_evidence) {
+                var v = data.validation_evidence[key];
+                evHtml += '<div style="background:#fff;border-radius:6px;padding:8px;border:1px solid ' + (v ? '#22c55e' : '#ef4444') + ';"><div style="font-size:0.75rem;color:#7f8c8d;">' + key + '</div><div style="font-size:0.8rem;color:' + (v ? '#22c55e' : '#ef4444') + ';">' + (v ? '✅' : '❌') + '</div></div>';
+              }
+            }
+            evHtml += '</div>';
+            if (data.backup_status) {
+              evHtml += '<div style="margin-top:10px;font-size:0.8rem;color:#555;"><strong>Backup:</strong> preview=' + (data.backup_status.backup_preview_exists ? '✅' : '❌') + ', rollback=' + (data.backup_status.rollback_manifest_exists ? '✅' : '❌') + '</div>';
+            }
+            if (data.human_checklist && data.human_checklist.length > 0) {
+              evHtml += '<div style="margin-top:10px;font-size:0.8rem;color:#555;"><strong>Human Checklist (' + data.human_checklist.length + ' items):</strong></div><ol style="font-size:0.75rem;color:#555;margin-top:4px;">';
+              for (var i = 0; i < data.human_checklist.length; i++) {
+                evHtml += '<li>' + data.human_checklist[i] + '</li>';
+              }
+              evHtml += '</ol>';
+            }
+            evHtml += '<div style="margin-top:10px;font-size:0.8rem;color:#dc2626;font-weight:600;">' + (data.explicit_no_production_write || '') + '</div>';
+            detailsDiv.innerHTML = evHtml;
+          }
+        })
+        .catch(function(e) {
+          console.log('Promote approval pack load failed:', e);
+        });
+    }
+
     // Load on page init
     loadSandboxStatus();
     loadLatestBuildStatus();
@@ -1527,6 +1589,7 @@
     loadPromoteGate();
     loadPromoteExecutionReview();
     loadPromoteExecutionDisabled();
+    loadPromoteApprovalPack();
   </script>
 
   <script>
