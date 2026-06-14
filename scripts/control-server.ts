@@ -1799,6 +1799,18 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/promote-execution-review": {
+      // Phase 5C-2C-C5K: Read promote execution review (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { reviewPromoteExecution } = require("./daily-digest-promote-execution-review");
+      const review = reviewPromoteExecution();
+      jsonResponse(res, review);
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;

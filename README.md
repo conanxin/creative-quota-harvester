@@ -74,6 +74,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-2C-C5H** | **✅ Complete** | **Sandbox Promote Dry-run / Copy Plan (dry-run plan, copy map, backup/rollback, human approval)** |
 | **Phase 5C-2C-C5I** | **✅ Complete** | **Promote Shadow Copy / Backup Plan (shadow copy of production, candidate preview, rollback manifest, promote checklist)** |
 | **Phase 5C-2C-C5J** | **✅ Complete** | **Promote Commit Gate (13/13 evidence met, gate_status=pass, all preconditions satisfied)** |
+| **Phase 5C-2C-C5K** | **✅ Complete** | **Promote Execution Design Review (design review, 6/6 evidence met, recommendation=allow_next_phase_design_only)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

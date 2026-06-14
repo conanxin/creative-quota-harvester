@@ -1856,3 +1856,41 @@ Expected: All PASS.
 
 ---
 *Runbook v5.16 — Phase 5C-2C-C5J*
+
+## Phase 5C-2C-C5K — Promote Execution Design Review
+
+Phase 5C-2C-C5K establishes the **promote execution design review** that evaluates the future promote execution protocol.
+
+### What Changed
+
+- New `dashboard/daily-digest-promote-execution-design.json` — execution design configuration
+- New `scripts/daily-digest-promote-execution-review.ts` — execution reviewer
+- New `scripts/validate-daily-digest-promote-execution-review.ts` — execution review validator (37 checks)
+- New `GET /api/daily-digest/promote-execution-review` endpoint — read-only execution review
+- Updated `dashboard/control.html` — promote execution review panel
+- Updated `package.json` — added validate + check scripts
+
+### Recommendation Levels
+
+| Recommendation | Meaning |
+|----------------|---------|
+| `allow_next_phase_design_only` | Design review complete, next phase can implement |
+| `allow_controlled_promote` | All checks pass, promote can be executed |
+| `block` | Missing requirements, must complete previous phases |
+
+### Safety Invariants
+
+- real_promote_allowed=false
+- production_write_allowed=false
+- telegram_send_allowed=false
+- confirm_phrase required for any promote action
+- human_approval required for any promote action
+
+### Files
+
+- `dashboard/daily-digest-promote-execution-design.json` — execution design config
+- `scripts/daily-digest-promote-execution-review.ts` — execution reviewer
+- `scripts/validate-daily-digest-promote-execution-review.ts` — execution review validator (37 checks)
+
+---
+*Runbook v5.17 — Phase 5C-2C-C5K*

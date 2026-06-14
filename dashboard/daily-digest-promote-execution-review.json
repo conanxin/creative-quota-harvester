@@ -1,0 +1,86 @@
+{
+  "phase": "5C-2C-C5K",
+  "mode": "promote_execution_design_only",
+  "version": "0.1.0",
+  "generated_at": "2026-06-14T13:42:20.259Z",
+  "recommendation": "allow_next_phase_design_only",
+  "promote_gate_status": "pass",
+  "latest_run_id": "sandbox-2026-06-14-06-50-12",
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "required_human_approval": true,
+  "required_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "evidence": {
+    "promote_gate_pass": {
+      "met": true,
+      "message": "Gate status: pass"
+    },
+    "shadow_copy_pass": {
+      "met": true,
+      "message": "Shadow copy directory exists"
+    },
+    "rollback_manifest_exists": {
+      "met": true,
+      "message": "Rollback manifest exists"
+    },
+    "protected_paths_snapshot_exists": {
+      "met": true,
+      "message": "Production backup preview contains 2 files"
+    },
+    "sandbox_output_validation_pass": {
+      "met": true,
+      "message": "Both outputs exist"
+    },
+    "diff_summary_reviewed": {
+      "met": true,
+      "message": "Diff summary exists (review required)"
+    }
+  },
+  "unresolved_risks": [],
+  "required_locks": [
+    "promote_lock",
+    "execution_lock"
+  ],
+  "allowed_copy_map": {
+    "daily-digest.md": {
+      "source": "sandbox/outputs/daily-digest.md",
+      "target": "reports/daily-digest.md"
+    },
+    "telegram-digest.txt": {
+      "source": "sandbox/outputs/telegram-digest.txt",
+      "target": "reports/telegram-digest.txt"
+    }
+  },
+  "rollback_readiness": {
+    "rollback_supported": true,
+    "rollback_manifest_exists": true,
+    "backup_files_planned": [
+      "reports/daily-digest.md.bak",
+      "reports/telegram-digest.txt.bak"
+    ]
+  },
+  "validation_gates_after_copy": [
+    "validate:telegram-sanitizer",
+    "validate:sanitizer-secret-completeness",
+    "validate:digest-freshness"
+  ],
+  "proposed_execution_steps": [
+    "1. Acquire promote lock",
+    "2. Recheck latest gate status",
+    "3. Backup production files",
+    "4. Copy sandbox daily-digest.md to production",
+    "5. Copy sandbox telegram-digest.txt to production",
+    "6. Verify hashes/sizes",
+    "7. Run validation scripts",
+    "8. Write promote audit record",
+    "9. Release lock"
+  ],
+  "rollback_steps": [
+    "1. Restore production backups from .bak files",
+    "2. Verify hashes match pre-promote state",
+    "3. Write rollback audit record"
+  ],
+  "safe_next_step": "All evidence met. Design review complete. Next phase can implement actual promote execution with safety guards.",
+  "output_files": []
+}

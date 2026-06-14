@@ -1,0 +1,85 @@
+{
+  "phase": "5C-2C-C5K",
+  "mode": "promote_execution_design_only",
+  "version": "0.1.0",
+  "updated_at": "2026-06-14T13:37:00Z",
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "required_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "required_human_approval": true,
+  "required_evidence": {
+    "promote_gate_pass": {
+      "description": "Promote gate must show pass status",
+      "required": true,
+      "source": "dashboard/daily-digest-promote-gate.json"
+    },
+    "shadow_copy_pass": {
+      "description": "Shadow copy must be created successfully",
+      "required": true,
+      "source": "promote-shadow/"
+    },
+    "rollback_manifest_exists": {
+      "description": "Rollback manifest must exist",
+      "required": true,
+      "source": "promote-shadow/rollback-manifest.json"
+    },
+    "protected_paths_snapshot_exists": {
+      "description": "Protected paths snapshot must exist in shadow copy",
+      "required": true,
+      "source": "promote-shadow/production-backup-preview/"
+    },
+    "sandbox_output_validation_pass": {
+      "description": "Sandbox output validation must pass",
+      "required": true,
+      "source": "validate-daily-digest-sandbox-output.ts"
+    },
+    "diff_summary_reviewed": {
+      "description": "Diff summary must be reviewed",
+      "required": true,
+      "source": "diffs/diff-summary.json"
+    }
+  },
+  "proposed_execution_steps": [
+    "1. Acquire promote lock (prevent concurrent promote)",
+    "2. Recheck latest gate status (must be pass)",
+    "3. Backup production files (reports/daily-digest.md, reports/telegram-digest.txt)",
+    "4. Copy sandbox daily-digest.md to production",
+    "5. Copy sandbox telegram-digest.txt to production",
+    "6. Verify hashes and sizes against rollback manifest",
+    "7. Run validation scripts (sanitizer, digest-freshness)",
+    "8. Write promote audit record",
+    "9. Release lock"
+  ],
+  "rollback_steps": [
+    "1. Restore production backups from .bak files",
+    "2. Verify hashes match pre-promote state",
+    "3. Write rollback audit record"
+  ],
+  "allowed_copy_map": {
+    "daily-digest.md": {
+      "source": "sandbox/outputs/daily-digest.md",
+      "target": "reports/daily-digest.md"
+    },
+    "telegram-digest.txt": {
+      "source": "sandbox/outputs/telegram-digest.txt",
+      "target": "reports/telegram-digest.txt"
+    }
+  },
+  "blocked_in_this_phase": [
+    "production_write",
+    "telegram_send",
+    "collect",
+    "timer",
+    "git",
+    "promote"
+  ],
+  "design_rationale": "Future promote is a multi-step atomic operation requiring lock, backup, copy, verify, and audit. Each step is gated by a validation check. Rollback is supported via .bak files. Human approval is required at confirmation step.",
+  "safety_invariants": [
+    "real_promote_allowed=false (always, until design review complete)",
+    "production_write_allowed=false (always, until promote execution enabled)",
+    "telegram_send_allowed=false (always, until send enabled)",
+    "confirm_phrase required for any promote action",
+    "human_approval required for any promote action"
+  ]
+}

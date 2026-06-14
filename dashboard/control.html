@@ -1177,6 +1177,18 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5K: Promote Execution Review Panel -->
+<div id="promote-execution-review-panel" class="promote-execution-review-panel" style="display:none;">
+  <div class="section" style="background:#eff6ff;border:1px solid #3b82f6;">
+    <h2>📋 Promote Execution Review / 推送执行审查</h2>
+    <div id="promote-execution-review-status" style="margin-bottom:12px;"></div>
+    <div id="promote-execution-review-details" style="margin-top:10px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      ⚠️ 本阶段只审查未来 promote 执行协议，不覆盖 production、不发送 Telegram。
+    </div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5G: Load promote readiness
     function loadPromoteReadiness() {
@@ -1420,6 +1432,44 @@
         });
     }
 
+    // Phase 5C-2C-C5K: Load promote execution review
+    function loadPromoteExecutionReview() {
+      var base = location.protocol + '//' + location.host;
+      fetch(base + '/api/daily-digest/promote-execution-review')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var panel = document.getElementById('promote-execution-review-panel');
+          if (panel) panel.style.display = 'block';
+          var statusDiv = document.getElementById('promote-execution-review-status');
+          if (statusDiv) {
+            var recColor = data.recommendation === 'allow_controlled_promote' ? '#22c55e' : (data.recommendation === 'allow_next_phase_design_only' ? '#3b82f6' : '#ef4444');
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:10px;">';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:' + recColor + ';">' + (data.recommendation || 'N/A').toUpperCase() + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Recommendation</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.latest_run_id || 'N/A') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Latest Run</div></div>';
+            html += '</div>';
+            statusDiv.innerHTML = html;
+          }
+          var detailsDiv = document.getElementById('promote-execution-review-details');
+          if (detailsDiv && data.evidence) {
+            var evHtml = '<div style="margin-top:10px;"><strong>Evidence:</strong></div>';
+            evHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:8px;">';
+            for (var key in data.evidence) {
+              var p = data.evidence[key];
+              evHtml += '<div style="background:#fff;border-radius:6px;padding:8px;border:1px solid ' + (p.met ? '#22c55e' : '#ef4444') + ';"><div style="font-size:0.75rem;color:#7f8c8d;">' + key + '</div><div style="font-size:0.75rem;color:' + (p.met ? '#22c55e' : '#ef4444') + ';">' + (p.met ? '✅' : '❌') + ' ' + p.message + '</div></div>';
+            }
+            evHtml += '</div>';
+            if (data.unresolved_risks && data.unresolved_risks.length > 0) {
+              evHtml += '<div style="margin-top:10px;color:#f59e0b;"><strong>Unresolved Risks:</strong> ' + data.unresolved_risks.join(', ') + '</div>';
+            }
+            evHtml += '<div style="margin-top:10px;font-size:0.8rem;color:#555;"><strong>Next step:</strong> ' + (data.safe_next_step || '') + '</div>';
+            detailsDiv.innerHTML = evHtml;
+          }
+        })
+        .catch(function(e) {
+          console.log('Promote execution review load failed:', e);
+        });
+    }
+
     // Load on page init
     loadSandboxStatus();
     loadLatestBuildStatus();
@@ -1427,6 +1477,7 @@
     loadPromoteDryRun();
     loadPromoteShadow();
     loadPromoteGate();
+    loadPromoteExecutionReview();
   </script>
 
   <script>

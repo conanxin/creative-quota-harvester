@@ -91,6 +91,10 @@ function redact(text: string): string {
 }
 
 export function checkPromoteGate(): GateResult {
+  // Read config first to preserve required_evidence in output
+  const configPath = path.join(HARVESTER_DIR, "dashboard/daily-digest-promote-gate.json");
+  const config = loadJson(configPath);
+
   const result: GateResult = {
     phase: "5C-2C-C5J",
     mode: "promote_gate_only",
@@ -101,6 +105,21 @@ export function checkPromoteGate(): GateResult {
     real_promote_allowed: false,
     production_write_allowed: false,
     telegram_send_allowed: false,
+    required_evidence: config?.required_evidence && Object.keys(config.required_evidence).length > 0 ? config.required_evidence : {
+      latest_sandbox_run_exists: { description: "Latest sandbox run must exist", required: true, source: "reports/sandbox/daily-digest/latest.json" },
+      sandbox_build_success: { description: "Sandbox build must have succeeded", required: true, source: "build-summary.json" },
+      sandbox_output_validation_pass: { description: "Sandbox output validation must pass", required: true, source: "validate-daily-digest-sandbox-output.ts" },
+      secret_scan_pass: { description: "No secrets found in sandbox outputs", required: true, source: "validate-daily-digest-sandbox-output.ts" },
+      tool_residue_scan_pass: { description: "No tool residues found in sandbox outputs", required: true, source: "validate-daily-digest-sandbox-output.ts" },
+      diff_summary_exists: { description: "Diff summary must exist", required: true, source: "daily-digest-sandbox-diff.ts" },
+      promote_readiness_ready: { description: "Promote readiness checker must show ready", required: true, source: "daily-digest-promote-readiness.ts" },
+      promote_dry_run_pass: { description: "Promote dry-run plan must pass", required: true, source: "daily-digest-promote-dry-run.ts" },
+      shadow_copy_pass: { description: "Shadow copy must be created successfully", required: true, source: "daily-digest-promote-shadow-copy.ts" },
+      rollback_manifest_exists: { description: "Rollback manifest must exist", required: true, source: "promote-shadow/rollback-manifest.json" },
+      promote_checklist_exists: { description: "Promote checklist must exist", required: true, source: "promote-shadow/promote-checklist.md" },
+      protected_paths_unchanged: { description: "Production protected paths must be unchanged", required: true, source: "build-summary.json" },
+      human_approval_required: { description: "Human approval required before any promote", required: true, source: "policy" },
+    },
     evidence: {},
     missing_requirements: [],
     blocked_actions: [
@@ -112,7 +131,7 @@ export function checkPromoteGate(): GateResult {
       "promote",
     ],
     human_approval_required: true,
-    future_confirm_phrase: "PROMOTE DAILY DIGEST FROM SANDBOX",
+    future_confirm_phrase: config?.future_confirm_phrase || "PROMOTE DAILY DIGEST FROM SANDBOX",
     future_confirm_phrase_enabled: false,
     safe_next_step: "",
     output_files: [],

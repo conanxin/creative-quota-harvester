@@ -2,12 +2,79 @@
   "phase": "5C-2C-C5J",
   "mode": "promote_gate_only",
   "version": "0.1.0",
-  "generated_at": "2026-06-14T13:13:10.907Z",
+  "generated_at": "2026-06-14T13:42:06.762Z",
   "gate_status": "pass",
   "latest_run_id": "sandbox-2026-06-14-06-50-12",
   "real_promote_allowed": false,
   "production_write_allowed": false,
   "telegram_send_allowed": false,
+  "required_evidence": {
+    "latest_sandbox_run_exists": {
+      "description": "Latest sandbox run must exist",
+      "required": true,
+      "source": "reports/sandbox/daily-digest/latest.json"
+    },
+    "sandbox_build_success": {
+      "description": "Sandbox build must have succeeded",
+      "required": true,
+      "source": "build-summary.json"
+    },
+    "sandbox_output_validation_pass": {
+      "description": "Sandbox output validation must pass",
+      "required": true,
+      "source": "validate-daily-digest-sandbox-output.ts"
+    },
+    "secret_scan_pass": {
+      "description": "No secrets found in sandbox outputs",
+      "required": true,
+      "source": "validate-daily-digest-sandbox-output.ts"
+    },
+    "tool_residue_scan_pass": {
+      "description": "No tool residues found in sandbox outputs",
+      "required": true,
+      "source": "validate-daily-digest-sandbox-output.ts"
+    },
+    "diff_summary_exists": {
+      "description": "Diff summary must exist",
+      "required": true,
+      "source": "daily-digest-sandbox-diff.ts"
+    },
+    "promote_readiness_ready": {
+      "description": "Promote readiness checker must show ready",
+      "required": true,
+      "source": "daily-digest-promote-readiness.ts"
+    },
+    "promote_dry_run_pass": {
+      "description": "Promote dry-run plan must pass",
+      "required": true,
+      "source": "daily-digest-promote-dry-run.ts"
+    },
+    "shadow_copy_pass": {
+      "description": "Shadow copy must be created successfully",
+      "required": true,
+      "source": "daily-digest-promote-shadow-copy.ts"
+    },
+    "rollback_manifest_exists": {
+      "description": "Rollback manifest must exist",
+      "required": true,
+      "source": "promote-shadow/rollback-manifest.json"
+    },
+    "promote_checklist_exists": {
+      "description": "Promote checklist must exist",
+      "required": true,
+      "source": "promote-shadow/promote-checklist.md"
+    },
+    "protected_paths_unchanged": {
+      "description": "Production protected paths must be unchanged",
+      "required": true,
+      "source": "build-summary.json"
+    },
+    "human_approval_required": {
+      "description": "Human approval required before any promote",
+      "required": true,
+      "source": "policy"
+    }
+  },
   "evidence": {
     "latest_sandbox_run_exists": {
       "met": true,

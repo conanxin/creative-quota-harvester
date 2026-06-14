@@ -75,6 +75,8 @@
     "check:daily-digest-promote-shadow-copy": "tsx scripts/daily-digest-promote-shadow-copy.ts",
     "validate:daily-digest-promote-gate": "tsx scripts/validate-daily-digest-promote-gate.ts",
     "check:daily-digest-promote-gate": "tsx scripts/daily-digest-promote-gate.ts",
+    "validate:daily-digest-promote-execution-review": "tsx scripts/validate-daily-digest-promote-execution-review.ts",
+    "check:daily-digest-promote-execution-review": "tsx scripts/daily-digest-promote-execution-review.ts",
     "validate:daily-digest-builder-sandbox-refactor": "tsx scripts/validate-daily-digest-builder-sandbox-refactor.ts",
     "validate:daily-digest-sandbox-interface": "tsx scripts/validate-daily-digest-sandbox-interface.ts",
     "validate:daily-digest-sandbox-guards": "tsx scripts/validate-daily-digest-sandbox-guards.ts",
