@@ -1,0 +1,94 @@
+Phase 5C-2C-C5B Daily Digest Build Readiness — COMPLETE ✅
+
+Status: Readiness audit completed. 118 files scanned. 62 builders detected. Ready: partial.
+Date: 2026-06-14
+
+---
+
+What Changed:
+- Created: scripts/audit-daily-digest-build-readiness.ts
+- Created: scripts/validate-daily-digest-build-readiness.ts
+- Created: dashboard/daily-digest-build-readiness.json
+- Modified: package.json (+audit/validate scripts)
+- Modified: scripts/control-server.ts (+GET /api/daily-digest/build-readiness)
+- Modified: dashboard/control.html (+Digest Build Readiness panel)
+
+---
+
+Readiness Result:
+Ready for sandbox build: PARTIAL
+Files scanned: 118
+Builders detected: 62
+
+---
+
+Blocked Risks:
+- collect: ❌ blocked
+- telegram_send: ❌ blocked
+- timer: ❌ blocked
+- model_call: ⚠️ detected (30+ builders)
+- media_generation: ✅ safe
+- production_write: ❌ blocked
+
+---
+
+Production Write Paths Detected:
+- dashboard/status.json
+- reports/telegram-digest.txt
+- reports/daily-digest.md
+- reports/daily/
+
+---
+
+Required Refactors:
+1. Refactor builders to accept --output-dir parameter
+2. Ensure collect disabled in sandbox mode
+3. Ensure Telegram send disabled in sandbox mode
+4. Ensure timer modification disabled in sandbox mode
+
+---
+
+Safe Next Step:
+Complete required refactors then re-run readiness audit.
+
+---
+
+Validation Results (12/12 PASS):
+✅ validate:daily-digest-build-readiness (46/46)
+✅ validate:daily-digest-sandbox-manager (63/63)
+✅ validate:daily-digest-build-sandbox-plan (40/40)
+✅ validate:daily-digest-stage-execution (30/30)
+✅ validate:daily-digest-staged-plan (21/21)
+✅ validate:control-hardening (all)
+✅ validate:control-low-risk-execution (176/176)
+✅ dashboard:policy:validate (35/35)
+✅ validate:sanitizer-secret-completeness (36/36)
+✅ validate:sanitizer-false-positives (25/25)
+✅ validate:telegram-sanitizer (43/43)
+✅ validate:project-report-send (11/11)
+
+---
+
+Auditor Safety:
+✅ Read-only scan
+✅ No child_process/exec/spawn
+✅ No network calls
+✅ No .env/.control.local reading
+✅ No builder execution
+✅ No model calls
+✅ No production writes
+
+---
+
+Next Phase Proposal:
+5C-2C-C6: Sandbox Digest Build (Read-only Plan)
+- Define sandbox digest build pipeline
+- Refactor telegram-daily-digest.ts to accept --output-dir
+- Add sandbox_mode flag support
+
+---
+
+C5B_COMMIT_READY=yes
+C5B_VALIDATION_PASS=12/12
+C5B_READINESS=partial
+C5B_REFACTORS_REQUIRED=4

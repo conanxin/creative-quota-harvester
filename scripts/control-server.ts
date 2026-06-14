@@ -1483,6 +1483,22 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/build-readiness": {
+      // Phase 5C-2C-C5B: Read-only readiness audit (no execution, no builder call)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const readinessPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-build-readiness.json");
+      const readiness = safeReadJson(readinessPath, null);
+      if (!readiness) {
+        notFound(res, "Readiness audit not found. Run: npm run audit:daily-digest-build-readiness");
+        return;
+      }
+      jsonResponse(res, readiness);
+      return;
+    }
+
     case "/api/daily-digest/sandbox-status": {
       // Phase 5C-2C-C5: Read sandbox status (read-only, no execution)
       if (req.method !== "GET") {
@@ -1515,7 +1531,7 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-status, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);

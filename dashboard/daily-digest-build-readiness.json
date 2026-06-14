@@ -1,0 +1,1304 @@
+{
+  "phase": "5C-2C-C5B",
+  "mode": "readiness_check_only",
+  "ready_for_sandbox_build": "partial",
+  "builders_detected": [
+    {
+      "file": "scripts/build-content-pack-pages.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "minimax",
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/build-daily-archive.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/build-dashboard-status.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "dashboard/status.json"
+      ],
+      "detected_keywords": [
+        "dashboard/status.json",
+        "status.json",
+        "timer",
+        "minimax",
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/build-gallery-dedup-index.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/build-gallery-from-dedup.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/build-policy-review.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "timer",
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/build-static-gallery.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/check-telegram-digest.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [
+        "reports/telegram-digest.txt"
+      ],
+      "detected_keywords": [
+        "telegram-digest"
+      ]
+    },
+    {
+      "file": "scripts/collect-diagnose.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/collect-fresh.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "collect-fresh",
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/collect.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "systemd",
+        "cron",
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/control-workflow-planner.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "timer"
+      ]
+    },
+    {
+      "file": "scripts/daily-digest-build-sandbox-planner.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": true,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "daily-digest",
+        "sandbox",
+        "SANDBOX"
+      ]
+    },
+    {
+      "file": "scripts/daily-digest-sandbox-manager.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": true,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json",
+        "reports/daily/"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "telegram-digest",
+        "dashboard/status.json",
+        "status.json",
+        "collect",
+        "timer",
+        "sandbox",
+        "SANDBOX",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/daily-digest-stage-executor.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "daily-digest",
+        "collect",
+        "timer"
+      ]
+    },
+    {
+      "file": "scripts/daily-digest-staged-planner.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "daily-digest",
+        "collect",
+        "timer",
+        "generate"
+      ]
+    },
+    {
+      "file": "scripts/daily-manual.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/telegram-digest.txt"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "telegram-digest",
+        "collect",
+        "timer",
+        "systemd",
+        "cron",
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/diagnose-sources.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/enhance-image-prompts.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/enhance-music-prompts.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "minimax",
+        "completion",
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/enhance-video-prompts.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "openai",
+        "completion",
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/enrich-content-packs.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/enrich-facts-from-sources.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/generate-briefs.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/generate-control-catalog.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "daily_digest",
+        "collect",
+        "timer",
+        "systemd",
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/generate-controlled-image-batch.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "minimax",
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "scripts/review-generated-images.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/run-once.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "systemd",
+        "cron"
+      ]
+    },
+    {
+      "file": "scripts/send-project-report.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "telegram-digest",
+        "CQA_ALLOW_TELEGRAM_SEND",
+        "send-telegram",
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/send-telegram-digest.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [
+        "reports/telegram-digest.txt"
+      ],
+      "detected_keywords": [
+        "telegram-digest",
+        "CQA_ALLOW_TELEGRAM_SEND",
+        "send-telegram",
+        "telegram-send",
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "scripts/update-gallery.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "src/generators/generation-guard.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "minimax"
+      ]
+    },
+    {
+      "file": "src/generators/minimax-image-canary.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "minimax",
+        "generate",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "src/generators/minimax-quota-guard.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "minimax"
+      ]
+    },
+    {
+      "file": "src/pipeline/collect-signals.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "timer"
+      ]
+    },
+    {
+      "file": "src/pipeline/create-asset-plans.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/pipeline/create-briefs.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/pipeline/export-content-pack.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": true,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "outputDir",
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "src/pipeline/export-content-packs.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "src/reports/telegram-daily-digest.ts",
+      "type": "script",
+      "writes_production_paths": true,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "telegram-digest",
+        "collect",
+        "timer",
+        "systemd",
+        "generate",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "src/reports/telegram-digest-sanitizer.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "telegram-digest",
+        "minimax",
+        "openai"
+      ]
+    },
+    {
+      "file": "src/sources/profile.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "CQA_PROFILE",
+        "completion",
+        "writeFile"
+      ]
+    },
+    {
+      "file": "src/sources/types.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/utils.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/storage/asset-repo-writer.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "writeFile",
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "src/storage/sqlite.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "mkdirSync"
+      ]
+    },
+    {
+      "file": "src/sources/academic/arxiv-ai.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/ai-ecosystem/huggingface-hub.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/code/github-open-source-radar.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/context/date-context.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/context/holidays.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/context/open-meteo.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/context/solar-terms.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/culture-art/met-collection.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/dev-community/hackernews.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "openai",
+        "generate"
+      ]
+    },
+    {
+      "file": "src/sources/news/gdelt.ts",
+      "type": "script",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "generate"
+      ]
+    },
+    {
+      "file": "dashboard/control-catalog.generated.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "daily_digest",
+        "telegram-digest",
+        "dashboard/status.json",
+        "status.json",
+        "collect",
+        "CQA_PROFILE",
+        "collect-fresh",
+        "CQA_ALLOW_TELEGRAM_SEND",
+        "send-telegram",
+        "telegram-send",
+        "timer",
+        "minimax",
+        "generate"
+      ]
+    },
+    {
+      "file": "dashboard/control-catalog.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "daily_digest",
+        "telegram-digest",
+        "dashboard/status.json",
+        "status.json",
+        "collect",
+        "CQA_PROFILE",
+        "collect-fresh",
+        "CQA_ALLOW_TELEGRAM_SEND",
+        "send-telegram",
+        "telegram-send",
+        "timer",
+        "minimax",
+        "generate"
+      ]
+    },
+    {
+      "file": "dashboard/control-execution-allowlist.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "timer",
+        "generate"
+      ]
+    },
+    {
+      "file": "dashboard/control-policy.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "CQA_ALLOW_TELEGRAM_SEND",
+        "telegram-send",
+        "timer",
+        "generate"
+      ]
+    },
+    {
+      "file": "dashboard/control-workflows.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "daily_digest",
+        "collect",
+        "timer",
+        "generate"
+      ]
+    },
+    {
+      "file": "dashboard/daily-digest-build-sandbox-plan.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": true,
+      "collects_data": true,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "telegram-digest",
+        "dashboard/status.json",
+        "status.json",
+        "collect",
+        "CQA_ALLOW_TELEGRAM_SEND",
+        "timer",
+        "systemd",
+        "generate",
+        "sandbox",
+        "SANDBOX"
+      ]
+    },
+    {
+      "file": "dashboard/daily-digest-staged-plan.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json"
+      ],
+      "detected_keywords": [
+        "daily-digest",
+        "daily_digest",
+        "telegram-digest",
+        "dashboard/status.json",
+        "status.json",
+        "collect",
+        "collect-fresh",
+        "CQA_ALLOW_TELEGRAM_SEND",
+        "timer",
+        "systemd",
+        "generate"
+      ]
+    },
+    {
+      "file": "dashboard/policy-review.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": true,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "collect",
+        "telegram-send",
+        "timer",
+        "generate"
+      ]
+    },
+    {
+      "file": "dashboard/status.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": false,
+      "collects_data": false,
+      "sends_telegram": false,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": true,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "timer",
+        "minimax",
+        "generate"
+      ]
+    },
+    {
+      "file": "package.json",
+      "type": "config",
+      "writes_production_paths": false,
+      "has_output_dir_param": false,
+      "has_sandbox_mode": true,
+      "collects_data": true,
+      "sends_telegram": true,
+      "calls_model": true,
+      "generates_media": false,
+      "modifies_timer": false,
+      "hardcoded_production_paths": [],
+      "detected_keywords": [
+        "daily-digest",
+        "telegram-digest",
+        "collect",
+        "CQA_PROFILE",
+        "collect-fresh",
+        "CQA_ALLOW_TELEGRAM_SEND",
+        "send-telegram",
+        "telegram-send",
+        "minimax",
+        "generate",
+        "sandbox"
+      ]
+    }
+  ],
+  "production_write_paths": [
+    "dashboard/status.json",
+    "reports/telegram-digest.txt",
+    "reports/daily-digest.md",
+    "reports/daily/"
+  ],
+  "sandbox_support": {
+    "supports_output_dir": true,
+    "supports_sandbox_mode": true,
+    "has_hardcoded_production_paths": true
+  },
+  "blocked_risks": {
+    "collect": true,
+    "telegram_send": true,
+    "timer": true,
+    "model_call": true,
+    "media_generation": false,
+    "production_write": true
+  },
+  "required_refactors_before_sandbox_execution": [
+    "Refactor builders to accept --output-dir parameter instead of hardcoded production paths",
+    "Ensure collect is disabled in sandbox mode (collect_allowed=false)",
+    "Ensure Telegram send is disabled in sandbox mode (telegram_send_allowed=false)",
+    "Ensure timer modification is disabled in sandbox mode"
+  ],
+  "safe_next_step": "Complete required refactors (output-dir param, sandbox mode flag) then re-run readiness audit",
+  "audit_timestamp": "2026-06-14T05:25:05.920Z",
+  "files_scanned": 118
+}

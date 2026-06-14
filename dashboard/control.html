@@ -1247,4 +1247,92 @@
     })();
   </script>
 
+  <!-- Phase 5C-2C-C5B: Digest Build Readiness Panel -->
+  <div id="build-readiness-panel" class="build-readiness-panel" style="display:none;">
+    <div class="section" style="background:#f0f9ff;border:1px solid #3b82f6;">
+      <h2>📊 Digest Build Readiness / 日报构建就绪度</h2>
+      <div id="build-readiness-status" style="margin-bottom:12px;"></div>
+      <div style="margin-top:10px;background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+        ⚠️ 本阶段只做 readiness audit，不构建日报、不采集、不发送 Telegram、不覆盖 production。
+      </div>
+      <div id="build-readiness-details" style="margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <script>
+    // Phase 5C-2C-C5B: Load digest build readiness
+    (function() {
+      var base = location.protocol + '//' + location.host;
+      fetch(base + '/api/daily-digest/build-readiness')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var panel = document.getElementById('build-readiness-panel');
+          if (panel) panel.style.display = 'block';
+          var statusDiv = document.getElementById('build-readiness-status');
+          if (statusDiv) {
+            var readyColor = data.ready_for_sandbox_build === 'yes' ? '#22c55e' : (data.ready_for_sandbox_build === 'partial' ? '#f59e0b' : '#ef4444');
+            var readyBg = data.ready_for_sandbox_build === 'yes' ? '#d1fae5' : (data.ready_for_sandbox_build === 'partial' ? '#fef3c7' : '#fee2e2');
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:10px;">';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:' + readyColor + ';">' + (data.ready_for_sandbox_build || 'unknown') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Ready for Sandbox Build</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.3rem;font-weight:700;color:#1e3a5f;">' + (data.builders_detected ? data.builders_detected.length : 0) + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Builders Detected</div></div>';
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1.3rem;font-weight:700;color:#1e3a5f;">' + (data.files_scanned || 0) + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Files Scanned</div></div>';
+            html += '</div>';
+            statusDiv.innerHTML = html;
+          }
+          var detailsDiv = document.getElementById('build-readiness-details');
+          if (detailsDiv) {
+            var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:10px;">';
+            // Blocked risks
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
+            html += '<div style="font-weight:700;font-size:1rem;color:#1e3a5f;margin-bottom:8px;">🚫 Blocked Risks</div>';
+            var risks = data.blocked_risks || {};
+            html += '<div style="font-size:0.85rem;color:#555;">';
+            html += 'collect: ' + (risks.collect ? '❌ blocked' : '✅ safe') + '<br>';
+            html += 'telegram_send: ' + (risks.telegram_send ? '❌ blocked' : '✅ safe') + '<br>';
+            html += 'timer: ' + (risks.timer ? '❌ blocked' : '✅ safe') + '<br>';
+            html += 'model_call: ' + (risks.model_call ? '⚠️ detected' : '✅ safe') + '<br>';
+            html += 'production_write: ' + (risks.production_write ? '❌ blocked' : '✅ safe') + '<br>';
+            html += '</div></div>';
+            // Sandbox support
+            html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
+            html += '<div style="font-weight:700;font-size:1rem;color:#1e3a5f;margin-bottom:8px;">📁 Sandbox Support</div>';
+            var support = data.sandbox_support || {};
+            html += '<div style="font-size:0.85rem;color:#555;">';
+            html += 'output_dir: ' + (support.supports_output_dir ? '✅ supported' : '❌ missing') + '<br>';
+            html += 'sandbox_mode: ' + (support.supports_sandbox_mode ? '✅ supported' : '❌ missing') + '<br>';
+            html += 'hardcoded_production_paths: ' + (support.has_hardcoded_production_paths ? '⚠️ detected' : '✅ clean') + '<br>';
+            html += '</div></div>';
+            // Production write paths
+            if (data.production_write_paths && data.production_write_paths.length > 0) {
+              html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
+              html += '<div style="font-weight:700;font-size:1rem;color:#ef4444;margin-bottom:8px;">🛡️ Production Write Paths</div>';
+              html += '<div style="font-size:0.8rem;color:#555;">' + data.production_write_paths.join('<br>') + '</div>';
+              html += '</div>';
+            }
+            // Required refactors
+            if (data.required_refactors_before_sandbox_execution && data.required_refactors_before_sandbox_execution.length > 0) {
+              html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
+              html += '<div style="font-weight:700;font-size:1rem;color:#f59e0b;margin-bottom:8px;">🔧 Required Refactors</div>';
+              html += '<div style="font-size:0.8rem;color:#555;">';
+              data.required_refactors_before_sandbox_execution.forEach(function(r) {
+                html += '• ' + r + '<br>';
+              });
+              html += '</div></div>';
+            }
+            html += '</div>';
+            // Safe next step
+            if (data.safe_next_step) {
+              html += '<div style="margin-top:16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px 16px;font-size:0.85rem;color:#1e40af;">';
+              html += '<strong>Next Step:</strong> ' + data.safe_next_step;
+              html += '</div>';
+            }
+            detailsDiv.innerHTML = html;
+          }
+        })
+        .catch(function(e) {
+          console.log('Build readiness load failed:', e);
+        });
+    })();
+  </script>
+
 </body></html>
