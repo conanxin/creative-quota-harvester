@@ -1490,3 +1490,71 @@ Expected: All PASS.
 
 ---
 *Runbook v5.11 — Phase 5C-2C-C5E*
+
+## Phase 5C-2C-C5F — Sandbox Output Validation & Diff
+
+Phase 5C-2C-C5F validates the **latest sandbox digest outputs** for integrity, safety, and format correctness. It also compares sandbox outputs with production outputs and generates a diff summary. No re-build, no production write, no send.
+
+### What Changed
+
+- New `scripts/validate-daily-digest-sandbox-output.ts` — sandbox output validator (11 checks: manifest, file existence, secret scan, tool residue scan, Telegram length)
+- New `scripts/daily-digest-sandbox-diff.ts` — sandbox diff generator (compares sandbox vs production, writes diff-summary.json + diff-summary.md to sandbox diffs/)
+- New `scripts/validate-daily-digest-sandbox-output-tools.ts` — tools validator (33 checks)
+- New `GET /api/daily-digest/sandbox/latest-output-validation` endpoint — read-only validation + diff summary
+- Updated `package.json` — added `validate:daily-digest-sandbox-output-tools` script
+
+### Sandbox Output Validator
+
+| Check | Purpose |
+|-------|---------|
+| manifest.json | Exists and valid JSON |
+| collect_allowed | Must be false |
+| telegram_send_allowed | Must be false |
+| production_write_allowed | Must be false |
+| daily-digest.md | Exists and non-empty |
+| telegram-digest.txt | Exists and non-empty |
+| telegram length | Within 3500 char limit (warning if exceeds) |
+| secret scan | No TELEGRAM_BOT_TOKEN, API_KEY, sk-cp, Bearer tokens |
+| tool residue scan | No `<tool_call`, `</tool_call>`, `<invoke`, `[truncated]` |
+
+### Sandbox Diff Generator
+
+| Output | Purpose |
+|--------|---------|
+| `diffs/diff-summary.json` | Machine-readable diff summary |
+| `diffs/diff-summary.md` | Human-readable diff report |
+
+Diff includes: line count, char count, added/removed summary, sandbox-only sections, production-only sections, risk notes.
+
+### How to Validate
+
+```bash
+npm run validate:daily-digest-sandbox-output-tools
+npm run validate:daily-digest-sandbox-build-pilot
+npm run validate:daily-digest-builder-sandbox-refactor
+npm run validate:daily-digest-sandbox-interface
+npm run validate:daily-digest-sandbox-guards
+npm run audit:daily-digest-build-readiness
+npm run validate:daily-digest-build-readiness
+npm run validate:daily-digest-sandbox-manager
+npm run validate:daily-digest-build-sandbox-plan
+npm run validate:daily-digest-staged-plan
+npm run validate:daily-digest-stage-execution
+npm run validate:digest-freshness
+npm run validate:dashboard:policy:validate
+npm run validate:sanitizer-secret-completeness
+npm run validate:sanitizer-false-positives
+npm run validate:telegram-sanitizer
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+### Files
+
+- `scripts/validate-daily-digest-sandbox-output.ts` — output validator
+- `scripts/daily-digest-sandbox-diff.ts` — diff generator
+- `scripts/validate-daily-digest-sandbox-output-tools.ts` — tools validator (33 checks)
+
+---
+*Runbook v5.12 — Phase 5C-2C-C5F*

@@ -1685,6 +1685,44 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/sandbox/latest-output-validation": {
+      // Phase 5C-2C-C5F: Read latest sandbox output validation + diff (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { validateLatestSandboxOutput } = require("./validate-daily-digest-sandbox-output");
+      const { generateSandboxDiff } = require("./daily-digest-sandbox-diff");
+      const validationResult = validateLatestSandboxOutput();
+      const diffResult = generateSandboxDiff();
+      jsonResponse(res, {
+        phase: "5C-2C-C5F",
+        mode: "sandbox_output_validation_readonly",
+        real_execution: false,
+        production_write_allowed: false,
+        run_id: validationResult.run_id,
+        validation: validationResult,
+        diff: {
+          run_id: diffResult.run_id,
+          files: diffResult.files.map(f => ({
+            file_name: f.file_name,
+            sandbox_lines: f.sandbox_lines,
+            production_lines: f.production_lines,
+            sandbox_chars: f.sandbox_chars,
+            production_chars: f.production_chars,
+            lines_added: f.lines_added,
+            lines_removed: f.lines_removed,
+            chars_added: f.chars_added,
+            chars_removed: f.chars_removed,
+            summary: f.summary,
+          })),
+          summary: diffResult.summary,
+          output_files: diffResult.output_files,
+        },
+      });
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;
@@ -1705,7 +1743,7 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);
