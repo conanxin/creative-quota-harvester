@@ -164,6 +164,22 @@
       "notes": "5C-2C-B: Project report send validation. Only in allowlist."
     },
     {
+      "match": "validate:control-hardening",
+      "risk_level": "safe",
+      "requires_confirm": true,
+      "requires_env": [],
+      "calls_model": false,
+      "generates_media": false,
+      "modifies_timer": false,
+      "modifies_files": false,
+      "public_safe": true,
+      "dry_run_supported": true,
+      "real_execution_supported": true,
+      "execution_mode": "confirmed_low_risk",
+      "audit_required": true,
+      "notes": "5C-2C-C1: Control hardening validation. Only in allowlist."
+    },
+    {
       "match": "dashboard:control:validate",
       "risk_level": "safe",
       "requires_confirm": true,

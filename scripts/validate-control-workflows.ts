@@ -39,8 +39,17 @@ if (workflows.workflows.length < 3) {
 }
 pass(`dashboard/control-workflows.json exists with ${workflows.workflows.length} workflows`);
 
-// --- 2. All workflows have real_execution_supported=false ---
+// --- 2. All workflows have real_execution_supported=false (except confirmed_low_risk_workflow) ---
 for (const w of workflows.workflows) {
+  if (w.mode === "confirmed_low_risk_workflow") {
+    if (w.real_execution_supported !== true) {
+      fail(`workflow ${w.workflow_id} is confirmed_low_risk_workflow but real_execution_supported=${w.real_execution_supported}`);
+    }
+    if (w.allowed_for_execution !== true) {
+      fail(`workflow ${w.workflow_id} is confirmed_low_risk_workflow but allowed_for_execution=${w.allowed_for_execution}`);
+    }
+    continue;
+  }
   if (w.real_execution_supported !== false) {
     fail(`workflow ${w.workflow_id} has real_execution_supported=${w.real_execution_supported}`);
   }
@@ -48,7 +57,7 @@ for (const w of workflows.workflows) {
     fail(`workflow ${w.workflow_id} has mode=${w.mode}`);
   }
 }
-pass("All workflows have real_execution_supported=false and mode=dry_run_only");
+pass("All workflows have correct execution settings (confirmed_low_risk have real_execution=true, others false)");
 
 // --- 3. collect/send/generate/timer/git steps are blocked ---
 const blockedCategories = ["collect", "send", "generate", "timer", "git"];

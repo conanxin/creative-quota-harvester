@@ -13,6 +13,7 @@
     "validate:sanitizer-false-positives",
     "validate:sanitizer-secret-completeness",
     "validate:project-report-send",
+    "validate:control-hardening",
     "dashboard:control:validate",
     "dashboard:validate",
     "validate:public-gallery",

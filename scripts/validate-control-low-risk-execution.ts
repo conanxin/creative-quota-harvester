@@ -244,7 +244,7 @@ if (allowlist.max_output_chars <= 12000) {
 }
 
 // 11. Phase matches
-if (allowlist.phase === "5C-2C-B") {
+if (allowlist.phase === "5C-5A" || allowlist.phase === "5C-2C-B") {
   pass(`allowlist phase=${allowlist.phase}`);
 } else {
   fail(`allowlist phase=${allowlist.phase} (expected 5C-2C-B)`);

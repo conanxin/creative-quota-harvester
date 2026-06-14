@@ -525,7 +525,255 @@ const server = http.createServer((req, res) => {
         allowed_low_risk_steps: plan.summary.allowed_low_risk_steps,
       });
 
+      writeAuditLog({
+        action_id: "workflow_dry_run",
+        risk_level: "safe",
+        confirm_ok: true,
+        real_execution: false,
+        result: "success",
+        reason: "dry_run_plan_generated",
+        workflow_id: workflowId,
+        blocked_steps: plan.summary.blocked_steps,
+        allowed_low_risk_steps: plan.summary.allowed_low_risk_steps,
+      });
+
       jsonResponse(res, plan);
+    });
+    return;
+  }
+
+  // --- Phase 5C-2C-C1: Workflow execute low-risk handler ---
+  if (pathname === "/api/workflow/execute-low-risk" && req.method === "POST") {
+    // Phase 5C-5A: Rate limit (uses execute-low-risk category)
+    if (isRateLimited("execute_low_risk_per_minute")) {
+      rateLimitResponse(res, "execute_low_risk_per_minute", RATE_LIMITS.execute_low_risk_per_minute);
+      return;
+    }
+    // Phase 5C-5A: Execution lock (shared with execute-low-risk action)
+    if (!acquireExecutionLock()) {
+      res.writeHead(409, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({
+        error: "Execution lock busy",
+        message: "Another execute-low-risk or workflow is already in progress. Try again later.",
+        max_concurrent: 1,
+      }) + "\n");
+      return;
+    }
+
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", async () => {
+      let workflowId = "";
+      let confirmPhrase = "";
+      let token = "";
+      try {
+        let payload: any = {};
+        try {
+          payload = JSON.parse(body);
+        } catch {
+          badRequest(res, "Invalid JSON body");
+          return;
+        }
+
+        workflowId = String(payload.workflow_id || "").trim();
+        confirmPhrase = String(payload.confirm_phrase || "").trim();
+        token = String(payload.token || "").trim();
+
+        if (!workflowId) {
+          badRequest(res, "Missing 'workflow_id' field");
+          return;
+        }
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLog({
+            action_id: "workflow_execute_low_risk",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+            workflow_id: workflowId,
+          });
+          return;
+        }
+
+        // Load workflow definition
+        const workflowsData = safeReadJson(path.join(HARVESTER_DIR, "dashboard", "control-workflows.json"), null) as any;
+        if (!workflowsData || !workflowsData.workflows) {
+          notFound(res, "Workflow definitions not found");
+          writeAuditLog({
+            action_id: "workflow_execute_low_risk",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "workflows_not_found",
+            workflow_id: workflowId,
+          });
+          return;
+        }
+
+        const workflow = workflowsData.workflows.find((w: any) => w.workflow_id === workflowId);
+        if (!workflow) {
+          notFound(res, `Workflow "${workflowId}" not found`);
+          writeAuditLog({
+            action_id: "workflow_execute_low_risk",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "workflow_not_found",
+            workflow_id: workflowId,
+          });
+          return;
+        }
+
+        // Explicit allowlist: only asset_validation_sweep and control_health_sweep
+        if (workflowId !== "asset_validation_sweep" && workflowId !== "control_health_sweep") {
+          forbidden(res, `Workflow "${workflowId}" is not in the low-risk execution allowlist. Only asset_validation_sweep and control_health_sweep are allowed.`);
+          writeAuditLog({
+            action_id: "workflow_execute_low_risk",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "workflow_not_in_allowlist",
+            workflow_id: workflowId,
+          });
+          return;
+        }
+
+        // Must be confirmed_low_risk_workflow mode
+        if (workflow.mode !== "confirmed_low_risk_workflow") {
+          forbidden(res, `Workflow "${workflowId}" is not confirmed_low_risk_workflow. Mode: ${workflow.mode}`);
+          writeAuditLog({
+            action_id: "workflow_execute_low_risk",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "not_confirmed_low_risk_workflow",
+            workflow_id: workflowId,
+          });
+          return;
+        }
+
+        // Must have real_execution_supported=true
+        if (!workflow.real_execution_supported) {
+          forbidden(res, `Workflow "${workflowId}" does not support real execution.`);
+          writeAuditLog({
+            action_id: "workflow_execute_low_risk",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "real_execution_not_supported",
+            workflow_id: workflowId,
+          });
+          return;
+        }
+
+        // Must be allowed for execution
+        if (workflow.allowed_for_execution === false) {
+          forbidden(res, `Workflow "${workflowId}" is not allowed for execution: ${workflow.blocked_reason || "blocked"}`);
+          writeAuditLog({
+            action_id: "workflow_execute_low_risk",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "workflow_not_allowed_for_execution",
+            workflow_id: workflowId,
+          });
+          return;
+        }
+
+        // Check confirmation phrase
+        const expectedPhrase = workflow.confirmation_phrase || "EXECUTE LOW RISK WORKFLOW";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            workflow_id: workflowId,
+            confirmation_phrase_expected: expectedPhrase,
+            confirmation_status: "mismatch",
+            real_execution: false,
+            message: `Execution blocked: confirmation phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLog({
+            action_id: "workflow_execute_low_risk",
+            risk_level: "safe",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+            workflow_id: workflowId,
+          });
+          return;
+        }
+
+        // Execute workflow via executor
+        const { executeWorkflow } = require("./control-workflow-executor");
+        const result = await executeWorkflow(workflowId);
+
+        if (!result) {
+          notFound(res, `Workflow "${workflowId}" executor returned null`);
+          writeAuditLog({
+            action_id: "workflow_execute_low_risk",
+            risk_level: "safe",
+            confirm_ok: true,
+            real_execution: true,
+            result: "failed",
+            reason: "executor_null",
+            workflow_id: workflowId,
+          });
+          return;
+        }
+
+        jsonResponse(res, {
+          workflow_id: result.workflow_id,
+          real_execution: result.real_execution,
+          mode: result.mode,
+          steps_total: result.steps_total,
+          steps_completed: result.steps_completed,
+          steps_failed: result.steps_failed,
+          timed_out: result.timed_out,
+          results: result.results,
+          message: result.steps_failed === 0 ? "Workflow executed successfully." : `Workflow completed with ${result.steps_failed} failed steps.`,
+        });
+
+        writeAuditLog({
+          action_id: "workflow_execute_low_risk",
+          risk_level: "safe",
+          confirm_ok: true,
+          real_execution: true,
+          result: result.steps_failed === 0 ? "success" : "failed",
+          reason: "workflow_executed",
+          workflow_id: workflowId,
+          steps_total: result.steps_total,
+          steps_completed: result.steps_completed,
+          steps_failed: result.steps_failed,
+          timed_out: result.timed_out,
+        });
+      } catch (err: any) {
+        jsonResponse(res, {
+          workflow_id: workflowId,
+          real_execution: true,
+          error: err.message || "unknown",
+          message: "Workflow execution failed with an unexpected error.",
+        });
+        writeAuditLog({
+          action_id: "workflow_execute_low_risk",
+          risk_level: "safe",
+          confirm_ok: true,
+          real_execution: true,
+          result: "failed",
+          reason: err.message || "unknown",
+          workflow_id: workflowId,
+        });
+      } finally {
+        // Always release execution lock
+        releaseExecutionLock();
+      }
     });
     return;
   }

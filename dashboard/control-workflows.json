@@ -10,6 +10,8 @@
       "description_zh": "模拟完整的日常摘要工作流：收集信号 → 生成摘要 → 验证存档 → 发送。此阶段仅模拟，不执行真实的收集或发送操作。",
       "mode": "dry_run_only",
       "real_execution_supported": false,
+      "allowed_for_execution": false,
+      "blocked_reason": "Contains collect/send steps; dry-run only.",
       "steps": [
         {
           "step_id": "collect_fast",
@@ -83,8 +85,10 @@
       "workflow_id": "asset_validation_sweep",
       "label_zh": "资产验证扫描",
       "description_zh": "对创意配额收割器的资产进行全面验证扫描，包括公开画廊、每日存档、去重检查、内容包页面、音乐和视频提示。所有步骤都是安全的验证操作。",
-      "mode": "dry_run_only",
-      "real_execution_supported": false,
+      "mode": "confirmed_low_risk_workflow",
+      "real_execution_supported": true,
+      "confirmation_phrase": "EXECUTE LOW RISK WORKFLOW",
+      "allowed_for_execution": true,
       "steps": [
         {
           "step_id": "validate_public_gallery",
@@ -172,8 +176,10 @@
       "workflow_id": "control_health_sweep",
       "label_zh": "控制台健康扫描",
       "description_zh": "对 localhost-only 控制台进行全面的健康检查，包括验证服务器、只读动作、干跑动作、策略漂移检查、策略验证和加固验证。",
-      "mode": "dry_run_only",
-      "real_execution_supported": false,
+      "mode": "confirmed_low_risk_workflow",
+      "real_execution_supported": true,
+      "confirmation_phrase": "EXECUTE LOW RISK WORKFLOW",
+      "allowed_for_execution": true,
       "steps": [
         {
           "step_id": "validate_control_server",

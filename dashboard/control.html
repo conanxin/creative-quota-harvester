@@ -804,6 +804,18 @@
 })();
 </script>
 
+  <!-- Phase 5C-2C-C1: Workflow Execution Module -->
+  <div id="workflow-execution-panel" class="workflow-execution-panel" style="display:none;">
+    <div class="section" style="background:#f0fdf4;border:1px solid #86efac;">
+      <h2>🔄 Workflow Execution / 工作流执行</h2>
+      <div id="workflow-execution-status" style="margin-bottom:12px;"></div>
+      <div style="margin-top:10px;background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+        ⚠️ 仅 asset_validation_sweep 和 control_health_sweep 可真实执行。daily_digest_dry_run 仅模拟，不可执行。
+      </div>
+      <div id="workflow-execution-list" style="margin-top:16px;"></div>
+    </div>
+  </div>
+
   <!-- Phase 5C-2C-C0: Workflow Dry-run Module -->
   <div id="workflow-panel" class="workflow-panel" style="display:none;">
     <div class="section" style="background:#f0fdf4;border:1px solid #86efac;">
@@ -817,7 +829,7 @@
   </div>
 
   <script>
-    // Phase 5C-2C-C0: Load workflows
+    // Phase 5C-2C-C1: Load workflows for execution and dry-run
     (function() {
       var base = location.protocol + '//' + location.host;
       fetch(base + '/api/workflows')
@@ -825,15 +837,34 @@
         .then(function(data) {
           var panel = document.getElementById('workflow-panel');
           if (panel) panel.style.display = 'block';
+          var execPanel = document.getElementById('workflow-execution-panel');
+          if (execPanel) execPanel.style.display = 'block';
           var listDiv = document.getElementById('workflow-list');
           if (listDiv && data.workflows) {
             var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;">';
             data.workflows.forEach(function(w) {
+              var isExecutable = w.mode === 'confirmed_low_risk_workflow' && w.workflow_id !== 'daily_digest_dry_run';
+              var badgeColor = isExecutable ? '#d1fae5' : '#fee2e2';
+              var badgeTextColor = isExecutable ? '#065f46' : '#991b1b';
+              var badgeText = isExecutable ? '✅ 可执行低风险验证' : '❌ 仅模拟';
+              var buttonText = isExecutable ? '执行工作流' : '模拟工作流';
+              var buttonColor = isExecutable ? '#22c55e' : '#3b82f6';
+              var warningText = w.workflow_id === 'daily_digest_dry_run' ? '包含 collect/send，不能执行' : '';
               html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;">';
               html += '<div style="font-weight:700;font-size:1.1rem;color:#1e3a5f;">' + w.label_zh + '</div>';
               html += '<div style="font-size:0.8rem;color:#7f8c8d;margin-top:4px;">' + w.workflow_id + '</div>';
               html += '<div style="font-size:0.85rem;color:#555;margin-top:8px;">' + w.description_zh + '</div>';
-              html += '<div style="margin-top:10px;"><button class="button" onclick="simulateWorkflow(\'' + w.workflow_id + '\')">模拟工作流</button></div>';
+              html += '<div style="margin-top:8px;display:inline-block;padding:4px 10px;border-radius:6px;font-size:0.75rem;font-weight:600;background:' + badgeColor + ';color:' + badgeTextColor + ';">' + badgeText + '</div>';
+              if (warningText) {
+                html += '<div style="margin-top:6px;font-size:0.75rem;color:#dc3545;">' + warningText + '</div>';
+              }
+              html += '<div style="margin-top:10px;">';
+              if (isExecutable) {
+                html += '<button class="button" style="background:' + buttonColor + ';color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.85rem;" onclick="executeWorkflow(\'' + w.workflow_id + '\')">' + buttonText + '</button>';
+              } else {
+                html += '<button class="button" style="background:' + buttonColor + ';color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:0.85rem;" onclick="simulateWorkflow(\'' + w.workflow_id + '\')">' + buttonText + '</button>';
+              }
+              html += '</div>';
               html += '</div>';
             });
             html += '</div>';
@@ -877,6 +908,58 @@
         })
         .catch(function(e) {
           console.log('Workflow simulation failed:', e);
+        });
+      };
+
+      window.executeWorkflow = function(workflowId) {
+        var base = location.protocol + '//' + location.host;
+        var statusDiv = document.getElementById('workflow-execution-status');
+        if (statusDiv) {
+          statusDiv.innerHTML = '<div style="background:#f0f9ff;border:1px solid #bae6fd;padding:10px 14px;border-radius:8px;font-size:0.85rem;">⏳ 执行中: ' + workflowId + '...</div>';
+        }
+        fetch(base + '/api/workflow/execute-low-risk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ workflow_id: workflowId, token: '', confirm_phrase: 'EXECUTE LOW RISK WORKFLOW' })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (statusDiv) {
+            var isSuccess = !data.error && (!data.steps_failed || data.steps_failed === 0);
+            var bgColor = isSuccess ? '#d1fae5' : '#fee2e2';
+            var borderColor = isSuccess ? '#22c55e' : '#ef4444';
+            var textColor = isSuccess ? '#065f46' : '#991b1b';
+            var html = '<div style="background:' + bgColor + ';border:1px solid ' + borderColor + ';padding:12px 14px;border-radius:8px;margin-top:10px;">';
+            html += '<div style="font-weight:700;font-size:1.1rem;color:' + textColor + ';">' + (data.workflow_id || workflowId) + '</div>';
+            if (data.error) {
+              html += '<div style="font-size:0.85rem;color:#dc3545;margin-top:6px;">Error: ' + data.error + '</div>';
+            } else {
+              html += '<div style="font-size:0.85rem;color:#555;margin-top:6px;">Steps: ' + (data.steps_completed || 0) + '/' + (data.steps_total || 0) + ' completed';
+              if (data.steps_failed > 0) {
+                html += ' | <span style="color:#dc3545;">' + data.steps_failed + ' failed</span>';
+              }
+              html += '</div>';
+              if (data.results && data.results.length > 0) {
+                html += '<div style="margin-top:8px;">';
+                data.results.forEach(function(r) {
+                  var stepStatus = r.exit_code === 0 ? '✅' : '❌';
+                  html += '<div style="font-size:0.8rem;padding:4px 0;border-bottom:1px solid #f0f0f0;">' + stepStatus + ' ' + r.step_id + ' (' + r.script_name + ')';
+                  html += ' — exit_code=' + r.exit_code + ', duration=' + (r.duration_ms || 0) + 'ms';
+                  html += '</div>';
+                });
+                html += '</div>';
+              }
+            }
+            html += '<div style="font-size:0.8rem;color:#555;margin-top:8px;">' + (data.message || '') + '</div>';
+            html += '</div>';
+            statusDiv.innerHTML = html;
+          }
+        })
+        .catch(function(e) {
+          if (statusDiv) {
+            statusDiv.innerHTML = '<div style="background:#fee2e2;border:1px solid #ef4444;padding:10px 14px;border-radius:8px;font-size:0.85rem;color:#991b1b;">❌ Execution failed: ' + e.message + '</div>';
+          }
+          console.log('Workflow execution failed:', e);
         });
       };
     })();

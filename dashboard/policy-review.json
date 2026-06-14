@@ -1,24 +1,24 @@
 {
   "version": "0.4.0",
   "phase": "5C-4",
-  "generated_at": "2026-06-13T14:13:03Z",
-  "total_commands": 82,
-  "classified": 82,
+  "generated_at": "2026-06-14T02:01:04Z",
+  "total_commands": 85,
+  "classified": 85,
   "needs_policy_review": 0,
   "risk_counts": {
-    "safe": 68,
+    "safe": 71,
     "medium": 12,
     "high": 2,
     "danger": 0
   },
   "execution_mode_counts": {
     "safe_readonly": 7,
-    "dry_run_only": 57,
-    "confirmed_low_risk": 17,
+    "dry_run_only": 59,
+    "confirmed_low_risk": 18,
     "disabled": 1
   },
   "source_counts": {
-    "package-script": 75,
+    "package-script": 78,
     "manual": 7,
     "generated": 0
   },
@@ -26,7 +26,7 @@
   "risk_groups": [
     {
       "risk": "safe",
-      "count": 68,
+      "count": 71,
       "execution_mode": "dry_run_only",
       "examples": [
         "Daily: Manual",
@@ -63,13 +63,13 @@
     },
     {
       "mode": "dry_run_only",
-      "count": 57,
+      "count": 59,
       "can_real_execute": false,
       "description": "Dry-run only. Simulation without execution."
     },
     {
       "mode": "confirmed_low_risk",
-      "count": 17,
+      "count": 18,
       "can_real_execute": true,
       "description": "Confirmed low-risk execution. Requires explicit confirmation phrase. 5 canary commands only."
     },
@@ -80,8 +80,8 @@
       "description": "Disabled. Cannot execute in any mode."
     }
   ],
-  "real_execution_supported_count": 17,
-  "confirmed_low_risk_count": 17,
+  "real_execution_supported_count": 18,
+  "confirmed_low_risk_count": 18,
   "confirmed_low_risk_enabled": [
     {
       "id": "validate_daily-archive",
@@ -152,6 +152,12 @@
     {
       "id": "validate_control-readonly-actions",
       "label_zh": "Validate: Control-readonly-actions",
+      "risk": "safe",
+      "confirmation_phrase": "EXECUTE LOW RISK"
+    },
+    {
+      "id": "validate_control-hardening",
+      "label_zh": "Validate: Control-hardening",
       "risk": "safe",
       "confirmation_phrase": "EXECUTE LOW RISK"
     },
@@ -414,6 +420,20 @@
     {
       "id": "validate_control-low-risk-execution",
       "label_zh": "Validate: Control-low-risk-execution",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_control-workflow-execution",
+      "label_zh": "Validate: Control-workflow-execution",
+      "risk": "safe",
+      "execution_mode": "dry_run_only",
+      "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
+    },
+    {
+      "id": "validate_control-workflows",
+      "label_zh": "Validate: Control-workflows",
       "risk": "safe",
       "execution_mode": "dry_run_only",
       "reason": "Low-risk, no model/media/timer, mode=dry_run_only"
