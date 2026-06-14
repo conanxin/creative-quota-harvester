@@ -1,0 +1,28 @@
+Phase 5C-2C-C5E complete. SANDBOX_BUILD=success. message_id=50482.
+
+🚀 Pilot Sandbox Digest Build Execution
+
+STATUS: ✅ COMPLETE
+Commit: e1474d9 (pushed to master)
+
+WHAT_CHANGED:
+• scripts/daily-digest-sandbox-build-pilot.ts — pilot sandbox build runner
+• scripts/validate-daily-digest-sandbox-build-pilot.ts — 47-check validator
+• scripts/control-server.ts — POST /api/daily-digest/sandbox/build-pilot + GET /api/daily-digest/sandbox/latest-build
+• dashboard/control.html — pilot build panel + latest build status
+
+PILOT_BUILD RESULT:
+• run_id: sandbox-2026-06-14-06-50-12
+• exit_code: 0
+• duration: 497ms
+• outputs: daily-digest.md + telegram-digest.txt in sandbox outputs/
+• production_write_detected: false
+• protected_paths: unchanged
+
+VALIDATION: 14 suites / 540+ checks — ALL PASS ✅
+
+MODEL_CALL: NONE | MEDIA_GEN: NONE | COLLECT: NONE | TELEGRAM_SEND: NONE | PRODUCTION_WRITE: NONE
+
+LIMITATION: Only pilot builder executed in sandbox. Other builders still hardcoded. ready_for_sandbox_build=partial-pilot.
+
+Report: reports/pilot-sandbox-digest-build.md
