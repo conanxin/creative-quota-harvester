@@ -1646,3 +1646,70 @@ Expected: All PASS.
 
 ---
 *Runbook v5.13 — Phase 5C-2C-C5G*
+
+## Phase 5C-2C-C5H — Sandbox Promote Dry-run / Copy Plan
+
+Phase 5C-2C-C5H generates the **dry-run plan** for promoting sandbox digest outputs to production. It maps source files to production targets, captures backup/rollback requirements, and confirms human approval. No actual promote, no production write, no send.
+
+### What Changed
+
+- New `dashboard/daily-digest-promote-dry-run-plan.json` — dry-run plan configuration
+- New `scripts/daily-digest-promote-dry-run.ts` — promote dry-run planner
+- New `scripts/validate-daily-digest-promote-dry-run.ts` — dry-run validator (38 checks)
+- New `GET /api/daily-digest/promote-dry-run-plan` endpoint — read-only dry-run plan
+- Updated `dashboard/control.html` — promote dry-run panel
+- Updated `package.json` — added validate + check scripts
+
+### Copy Map
+
+| Source | Target | Backup |
+|--------|--------|--------|
+| `sandbox/outputs/daily-digest.md` | `reports/daily-digest.md` | `reports/daily-digest.md.bak` |
+| `sandbox/outputs/telegram-digest.txt` | `reports/telegram-digest.txt` | `reports/telegram-digest.txt.bak` |
+
+### Backup / Rollback Plan
+
+- backup_before_promote: true
+- Backup manifest: `sandbox/reports/backup-manifest.json`
+- Rollback manifest: `sandbox/reports/rollback-manifest.json`
+- Backup format: `{file}.bak.{timestamp}`
+
+### Safety Invariants
+
+- real_promote_allowed=false
+- future_confirm_phrase_enabled=false
+- human_approval_required=true
+- Only writes to sandbox reports/
+- Does not copy files to production
+- Does not send Telegram
+
+### How to Validate
+
+```bash
+npm run check:daily-digest-promote-dry-run
+npm run validate:daily-digest-promote-dry-run
+npm run validate:daily-digest-promote-readiness
+npm run validate:daily-digest-sandbox-output-tools
+npm run validate:daily-digest-sandbox-build-pilot
+npm run validate:daily-digest-builder-sandbox-refactor
+npm run validate:daily-digest-sandbox-interface
+npm run validate:daily-digest-sandbox-guards
+npm run validate:daily-digest-build-readiness
+npm run validate:daily-digest-sandbox-manager
+npm run validate:dashboard:policy:validate
+npm run validate:sanitizer-secret-completeness
+npm run validate:sanitizer-false-positives
+npm run validate:telegram-sanitizer
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+### Files
+
+- `dashboard/daily-digest-promote-dry-run-plan.json` — dry-run plan config
+- `scripts/daily-digest-promote-dry-run.ts` — promote dry-run planner
+- `scripts/validate-daily-digest-promote-dry-run.ts` — dry-run validator (38 checks)
+
+---
+*Runbook v5.14 — Phase 5C-2C-C5H*

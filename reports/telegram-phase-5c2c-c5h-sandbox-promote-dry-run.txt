@@ -1,0 +1,38 @@
+Phase 5C-2C-C5H complete. PROMOTE_DRY_RUN=pass. message_id=xxxxxx.
+
+📋 Promote Dry-run / Copy Plan
+
+STATUS: ✅ COMPLETE
+Commit: pending
+LATEST_RUN: sandbox-2026-06-14-06-50-12
+
+WHAT_CHANGED:
+• dashboard/daily-digest-promote-dry-run-plan.json — dry-run plan config
+• scripts/daily-digest-promote-dry-run.ts — promote dry-run planner
+• scripts/validate-daily-digest-promote-dry-run.ts — 38-check validator
+• scripts/control-server.ts — GET /api/daily-digest/promote-dry-run-plan
+• dashboard/control.html — promote dry-run panel
+
+DRY_RUN_PLAN: preconditions all met ✅
+• readiness: true
+• outputs_exist: true
+• diff_exists: true
+
+COPY_MAP:
+• sandbox/outputs/daily-digest.md → reports/daily-digest.md
+• sandbox/outputs/telegram-digest.txt → reports/telegram-digest.txt
+
+BACKUP: backup_before_promote=true
+ROLLBACK: rollback_manifest enabled
+HUMAN_APPROVAL: required
+FUTURE_CONFIRM: "PROMOTE DAILY DIGEST FROM SANDBOX" (enabled=false)
+
+VALIDATION: 14 suites / 650+ checks — ALL PASS ✅
+
+MODEL_CALL: NONE | MEDIA_GEN: NONE | COLLECT: NONE | SEND: NONE | PRODUCTION_WRITE: NONE | PROMOTE: NONE
+
+LIMITATION: Only dry-run plan. No actual promote.
+
+NEXT_PHASE: 5C-2C-C5I — Promote Enablement
+
+Report: reports/sandbox-promote-dry-run.md

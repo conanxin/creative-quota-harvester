@@ -1,0 +1,66 @@
+{
+  "phase": "5C-2C-C5H",
+  "mode": "promote_dry_run_only",
+  "version": "0.1.0",
+  "updated_at": "2026-06-14T08:18:00Z",
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "latest_run_required": true,
+  "required_inputs": {
+    "sandbox_outputs": [
+      "outputs/daily-digest.md",
+      "outputs/telegram-digest.txt"
+    ],
+    "sandbox_validation": "validation result from validate-daily-digest-sandbox-output.ts",
+    "sandbox_diff": "diff summary from daily-digest-sandbox-diff.ts",
+    "promote_readiness": "readiness from daily-digest-promote-readiness.ts"
+  },
+  "planned_copy_map": {
+    "daily-digest.md": {
+      "source": "sandbox/outputs/daily-digest.md",
+      "target": "reports/daily-digest.md",
+      "backup_target": "reports/daily-digest.md.bak"
+    },
+    "telegram-digest.txt": {
+      "source": "sandbox/outputs/telegram-digest.txt",
+      "target": "reports/telegram-digest.txt",
+      "backup_target": "reports/telegram-digest.txt.bak"
+    }
+  },
+  "protected_paths": [
+    "reports/daily-digest.md",
+    "reports/telegram-digest.txt",
+    "dashboard/status.json",
+    "reports/daily/"
+  ],
+  "backup_plan": {
+    "backup_before_promote": true,
+    "backup_manifest_location": "sandbox/reports/backup-manifest.json",
+    "backup_format": "{file}.bak.{timestamp}",
+    "rollback_manifest_location": "sandbox/reports/rollback-manifest.json",
+    "rollback_support": true
+  },
+  "future_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "future_confirm_phrase_enabled": false,
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "collect",
+    "timer",
+    "git",
+    "promote"
+  ],
+  "human_approval_required": true,
+  "future_promote_command": {
+    "description": "When real_promote_allowed=true, this command would copy sandbox outputs to production",
+    "command": "tsx scripts/daily-digest-promote-dry-run.ts --execute",
+    "pre_conditions": [
+      "latest_run_id exists",
+      "sandbox_outputs exist",
+      "promote_readiness.ready=true",
+      "human_approval obtained",
+      "confirm_phrase matched"
+    ]
+  }
+}

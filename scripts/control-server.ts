@@ -1735,6 +1735,33 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/promote-dry-run-plan": {
+      // Phase 5C-2C-C5H: Read promote dry-run plan (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { generatePromoteDryRunPlan } = require("./daily-digest-promote-dry-run");
+      const plan = generatePromoteDryRunPlan();
+      jsonResponse(res, {
+        phase: "5C-2C-C5H",
+        mode: "promote_dry_run_only",
+        real_execution: false,
+        production_write_allowed: false,
+        run_id: plan.run_id,
+        preconditions: plan.preconditions,
+        copy_map: plan.copy_map,
+        backup_plan: plan.backup_plan,
+        human_approval_required: plan.human_approval_required,
+        future_confirm_phrase: plan.future_confirm_phrase,
+        future_confirm_phrase_enabled: plan.future_confirm_phrase_enabled,
+        blocked_actions: plan.blocked_actions,
+        safe_next_step: plan.safe_next_step,
+        output_files: plan.output_files,
+      });
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;

@@ -71,6 +71,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-2C-C5E** | **✅ Complete** | **Pilot Sandbox Digest Build Execution (sandbox build ran, outputs verified, production paths untouched)** |
 | **Phase 5C-2C-C5F** | **✅ Complete** | **Sandbox Output Validation & Diff (output validator, diff generator, secret/tool scan, 570+ checks PASS)** |
 | **Phase 5C-2C-C5G** | **✅ Complete** | **Sandbox Promote Readiness Plan (promote readiness checker, preconditions, blocked actions, future confirm phrase)** |
+| **Phase 5C-2C-C5H** | **✅ Complete** | **Sandbox Promote Dry-run / Copy Plan (dry-run plan, copy map, backup/rollback, human approval)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 
