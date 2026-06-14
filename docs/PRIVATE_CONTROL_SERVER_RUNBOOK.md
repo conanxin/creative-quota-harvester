@@ -964,4 +964,107 @@ Expected: All PASS (428/428 checks).
 
 ---
 
-*Runbook v5.6 — Phase 5C-2C-C3*
+## Phase 5C-2C-C4: Daily Digest Build Sandbox Plan
+
+### What's New
+
+- **Sandbox Plan**: `dashboard/daily-digest-build-sandbox-plan.json` defines a read-only sandbox plan for the daily digest build stage.
+- **Sandbox Planner**: `scripts/daily-digest-build-sandbox-planner.ts` — reads the sandbox plan and returns structured JSON without executing commands.
+- **API Endpoint**: `GET /api/daily-digest/build-sandbox-plan` — returns the sandbox plan (read-only, no execution).
+- **6 Stages**: prepare_sandbox → build_digest_sandbox → validate_sandbox_outputs → compare_with_production → promote_candidate (blocked) → send_telegram (blocked).
+- **Protected Paths**: reports/daily-digest.md, reports/telegram-digest.txt, dashboard/status.json, daily archive, Telegram send result, systemd timer state.
+- **Sandbox Paths**: reports/sandbox/daily-digest/<timestamp>/, reports/sandbox/daily-digest/latest/.
+- **Blocked Actions**: collect, send, timer, generate, git, promote.
+- **Sandbox Plan Validator**: `npm run validate:daily-digest-build-sandbox-plan` — 42 checks, all PASS.
+
+### Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `GET /api/daily-digest/build-sandbox-plan` | GET | Returns the sandbox plan (read-only, no execution) |
+
+### Sandbox Plan Status
+
+| Stage | Status | Allowed | Description |
+|-------|--------|---------|-------------|
+| `stage_a_prepare_sandbox` | `sandbox_plan_only` | ❌ | Create sandbox directory (future) |
+| `stage_b_build_digest_sandbox` | `sandbox_plan_only` | ❌ | Build digest in sandbox only (future) |
+| `stage_c_validate_sandbox_outputs` | `sandbox_plan_only` | ❌ | Validate sandbox outputs (future) |
+| `stage_d_compare_with_production` | `sandbox_plan_only` | ❌ | Compare sandbox vs production (future) |
+| `stage_e_promote_candidate` | `blocked` | ❌ | Promote sandbox to production (permanently blocked in this phase) |
+| `stage_f_send_telegram` | `blocked` | ❌ | Send Telegram message (permanently blocked in this phase) |
+
+### How to View the Sandbox Plan
+
+```bash
+# Start server
+cd ~/.openclaw/workspace/projects/creative-quota-harvester
+npm run control:server
+
+# Get sandbox plan
+curl -s http://127.0.0.1:8788/api/daily-digest/build-sandbox-plan
+```
+
+Expected response:
+```json
+{
+  "mode": "sandbox_plan_only",
+  "real_execution": false,
+  "production_write_allowed": false,
+  "stages": [...],
+  "protected_paths": [...],
+  "sandbox_paths": [...],
+  "blocked_actions": ["collect", "send", "timer", "generate", "git", "promote"],
+  "next_gate_required": true,
+  "summary": {
+    "total_stages": 6,
+    "plan_only_stages": 4,
+    "blocked_stages": 2,
+    "protected_paths_count": 6,
+    "sandbox_paths_count": 2
+  }
+}
+```
+
+### Safety Invariants
+
+- Only read-only access to sandbox plan
+- No production file writes
+- No external Telegram sends
+- No collect operations
+- No timer modifications
+- No model calls, no media generation
+- Audit log does not contain token
+- No shell execution, no exec/spawnSync/execFile
+
+### Validation
+
+```bash
+npm run validate:daily-digest-build-sandbox-plan
+npm run validate:daily-digest-stage-execution
+npm run validate:daily-digest-staged-plan
+npm run validate:control-workflow-execution
+npm run validate:control-workflows
+npm run validate:control-hardening
+npm run validate:control-low-risk-execution
+npm run dashboard:policy:validate
+npm run validate:telegram-sanitizer
+npm run validate:sanitizer-false-positives
+npm run validate:sanitizer-secret-completeness
+npm run validate:project-report-send
+```
+
+Expected: All PASS (470/470 checks).
+
+### Files
+
+- `dashboard/daily-digest-build-sandbox-plan.json` — sandbox plan configuration (NEW)
+- `scripts/daily-digest-build-sandbox-planner.ts` — sandbox planner (NEW)
+- `scripts/control-server.ts` — build-sandbox-plan endpoint (updated)
+- `dashboard/control.html` — sandbox plan UI module (updated)
+- `dashboard/index.html` — sandbox plan summary (updated)
+- `scripts/validate-daily-digest-build-sandbox-plan.ts` — sandbox plan validator (NEW)
+
+---
+
+*Runbook v5.7 — Phase 5C-2C-C4*

@@ -64,6 +64,7 @@
     "validate:control-low-risk-execution": "tsx scripts/validate-control-low-risk-execution.ts",
     "validate:control-hardening": "tsx scripts/validate-control-hardening.ts",
     "validate:daily-digest-staged-plan": "tsx scripts/validate-daily-digest-staged-plan.ts",
+    "validate:daily-digest-build-sandbox-plan": "tsx scripts/validate-daily-digest-build-sandbox-plan.ts",
     "validate:daily-digest-stage-execution": "tsx scripts/validate-daily-digest-stage-execution.ts",
     "validate:control-workflow-execution": "tsx scripts/validate-control-workflow-execution.ts",
     "validate:control-workflows": "tsx scripts/validate-control-workflows.ts",

@@ -1317,6 +1317,22 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/build-sandbox-plan": {
+      // Phase 5C-2C-C4: Daily digest build sandbox plan (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { buildSandboxPlan } = require("./daily-digest-build-sandbox-planner");
+      const sandboxPlan = buildSandboxPlan();
+      if (!sandboxPlan) {
+        notFound(res, "Sandbox plan not found");
+        return;
+      }
+      jsonResponse(res, sandboxPlan);
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;

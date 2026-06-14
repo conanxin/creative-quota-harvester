@@ -1,0 +1,174 @@
+{
+  "version": "0.1.0",
+  "phase": "5C-2C-C4",
+  "mode": "sandbox_plan_only",
+  "real_execution_supported": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "collect_allowed": false,
+  "timer_allowed": false,
+  "generated_at": "2026-06-14T11:00:00Z",
+  "purpose": "Sandbox plan for daily digest build stage. Defines safe sandbox directory structure, protected production paths, and future staged build process without real execution.",
+  "stages": [
+    {
+      "stage_id": "stage_a_prepare_sandbox",
+      "label_zh": "阶段 A: 准备沙盒 (Prepare Sandbox)",
+      "description_zh": "创建沙盒目录，读取现有输入快照，不执行采集",
+      "current_status": "sandbox_plan_only",
+      "allowed_now": false,
+      "blocked_reason": "本阶段只定义 sandbox plan，不创建实际目录",
+      "future_gate_required": "Phase 5C-2C-C5+ sandbox directory creation",
+      "expected_outputs": [
+        "reports/sandbox/daily-digest/<timestamp>/",
+        "reports/sandbox/daily-digest/latest/"
+      ],
+      "protected_paths": [],
+      "sandbox_paths": [
+        "reports/sandbox/daily-digest/<timestamp>/input/",
+        "reports/sandbox/daily-digest/latest/input/"
+      ],
+      "notes": "只读取现有信号和素材，不触发 collect"
+    },
+    {
+      "stage_id": "stage_b_build_digest_sandbox",
+      "label_zh": "阶段 B: 构建沙盒 Digest (Build Digest Sandbox)",
+      "description_zh": "在沙盒中运行 digest builder，输出只到沙盒目录，永不覆盖正式文件",
+      "current_status": "sandbox_plan_only",
+      "allowed_now": false,
+      "blocked_reason": "本阶段只定义 sandbox plan，不执行 digest build",
+      "future_gate_required": "Phase 5C-2C-C5+ sandbox digest builder script",
+      "expected_outputs": [
+        "reports/sandbox/daily-digest/<timestamp>/daily-digest.md",
+        "reports/sandbox/daily-digest/<timestamp>/telegram-digest.txt",
+        "reports/sandbox/daily-digest/<timestamp>/status.json"
+      ],
+      "protected_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json"
+      ],
+      "sandbox_paths": [
+        "reports/sandbox/daily-digest/<timestamp>/daily-digest.md",
+        "reports/sandbox/daily-digest/<timestamp>/telegram-digest.txt",
+        "reports/sandbox/daily-digest/<timestamp>/status.json",
+        "reports/sandbox/daily-digest/latest/daily-digest.md",
+        "reports/sandbox/daily-digest/latest/telegram-digest.txt",
+        "reports/sandbox/daily-digest/latest/status.json"
+      ],
+      "notes": "digest builder 只写 sandbox 目录，production 路径受保护"
+    },
+    {
+      "stage_id": "stage_c_validate_sandbox_outputs",
+      "label_zh": "阶段 C: 验证沙盒输出 (Validate Sandbox Outputs)",
+      "description_zh": "验证沙盒生成的 markdown/text/status 质量，不修改正式文件",
+      "current_status": "sandbox_plan_only",
+      "allowed_now": false,
+      "blocked_reason": "本阶段只定义 sandbox plan，不执行验证",
+      "future_gate_required": "Phase 5C-2C-C5+ sandbox validation scripts",
+      "expected_outputs": [
+        "reports/sandbox/daily-digest/<timestamp>/validation-report.json"
+      ],
+      "protected_paths": [],
+      "sandbox_paths": [
+        "reports/sandbox/daily-digest/<timestamp>/validation-report.json"
+      ],
+      "notes": "纯验证，不修改任何文件"
+    },
+    {
+      "stage_id": "stage_d_compare_with_production",
+      "label_zh": "阶段 D: 与正式版对比 (Compare with Production)",
+      "description_zh": "对比沙盒 vs 正式 digest/status，生成差异摘要",
+      "current_status": "sandbox_plan_only",
+      "allowed_now": false,
+      "blocked_reason": "本阶段只定义 sandbox plan，不执行对比",
+      "future_gate_required": "Phase 5C-2C-C5+ diff comparison script",
+      "expected_outputs": [
+        "reports/sandbox/daily-digest/<timestamp>/diff-summary.json",
+        "reports/sandbox/daily-digest/<timestamp>/diff-report.md"
+      ],
+      "protected_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json"
+      ],
+      "sandbox_paths": [
+        "reports/sandbox/daily-digest/<timestamp>/diff-summary.json",
+        "reports/sandbox/daily-digest/<timestamp>/diff-report.md"
+      ],
+      "notes": "只读对比，不修改正式文件"
+    },
+    {
+      "stage_id": "stage_e_promote_candidate",
+      "label_zh": "阶段 E: 提升候选 (Promote Candidate)",
+      "description_zh": "将沙盒输出提升为正式文件",
+      "current_status": "blocked",
+      "allowed_now": false,
+      "blocked_reason": "提升操作需要独立审批 gate，当前阶段不允许",
+      "future_gate_required": "CQA_ALLOW_PROMOTE_SANDBOX=1 + diff review + manual confirmation",
+      "expected_outputs": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json"
+      ],
+      "protected_paths": [
+        "reports/daily-digest.md",
+        "reports/telegram-digest.txt",
+        "dashboard/status.json",
+        "daily archive 输出",
+        "Telegram send result"
+      ],
+      "sandbox_paths": [],
+      "notes": "promote 操作永远需要人工确认和独立 gate"
+    },
+    {
+      "stage_id": "stage_f_send_telegram",
+      "label_zh": "阶段 F: 发送 Telegram (Send Telegram)",
+      "description_zh": "发送沙盒 digest 到 Telegram",
+      "current_status": "blocked",
+      "allowed_now": false,
+      "blocked_reason": "外部 Telegram 发送需要 CQA_ALLOW_TELEGRAM_SEND gate",
+      "future_gate_required": "CQA_ALLOW_TELEGRAM_SEND=1 + digest sanitized + send-gate validated",
+      "expected_outputs": [
+        "Telegram message"
+      ],
+      "protected_paths": [
+        "reports/project-report-send-result.json"
+      ],
+      "sandbox_paths": [],
+      "notes": "外部消息发送被严格阻断"
+    }
+  ],
+  "blocked_actions": [
+    "collect",
+    "send",
+    "timer",
+    "generate",
+    "git",
+    "promote"
+  ],
+  "protected_paths": [
+    "reports/daily-digest.md",
+    "reports/telegram-digest.txt",
+    "dashboard/status.json",
+    "daily archive 输出",
+    "reports/project-report-send-result.json",
+    "systemd timer state"
+  ],
+  "sandbox_paths": [
+    "reports/sandbox/daily-digest/<timestamp>/",
+    "reports/sandbox/daily-digest/latest/"
+  ],
+  "next_gate_required": true,
+  "next_gate_description": "Phase 5C-2C-C5: sandbox directory creation + sandbox digest builder script",
+  "safety_model": {
+    "localhost_only": true,
+    "token_auth_required": true,
+    "read_only": true,
+    "no_production_write": true,
+    "no_external_send": true,
+    "no_collect": true,
+    "no_timer_modify": true,
+    "audit_logging": true,
+    "no_secrets_in_env": true
+  }
+}

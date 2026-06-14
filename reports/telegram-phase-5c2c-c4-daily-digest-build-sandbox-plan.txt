@@ -1,0 +1,14 @@
+Phase 5C-2C-C4 COMPLETE
+
+Status: PASS
+
+Daily Digest Build Sandbox Plan:
+- 6 stages defined (prepare → build → validate → compare → promote blocked → send blocked)
+- Protected paths: reports/daily-digest.md, reports/telegram-digest.txt, dashboard/status.json
+- Sandbox paths: reports/sandbox/daily-digest/<timestamp>/
+- Blocked: collect, send, timer, generate, git, promote
+
+Validation: 470/470 checks passed
+Smoke test: 6/6 passed
+
+Report: reports/daily-digest-build-sandbox-plan.md

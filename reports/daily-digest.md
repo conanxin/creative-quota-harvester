@@ -1,11 +1,11 @@
 # Creative Quota Daily Digest
-**Generated:** 2026-06-13T03:49:57.504Z
+**Generated:** 2026-06-13T23:32:50.162Z
 **STATUS:** WARN
 
 ## 今日输入
 | 指标 | 数值 |
 |------|------|
-| Signals (DB) | 715 |
+| Signals (DB) | 793 |
 | Content Packs | 25 |
 | Packs with image prompt | 25 |
 | Generated Assets | 5 |
@@ -13,15 +13,15 @@
 | Music | 0 |
 | Video | 0 |
 | Signal freshness | PASS — signals last collected 0h ago |
-| Source health | arXiv: ✅ / GitHub: ✅ / Hacker: ✅ / GDELT: skipped_cooldown / Hugging: ✅ / Open-Meteo: ✅ / Date: ✅ / Solar: ✅ / The: ✅ |
+| Source health | arXiv: ✅ / GitHub: ✅ / Hacker: ✅ / GDELT: ⚠️ / Hugging: ⏱️ / Open-Meteo: ✅ / Date: ✅ / Solar: ✅ / The: ⏱️ |
 
 ### Signal Sources
-- code: 225
+- code: 265
+- academic: 160
 - ai-ecosystem: 156
-- academic: 140
-- dev-community: 105
+- dev-community: 120
 - culture-art: 63
-- context: 26
+- context: 29
 
 ## Top 5 Signals (deduplicated)
 1. **SamurAIGPT/Generative-Media-Skills** — code (score: 0.703)
@@ -32,8 +32,8 @@
    URL: https://arxiv.org/abs/2606.11166v1
 4. **FurkanGozukara/Stable-Diffusion** — code (score: 0.638)
    URL: https://github.com/FurkanGozukara/Stable-Diffusion
-5. **Show HN: Learn while you wait for your agents to code** — dev-community (score: 0.629)
-   URL: https://github.com/get-foyer/foyer
+5. **wuyoscar/GPT-Image2-Skill** — code (score: 0.635)
+   URL: https://github.com/wuyoscar/GPT-Image2-Skill
 
 ## Recommended Generation Queue
 All top-priority packs already have generated images.
@@ -53,18 +53,18 @@ Next step: produce video prompt / music prompt / run new signal collection.
 | Image model called | No |
 | New media generated | No |
 | .env git-tracked | No |
-| signal_last_collected_at | 2026-06-13T03:49:46.536Z |
+| signal_last_collected_at | 2026-06-13T23:32:07.886Z |
 
 ## Source Health
-- arXiv AI: success (20 signals, 17506ms)
-- GitHub Open Source Radar: success (20 signals, 2105ms)
-- Hacker News: success (16 signals, 7100ms)
-- GDELT: skipped_cooldown (0 signals, 0ms) — cooldown until 2026-06-13T09:39:46.968Z (HTTP 429 at 2026-06-13T03:39:46.967Z)
-- Hugging Face Hub: success (20 signals, 8698ms)
-- Open-Meteo: success (1 signals, 725ms)
+- arXiv AI: success (20 signals, 16132ms)
+- GitHub Open Source Radar: success (40 signals, 4061ms)
+- Hacker News: success (15 signals, 5048ms)
+- GDELT: partial (0 signals, 24340ms)
+- Hugging Face Hub: timeout (0 signals, 35857ms) — timeout after 35000ms
+- Open-Meteo: success (1 signals, 689ms)
 - Date Context: success (1 signals, 0ms)
-- Solar Terms: success (1 signals, 1ms)
-- The Met Collection: success (7 signals, 30020ms)
+- Solar Terms: success (1 signals, 0ms)
+- The Met Collection: timeout (0 signals, 35160ms) — timeout after 35000ms
 
 ## 下一阶段
 - Phase 4C-4: Collect Timeout Fix & Source Health (COMPLETE)

@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-13T00:39:12.540Z",
+  "generated_at": "2026-06-13T23:32:51.121Z",
   "phase": "4C-3",
   "mode": "real-send",
   "digest_check": {
-    "char_count": 1662,
+    "char_count": 1687,
     "max_allowed": 3500,
     "pass": true,
     "has_truncated": false,
@@ -15,7 +15,7 @@
     "env_flag": "1",
     "has_token": true,
     "has_chat_id": true,
-    "send_result": "success",
-    "message_id": 50003
+    "send_result": "failed",
+    "error": "Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 1542"
   }
 }
