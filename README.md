@@ -64,6 +64,8 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-2C-C2** | **✅ Complete** | **Daily Digest Staged Plan (5 stages: collect blocked, build candidate, validate executable, send blocked, timer blocked)** |
 | **Phase 5C-2C-C3** | **✅ Complete** | **Daily Digest Validate Stage Execution (stage_3_validate_outputs real execution, 3 scripts, confirmation phrase, other stages blocked)** |
 | **Phase 5C-2C-C4** | **✅ Complete** | **Daily Digest Build Sandbox Plan (6 stages, protected paths, sandbox paths, no real execution, no production write)** |
+| **Phase 5C-2C-C5** | **✅ Complete** | **Daily Digest Sandbox Directory Creation (sandbox runs, manifest, protected paths)** |
+| **Phase 5C-2C-C5B** | **✅ Complete** | **Daily Digest Build Readiness Audit (118 files, 62 builders, partial readiness)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

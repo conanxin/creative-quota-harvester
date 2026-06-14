@@ -1068,3 +1068,148 @@ Expected: All PASS (470/470 checks).
 ---
 
 *Runbook v5.7 — Phase 5C-2C-C4*
+
+---
+
+## Phase 5C-2C-C5 — Daily Digest Sandbox Directory Creation
+
+Phase 5C-2C-C5 adds **sandbox directory creation** for daily digest builds. It creates isolated run directories under `reports/sandbox/daily-digest/` without touching production paths.
+
+### What Changed
+
+- New `scripts/daily-digest-sandbox-manager.ts` — creates sandbox run directories with manifest.json
+- New `scripts/validate-daily-digest-sandbox-manager.ts` — validates sandbox manager safety (63 checks)
+- New `reports/sandbox/README.md` — sandbox directory documentation
+- New `reports/sandbox/daily-digest/.gitkeep` — directory structure placeholder
+- New `POST /api/daily-digest/sandbox/create` endpoint — creates sandbox run with confirmation phrase
+- New `GET /api/daily-digest/sandbox-status` endpoint — reads latest sandbox status
+- Updated `dashboard/control.html` — sandbox creation UI module
+- Updated `.gitignore` — ignores sandbox runtime directories but keeps `.gitkeep`
+
+### Sandbox Directory Structure
+
+```
+reports/sandbox/daily-digest/
+├── .gitkeep
+├── latest.json
+└── sandbox-YYYYMMDD_HHMMSS/
+    ├── manifest.json
+    ├── inputs/
+    ├── outputs/
+    ├── reports/
+    ├── diffs/
+    └── logs/
+```
+
+### Manifest Schema
+
+```json
+{
+  "run_id": "sandbox-2026-06-14-04-45-07",
+  "created_at": "2026-06-14T04:45:07.106Z",
+  "mode": "sandbox_directory_only",
+  "real_digest_build": false,
+  "collect_allowed": false,
+  "telegram_send_allowed": false,
+  "production_write_allowed": false,
+  "protected_paths": [
+    "reports/daily-digest.md",
+    "reports/telegram-digest.txt",
+    "dashboard/status.json",
+    "reports/daily/"
+  ],
+  "sandbox_root": "...",
+  "next_allowed_stage": "sandbox_build_readiness"
+}
+```
+
+### Safety Invariants
+
+- ✅ Only writes to `reports/sandbox/daily-digest/`
+- ✅ No `child_process`, `exec`, `spawn`
+- ✅ No network calls
+- ✅ No `.env` or `.control.local` reading
+- ✅ No production path writes
+- ✅ Rate limited (5/min)
+- ✅ Execution locked (1 concurrent)
+- ✅ Confirmation phrase required: `CREATE DAILY SANDBOX`
+
+### How to Test
+
+```bash
+# Start control server with actions enabled
+cat > .control.local << 'EOF'
+CQA_CONTROL_TOKEN=test-token
+CQA_CONTROL_ENABLE_ACTIONS=1
+EOF
+npm run control:server
+
+# Create sandbox
+curl -s -X POST http://127.0.0.1:8788/api/daily-digest/sandbox/create   -H "Content-Type: application/json"   -d '{"confirm_phrase":"CREATE DAILY SANDBOX","token":"test-token"}'
+
+# Check status
+curl -s http://127.0.0.1:8788/api/daily-digest/sandbox-status
+```
+
+### Files
+
+- `scripts/daily-digest-sandbox-manager.ts` — sandbox manager
+- `scripts/validate-daily-digest-sandbox-manager.ts` — validator (63 checks)
+- `reports/sandbox/README.md` — documentation
+- `reports/sandbox/daily-digest/.gitkeep` — directory structure
+
+---
+
+## Phase 5C-2C-C5B — Daily Digest Build Readiness Audit
+
+Phase 5C-2C-C5B adds a **read-only readiness audit** that scans 118 files to determine if builders are ready for sandbox execution. It does not execute builders, call models, or write production files.
+
+### What Changed
+
+- New `scripts/audit-daily-digest-build-readiness.ts` — read-only codebase scanner
+- New `scripts/validate-daily-digest-build-readiness.ts` — validator (46 checks)
+- New `dashboard/daily-digest-build-readiness.json` — audit output
+- New `GET /api/daily-digest/build-readiness` endpoint — serves audit JSON
+- Updated `dashboard/control.html` — Digest Build Readiness panel
+
+### Readiness Result
+
+- **Ready for Sandbox Build:** `partial` (4 refactors required)
+- **Files Scanned:** 118
+- **Builders Detected:** 62
+
+### Blocked Risks
+
+| Risk | Status |
+|------|--------|
+| collect | ❌ blocked |
+| telegram_send | ❌ blocked |
+| timer | ❌ blocked |
+| model_call | ⚠️ detected |
+| media_generation | ✅ safe |
+| production_write | ❌ blocked |
+
+### Required Refactors
+
+1. Refactor builders to accept `--output-dir` parameter
+2. Ensure collect disabled in sandbox mode
+3. Ensure Telegram send disabled in sandbox mode
+4. Ensure timer modification disabled in sandbox mode
+
+### How to Run Audit
+
+```bash
+npm run audit:daily-digest-build-readiness
+npm run validate:daily-digest-build-readiness
+```
+
+Expected: All PASS (46/46 checks).
+
+### Files
+
+- `scripts/audit-daily-digest-build-readiness.ts` — auditor
+- `scripts/validate-daily-digest-build-readiness.ts` — validator (46 checks)
+- `dashboard/daily-digest-build-readiness.json` — audit output
+
+---
+*Runbook v5.8 — Phase 5C-2C-C5 + C5B*
