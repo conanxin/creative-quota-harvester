@@ -25,6 +25,70 @@ const HOST = "127.0.0.1";
 const PORT = parseInt(process.env.CQA_CONTROL_PORT || "8788", 10);
 const HARVESTER_DIR = path.resolve(__dirname, "..");
 
+// --- Phase 5C-5A: Rate limit state (in-memory, per-process) ---
+interface RateLimitBucket {
+  count: number;
+  windowStart: number;
+}
+const rateLimitWindows = new Map<string, RateLimitBucket>();
+const RATE_LIMITS = {
+  execute_low_risk_per_minute: 5,
+  dry_run_per_minute: 20,
+  read_only_per_minute: 60,
+};
+
+function isRateLimited(category: string): boolean {
+  const now = Date.now();
+  const windowMs = 60000; // 1 minute
+  const key = `${category}:${Math.floor(now / windowMs)}`;
+  const bucket = rateLimitWindows.get(key) || { count: 0, windowStart: now };
+  bucket.count++;
+  rateLimitWindows.set(key, bucket);
+  // Cleanup old windows
+  for (const [k, b] of rateLimitWindows) {
+    if (now - b.windowStart > windowMs * 2) {
+      rateLimitWindows.delete(k);
+    }
+  }
+  const limit = (RATE_LIMITS as any)[category] || 10;
+  return bucket.count > limit;
+}
+
+function rateLimitResponse(res: http.ServerResponse, category: string, limit: number) {
+  res.writeHead(429, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({
+    error: "Rate limit exceeded",
+    category,
+    limit_per_minute: limit,
+    retry_after_seconds: 60,
+  }) + "\n");
+}
+
+// --- Phase 5C-5A: Execution lock ---
+let executionLock = false;
+function acquireExecutionLock(): boolean {
+  if (executionLock) return false;
+  executionLock = true;
+  return true;
+}
+function releaseExecutionLock() {
+  executionLock = false;
+}
+
+// --- Phase 5C-5A: Audit log redaction helper ---
+function redactAuditLine(line: string): string {
+  let result = line;
+  // Telegram tokens
+  result = result.replace(/[0-9]{8,12}:[A-Za-z0-9_-]{25,}/g, "<REDACTED_TELEGRAM_TOKEN>");
+  // API keys
+  result = result.replace(/sk-[A-Za-z0-9_-]{20,}/g, "<REDACTED_API_KEY>");
+  // Bearer tokens
+  result = result.replace(/(authorization:\s*bearer\s+)[A-Za-z0-9._-]+/gi, "$1<REDACTED>");
+  // Generic token values
+  result = result.replace(/(token["']?\s*[:=]\s*["']?)[^"',\s]+/gi, "$1<REDACTED>");
+  return result;
+}
+
 // --- Phase 5C-2A: Auth config ---
 function loadControlConfig(): { token: string; actionsEnabled: boolean } {
   const configPath = path.join(HARVESTER_DIR, ".control.local");
@@ -415,8 +479,8 @@ const server = http.createServer((req, res) => {
       const allowlist = safeReadJson(path.join(HARVESTER_DIR, "dashboard", "control-execution-allowlist.json"), null) as any;
       jsonResponse(res, {
         status: "ok",
-        mode: "localhost-only-dry-run-safe-readonly-confirmed-low-risk-expanded",
-        phase: "5C-2C-B",
+        mode: "localhost-only-dry-run-safe-readonly-confirmed-low-risk-hardened",
+        phase: "5C-5A",
         host: HOST,
         port: PORT,
         actions_enabled: CONTROL_CONFIG.actionsEnabled,
@@ -469,6 +533,74 @@ const server = http.createServer((req, res) => {
         return;
       }
       jsonResponse(res, review);
+      return;
+    }
+
+    case "/api/audit-log": {
+      // Phase 5C-5A: Audit log viewer (read-only, redacted, no path parameters)
+      let lines: string[] = [];
+      try {
+        if (fs.existsSync(AUDIT_LOG_PATH)) {
+          const content = fs.readFileSync(AUDIT_LOG_PATH, "utf-8");
+          lines = content.trim().split("\n").filter((l) => l.trim() !== "");
+        }
+      } catch {
+        lines = [];
+      }
+      // Return only last 100 lines, redacted
+      const recentLines = lines.slice(-100);
+      const redactedLines = recentLines.map((line) => redactAuditLine(line));
+      jsonResponse(res, {
+        enabled: true,
+        total_lines: lines.length,
+        returned_lines: redactedLines.length,
+        redacted: true,
+        entries: redactedLines.map((line) => {
+          try {
+            return JSON.parse(line);
+          } catch {
+            return { raw: line };
+          }
+        }),
+      });
+      return;
+    }
+
+    case "/api/control-security-status": {
+      // Phase 5C-5A: Security status endpoint (no secrets, no token leakage)
+      const securityPolicy = safeReadJson(path.join(HARVESTER_DIR, "dashboard", "control-security-policy.json"), null) as any;
+      const allowlist = safeReadJson(path.join(HARVESTER_DIR, "dashboard", "control-execution-allowlist.json"), null) as any;
+      let auditLogExists = false;
+      let auditLogSize = 0;
+      try {
+        const stat = fs.statSync(AUDIT_LOG_PATH);
+        auditLogExists = true;
+        auditLogSize = stat.size;
+      } catch {
+        // audit log not present
+      }
+      jsonResponse(res, {
+        mode: "localhost-only",
+        host: HOST,
+        real_execution_scope: "confirmed_low_risk_validation_only",
+        allowed_scripts_count: allowlist?.allowed_scripts?.length || 0,
+        rate_limits: securityPolicy?.rate_limits || RATE_LIMITS,
+        execution_lock: {
+          enabled: true,
+          max_concurrent_execute_low_risk: 1,
+          currently_locked: executionLock,
+        },
+        audit_log: {
+          enabled: true,
+          exists: auditLogExists,
+          size_bytes: auditLogSize,
+        },
+        output: {
+          max_output_chars: securityPolicy?.output?.max_output_chars || 12000,
+          redact_before_return: true,
+        },
+        timestamp: new Date().toISOString(),
+      });
       return;
     }
 
@@ -540,12 +672,12 @@ server.on("error", (err) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk)`);
+  console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
-  console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist)`);
+  console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);
   console.log(`[control-server] Actions enabled: ${CONTROL_CONFIG.actionsEnabled}, Token configured: ${!!CONTROL_CONFIG.token}`);
 });
 
@@ -561,6 +693,11 @@ process.on("SIGINT", () => {
 
 // --- Phase 5C-2A: Dry-run handler (no command execution, no child_process, no exec/spawn) ---
 function handleDryRun(req: http.IncomingMessage, res: http.ServerResponse) {
+  // Phase 5C-5A: Rate limit
+  if (isRateLimited("dry_run_per_minute")) {
+    rateLimitResponse(res, "dry_run_per_minute", RATE_LIMITS.dry_run_per_minute);
+    return;
+  }
   let body = "";
   req.on("data", (chunk) => { body += chunk; });
   req.on("end", () => {
@@ -708,6 +845,11 @@ function handleDryRun(req: http.IncomingMessage, res: http.ServerResponse) {
 
 // --- Phase 5C-2B: Safe read-only handler (no command execution, no child_process, no exec/spawn) ---
 function handleReadOnly(req: http.IncomingMessage, res: http.ServerResponse) {
+  // Phase 5C-5A: Rate limit
+  if (isRateLimited("read_only_per_minute")) {
+    rateLimitResponse(res, "read_only_per_minute", RATE_LIMITS.read_only_per_minute);
+    return;
+  }
   let body = "";
   req.on("data", (chunk) => { body += chunk; });
   req.on("end", () => {
@@ -995,9 +1137,27 @@ function writeAuditLogLowRisk(entry: AuditEntryLowRisk) {
 
 // --- Phase 5C-2C-A: Confirmed low-risk execution handler ---
 function handleExecuteLowRisk(req: http.IncomingMessage, res: http.ServerResponse) {
+  // Phase 5C-5A: Rate limit
+  if (isRateLimited("execute_low_risk_per_minute")) {
+    rateLimitResponse(res, "execute_low_risk_per_minute", RATE_LIMITS.execute_low_risk_per_minute);
+    return;
+  }
+  // Phase 5C-5A: Execution lock
+  if (!acquireExecutionLock()) {
+    res.writeHead(409, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({
+      error: "Execution lock busy",
+      message: "Another execute-low-risk is already in progress. Try again later.",
+      max_concurrent: 1,
+    }) + "\n");
+    return;
+  }
   let body = "";
   req.on("data", (chunk) => { body += chunk; });
   req.on("end", async () => {
+    let actionId = "";
+    let confirmPhrase = "";
+    let token = "";
     let payload: any = {};
     try {
       payload = JSON.parse(body);
@@ -1006,9 +1166,9 @@ function handleExecuteLowRisk(req: http.IncomingMessage, res: http.ServerRespons
       return;
     }
 
-    const actionId = String(payload.action_id || "").trim();
-    const confirmPhrase = String(payload.confirm_phrase || "").trim();
-    const token = String(payload.token || "").trim();
+    actionId = String(payload.action_id || "").trim();
+    confirmPhrase = String(payload.confirm_phrase || "").trim();
+    token = String(payload.token || "").trim();
 
     if (!actionId) {
       badRequest(res, "Missing 'action_id' field");
@@ -1240,6 +1400,9 @@ function handleExecuteLowRisk(req: http.IncomingMessage, res: http.ServerRespons
         result: "failed",
         reason: err.message || "unknown",
       });
+    } finally {
+      // Phase 5C-5A: Always release execution lock
+      releaseExecutionLock();
     }
   });
 }

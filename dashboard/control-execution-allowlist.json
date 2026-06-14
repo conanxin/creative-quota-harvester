@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "phase": "5C-2C-B",
+  "phase": "5C-5A",
   "mode": "expanded-low-risk-validations",
   "purpose": "Phase 5C-2C-B: Expanded low-risk validation allowlist. 17 safe validation commands (5 original canary + 12 new validation scripts). All others remain blocked. Only validation commands that do not call models, generate media, send messages, or modify timers are allowed.",
   "allowed_scripts": [
@@ -29,6 +29,7 @@
     "git",
     "push",
     "pull",
+    "build",
     "deploy",
     "release",
     "model",

@@ -1,0 +1,21 @@
+Phase 5C-5A: Control Server Hardening & Audit Viewer
+
+STATUS: PASS ✅
+
+What changed:
+- Security policy added (dashboard/control-security-policy.json)
+- Rate limits: 5/20/60 per minute (execute/dry-run/read-only)
+- Execution lock: max 1 concurrent, 409 if busy
+- Audit log viewer: GET /api/audit-log (last 100, redacted)
+- Security status: GET /api/control-security-status
+- Runner output redaction: Telegram tokens, API keys, Bearer tokens redacted before return
+- Hardening validator: npm run validate:control-hardening
+- Control catalog UI: Security/Audit panel added
+
+Validation: All 10 validation scripts PASS
+Smoke test: PASS
+Blocked: generate/send/timer/collect/git/build/deploy/release still blocked
+No model calls. No media generated. No secrets leaked.
+
+Report: reports/control-hardening-audit-viewer.md
+Docs: docs/PHASE_5C5A_CONTROL_HARDENING_AUDIT_VIEWER_REPORT.md

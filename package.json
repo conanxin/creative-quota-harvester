@@ -62,6 +62,7 @@
     "validate:control-server": "tsx scripts/validate-control-server.ts",
     "validate:control-readonly-actions": "tsx scripts/validate-control-readonly-actions.ts",
     "validate:control-low-risk-execution": "tsx scripts/validate-control-low-risk-execution.ts",
+    "validate:control-hardening": "tsx scripts/validate-control-hardening.ts",
     "validate:control-actions-dry-run": "tsx scripts/validate-control-actions-dry-run.ts",
     "control:server": "tsx scripts/control-server.ts",
     "control:server:check": "tsx scripts/validate-control-server.ts",

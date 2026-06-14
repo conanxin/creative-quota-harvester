@@ -1,0 +1,23 @@
+{
+  "version": "0.1.0",
+  "phase": "5C-5A",
+  "host": "127.0.0.1",
+  "rate_limits": {
+    "execute_low_risk_per_minute": 5,
+    "dry_run_per_minute": 20,
+    "read_only_per_minute": 60
+  },
+  "execution_lock": {
+    "enabled": true,
+    "max_concurrent_execute_low_risk": 1
+  },
+  "audit": {
+    "enabled": true,
+    "max_lines_returned": 100,
+    "redact_before_return": true
+  },
+  "output": {
+    "max_output_chars": 12000,
+    "redact_before_return": true
+  }
+}

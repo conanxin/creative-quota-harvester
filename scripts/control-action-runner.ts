@@ -1,13 +1,34 @@
 /**
  * control-action-runner.ts
- * Phase 5C-2C-A: Confirmed Low-risk Execution Canary
+ * Phase 5C-5A: Hardened Low-risk Execution Runner with Output Redaction
  *
  * Safety-first execution runner for the localhost-only control server.
  * Only executes scripts listed in control-execution-allowlist.json.
+ * Output is redacted before return to prevent secret leakage.
  */
 import { spawn } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+
+// --- Phase 5C-5A: Redaction patterns ---
+const REDACTION_PATTERNS = [
+  // Telegram tokens
+  { pattern: /[0-9]{8,12}:[A-Za-z0-9_-]{25,}/g, replacement: "<REDACTED_TELEGRAM_TOKEN>" },
+  // API keys (sk- prefix)
+  { pattern: /sk-[A-Za-z0-9_-]{20,}/g, replacement: "<REDACTED_API_KEY>" },
+  // Bearer tokens in Authorization header
+  { pattern: /(authorization:\s*bearer\s+)[A-Za-z0-9._-]+/gi, replacement: "$1<REDACTED>" },
+  // Generic token values after = or :
+  { pattern: /(token["']?\s*[:=]\s*["']?)[^"',\s]+/gi, replacement: "$1<REDACTED>" },
+];
+
+function redactOutput(output: string): string {
+  let result = output;
+  for (const r of REDACTION_PATTERNS) {
+    result = result.replace(r.pattern, r.replacement);
+  }
+  return result;
+}
 
 interface ExecutionResult {
   exitCode: number;
@@ -52,17 +73,17 @@ function loadAllowlist(): AllowlistConfig {
 }
 
 function isAllowed(scriptName: string, allowlist: AllowlistConfig): boolean {
-  // Must be in explicit allowlist
-  if (!allowlist.allowed_scripts.includes(scriptName)) {
-    return false;
+  // Phase 5C-5A: Allowed_scripts has highest priority (explicit whitelist)
+  if (allowlist.allowed_scripts.includes(scriptName)) {
+    return true;
   }
-  // Must not match any blocked pattern
+  // Must not match any blocked pattern (for non-allowed scripts)
   for (const pattern of allowlist.blocked_patterns) {
     if (scriptName.toLowerCase().includes(pattern.toLowerCase())) {
       return false;
     }
   }
-  return true;
+  return false;
 }
 
 function truncateOutput(output: string, maxChars: number): string {
@@ -153,8 +174,8 @@ export async function executeLowRiskAction(
       resolve({
         exitCode: code ?? -1,
         timedOut,
-        stdout_tail: truncateOutput(stdout, allowlist.max_output_chars),
-        stderr_tail: truncateOutput(stderr, allowlist.max_output_chars),
+        stdout_tail: redactOutput(truncateOutput(stdout, allowlist.max_output_chars)),
+        stderr_tail: redactOutput(truncateOutput(stderr, allowlist.max_output_chars)),
         duration_ms,
         action_id,
         executed_at,

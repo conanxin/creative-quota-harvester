@@ -736,4 +736,72 @@
   }
 })();
 </script>
+  <!-- Phase 5C-5A: Security & Audit Panel -->
+  <div id="security-panel" class="security-panel" style="display:none;">
+    <div class="section" style="background:#f0f9ff;border:1px solid #bae6fd;">
+      <h2>🔒 Security Status / 安全状态</h2>
+      <div id="security-status"></div>
+      <div id="security-warning" style="margin-top:12px;background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+        ⚠️ 当前真实执行仅限验证类命令；generate / send / timer / collect / git 仍禁用。
+      </div>
+    </div>
+    <div class="section" style="background:#fff;border:1px solid #e0e0e0;">
+      <h2>📋 Audit Log / 审计日志</h2>
+      <div id="audit-log-status"></div>
+      <pre id="audit-log-preview" style="background:#f8f9fa;border:1px solid #e0e0e0;border-radius:8px;padding:12px;font-size:0.75rem;overflow-x:auto;max-height:300px;overflow-y:auto;margin-top:10px;"></pre>
+    </div>
+  </div>
+
+</div>
+<script>
+// Phase 5C-5A: Load security status and audit log
+(function() {
+  var base = location.protocol + '//' + location.host;
+  fetch(base + '/api/control-security-status')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var panel = document.getElementById('security-panel');
+      if (panel) panel.style.display = 'block';
+      var statusDiv = document.getElementById('security-status');
+      if (statusDiv) {
+        var html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:10px;">';
+        html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;"><div style="font-size:1.3rem;font-weight:700;color:#1e3a5f;">' + (data.mode || 'N/A') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Mode</div></div>';
+        html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;"><div style="font-size:1.3rem;font-weight:700;color:#1e3a5f;">' + (data.allowed_scripts_count || 0) + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Allowed Scripts</div></div>';
+        html += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;"><div style="font-size:1.3rem;font-weight:700;color:#1e3a5f;">' + (data.execution_lock?.currently_locked ? '🔒 Locked' : '🔓 Free') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Execution Lock</div></div>';
+        html += '</div>';
+        if (data.rate_limits) {
+          html += '<div style="margin-top:12px;font-size:0.85rem;color:#555;">';
+          html += 'Rate limits: execute_low_risk=' + (data.rate_limits.execute_low_risk_per_minute || 'N/A') + '/min · dry_run=' + (data.rate_limits.dry_run_per_minute || 'N/A') + '/min · read_only=' + (data.rate_limits.read_only_per_minute || 'N/A') + '/min';
+          html += '</div>';
+        }
+        statusDiv.innerHTML = html;
+      }
+      var auditStatusDiv = document.getElementById('audit-log-status');
+      if (auditStatusDiv) {
+        auditStatusDiv.innerHTML = '<div style="font-size:0.85rem;color:#555;">Audit log: ' + (data.audit_log?.exists ? '✅ exists (' + (data.audit_log?.size_bytes || 0) + ' bytes)' : '❌ not found') + '</div>';
+      }
+    })
+    .catch(function(e) {
+      console.log('Security status load failed:', e);
+    });
+
+  fetch(base + '/api/audit-log')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var pre = document.getElementById('audit-log-preview');
+      if (pre) {
+        if (data.entries && data.entries.length > 0) {
+          var lines = data.entries.slice(-10).map(function(e) { return JSON.stringify(e, null, 2); }).join('\n---\n');
+          pre.textContent = 'Recent entries (redacted):\n' + lines;
+        } else {
+          pre.textContent = 'No audit log entries yet.';
+        }
+      }
+    })
+    .catch(function(e) {
+      console.log('Audit log load failed:', e);
+    });
+})();
+</script>
+
 </body></html>

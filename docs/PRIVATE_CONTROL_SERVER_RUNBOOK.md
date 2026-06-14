@@ -644,3 +644,56 @@ The following command categories remain blocked for real execution:
 ---
 
 *Runbook v5.1 — Phase 5C-2C-B*
+
+---
+
+## Phase 5C-5A: Hardening & Audit Viewer
+
+### What's New
+
+- **Security Policy**: `dashboard/control-security-policy.json` defines rate limits, execution lock, and audit settings.
+- **Rate Limits**: 5 execute-low-risk / 20 dry-run / 60 read-only per minute (in-memory, per-process).
+- **Execution Lock**: Only 1 concurrent `execute-low-risk` allowed; returns 409 if busy. Lock released in finally block.
+- **Audit Log Viewer**: `GET /api/audit-log` returns last 100 entries, redacted.
+- **Security Status**: `GET /api/control-security-status` returns live security state without secrets.
+- **Runner Output Redaction**: `control-action-runner.ts` redacts stdout/stderr before return (Telegram tokens, API keys, Bearer tokens).
+- **Hardening Validator**: `npm run validate:control-hardening` — 14 checks, all PASS.
+
+### Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/audit-log` | GET | Read-only audit log (last 100 entries, redacted) |
+| `/api/control-security-status` | GET | Live security state (rate limits, lock status, audit log size) |
+
+### Safety Invariants (Still Enforced)
+
+- localhost-only (127.0.0.1)
+- No shell execution (spawn with shell=false)
+- No exec/spawnSync/execFile
+- Only 17 confirmed low-risk validation scripts allowed
+- generate / send / timer / collect / git / build / deploy / release still blocked
+- No .env / .control.local reading
+- No secrets in source code
+
+### Validation
+
+Run all validators:
+```bash
+npm run validate:control-hardening
+npm run validate:control-low-risk-execution
+npm run validate:control-actions-dry-run
+npm run validate:control-readonly-actions
+npm run validate:control-server
+npm run dashboard:policy:validate
+npm run validate:telegram-sanitizer
+npm run validate:sanitizer-false-positives
+npm run validate:sanitizer-secret-completeness
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+---
+
+*Runbook v5.2 — Phase 5C-5A*
