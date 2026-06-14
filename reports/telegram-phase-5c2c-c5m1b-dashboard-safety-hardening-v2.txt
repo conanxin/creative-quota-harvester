@@ -1,0 +1,41 @@
+PHASE-5C-2C-C5M1B-DASHBOARD-SAFETY-HARDENING-V2 COMPLETE
+
+状态：PASS
+
+- WHAT_CHANGED:
+  * dashboard/control-safety-policy.json (NEW): single source of truth
+  * scripts/validate-dashboard-control-safety.ts (NEW): 12-check validator
+  * scripts/validate-control-catalog.ts: check 6b reads policy + fallback
+  * package.json: +validate:dashboard-control-safety
+  * dashboard/control.html: no change; 5/5 cqa-action-btn have data-safety
+  * docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md / README.md / ROADMAP.md: updated
+- SAFETY_POLICY (dashboard/control-safety-policy.json):
+  * allowed: safe-localhost, safe-localhost-confirm-phrase-gated, safe-localhost-dry-run, read-only, dry-run, simulation
+  * forbidden_hints: production-write, production-promote, high-risk, telegram-send, collect, generate, timer, git, build, deploy, model, media, unrestricted, remote, arbitrary
+  * required_for_interactive: data-safety
+  * forbidden_elements: button
+  * forbidden_handlers: onclick, onsubmit, onerror, onload, etc.
+  * forbidden_endpoints: /promote/controlled, /telegram/send, /collect, /timer, /generate, /git, /build, /deploy
+  * escape_hatch: cqa-action-btn + data-safety (codified C5M1B)
+- VALIDATOR_RULES:
+  * Standalone: 12 checks (policy_present, html_present, policy_phase, allow_list_nonempty, forbidden_hints_nonempty, no_button_tag, no_inline_event_handlers, cqa_action_btns_have_data_safety, data_safety_values_allowed, no_forbidden_endpoints, no_secrets_in_html, policy_no_collision)
+  * Inline (dashboard:control:validate): 16 checks
+- INTERACTIVE_ELEMENT_AUDIT: 5/5 cqa-action-btn declare data-safety=safe-localhost-confirm-phrase-gated, all under escape hatch, none point at forbidden endpoints
+- PROTECTED_PATH_CHECK (md5-verified unchanged):
+  * reports/daily-digest.md = 735002a3969746aefabc57c75b5220e8
+  * reports/telegram-digest.txt = 53c2a73d440eb32967d1a9185763a6b3
+  * dashboard/status.json = d98c500cb52c78f57edd941cdedc7b49
+- VALIDATION_RESULTS: 11/11 PASS (12/12 standalone, 16/16 inline)
+- TELEGRAM_SEND_STATUS: BLOCKED (no digest); only stage report via report:send
+- TIMER_STATUS: NOT TRIGGERED
+- MODEL_CALL_STATUS: NONE (JSON + TS source only)
+- GENERATED_MEDIA_STATUS: NONE
+- LIMITATIONS:
+  (1) Policy is hand-edited JSON; future could add JSONSchema
+  (2) Inline handler check is regex-based, not DOM-based; eval/Function could bypass
+  (3) Endpoint check is pattern-based; future could add per-endpoint risk catalog
+  (4) Inline fallback values must be kept in sync manually
+- NEXT_PHASE_PROPOSAL: C5M1B.next — dashboard safety v3 (JSONSchema policy validator, per-endpoint risk catalog, runtime self-test, shared dangerous-patterns.json)
+
+报告路径：
+~/.openclaw/workspace/projects/creative-quota-harvester/reports/dashboard-safety-hardening-v2.md

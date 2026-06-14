@@ -2095,3 +2095,67 @@ npx tsx scripts/daily-digest-controlled-rollback.ts
 
 ---
 *Runbook v5.20 — Phase 5C-2C-C5M-1*
+
+## Phase 5C-2C-C5M1A — Post-Promote Validation Gap Fix
+
+Phase 5C-2C-C5M1A fixed the `dashboard:control:validate` button-tag FAIL that
+was a pre-existing gap (5 pre-existing `<button onclick=…>` triggers all
+served safe localhost + confirm-phrase-gated actions, but violated the
+validator's strict `<button>` ban). The fix replaced them with `<a
+class="cqa-action-btn" data-safety="safe-localhost-confirm-phrase-gated">`
+and added a new check 6b to the inline validator.
+
+## Phase 5C-2C-C5M1B — Dashboard Safety Hardening v2
+
+Phase 5C-2C-C5M1B hardens the dashboard safety contract by:
+
+1. Codifying the safety policy in a dedicated file
+   `dashboard/control-safety-policy.json` (single source of truth).
+2. Adding a standalone validator
+   `scripts/validate-dashboard-control-safety.ts` (12 checks, no false
+   positives on ordinary prose).
+3. Updating the inline `validate-control-catalog.ts` check 6b to read the
+   same policy file (with hard-coded fallback for defense in depth).
+4. Explicitly documenting the inline event-handler escape hatch
+   (`cqa-action-btn` + `data-safety` is the only allowed exception).
+
+### Policy file: `dashboard/control-safety-policy.json`
+
+Fields:
+- `allowed_data_safety_values`: `safe-localhost`, `safe-localhost-confirm-phrase-gated`, `safe-localhost-dry-run`, `read-only`, `dry-run`, `simulation`.
+- `forbidden_hints`: `production-write`, `production-promote`, `high-risk`, `telegram-send`, `collect`, `generate`, `timer`, `git`, `build`, `deploy`, `model`, `media`, `unrestricted`, `remote`, `arbitrary`.
+- `required_attributes_for_interactive_elements`: `data-safety`.
+- `forbidden_elements`: `button`.
+- `forbidden_inline_event_handlers`: `onclick`, `onsubmit`, `onerror`, `onload`, `onmouseover`, `onfocus`, `onblur`, `onchange`, `onkeydown`, `onkeyup`, `onkeypress`.
+- `forbidden_endpoint_hints`: production-write / telegram-send / collect / timer / generate / git / build / deploy paths.
+- `inline_event_handler_escape_hatch`: explicit documentation that `cqa-action-btn` + `data-safety` is the only allowed exception (introduced C5M1A, codified C5M1B).
+
+### Standalone validator
+
+```bash
+npm run validate:dashboard-control-safety
+```
+
+12 checks:
+1. `policy_present` — file exists
+2. `html_present` — file exists
+3. `policy_phase` — phase is `5C-2C-C5M1B`
+4. `policy_allow_list_nonempty` — allow-list is non-empty
+5. `policy_forbidden_hints_nonempty` — forbidden hints non-empty
+6. `no_button_tag` — no `<button>` (after stripping comments/style)
+7. `no_inline_event_handlers` — no inline handlers outside the escape hatch
+8. `cqa_action_btns_have_data_safety` — every `cqa-action-btn` declares `data-safety`
+9. `data_safety_values_allowed` — every `data-safety` value is in allow-list and not a forbidden hint
+10. `no_forbidden_endpoints` — no interactive endpoint matches forbidden patterns
+11. `no_secrets_in_html` — no token patterns
+12. `policy_no_allow_forbid_collision` — defensive: allow-list does not contain forbidden hints
+
+### Adding a new safe data-safety value
+
+1. Add the value to `allowed_data_safety_values` in `dashboard/control-safety-policy.json`.
+2. Document the safety argument in the runbook (this file).
+3. Re-run all validators.
+4. Manual review by the project owner before merge.
+
+---
+*Runbook v5.21 — Phase 5C-2C-C5M1B*

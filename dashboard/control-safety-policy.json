@@ -1,0 +1,86 @@
+{
+  "phase": "5C-2C-C5M1B",
+  "policy_version": "0.1.0",
+  "generated_at": "2026-06-15T07:10:00+08:00",
+  "purpose": "Codify the dashboard control.html interactive-element safety contract. This policy is the single source of truth for what counts as a 'safe' trigger in the CQA control dashboard; both validate-control-catalog.ts (inline) and validate-dashboard-control-safety.ts (standalone) MUST agree with this file.",
+  "allowed_data_safety_values": [
+    "safe-localhost",
+    "safe-localhost-confirm-phrase-gated",
+    "safe-localhost-dry-run",
+    "read-only",
+    "dry-run",
+    "simulation"
+  ],
+  "forbidden_hints": [
+    "production-write",
+    "production-promote",
+    "high-risk",
+    "telegram-send",
+    "collect",
+    "generate",
+    "timer",
+    "git",
+    "build",
+    "deploy",
+    "model",
+    "media",
+    "unrestricted",
+    "remote",
+    "arbitrary"
+  ],
+  "required_attributes_for_interactive_elements": [
+    "data-safety"
+  ],
+  "forbidden_elements": [
+    "button"
+  ],
+  "forbidden_inline_event_handlers": [
+    "onclick",
+    "onsubmit",
+    "onerror",
+    "onload",
+    "onmouseover",
+    "onfocus",
+    "onblur",
+    "onchange",
+    "onkeydown",
+    "onkeyup",
+    "onkeypress"
+  ],
+  "inline_event_handler_escape_hatch": {
+    "enabled": true,
+    "introduced_by_phase": "5C-2C-C5M1A",
+    "codified_by_phase": "5C-2C-C5M1B",
+    "rule": "Inline event handlers (onclick, onsubmit, etc.) are forbidden by default. The only documented exception is interactive elements that declare both (a) the cqa-action-btn class, and (b) a data-safety attribute whose value is in allowed_data_safety_values and does not contain any forbidden_hints. This keeps the C5M1A escape hatch explicit, code-reviewable, and machine-checkable.",
+    "required_attributes": [
+      "class=cqa-action-btn",
+      "data-safety"
+    ]
+  },
+  "allowed_endpoint_categories": [
+    "dry-run",
+    "read-only",
+    "safe-localhost-confirm-phrase-gated"
+  ],
+  "forbidden_endpoint_hints": [
+    "/api/daily-digest/promote/controlled",
+    "/api/daily-digest/promote/execute",
+    "/api/daily-digest/send",
+    "/api/telegram/send",
+    "/api/collect",
+    "/api/timer",
+    "/api/generate",
+    "/api/git",
+    "/api/build",
+    "/api/deploy"
+  ],
+  "interactive_class": "cqa-action-btn",
+  "audit": {
+    "introduced_by_phase": "5C-2C-C5M1B",
+    "supersedes_inline_policy_in": [
+      "scripts/validate-control-catalog.ts"
+    ],
+    "lint_target_class": "cqa-action-btn",
+    "manual_review_required_for_new_safety_value": true
+  }
+}

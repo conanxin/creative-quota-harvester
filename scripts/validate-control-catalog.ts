@@ -22,6 +22,7 @@ import { join } from 'path';
 const HARVESTER_DIR = '/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester';
 const CATALOG_PATH = join(HARVESTER_DIR, 'dashboard', 'control-catalog.json');
 const HTML_PATH = join(HARVESTER_DIR, 'dashboard', 'control.html');
+const SAFETY_POLICY_PATH = join(HARVESTER_DIR, 'dashboard', 'control-safety-policy.json');
 
 let passes = 0;
 let failures = 0;
@@ -267,19 +268,45 @@ if (!existsSync(HTML_PATH)) {
   //  for safe localhost + confirm-phrase-gated actions. The allow-list is
   //  intentionally small; production writes, collect, send, generate, timer,
   //  git, build, deploy, model, media, telegram-send are all forbidden.)
-  const ALLOWED_SAFETY = new Set([
-    'safe-localhost',
-    'safe-localhost-confirm-phrase-gated',
-    'safe-localhost-dry-run',
-    'read-only',
-    'dry-run',
-    'simulation',
-  ]);
-  const FORBIDDEN_SAFETY_HINTS = [
-    'production-write', 'production-promote', 'high-risk', 'telegram-send',
-    'collect', 'generate', 'timer', 'git', 'build', 'deploy', 'model',
-    'media', 'unrestricted', 'remote', 'arbitrary',
-  ];
+  //
+  //  Phase 5C-2C-C5M1B: load the same values from dashboard/control-safety-policy.json
+  //  so the source of truth is the policy file. Hard-coded fallback is kept
+  //  for defense in depth (in case the policy file is accidentally removed).
+  const SAFETY_FALLBACK = {
+    allowed_data_safety_values: [
+      'safe-localhost',
+      'safe-localhost-confirm-phrase-gated',
+      'safe-localhost-dry-run',
+      'read-only',
+      'dry-run',
+      'simulation',
+    ],
+    forbidden_hints: [
+      'production-write', 'production-promote', 'high-risk', 'telegram-send',
+      'collect', 'generate', 'timer', 'git', 'build', 'deploy', 'model',
+      'media', 'unrestricted', 'remote', 'arbitrary',
+    ],
+  };
+  let ALLOWED_SAFETY: string[];
+  let FORBIDDEN_SAFETY_HINTS: string[];
+  try {
+    const policyRaw = readFileSync(SAFETY_POLICY_PATH, 'utf-8');
+    const policy = JSON.parse(policyRaw);
+    if (Array.isArray(policy?.allowed_data_safety_values) && Array.isArray(policy?.forbidden_hints)) {
+      ALLOWED_SAFETY = policy.allowed_data_safety_values;
+      FORBIDDEN_SAFETY_HINTS = policy.forbidden_hints;
+      pass(`control.html: safety policy loaded (${ALLOWED_SAFETY.length} allowed, ${FORBIDDEN_SAFETY_HINTS.length} forbidden hints)`);
+    } else {
+      ALLOWED_SAFETY = SAFETY_FALLBACK.allowed_data_safety_values;
+      FORBIDDEN_SAFETY_HINTS = SAFETY_FALLBACK.forbidden_hints;
+      pass(`control.html: safety policy fallback used (policy file missing or malformed)`);
+    }
+  } catch (e) {
+    ALLOWED_SAFETY = SAFETY_FALLBACK.allowed_data_safety_values;
+    FORBIDDEN_SAFETY_HINTS = SAFETY_FALLBACK.forbidden_hints;
+    pass(`control.html: safety policy fallback used (load error: ${(e as Error).message})`);
+  }
+  const ALLOWED_SAFETY_SET = new Set(ALLOWED_SAFETY);
   const elementOpenRe = /<(a|span|div|li|p)\b[^>]*>/gi;
   const triggerAttrRe = /\s(onclick|data-action|data-execute)\s*=\s*['"][^'"]*['"]/i;
   const safetyAttrRe = /\sdata-safety\s*=\s*["']([^"']+)["']/i;
@@ -298,7 +325,7 @@ if (!existsSync(HTML_PATH)) {
       safetyIssues.push(`<${m[1]}> declares forbidden data-safety="${safetyMatch[1]}" (matches: ${FORBIDDEN_SAFETY_HINTS.filter(h => value.includes(h)).join(',')})`);
       continue;
     }
-    if (!ALLOWED_SAFETY.has(value)) {
+    if (!ALLOWED_SAFETY_SET.has(value)) {
       safetyIssues.push(`<${m[1]}> declares unknown data-safety="${safetyMatch[1]}" (allowed: ${[...ALLOWED_SAFETY].join(', ')})`);
     }
   }
