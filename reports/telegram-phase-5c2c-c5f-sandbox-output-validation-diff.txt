@@ -3,6 +3,14 @@ Phase 5C-2C-C5F complete. SANDBOX_OUTPUT_VALIDATION=pass. message_id=xxxxxx.
 🔍 Sandbox Output Validation & Diff
 
 STATUS: ✅ COMPLETE
+Commit: c90406a (pushed to master)
+
+WHAT_CHANGED:
+• scripts/validate-daily-digest-sandbox-output.ts — 11-check output validator
+• scripts/daily-digest-sandbox-diff.ts — diff generator
+• scripts/validate-daily-digest-sandbox-output-tools.ts — 33-check validator
+• scripts/control-server.ts — GET /api/daily-digest/sandbox/latest-output-validation
+
 LATEST_RUN: sandbox-2026-06-14-06-50-12
 
 OUTPUT_VALIDATION: 11/11 PASS ✅
@@ -12,17 +20,14 @@ OUTPUT_VALIDATION: 11/11 PASS ✅
 • Secret scan: 0 found
 • Tool residue: 0 found
 
-DIFF_SUMMARY: +0/-0 (identical to production — same data)
+DIFF: +0/-0 (identical to production — same data)
 
 PROTECTED_PATHS: ALL UNCHANGED ✅
-• reports/daily-digest.md | telegram-digest.txt | dashboard/status.json
 
 VALIDATION: 15 suites / 570+ checks — ALL PASS ✅
 
 MODEL_CALL: NONE | MEDIA_GEN: NONE | COLLECT: NONE | SEND: NONE | PRODUCTION_WRITE: NONE
 
-LIMITATION: Only pilot builder output validated. Other builders pending refactor. ready_for_sandbox_build=partial-pilot.
-
-NEXT_PHASE: 5C-2C-C5G — Remaining Builder Sandbox Refactor
+LIMITATION: Only pilot builder output validated. Other builders pending refactor.
 
 Report: reports/sandbox-output-validation-diff.md
