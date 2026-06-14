@@ -1762,6 +1762,31 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/promote-shadow-status": {
+      // Phase 5C-2C-C5I: Read promote shadow copy status (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { createPromoteShadowCopy } = require("./daily-digest-promote-shadow-copy");
+      const result = createPromoteShadowCopy();
+      jsonResponse(res, {
+        phase: "5C-2C-C5I",
+        mode: "shadow_copy_only",
+        real_execution: false,
+        production_write_allowed: false,
+        run_id: result.run_id,
+        shadow_dir: result.shadow_dir,
+        production_backups: result.production_backups,
+        candidate_previews: result.candidate_previews,
+        rollback_manifest: result.rollback_manifest,
+        promote_checklist: result.promote_checklist,
+        output_files: result.output_files,
+        safe_next_step: result.safe_next_step,
+      });
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;

@@ -1713,3 +1713,72 @@ Expected: All PASS.
 
 ---
 *Runbook v5.14 — Phase 5C-2C-C5H*
+
+## Phase 5C-2C-C5I — Promote Shadow Copy / Backup Plan
+
+Phase 5C-2C-C5I creates a **shadow copy** of production files in the sandbox run directory, along with candidate previews, rollback manifest, and promote checklist. No actual promote, no production write, no send.
+
+### What Changed
+
+- New `dashboard/daily-digest-promote-shadow-plan.json` — shadow plan configuration
+- New `scripts/daily-digest-promote-shadow-copy.ts` — shadow copy planner
+- New `scripts/validate-daily-digest-promote-shadow-copy.ts` — shadow copy validator (40 checks)
+- New `GET /api/daily-digest/promote-shadow-status` endpoint — read-only shadow status
+- Updated `dashboard/control.html` — promote shadow copy panel
+- Updated `package.json` — added validate + check scripts
+
+### Shadow Copy Structure
+
+```
+reports/sandbox/daily-digest/<run_id>/reports/promote-shadow/
+├── production-backup-preview/
+│   ├── daily-digest.md          (current production, redacted)
+│   └── telegram-digest.txt      (current production, redacted)
+├── candidate-preview/
+│   ├── daily-digest.md          (sandbox output, redacted)
+│   └── telegram-digest.txt      (sandbox output, redacted)
+├── rollback-manifest.json
+├── promote-checklist.md
+└── shadow-copy-summary.json
+```
+
+### Safety Invariants
+
+- real_promote_allowed=false
+- future_confirm_phrase_enabled=false
+- human_approval_required=true
+- Only writes to sandbox reports/promote-shadow/
+- Does not copy files to production
+- Does not send Telegram
+
+### How to Validate
+
+```bash
+npm run check:daily-digest-promote-shadow-copy
+npm run validate:daily-digest-promote-shadow-copy
+npm run validate:daily-digest-promote-dry-run
+npm run validate:daily-digest-promote-readiness
+npm run validate:daily-digest-sandbox-output-tools
+npm run validate:daily-digest-sandbox-build-pilot
+npm run validate:daily-digest-builder-sandbox-refactor
+npm run validate:daily-digest-sandbox-interface
+npm run validate:daily-digest-sandbox-guards
+npm run validate:daily-digest-build-readiness
+npm run validate:daily-digest-sandbox-manager
+npm run validate:dashboard:policy:validate
+npm run validate:sanitizer-secret-completeness
+npm run validate:sanitizer-false-positives
+npm run validate:telegram-sanitizer
+npm run validate:project-report-send
+```
+
+Expected: All PASS.
+
+### Files
+
+- `dashboard/daily-digest-promote-shadow-plan.json` — shadow plan config
+- `scripts/daily-digest-promote-shadow-copy.ts` — shadow copy planner
+- `scripts/validate-daily-digest-promote-shadow-copy.ts` — shadow copy validator (40 checks)
+
+---
+*Runbook v5.15 — Phase 5C-2C-C5I*

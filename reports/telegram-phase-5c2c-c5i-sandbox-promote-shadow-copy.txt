@@ -1,0 +1,36 @@
+Phase 5C-2C-C5I complete. PROMOTE_SHADOW_COPY=pass. message_id=xxxxxx.
+
+🔒 Promote Shadow Copy / Backup Plan
+
+STATUS: ✅ COMPLETE
+Commit: pending
+LATEST_RUN: sandbox-2026-06-14-06-50-12
+
+WHAT_CHANGED:
+• dashboard/daily-digest-promote-shadow-plan.json — shadow plan config
+• scripts/daily-digest-promote-shadow-copy.ts — shadow copy planner
+• scripts/validate-daily-digest-promote-shadow-copy.ts — 40-check validator
+• scripts/control-server.ts — GET /api/daily-digest/promote-shadow-status
+• dashboard/control.html — promote shadow copy panel
+
+SHADOW_COPY: created ✅
+• production-backup-preview/ (current production files, redacted)
+• candidate-preview/ (sandbox output files, redacted)
+• rollback-manifest.json
+• promote-checklist.md (10 items)
+• shadow-copy-summary.json
+
+BACKUP_PREVIEW: ✅
+CANDIDATE_PREVIEW: ✅
+ROLLBACK_MANIFEST: ✅
+PROMOTE_CHECKLIST: ✅
+
+VALIDATION: 15 suites / 690+ checks — ALL PASS ✅
+
+MODEL_CALL: NONE | MEDIA_GEN: NONE | COLLECT: NONE | SEND: NONE | PRODUCTION_WRITE: NONE | PROMOTE: NONE
+
+LIMITATION: Only shadow copy. No actual promote.
+
+NEXT_PHASE: 5C-2C-C5J — Promote Enablement
+
+Report: reports/sandbox-promote-shadow-copy.md

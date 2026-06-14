@@ -71,6 +71,8 @@
     "check:daily-digest-promote-readiness": "tsx scripts/daily-digest-promote-readiness.ts",
     "validate:daily-digest-promote-dry-run": "tsx scripts/validate-daily-digest-promote-dry-run.ts",
     "check:daily-digest-promote-dry-run": "tsx scripts/daily-digest-promote-dry-run.ts",
+    "validate:daily-digest-promote-shadow-copy": "tsx scripts/validate-daily-digest-promote-shadow-copy.ts",
+    "check:daily-digest-promote-shadow-copy": "tsx scripts/daily-digest-promote-shadow-copy.ts",
     "validate:daily-digest-builder-sandbox-refactor": "tsx scripts/validate-daily-digest-builder-sandbox-refactor.ts",
     "validate:daily-digest-sandbox-interface": "tsx scripts/validate-daily-digest-sandbox-interface.ts",
     "validate:daily-digest-sandbox-guards": "tsx scripts/validate-daily-digest-sandbox-guards.ts",

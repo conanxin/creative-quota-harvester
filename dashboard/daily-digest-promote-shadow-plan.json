@@ -1,0 +1,31 @@
+{
+  "phase": "5C-2C-C5I",
+  "mode": "shadow_copy_only",
+  "version": "0.1.0",
+  "updated_at": "2026-06-14T09:10:00Z",
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "latest_run_required": true,
+  "shadow_outputs": "reports/sandbox/daily-digest/<run_id>/reports/promote-shadow/",
+  "backup_sources": [
+    "reports/daily-digest.md",
+    "reports/telegram-digest.txt"
+  ],
+  "candidate_sources": [
+    "sandbox/outputs/daily-digest.md",
+    "sandbox/outputs/telegram-digest.txt"
+  ],
+  "rollback_required": true,
+  "human_approval_required": true,
+  "future_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "future_confirm_phrase_enabled": false,
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "collect",
+    "timer",
+    "git",
+    "promote"
+  ]
+}
