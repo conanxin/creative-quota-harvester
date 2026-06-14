@@ -1056,6 +1056,22 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/staged-plan": {
+      // Phase 5C-2C-C2: Daily digest staged plan (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const { buildStagedPlan } = require("./daily-digest-staged-planner");
+      const stagedPlan = buildStagedPlan();
+      if (!stagedPlan) {
+        notFound(res, "Staged plan not found");
+        return;
+      }
+      jsonResponse(res, stagedPlan);
+      return;
+    }
+
     default: {
       notFound(res, "Unknown route");
       return;

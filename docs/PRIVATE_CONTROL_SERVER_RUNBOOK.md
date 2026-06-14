@@ -738,4 +738,130 @@ Expected: PASS.
 
 ---
 
-*Runbook v5.3 — Phase 5C-2C-C0*
+## Phase 5C-2C-C1: Validation Workflow Execution
+
+### What's New
+
+- **Real Execution for 2 Validation Workflows**: `asset_validation_sweep` and `control_health_sweep` can now be executed for real through the control server.
+- **Workflow Executor**: `scripts/control-workflow-executor.ts` — uses `control-action-runner.ts` to execute low-risk steps.
+- **Workflow Allowlist**: Only `asset_validation_sweep` and `control_health_sweep` are allowed; `daily_digest_dry_run` is blocked (403).
+- **Confirmation Phrase**: `EXECUTE LOW RISK WORKFLOW` required for workflow execution.
+- **Stop on Failure**: `stop_on_failure=true` — any step failure stops the workflow.
+- **Workflow Execution Validator**: `npm run validate:control-workflow-execution` — 26 checks, all PASS.
+
+### Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `POST /api/workflow/execute-low-risk` | POST | Execute a confirmed low-risk workflow (only 2 allowed) |
+
+### Workflow Status
+
+| Workflow | Mode | Real Execution | Allowed |
+|----------|------|--------------|---------|
+| `asset_validation_sweep` | `confirmed_low_risk_workflow` | ✅ | ✅ |
+| `control_health_sweep` | `confirmed_low_risk_workflow` | ✅ | ✅ |
+| `daily_digest_dry_run` | `dry_run_only` | ❌ | ❌ (403) |
+
+### Safety Invariants
+
+- Only 2 workflows in explicit allowlist (`asset_validation_sweep`, `control_health_sweep`)
+- `daily_digest_dry_run` blocked at server level with `workflow_not_in_allowlist`
+- All workflow steps validated against allowlist before execution
+- `stop_on_failure=true` — any step failure stops the workflow
+- Audit log records workflow execution with no token
+- No shell execution, no exec/spawnSync/execFile
+
+### Validation
+
+```bash
+npm run validate:control-workflow-execution
+npm run validate:control-workflows
+npm run validate:control-hardening
+npm run validate:control-low-risk-execution
+npm run validate:control-actions-dry-run
+npm run validate:control-readonly-actions
+npm run validate:control-server
+npm run dashboard:policy:validate
+npm run validate:telegram-sanitizer
+npm run validate:sanitizer-false-positives
+npm run validate:sanitizer-secret-completeness
+npm run validate:project-report-send
+```
+
+Expected: All PASS (437/437 checks).
+
+### Files
+
+- `dashboard/control-workflows.json` — workflow modes updated
+- `scripts/control-workflow-executor.ts` — workflow executor (NEW)
+- `scripts/control-server.ts` — execute-low-risk workflow endpoint (updated)
+- `dashboard/control.html` — workflow execution UI (updated)
+- `scripts/validate-control-workflow-execution.ts` — workflow execution validator (NEW)
+
+---
+
+*Runbook v5.4 — Phase 5C-2C-C1*
+
+---
+
+## Phase 5C-2C-C2: Daily Digest Staged Plan
+
+### What's New
+
+- **Staged Execution Plan**: `dashboard/daily-digest-staged-plan.json` defines 5 stages for the daily digest workflow with explicit risk levels and gates.
+- **Planner**: `scripts/daily-digest-staged-planner.ts` — reads staged plan and returns structured JSON without executing commands.
+- **API Endpoint**: `GET /api/daily-digest/staged-plan` — returns staged plan (read-only, no execution).
+- **UI Module**: `dashboard/control.html` — "Daily Digest Staged Plan / 日报分阶段执行计划" section with color-coded stage cards.
+- **Staged Plan Validator**: `npm run validate:daily-digest-staged-plan` — 21 checks, all PASS.
+
+### Stages
+
+| Stage | Status | Risk | Allowed Now | Blocked Reason / Future Gate |
+|-------|--------|------|-------------|------------------------------|
+| 1. Collect | `blocked_real_execution` | high | ❌ | External network collection; needs CQA_ALLOW_COLLECT gate |
+| 2. Build Digest | `dry_run_only_or_candidate` | medium | ❌ | Writes digest/status; needs future review |
+| 3. Validate Outputs | `executable_low_risk` | safe | ✅ | 3 validation scripts in allowlist |
+| 4. Send Telegram | `blocked_real_execution` | high | ❌ | External Telegram send; needs CQA_ALLOW_TELEGRAM_SEND gate |
+| 5. Timer Integration | `blocked_real_execution` | danger | ❌ | Modifies systemd timer; not allowed here |
+
+### Safety Invariants
+
+- No collect/send/timer/generate/git execution in any stage
+- Only validation stage (3) has executable scripts
+- Planner does not use child_process/exec/spawn/network
+- `/api/daily-digest/staged-plan` does not call runner
+- No secrets in staged plan JSON or planner code
+
+### Validation
+
+```bash
+npm run validate:daily-digest-staged-plan
+npm run validate:control-workflow-execution
+npm run validate:control-workflows
+npm run validate:control-hardening
+npm run validate:control-low-risk-execution
+npm run validate:control-actions-dry-run
+npm run validate:control-readonly-actions
+npm run validate:control-server
+npm run dashboard:policy:validate
+npm run validate:telegram-sanitizer
+npm run validate:sanitizer-false-positives
+npm run validate:sanitizer-secret-completeness
+npm run validate:project-report-send
+```
+
+Expected: All PASS (398/398 checks).
+
+### Files
+
+- `dashboard/daily-digest-staged-plan.json` — staged plan configuration (NEW)
+- `scripts/daily-digest-staged-planner.ts` — staged plan planner (NEW)
+- `scripts/control-server.ts` — staged plan endpoint (updated)
+- `dashboard/control.html` — staged plan UI module (updated)
+- `scripts/validate-daily-digest-staged-plan.ts` — staged plan validator (NEW)
+- `docs/PHASE_5C2C_C2_DAILY_DIGEST_STAGED_PLAN_REPORT.md` — detailed report (NEW)
+
+---
+
+*Runbook v5.5 — Phase 5C-2C-C2*

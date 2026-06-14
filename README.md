@@ -60,6 +60,8 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 5C-2C-B** | **✅ Complete** | **More Low-risk Validation Executions (17 commands, expanded allowlist, no model calls, no media generation)** |
 | **Phase 5C-5A** | **✅ Complete** | **Control Server Hardening & Audit Viewer (rate limits, execution lock, audit log viewer, security status, runner output redaction)** |
 | **Phase 5C-2C-C0** | **✅ Complete** | **End-to-end Workflow Dry-run Orchestrator (3 workflows, dry-run planner, no real collect/send/generate/timer/git execution)** |
+| **Phase 5C-2C-C1** | **✅ Complete** | **Validation Workflow Execution (2 workflows: asset_validation_sweep + control_health_sweep, real execution with confirm phrase, daily_digest blocked)** |
+| **Phase 5C-2C-C2** | **✅ Complete** | **Daily Digest Staged Plan (5 stages: collect blocked, build candidate, validate executable, send blocked, timer blocked)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

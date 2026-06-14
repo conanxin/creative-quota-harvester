@@ -1,0 +1,113 @@
+{
+  "version": "0.1.0",
+  "phase": "5C-2C-C2",
+  "generated_at": "2026-06-14T10:30:00Z",
+  "purpose": "Staged execution plan for daily digest workflow. Separates collect/build/validate/send/timer into risk-assessed stages with explicit gates.",
+  "workflows": [
+    {
+      "workflow_id": "daily_digest_staged_plan",
+      "label_zh": "日报分阶段执行计划",
+      "description_zh": "Daily Digest 工作流的分阶段执行计划。collect/send/timer 仍被阻断，validation 阶段可执行。",
+      "overall_risk_level": "medium",
+      "overall_execution_status": "partially_blocked",
+      "stages": [
+        {
+          "stage_id": "stage_1_collect_fast",
+          "label_zh": "阶段 1: 采集源数据 (Collect)",
+          "risk_level": "high",
+          "current_execution_status": "blocked_real_execution",
+          "allowed_now": false,
+          "blocked_reason": "外部网络采集；需要独立的 CQA_ALLOW_COLLECT gate 和外部 source 可用性检查",
+          "future_gate_required": "CQA_ALLOW_COLLECT=1 + source health check pass",
+          "related_actions": ["collect", "collect:fresh", "collect:diagnose"],
+          "expected_outputs": ["reports/collect-fresh-report.md", "data/signals.db"],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "sends_external_message": false,
+          "notes": "当前阶段不允许真实执行。仅 dry-run 模拟计划。"
+        },
+        {
+          "stage_id": "stage_2_build_digest",
+          "label_zh": "阶段 2: 构建 Digest",
+          "risk_level": "medium",
+          "current_execution_status": "dry_run_only_or_candidate",
+          "allowed_now": false,
+          "blocked_reason": "写入 digest/status 文件；需要显式未来审查确认此操作安全",
+          "future_gate_required": "Phase 5C-2C-C3+ review: digest build writes reports/ without collect/send/model",
+          "related_actions": ["daily:manual", "digest:telegram", "dashboard:build"],
+          "expected_outputs": ["reports/daily-digest.md", "reports/telegram-digest.txt", "dashboard/status.json"],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "sends_external_message": false,
+          "notes": "dry-run 可模拟，真实执行需要 future review。"
+        },
+        {
+          "stage_id": "stage_3_validate_outputs",
+          "label_zh": "阶段 3: 验证输出 (Validation)",
+          "risk_level": "safe",
+          "current_execution_status": "executable_low_risk",
+          "allowed_now": true,
+          "blocked_reason": null,
+          "future_gate_required": null,
+          "related_actions": ["validate:daily-archive", "dashboard:validate", "dashboard:control:validate"],
+          "expected_outputs": ["validation report"],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "sends_external_message": false,
+          "notes": "纯验证命令，可在当前阶段通过控制服务器执行。"
+        },
+        {
+          "stage_id": "stage_4_send_telegram",
+          "label_zh": "阶段 4: 发送 Telegram",
+          "risk_level": "high",
+          "current_execution_status": "blocked_real_execution",
+          "allowed_now": false,
+          "blocked_reason": "发送外部 Telegram 消息；需要显式 send gate (CQA_ALLOW_TELEGRAM_SEND)",
+          "future_gate_required": "CQA_ALLOW_TELEGRAM_SEND=1 + digest sanitized + send-gate validated",
+          "related_actions": ["digest:send:confirmed", "report:send"],
+          "expected_outputs": ["telegram message"],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": false,
+          "sends_external_message": true,
+          "notes": "外部消息发送被严格阻断。仅 project sender 可发送报告。"
+        },
+        {
+          "stage_id": "stage_5_timer_integration",
+          "label_zh": "阶段 5: Timer 集成",
+          "risk_level": "danger",
+          "current_execution_status": "blocked_real_execution",
+          "allowed_now": false,
+          "blocked_reason": "修改或依赖 systemd timer；不允许在当前阶段操作",
+          "future_gate_required": "Phase 6+ timer governance review + manual systemd setup",
+          "related_actions": ["timer enable", "timer disable", "systemctl"],
+          "expected_outputs": ["systemd timer status"],
+          "calls_model": false,
+          "generates_media": false,
+          "modifies_timer": true,
+          "sends_external_message": false,
+          "notes": "timer 修改是 danger 级别操作，永远需要人工确认。"
+        }
+      ],
+      "blocked_categories": ["collect", "send", "timer", "generate", "git", "build", "deploy", "release"],
+      "allowed_validation_scripts": [
+        "validate:daily-archive",
+        "dashboard:validate",
+        "dashboard:control:validate"
+      ],
+      "safety_model": {
+        "localhost_only": true,
+        "token_auth_required": true,
+        "confirmation_phrase_required": true,
+        "audit_logging": true,
+        "rate_limiting": true,
+        "execution_lock": true,
+        "output_redaction": true,
+        "no_secrets_in_env": true
+      }
+    }
+  ]
+}

@@ -63,6 +63,7 @@
     "validate:control-readonly-actions": "tsx scripts/validate-control-readonly-actions.ts",
     "validate:control-low-risk-execution": "tsx scripts/validate-control-low-risk-execution.ts",
     "validate:control-hardening": "tsx scripts/validate-control-hardening.ts",
+    "validate:daily-digest-staged-plan": "tsx scripts/validate-daily-digest-staged-plan.ts",
     "validate:control-workflow-execution": "tsx scripts/validate-control-workflow-execution.ts",
     "validate:control-workflows": "tsx scripts/validate-control-workflows.ts",
     "validate:control-actions-dry-run": "tsx scripts/validate-control-actions-dry-run.ts",
