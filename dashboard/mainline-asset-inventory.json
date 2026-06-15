@@ -1,0 +1,184 @@
+{
+  "phase": "6A",
+  "mode": "mainline_recovery_asset_inventory",
+  "generated_at": "2026-06-15T08:27:00+08:00",
+  "asset_repo": "~/.openclaw/workspace/projects/creative-quota-assets/",
+  "inventory": {
+    "content_packs": {
+      "total": 25,
+      "unique_titles": 5,
+      "packs_per_title": 5,
+      "unique_topics": [
+        "SamurAIGPT/Generative-Media-Skills",
+        "Flaws in the LLM Automation Narrative",
+        "The Penitence of Saint Jerome",
+        "stabilityai/stable-video-diffusion-img2vid-xt",
+        "River AI"
+      ],
+      "source_type_coverage": {
+        "academic": 5,
+        "code": 5,
+        "culture-art": 5,
+        "dev-community": 5,
+        "ai-ecosystem": 5
+      },
+      "avg_quality_score": 0.5932,
+      "top_tags": [
+        "code", "agent-tools", "ai-agents", "ai-art", "ai-music",
+        "ai-video", "claude-code", "flux", "generative-ai", "image-generation"
+      ],
+      "files_per_pack": 22,
+      "all_have_image_prompt": 25,
+      "all_have_video_prompt": 5,
+      "all_have_music_prompt": 25,
+      "all_have_x_post": 25,
+      "have_webpage_outline": 15,
+      "status": "complete_all_prompts_ready"
+    },
+    "generated_images": {
+      "total": 5,
+      "all_reviewed": true,
+      "avg_quality_score": 96,
+      "quality_distribution": {
+        "excellent": 5,
+        "good": 0,
+        "fair": 0,
+        "poor": 0
+      },
+      "watermarked": 1,
+      "non_watermarked": 4,
+      "in_gallery": 5,
+      "source_type_coverage": {
+        "academic": 1,
+        "code": 1,
+        "culture-art": 1,
+        "dev-community": 1,
+        "ai-ecosystem": 1
+      },
+      "status": "complete_one_per_source_type",
+      "gap": "20 packs produced but only 5 images generated — 80% of prompts unused"
+    },
+    "image_prompts": {
+      "total": 25,
+      "in_content_packs": 25,
+      "enriched": 25,
+      "has_zh_version": 25,
+      "status": "complete_ready_for_generation"
+    },
+    "video_prompts": {
+      "total": 5,
+      "in_content_packs": 5,
+      "enriched": 5,
+      "generated_video_asset": 0,
+      "status": "ready_for_generation"
+    },
+    "music_prompts": {
+      "total": 25,
+      "in_content_packs": 25,
+      "enriched": 25,
+      "generated_music_asset": 0,
+      "status": "ready_for_generation"
+    },
+    "gallery": {
+      "total_items": 5,
+      "all_generated_images_covered": true,
+      "has_index_html": true,
+      "has_static_html": true,
+      "has_readme": true,
+      "status": "complete_but_small"
+    },
+    "daily_archive": {
+      "total_days": 2,
+      "days": [
+        {
+          "date": "2026-06-10",
+          "content_pack_count": 15,
+          "generated_image_count": 0
+        },
+        {
+          "date": "2026-06-11",
+          "content_pack_count": 10,
+          "generated_image_count": 3
+        }
+      ],
+      "total_content_packs_archived": 25,
+      "status": "partial_only_2_days"
+    },
+    "x_posts": {
+      "total": 25,
+      "in_content_packs": 25,
+      "published": 0,
+      "status": "ready_for_publishing"
+    },
+    "standalone_prompts": {
+      "total": 2,
+      "location": "creative-quota-assets/prompts/",
+      "status": "legacy_needs_review"
+    }
+  },
+  "gaps": [
+    {
+      "gap_id": "G-001",
+      "category": "image_generation",
+      "description": "80% of image prompts unused (20/25 packs have no generated image)",
+      "impact": "high",
+      "affected_packs": 20
+    },
+    {
+      "gap_id": "G-002",
+      "category": "video_generation",
+      "description": "Only 5 video prompts, 0 actual videos generated",
+      "impact": "medium",
+      "affected_packs": 5
+    },
+    {
+      "gap_id": "G-003",
+      "category": "music_generation",
+      "description": "25 music prompts, 0 actual music generated",
+      "impact": "medium",
+      "affected_packs": 25
+    },
+    {
+      "gap_id": "G-004",
+      "category": "publishing",
+      "description": "25 X posts ready, 0 published",
+      "impact": "high",
+      "affected_packs": 25
+    },
+    {
+      "gap_id": "G-005",
+      "category": "daily_archive",
+      "description": "Only 2 days archived, no new signals processed since 2026-06-11",
+      "impact": "medium"
+    },
+    {
+      "gap_id": "G-006",
+      "category": "source_refresh",
+      "description": "Signal source has not been refreshed since 2026-06-11; no new content packs since then",
+      "impact": "high"
+    }
+  ],
+  "ready_for_next": [
+    {
+      "action": "controlled_image_generation",
+      "target": "20 remaining packs without images",
+      "requires_model_call": true,
+      "requires_human_review": true,
+      "priority": "high"
+    },
+    {
+      "action": "x_post_publishing",
+      "target": "25 X posts ready (Chinese, from content packs)",
+      "requires_model_call": false,
+      "requires_human_review": true,
+      "priority": "high"
+    },
+    {
+      "action": "source_refresh",
+      "target": "New signals needed to produce new content packs",
+      "requires_model_call": false,
+      "requires_human_review": false,
+      "priority": "high"
+    }
+  ]
+}

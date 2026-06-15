@@ -1,0 +1,202 @@
+{
+  "phase": "6A",
+  "mode": "mainline_recovery_production_queue",
+  "generated_at": "2026-06-15T08:27:00+08:00",
+  "total_queue_items": 23,
+  "categories": {
+    "A_ready_for_image_generation": {
+      "label": "A. Ready for Controlled Image Generation",
+      "count": 15,
+      "description": "Content packs with image prompts ready for controlled generation. 5 images already generated (1 per source type); 20 remaining packs need generation.",
+      "priority": "high"
+    },
+    "B_ready_for_video_prompt_publication": {
+      "label": "B. Ready for Video Prompt Publication",
+      "count": 5,
+      "description": "Video prompts for stabilityai/stable-video-diffusion-img2vid-xt topic, ready for blog/wiki publication.",
+      "priority": "medium"
+    },
+    "C_ready_for_music_prompt_publication": {
+      "label": "C. Ready for Music Prompt Publication",
+      "count": 25,
+      "description": "Music prompts (enriched) for all content packs, ready for blog/wiki publication.",
+      "priority": "low"
+    },
+    "D_ready_for_x_blog_publishing": {
+      "label": "D. Ready for X / Blog Publishing",
+      "count": 25,
+      "description": "X posts (Chinese) and webpage outlines ready for publishing to X and blog.",
+      "priority": "high"
+    },
+    "E_needs_source_refresh": {
+      "label": "E. Needs Source Refresh",
+      "count": 1,
+      "description": "Signal source has not been refreshed since 2026-06-11. New signals needed.",
+      "priority": "high"
+    },
+    "F_needs_quality_review": {
+      "label": "F. Needs Quality Review",
+      "count": 0,
+      "description": "All 5 generated images have been reviewed (avg score 96/100). No pending review.",
+      "priority": "none"
+    }
+  },
+  "items": [
+    {
+      "id": "Q-6A-A-001",
+      "category": "A",
+      "title": "SamurAIGPT/Generative-Media-Skills — Image Generation (remaining 4 variants)",
+      "source_type": "code",
+      "current_asset_state": "1 image generated (gen-002, score 97); 4 variants with image-prompt.md ready",
+      "recommended_next_action": "Execute controlled image generation for remaining 4 variants, then publish to gallery",
+      "risk_level": "medium",
+      "requires_model_call": true,
+      "estimated_output": "4 JPG images (16:9, ~200-350KB each)",
+      "why_this_matters": "Code/agent-tools topic has high relevance for dev-community audience; expanding visual coverage increases engagement surface"
+    },
+    {
+      "id": "Q-6A-A-002",
+      "category": "A",
+      "title": "Flaws in the LLM Automation Narrative — Image Generation (remaining 4 variants)",
+      "source_type": "academic",
+      "current_asset_state": "1 image generated (canary-001, score 96); 4 variants with image-prompt.md ready",
+      "recommended_next_action": "Execute controlled image generation for remaining 4 variants",
+      "risk_level": "medium",
+      "requires_model_call": true,
+      "estimated_output": "4 JPG images (16:9, ~200-350KB each)",
+      "why_this_matters": "Academic topic with high shareability; visual assets increase blog/X engagement"
+    },
+    {
+      "id": "Q-6A-A-003",
+      "category": "A",
+      "title": "The Penitence of Saint Jerome — Image Generation (remaining 4 variants)",
+      "source_type": "culture-art",
+      "current_asset_state": "1 image generated (gen-003, score 96); 4 variants with image-prompt.md ready",
+      "recommended_next_action": "Execute controlled image generation for remaining 4 variants",
+      "risk_level": "medium",
+      "requires_model_call": true,
+      "estimated_output": "4 JPG images (16:9, ~200-350KB each)",
+      "why_this_matters": "Culture-art topic benefits from multiple visual interpretations; classical art + AI creates compelling contrast"
+    },
+    {
+      "id": "Q-6A-A-004",
+      "category": "A",
+      "title": "stabilityai/stable-video-diffusion-img2vid-xt — Image Generation (remaining 4 variants)",
+      "source_type": "ai-ecosystem",
+      "current_asset_state": "1 image generated (gen-005, score 94); 4 variants with image-prompt.md ready",
+      "recommended_next_action": "Execute controlled image generation for remaining 4 variants",
+      "risk_level": "medium",
+      "requires_model_call": true,
+      "estimated_output": "4 JPG images (16:9, ~200-350KB each)",
+      "why_this_matters": "AI ecosystem topic needs strong visuals to communicate model capabilities"
+    },
+    {
+      "id": "Q-6A-A-005",
+      "category": "A",
+      "title": "River AI — Image Generation (remaining 4 variants)",
+      "source_type": "dev-community",
+      "current_asset_state": "1 image generated (gen-004, score 97); 4 variants with image-prompt.md ready",
+      "recommended_next_action": "Execute controlled image generation for remaining 4 variants",
+      "risk_level": "medium",
+      "requires_model_call": true,
+      "estimated_output": "4 JPG images (16:9, ~200-350KB each)",
+      "why_this_matters": "River AI topic covers AI-generated content ethics — high engagement potential"
+    },
+    {
+      "id": "Q-6A-B-001",
+      "category": "B",
+      "title": "stabilityai/stable-video-diffusion-img2vid-xt — Video Prompt Publication",
+      "source_type": "ai-ecosystem",
+      "current_asset_state": "5 video-prompt.enriched.md files exist; 5 video-prompt.zh.md files ready; 0 actual videos generated",
+      "recommended_next_action": "Publish video prompts as blog post or wiki page documenting video generation workflow",
+      "risk_level": "low",
+      "requires_model_call": false,
+      "estimated_output": "1 blog post / wiki page with 5 video prompt examples",
+      "why_this_matters": "Video prompts are reusable assets that can guide future video generation without requiring immediate model calls"
+    },
+    {
+      "id": "Q-6A-B-002",
+      "category": "B",
+      "title": "SamurAIGPT/Generative-Media-Skills — Video Prompt Review",
+      "source_type": "code",
+      "current_asset_state": "music-prompt.enriched.md exists; video prompt not present in this pack",
+      "recommended_next_action": "Check if video-prompt.enriched.md should be generated for this pack",
+      "risk_level": "low",
+      "requires_model_call": false,
+      "estimated_output": "Confirm video prompt coverage per pack",
+      "why_this_matters": "Ensure consistent prompt coverage across all 5 source types"
+    },
+    {
+      "id": "Q-6A-C-001",
+      "category": "C",
+      "title": "All 25 Content Packs — Music Prompt Publication",
+      "source_type": "mixed",
+      "current_asset_state": "25 music-prompt.enriched.md files exist; 25 music-prompt.zh.md files ready; 0 music generated",
+      "recommended_next_action": "Publish music prompts as blog series or compiled prompt pack document",
+      "risk_level": "low",
+      "requires_model_call": false,
+      "estimated_output": "1 compiled music prompt pack (PDF or blog post series)",
+      "why_this_matters": "Music prompts are low-cost to publish and demonstrate pipeline breadth"
+    },
+    {
+      "id": "Q-6A-D-001",
+      "category": "D",
+      "title": "All 25 Content Packs — X Posts (Chinese) Ready for Publishing",
+      "source_type": "mixed",
+      "current_asset_state": "25 x-post.zh.md files ready in content packs; 0 published",
+      "recommended_next_action": "Human review + publish X posts (one per content pack, prioritized by topic relevance)",
+      "risk_level": "medium",
+      "requires_model_call": false,
+      "estimated_output": "25 Chinese X posts, ready to publish in batches of 5",
+      "why_this_matters": "X posts are the most direct engagement channel; each pack has a pre-written Chinese post ready"
+    },
+    {
+      "id": "Q-6A-D-002",
+      "category": "D",
+      "title": "15 Content Packs — Webpage Outlines Ready for Blog Publication",
+      "source_type": "mixed",
+      "current_asset_state": "15 webpage-outline.md files exist; can be expanded into full blog posts",
+      "recommended_next_action": "Select top 3 topics and expand outline into full blog post",
+      "risk_level": "low",
+      "requires_model_call": false,
+      "estimated_output": "3 blog posts (1500-2500 words each)",
+      "why_this_matters": "Blog posts drive long-tail traffic; webpage outlines provide structure"
+    },
+    {
+      "id": "Q-6A-D-003",
+      "category": "D",
+      "title": "Gallery Enhancement — Add Descriptions and Use Cases to All 5 Images",
+      "source_type": "mixed",
+      "current_asset_state": "5 images in gallery; all have quality reviews; some missing one_sentence_summary + recommended_uses",
+      "recommended_next_action": "Verify all gallery items have one_sentence_summary and recommended_uses populated",
+      "risk_level": "low",
+      "requires_model_call": false,
+      "estimated_output": "Gallery cards with complete metadata",
+      "why_this_matters": "Complete gallery metadata helps downstream consumers understand asset use cases"
+    },
+    {
+      "id": "Q-6A-E-001",
+      "category": "E",
+      "title": "Signal Source Refresh — New Signals Needed",
+      "source_type": "all",
+      "current_asset_state": "Last signal collection: 2026-06-11. No new content packs since then. signals.db may be stale.",
+      "recommended_next_action": "Execute signal refresh (collect:*) to ingest new RSS/API signals; then produce new content packs",
+      "risk_level": "medium",
+      "requires_model_call": false,
+      "estimated_output": "New signals in signals.db; new content pack candidates",
+      "why_this_matters": "Without new signals, the pipeline is paused; new signals are the raw material for all downstream production"
+    },
+    {
+      "id": "Q-6A-F-001",
+      "category": "F",
+      "title": "No quality review needed — all generated assets reviewed",
+      "source_type": "all",
+      "current_asset_state": "All 5 generated images reviewed with avg score 96 (excellent). No pending reviews.",
+      "recommended_next_action": "None — quality review queue is empty",
+      "risk_level": "none",
+      "requires_model_call": false,
+      "estimated_output": "N/A",
+      "why_this_matters": "Quality gate passed; focus resources on generation and publishing"
+    }
+  ]
+}

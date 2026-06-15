@@ -1,0 +1,90 @@
+{
+  "phase": "6A",
+  "mode": "mainline_recovery",
+  "generated_at": "2026-06-15T08:27:00+08:00",
+  "north_star": "turn real-world signals and unused model capacity into reusable creative assets",
+  "control_plane_status": "stable_frozen",
+  "control_plane_frozen_at": "2026-06-15T12:17:00+08:00",
+  "control_plane_frozen_reason": "human decision: keep approved_for_future_promote but do not promote yet; C5N4C commit 61f9252",
+  "daily_digest_status": "promoted_once_stable",
+  "daily_digest_last_promote": "2026-06-14T22:34:23+08:00",
+  "continuous_promote_status": "frozen_plan_only",
+  "continuous_promote_frozen_reason": "C5N4B decision record + C5N4C human decision; next_allowed_phase review only",
+  "telegram_send_status": "blocked_policy_level",
+  "timer_status": "blocked_no_auto_trigger",
+  "asset_pipeline_status": "paused_content_mainline_ready",
+  "current_assets": {
+    "content_packs": {
+      "total": 25,
+      "last_updated": "2026-06-11",
+      "unique_source_types": 5,
+      "avg_quality_score": 0.5932,
+      "location": "~/.openclaw/workspace/projects/creative-quota-assets/content-packs/"
+    },
+    "generated_images": {
+      "total": 5,
+      "all_reviewed": true,
+      "avg_quality_score": 96,
+      "watermarked": 1,
+      "non_watermarked": 4,
+      "location": "creative-quota-assets/images/"
+    },
+    "image_prompts": {
+      "total": 25,
+      "in_content_packs": 25,
+      "standalone_prompts_dir": 2
+    },
+    "video_prompts": {
+      "total": 5,
+      "in_content_packs": 5,
+      "video_asset_exists": 1
+    },
+    "music_prompts": {
+      "total": 25,
+      "in_content_prompts": 25,
+      "music_asset_exists": 1
+    },
+    "x_posts": {
+      "total": 25,
+      "in_content_packs": 25
+    },
+    "gallery_assets": {
+      "total": 5,
+      "all_images_covered": true
+    },
+    "daily_archive": {
+      "total_days": 2,
+      "dates": ["2026-06-10", "2026-06-11"],
+      "total_content_packs_archived": 10
+    }
+  },
+  "next_asset_queue": [],
+  "pipeline_health": {
+    "signal_ingestion": "functional",
+    "content_pack_production": "functional",
+    "prompt_pack_production": "functional",
+    "controlled_generation": "ready_but_paused",
+    "gallery": "functional",
+    "daily_archive": "functional",
+    "publishing": "ready_but_paused"
+  },
+  "recommendation": {
+    "next_phase": "Phase 6B",
+    "next_action": "resume content production — focus on queue category A (image generation) and category D (X/Blog publishing)",
+    "blocked_by": "none",
+    "requires_model_call": true,
+    "requires_human_review": true
+  },
+  "boundaries_enforced": {
+    "model_call_allowed": false,
+    "media_generation_allowed": false,
+    "collect_allowed": false,
+    "digest_send_allowed": false,
+    "timer_allowed": false,
+    "generate_allowed": false,
+    "c5n_promote_allowed": false,
+    "production_digest_overwrite": false,
+    "systemd_change": false,
+    "token_commit": false
+  }
+}

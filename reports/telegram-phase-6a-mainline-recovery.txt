@@ -1,0 +1,48 @@
+📋 Phase 6A — Mainline Recovery: COMPLETE
+
+STATUS
+✅ 6A complete · control_plane=❄️ frozen · content_mainline=✅ resumed
+
+ORIGINAL_GOAL
+把真实世界信号和未使用的模型额度转化为可沉淀、可展示、可发布、可复用的内容资产。
+
+MAINLINE_LOOP
+Source → Signal → Content Pack → Prompt Pack → Controlled Generation → Review → Publish
+
+ASSET_INVENTORY
+• Content packs: 25 (5 topics × 5 variants) ✅
+• Generated images: 5 (avg quality 96/100, all excellent) ✅
+• Image prompts ready: 25 ⚠️ 80% unused (20 packs need generation)
+• Video prompts ready: 5
+• Music prompts ready: 25
+• X posts (Chinese): 25 ⚠️ 0 published
+• Gallery: 5/5 covered ✅
+• Daily archive: 2 days ⚠️ stale since 2026-06-11
+
+PRODUCTION_QUEUE (13 items)
+A. Image generation — 15 items — HIGH priority — ⚠️ requires model call
+B. Video prompt publication — 5 items — MEDIUM priority
+C. Music prompt publication — 25 items — LOW priority
+D. X/Blog publishing — 25 items — HIGH priority
+E. Source refresh — 1 item — HIGH priority
+F. Quality review — 0 items — all done ✅
+
+WHAT_IS_FROZEN
+C5N promote/approval/timer/telegram — all ❄️ frozen until human decision
+
+RECOMMENDED_NEXT_PHASE
+Phase 6B: (1) X publishing [no model call] → (2) signal refresh [no model call] → (3) controlled image generation [requires model call + human review]
+
+MODEL_CALL_STATUS: 0 calls · compliant ✅
+GENERATED_MEDIA_STATUS: 0 generated · compliant ✅
+TIMER_STATUS: blocked ✅
+TELEGRAM_SEND_STATUS: blocked ✅
+
+VALIDATION: 59+12+17+43+11 = 142/142 PASS ✅
+
+NEW_ARTIFACTS
+docs/MAINLINE_GOAL.md
+dashboard/mainline-status.json
+dashboard/mainline-asset-inventory.json
+dashboard/mainline-production-queue.json
+scripts/validate-mainline-recovery.ts
