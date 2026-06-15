@@ -397,6 +397,44 @@
     </div>
   </div>
 
+  <div class="card" style="margin-bottom: 30px; background: #fdf4ff; border: 1px solid #a21caf;">
+    <h2 style="color: #86198f;"><span class="icon">📝</span> X 人工决策表 · X Human Review Decision Sheet (Phase 6D-2)</h2>
+    <p style="color:#86198f; font-size:0.9rem; margin-bottom:12px;">
+      基于 Phase 6D-1 X Manual Review Board (5 items) 的人工决策表。<br/>
+      <strong>decision_status=awaiting_human_input</strong> · <strong>no_platform_publish=true</strong> · <strong>platform_publish_enabled=false</strong> · <strong>no_x_api=true</strong> · <strong>no_baoyu_post_to_x=true</strong> · <strong>no_model_call=true</strong> · <strong>no_media_generation=true</strong> · <strong>no_timer=true</strong>
+    </p>
+    <table>
+      <thead>
+        <tr><th>指标</th><th>值</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>decision_status</td><td><span style="background:#fce7f3; color:#86198f; padding:2px 6px; border-radius:4px;">awaiting_human_input</span></td></tr>
+        <tr><td>total items</td><td><strong>5</strong></td></tr>
+        <tr><td>approved / needs_edit / rejected / hold</td><td>0 / 0 / 0 / 0</td></tr>
+        <tr><td>pending (current_decision)</td><td>5 (all)</td></tr>
+        <tr><td>Decision sheet JSON</td><td><code>dashboard/x-human-review-decision-sheet.json</code></td></tr>
+        <tr><td>Assets decision sheet (JSON + MD)</td><td><code>publishing/review/x/phase-6d/decision-sheet.{json,md}</code></td></tr>
+        <tr><td>Decision cards (5 markdown files)</td><td><code>publishing/review/x/phase-6d/decision-cards/</code></td></tr>
+      </tbody>
+    </table>
+    <table style="margin-top:12px;">
+      <thead>
+        <tr><th>#</th><th>Title</th><th>source_type</th><th>risk</th><th>current_decision</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Flaws in the LLM Automation Narrative</td><td>academic</td><td>low</td><td><span style="background:#fce7f3; color:#86198f; padding:2px 6px; border-radius:4px;">pending</span></td></tr>
+        <tr><td>2</td><td>stabilityai/stable-video-diffusion-img2vid-xt</td><td>ai-ecosystem</td><td>low</td><td><span style="background:#fce7f3; color:#86198f; padding:2px 6px; border-radius:4px;">pending</span></td></tr>
+        <tr><td>3</td><td>SamurAIGPT/Generative-Media-Skills</td><td>code</td><td>low</td><td><span style="background:#fce7f3; color:#86198f; padding:2px 6px; border-radius:4px;">pending</span></td></tr>
+        <tr><td>4</td><td>River AI</td><td>dev-community</td><td><span style="background:#fed7aa; color:#9a3412; padding:2px 6px; border-radius:4px;">medium</span></td><td><span style="background:#fce7f3; color:#86198f; padding:2px 6px; border-radius:4px;">pending</span></td></tr>
+        <tr><td>5</td><td>The Penitence of Saint Jerome</td><td>culture-art</td><td><span style="background:#fed7aa; color:#9a3412; padding:2px 6px; border-radius:4px;">medium</span></td><td><span style="background:#fce7f3; color:#86198f; padding:2px 6px; border-radius:4px;">pending</span></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px; padding:10px 14px; background:#fce7f3; border:1px solid #a21caf; border-radius:8px; font-size:0.8rem; color:#86198f;">
+      <strong>📋 Next action:</strong> 在 <code>creative-quota-assets/publishing/review/x/phase-6d/decision-cards/</code> 中查看 5 张决策卡 → 填写 reviewer_notes → 在 <code>decision-sheet.json</code> 更新 current_decision。<br/>
+      <strong>❌ 不要做:</strong> 不要调用 baoyu-post-to-x · 不要调用 X API · 不要添加发布按钮 · 不要添加任何自动化 · 不要替用户做决定。
+    </div>
+  </div>
+
   <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>
