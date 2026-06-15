@@ -87,6 +87,7 @@
     "validate:x-human-review-pack": "tsx scripts/validate-x-human-review-pack.ts",
     "validate:x-manual-review-board": "tsx scripts/validate-x-manual-review-board.ts",
     "validate:x-human-review-decision-sheet": "tsx scripts/validate-x-human-review-decision-sheet.ts",
+    "validate:x-human-decision-update": "tsx scripts/validate-x-human-decision-update.ts",
     "validate:dashboard-control-safety": "tsx scripts/validate-dashboard-control-safety.ts",
     "check:daily-digest-continuous-promote-workflow": "tsx scripts/daily-digest-continuous-promote-planner.ts",
     "validate:daily-digest-continuous-promote-workflow": "tsx scripts/validate-daily-digest-continuous-promote-workflow.ts",
