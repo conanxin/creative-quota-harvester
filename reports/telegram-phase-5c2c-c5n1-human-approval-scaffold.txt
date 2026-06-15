@@ -1,0 +1,36 @@
+PHASE-5C-2C-C5N1-HUMAN-APPROVAL-SCAFFOLD COMPLETE
+
+状态：scaffold_only (NOT enabled)
+
+- WHAT_CHANGED:
+  * dashboard/daily-digest-human-approval-state.json (NEW): 6 transitions, 9 boolean gates all false
+  * dashboard/daily-digest-human-approval-state-status.json (NEW): planner output
+  * scripts/daily-digest-human-approval-planner.ts (NEW): scaffold-only planner
+  * scripts/validate-daily-digest-human-approval-scaffold.ts (NEW): 26-check validator
+  * scripts/control-server.ts: +2 endpoints (GET state, POST plan-regen)
+  * dashboard/control.html: +1 panel + JS loader
+  * package.json: +2 scripts (check, validate)
+  * docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md / README.md / ROADMAP.md: updated
+- APPROVAL_STATE: approval_state=approval_pack_ready (8/8 pack-ready evidence met); allowed_next_transitions=['human_review_pending'] (future-only)
+- HUMAN_APPROVAL_MODEL: 3 evidence checklists (8/8 for pack_ready, 0/3 for human_review_pending future, 0/3 for approved_for_future_promote future)
+- ENV_GATE: CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1 (planner does NOT read process.env); env_gate_satisfied conservatively false
+- BLOCKED_ACTIONS: production_write, telegram_send, timer, collect, generate, git, unattended_promote, model_call, media_generation
+- API_ENDPOINTS:
+  * GET /api/daily-digest/human-approval-state: read-only status
+  * POST /api/daily-digest/human-approval/plan: token+plan_phrase, regenerates state only
+- VALIDATION_RESULTS: 14/14 PASS (26/26 human-approval, 27/27 continuous-workflow, 12/12 dashboard safety, 16/16 control catalog, +C5M1)
+- SMOKE_TEST: server 127.0.0.1:18792; GET 200 OK with approval_state=approval_pack_ready; POST wrong phrase blocked; POST PLAN DAILY HUMAN APPROVAL → success (real_execution=false); audit log no-token; server shutdown clean
+- MODEL_CALL_STATUS: NONE
+- GENERATED_MEDIA_STATUS: NONE
+- PROTECTED_PATH_CHECK (md5 unchanged): daily-digest.md=735002a3969746aefabc57c75b5220e8, telegram-digest.txt=53c2a73d440eb32967d1a9185763a6b3, status.json=d98c500cb52c78f57edd941cdedc7b49
+- LIMITATIONS:
+  (1) Planner does not read process.env; env_gate_satisfied conservatively false
+  (2) human_review_pending and approved_for_future_promote evidence are all-met=false (future C5N-2)
+  (3) Even at approved_for_future_promote, production_write is blocked; C5M1 executor must be invoked separately
+  (4) Validator regex precise to avoid false positives on property names
+  (5) State config and state status are two separate files; both must be tracked
+  (6) Smoke test ran on port 18792 to avoid conflicts; server cleanly shut down
+- NEXT_PHASE_PROPOSAL: C5N-2 — manual approval UI flow with explicit human record + env gate + audit (CLI cqa-approve, POST /grant endpoint, all transitions manual-initiation gated)
+
+报告路径：
+~/.openclaw/workspace/projects/creative-quota-harvester/reports/human-in-loop-promote-ui-scaffold.md

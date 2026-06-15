@@ -1,0 +1,165 @@
+{
+  "phase": "5C-2C-C5N1",
+  "mode": "human_approval_scaffold_only",
+  "version": "0.1.0",
+  "generated_at": "2026-06-15T00:39:10.717Z",
+  "approval_enabled": false,
+  "approval_state": "approval_pack_ready",
+  "allowed_next_transitions": [
+    "human_review_pending"
+  ],
+  "evidence_for_approval_pack_ready": [
+    {
+      "key": "latest_sandbox_run_present",
+      "label_zh": "最新沙盒运行存在",
+      "met": true,
+      "evidence_path": "reports/sandbox/daily-digest/latest.json",
+      "note": "run_id=sandbox-2026-06-14-06-50-12"
+    },
+    {
+      "key": "sandbox_output_validation_pass",
+      "label_zh": "沙盒输出校验通过",
+      "met": true,
+      "evidence_path": "dashboard/daily-digest-continuous-promote-workflow-status.json",
+      "note": "stage ready"
+    },
+    {
+      "key": "diff_check_pass",
+      "label_zh": "diff 检查通过",
+      "met": true,
+      "evidence_path": "dashboard/daily-digest-continuous-promote-workflow-status.json",
+      "note": "stage ready"
+    },
+    {
+      "key": "promote_readiness_pass",
+      "label_zh": "推送就绪度通过",
+      "met": true,
+      "evidence_path": "dashboard/daily-digest-continuous-promote-workflow-status.json",
+      "note": "stage ready"
+    },
+    {
+      "key": "promote_gate_pass",
+      "label_zh": "推送门禁通过",
+      "met": true,
+      "evidence_path": "dashboard/daily-digest-continuous-promote-workflow-status.json",
+      "note": "stage ready"
+    },
+    {
+      "key": "shadow_copy_present",
+      "label_zh": "影子备份存在",
+      "met": true,
+      "evidence_path": "reports/sandbox/daily-digest/<run>/reports/promote-shadow/",
+      "note": "promote_gate pass implies shadow copy present"
+    },
+    {
+      "key": "rollback_manifest_present",
+      "label_zh": "回滚清单存在",
+      "met": true,
+      "evidence_path": "reports/sandbox/daily-digest/<run>/reports/promote-shadow/rollback-manifest.json",
+      "note": "rollback manifest present"
+    },
+    {
+      "key": "approval_pack_generated",
+      "label_zh": "审批包已生成",
+      "met": true,
+      "evidence_path": "dashboard/daily-digest-promote-approval-pack.json",
+      "note": "approval pack present for run sandbox-2026-06-14-06-50-12"
+    }
+  ],
+  "evidence_for_human_review_pending": [
+    {
+      "key": "approval_pack_reviewed_by_human",
+      "label_zh": "审批包已由人工审阅",
+      "met": false,
+      "evidence_path": null,
+      "note": "scaffold-only: no human-approver UI yet (future C5N-2)"
+    },
+    {
+      "key": "human_confirms_target_files",
+      "label_zh": "人工确认目标文件",
+      "met": false,
+      "evidence_path": null,
+      "note": "scaffold-only: target files are reports/daily-digest.md + reports/telegram-digest.txt (per C5M1 contract)"
+    },
+    {
+      "key": "human_confirms_backup_retention_acceptable",
+      "label_zh": "人工确认备份保留可接受",
+      "met": false,
+      "evidence_path": null,
+      "note": "scaffold-only: backup retention=7 days (per C5N0); not yet approved by human"
+    }
+  ],
+  "evidence_for_approved_for_future_promote": [
+    {
+      "key": "human_approval_recorded",
+      "label_zh": "人工审批记录已写入",
+      "met": false,
+      "evidence_path": null,
+      "note": "scaffold-only: no human-approval UI yet (future C5N-2)"
+    },
+    {
+      "key": "env_gate_set_in_target_environment",
+      "label_zh": "目标环境 env gate 已设置",
+      "met": false,
+      "evidence_path": null,
+      "note": "scaffold-only: env gate not set; this script does not read process.env"
+    },
+    {
+      "key": "audit_log_witness_recorded",
+      "label_zh": "审计见证记录已写入",
+      "met": false,
+      "evidence_path": null,
+      "note": "scaffold-only: audit log entry will be written on first real human-approval call (future C5N-2)"
+    }
+  ],
+  "required_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "required_plan_phrase": "PLAN DAILY HUMAN APPROVAL",
+  "required_env_gate": "CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1",
+  "env_gate_satisfied": false,
+  "env_gate_satisfied_note": "scaffold-only: this script does not read process.env; an external orchestrator must verify the env gate before any real human-approval transition",
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "model_call",
+    "media_generation"
+  ],
+  "audit_log_policy": {
+    "audit_log_file": "reports/control-action-audit.jsonl",
+    "modes_emitted": [
+      "daily_digest_human_approval_plan",
+      "daily_digest_human_approval_request",
+      "daily_digest_human_approval_grant",
+      "daily_digest_human_approval_reject",
+      "daily_digest_human_approval_expire"
+    ],
+    "real_execution_field_reflects_actual": true,
+    "production_write_allowed_field_reflects_actual": true,
+    "token_field_present": false,
+    "secret_field_present": false
+  },
+  "upstream_inputs": {
+    "c5n0_workflow_status_present": true,
+    "continuous_promote_enabled": false,
+    "approval_pack_present": true,
+    "latest_sandbox_run": "sandbox-2026-06-14-06-50-12",
+    "rollback_manifest_present": true
+  },
+  "recommendation": "approval_enabled=false (current). Planner ONLY produces a UI state and an evidence checklist. No human action is requested, no approve is granted. To enable, a future phase (C5N-2) would implement a human-approver runner, an env-gate check, and a per-transition audit log entry — all gated by an explicit human initiation command.",
+  "safety_constraints": {
+    "no_child_process": true,
+    "no_exec_spawn": true,
+    "no_env_read": true,
+    "no_control_local_read": true,
+    "no_network_calls": true,
+    "no_production_writes": true,
+    "no_timer": true,
+    "no_telegram_send": true,
+    "no_approve": true,
+    "output_redacted": true
+  }
+}

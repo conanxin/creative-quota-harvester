@@ -1389,6 +1389,86 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5N1: Human approval plan endpoint (POST, plan-only) ---
+  if (pathname === "/api/daily-digest/human-approval/plan" && req.method === "POST") {
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_human_approval_plan",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "PLAN DAILY HUMAN APPROVAL";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_human_approval_plan",
+            result: "blocked",
+            blocked_reason: "confirm_phrase_mismatch",
+            message: `Plan endpoint blocked: phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_human_approval_plan",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        // Re-generate approval state
+        const { planHumanApproval } = require("./daily-digest-human-approval-planner");
+        const state = planHumanApproval();
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_human_approval_plan",
+          risk_level: "low",
+          confirm_ok: true,
+          real_execution: false,
+          result: "success",
+          reason: "approval_state_regenerated",
+        });
+        jsonResponse(res, {
+          action_id: "daily_digest_human_approval_plan",
+          result: "success",
+          real_execution: false,
+          production_write_allowed: false,
+          state,
+        });
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_human_approval_plan",
+          result: "failed",
+          blocked_reason: "invalid_request",
+          error: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // --- Phase 5C-2C-C5N-0: Continuous promote workflow plan endpoint (POST, plan-only) ---
   if (pathname === "/api/daily-digest/continuous-promote-workflow/plan" && req.method === "POST") {
     if (!acquireExecutionLock()) {
@@ -2117,6 +2197,22 @@ const server = http.createServer((req, res) => {
       }
       const status = JSON.parse(fs.readFileSync(statusPath, "utf-8"));
       jsonResponse(res, status);
+      return;
+    }
+
+    case "/api/daily-digest/human-approval-state": {
+      // Phase 5C-2C-C5N1: Human Approval State (read-only, scaffold only)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const statePath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-human-approval-state-status.json");
+      if (!fs.existsSync(statePath)) {
+        notFound(res, "human-approval-state-status.json not found; run check:daily-digest-human-approval-scaffold first");
+        return;
+      }
+      const state = JSON.parse(fs.readFileSync(statePath, "utf-8"));
+      jsonResponse(res, state);
       return;
     }
 

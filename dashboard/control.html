@@ -1287,6 +1287,47 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5N1: Human Approval Panel -->
+<div id="human-approval-panel" class="human-approval-panel" style="display:none;">
+  <div class="section" style="background:#fdf2f8;border:1px solid #db2777;">
+    <h2>👤 Human Approval / 人工审批</h2>
+    <div id="human-approval-status" style="margin-bottom:12px;"></div>
+    <div id="human-approval-details" style="margin-top:10px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#dc2626;color:#fff;padding:12px 16px;border-radius:8px;font-size:0.9rem;font-weight:600;">
+      ⚠️ 本阶段只建立人工审批状态、审批包展示、确认短语展示、审计记录和 UI 状态，不执行 promote，不覆盖 production，不发送 Telegram，不新增 timer。
+    </div>
+    <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;">
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Approval enabled?</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;" id="ha-enabled">DISABLED (scaffold only)</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Current state</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="ha-state">not_requested</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Required confirm phrase</div>
+        <div style="font-size:0.8rem;color:#1e3a5f;">PROMOTE DAILY DIGEST FROM SANDBOX</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Required env gate</div>
+        <div style="font-size:0.8rem;color:#1e3a5f;">CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Production promote</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Telegram send</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Blocked actions:</strong> production_write, telegram_send, timer, collect, generate, git, unattended_promote, model_call, media_generation
+    </div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5G: Load promote readiness
     function loadPromoteReadiness() {
@@ -1689,6 +1730,38 @@
       });
     }
 
+    // Phase 5C-2C-C5N-1: Load human approval state (read-only)
+    function loadHumanApproval() {
+      var base = location.protocol + '//' + location.host;
+      var panel = document.getElementById('human-approval-panel');
+      if (panel) panel.style.display = 'block';
+      var statusDiv = document.getElementById('human-approval-status');
+      var detailsDiv = document.getElementById('human-approval-details');
+      if (!statusDiv) return;
+      fetch(base + '/api/daily-digest/human-approval-state')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var sHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:10px;">';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#dc2626;">' + (data.approval_enabled ? 'ENABLED' : 'DISABLED') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Approval</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.approval_state || 'unknown') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Current state</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#dc2626;">' + (data.production_write_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Production write</div></div>';
+          var packReady = data.evidence_for_approval_pack_ready || [];
+          var met = packReady.filter(function(e) { return e.met; }).length;
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + met + '/' + packReady.length + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Pack-ready evidence</div></div>';
+          sHtml += '</div>';
+          statusDiv.innerHTML = sHtml;
+          var dHtml = '<div style="margin-top:10px;font-size:0.85rem;color:#555;">';
+          dHtml += '<div><strong>Mode:</strong> ' + data.mode + ' (Phase 5C-2C-C5N1)</div>';
+          dHtml += '<div><strong>Allowed next transitions:</strong> ' + (data.allowed_next_transitions || []).map(function(s) { return '<code>' + s + '</code>'; }).join(", ") + '</div>';
+          dHtml += '<div><strong>Required env gate:</strong> <code>' + data.required_env_gate + '</code> (env_gate_satisfied: ' + data.env_gate_satisfied + ')</div>';
+          dHtml += '<div><strong>Required confirm phrase:</strong> <code>' + data.required_confirm_phrase + '</code></div>';
+          dHtml += '<div style="margin-top:6px;"><strong>Recommendation:</strong> ' + data.recommendation + '</div>';
+          dHtml += '</div>';
+          if (detailsDiv) detailsDiv.innerHTML = dHtml;
+        })
+        .catch(function(e) { console.log('Human approval load failed:', e); });
+    }
+
     // Phase 5C-2C-C5N-0: Load continuous promote workflow (read-only)
     function loadContinuousPromoteWorkflow() {
       var base = location.protocol + '//' + location.host;
@@ -1734,6 +1807,7 @@
     loadPromoteApprovalPack();
     loadControlledPromoteStatus();
     loadContinuousPromoteWorkflow();
+    loadHumanApproval();
   </script>
 
   <script>
