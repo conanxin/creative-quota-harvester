@@ -1,0 +1,90 @@
+{
+  "phase": "6C",
+  "mode": "deduped_publishing_shortlist",
+  "generated_at": "2026-06-15T20:55:00+08:00",
+  "based_on_phase": "6B",
+  "based_on_assets_commit": "4969002",
+  "based_on_harvester_commit": "0a7c051",
+  "policy_path": "dashboard/publishing-readiness-policy.json",
+  "no_platform_publish": true,
+  "no_model_call": true,
+  "no_media_generation": true,
+  "no_x_api": true,
+  "no_external_llm": true,
+  "no_timer": true,
+  "no_auto_publish": true,
+  "round": "first_round",
+  "shortlists": {
+    "ready_x": {
+      "target_count": 5,
+      "actual_count": 5,
+      "unique_topics": 5,
+      "unique_source_types": 5,
+      "topic_diversity": "5/5 = 100%",
+      "items": [
+        "Q-6B-X-brief-brief-mq8c6kp5-u-flaws-i",
+        "Q-6B-X-brief-brief-mq8c663q-4-stabili",
+        "Q-6B-X-brief-brief-mq8c6kp4-7-samurai",
+        "Q-6B-X-brief-brief-mq8c663q-v-river-a",
+        "Q-6B-X-brief-brief-mq8c6kp5-r-the-pen"
+      ],
+      "publish_status_for_all": "ready_for_human_review",
+      "no_platform_publish_for_all": true
+    },
+    "blog": {
+      "target_count": 5,
+      "actual_count": 5,
+      "unique_topics": 5,
+      "unique_source_types": 5,
+      "topic_diversity": "5/5 = 100%",
+      "items": [
+        "Q-6B-BLOG-brief-brief-mq8c6kp5-u-flaws-i",
+        "Q-6B-BLOG-brief-brief-mq8c663q-4-stabili",
+        "Q-6B-BLOG-brief-brief-mq8c6kp4-7-samurai",
+        "Q-6B-BLOG-brief-brief-mq8c663q-v-river-a",
+        "Q-6B-BLOG-brief-brief-mq8c6kp5-r-the-pen"
+      ],
+      "all_have_image": true,
+      "all_have_quality_score": true,
+      "min_quality_score": 94,
+      "max_quality_score": 97
+    },
+    "image_generation_candidates": {
+      "target_count": 5,
+      "actual_count": 5,
+      "unique_topics": 5,
+      "unique_source_types": 5,
+      "topic_diversity": "5/5 = 100%",
+      "items": [
+        "Q-6B-X-brief-brief-mq8c663q-r-flaws-i",
+        "Q-6B-X-brief-brief-mq8c6kp5-5-stabili",
+        "Q-6B-X-brief-brief-mq8c663q-e-samurai",
+        "Q-6B-X-brief-brief-mq8c663r-2-the-pen",
+        "Q-6B-X-brief-brief-mq8c6kp5-1-river-a"
+      ],
+      "requires_model_call": true,
+      "model_call_status_for_all": "not_called",
+      "model_call_blocked_reason": "Phase 6C does NOT execute model calls. Image generation is gated to a future phase with explicit human approval and separate spending decision."
+    }
+  },
+  "excluded_from_first_round": {
+    "reason": "Duplicates of the 5 selected topics (5 variants per topic from 5 content-pack runs). 20 X posts + 20 blog drafts remain in raw queue and will be re-evaluated in subsequent rounds if human publishing of the first round is successful.",
+    "excluded_x_count": 20,
+    "excluded_blog_count": 20
+  },
+  "post_text_passthrough_disclaimer": "All post_text fields in shortlists are VERBATIM copies of the corresponding x-post.zh.md in content-packs. Phase 6C did NOT rewrite, summarize, or re-generate any post text. No LLM call was made.",
+  "image_url_passthrough_disclaimer": "All image_url fields in shortlists are VERBATIM copies of linked_image_url from Phase 6B's publishing/x/index.json. Phase 6C did NOT generate, modify, or re-prompt any image. No image model was called.",
+  "human_action_required": [
+    "Review each ready_x item for tone, accuracy, and brand alignment before any manual post.",
+    "Post manually via baoyu-post-to-x or direct Twitter UI. Do NOT automate.",
+    "If a topic is rejected during review, mark it as 'human_rejected' in a future phase; do not auto-substitute."
+  ],
+  "no_human_action_required": [
+    "Do NOT call any model (image, video, music, LLM).",
+    "Do NOT publish to X, Twitter, blog, or any platform.",
+    "Do NOT send Telegram digest.",
+    "Do NOT start any timer or cron job.",
+    "Do NOT modify systemd, gateway, or .env files.",
+    "Do NOT overwrite daily-digest.md, telegram-digest.txt, or status.json."
+  ]
+}

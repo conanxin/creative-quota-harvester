@@ -1,0 +1,111 @@
+PHASE-6C PUBLISHING READINESS REVIEW
+===================================
+STATUS: COMPLETE | VALIDATION: PASS
+Generated: 2026-06-15T20:55:00+08:00
+Based on: Phase 6B (Harvester=0a7c051, Assets=4969002)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT_CHANGED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Dedup policy (7 rules) → dashboard/publishing-readiness-policy.json
+2. Publishing readiness review → dashboard/publishing-readiness-review.json
+3. Deduped shortlist → dashboard/deduped-publishing-shortlist.json
+4. Assets shortlists → creative-quota-assets/publishing/shortlists/ (3 JSON + README)
+5. Dashboard updated → mainline-publishing-status.json (preserves 6B + adds 6C section)
+6. Validator → scripts/validate-publishing-readiness.ts + npm run validate:publishing-readiness
+7. Markdown reports → reports/publishing-readiness-review.md + reports/deduped-publishing-shortlist.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION RESULTS (7/7 PASS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+validate:publishing-readiness    ✅ PASS (221 checks)
+validate:publishing-pack         ✅ PASS
+validate:mainline-recovery       ✅ PASS
+validate:dashboard-control-safety ✅ PASS
+dashboard:control:validate        ✅ PASS (17/17)
+validate:telegram-sanitizer      ✅ PASS (43/43)
+validate:project-report-send     ✅ PASS (11/11)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+READY_X_SHORTLIST (5 items, 5/5 unique topics)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#1 Flaws in the LLM Automation Narrative  [academic]   Q-6B-X-...-mq8c6kp5-u  Q=96 ✅
+#2 stabilityai/stable-video-diffusion     [ai-ecosystem] Q-6B-X-...-mq8c663q-4  Q=94 ✅
+#3 SamurAIGPT/Generative-Media-Skills     [code]         Q-6B-X-...-mq8c6kp4-7  Q=97 ✅
+#4 River AI                              [dev-community] Q-6B-X-...-mq8c663q-v  Q=97 ✅
+#5 The Penitence of Saint Jerome         [culture-art]  Q-6B-X-...-mq8c6kp5-r  Q=96 ✅
+
+All: publish_status=ready_for_human_review, no_platform_publish=true, have image+gallery+review URLs.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BLOG_SHORTLIST (5 items, 5/5 unique topics)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#1 Flaws in the LLM Automation Narrative  [academic]      Q=96 | expansion=false
+#2 stabilityai/stable-video-diffusion      [ai-ecosystem]  Q=94 | expansion=false
+#3 SamurAIGPT/Generative-Media-Skills      [code]          Q=97 | expansion=false
+#4 River AI                               [dev-community] Q=97 | expansion=TRUE ⚠️
+#5 The Penitence of Saint Jerome          [culture-art]   Q=96 | expansion=TRUE ⚠️
+
+Note: River AI + Penitence need human voice expansion (personal/founder note + art history).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IMAGE_GENERATION_CANDIDATES (5 items, 5/5 unique topics)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#1 Flaws in the LLM Automation Narrative  [academic]      brief-brief-mq8c663q-r-flaws-i
+#2 stabilityai/stable-video-diffusion     [ai-ecosystem]  brief-brief-mq8c6kp5-5-stabili
+#3 SamurAIGPT/Generative-Media-Skills     [code]          brief-brief-mq8c663q-e-samurai
+#4 The Penitence of Saint Jerome          [culture-art]   brief-brief-mq8c663r-2-the-pen
+#5 River AI                              [dev-community] brief-brief-mq8c6kp5-1-river-a
+
+All: requires_model_call=true, model_call_status=not_called. Phase 6C did NOT call any model.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DUPLICATE_QUEUE_FIX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Phase 6B: HIGH_PRIORITY_QUEUE top 5 = 5/5 "Flaws in the LLM Automation Narrative" ❌
+Phase 6C: All 3 shortlists = 5/5 unique topics ✅ DUPLICATE WARNING = RESOLVED
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TOPIC_DIVERSITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Ready X shortlist:      5/5 unique topics = 100% | 5/5 unique source types
+Blog shortlist:         5/5 unique topics = 100% | 5/5 unique source types
+Image gen candidates:   5/5 unique topics = 100% | 5/5 unique source types
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BOUNDARY STATUS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Model call executed:       ❌ NO (model_call_status=not_called for all)
+Media generated:          ❌ NO (all image_url verbatim from Phase 6B)
+Platform publish:         ❌ NO (no_platform_publish=true everywhere)
+X API called:              ❌ NO (no_x_api=true everywhere)
+Telegram digest sent:      ❌ NO (telegram_send_allowed=false)
+Timer started:             ❌ NO (timer_allowed=false)
+.env/.control.local:       ❌ NOT COMMITTED (in .gitignore)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEXT PHASE PROPOSAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Phase 6D: Human review of 5 ready X posts → manual post via baoyu-post-to-x or Twitter UI
+Phase 6E: Image generation for 5 candidates (gated: human approval + spending decision)
+Phase 6C: No action taken on 6D/6E — these are recommendations only.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OUTPUT FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Harvester:
+  dashboard/publishing-readiness-policy.json      (7-rule dedup policy)
+  dashboard/publishing-readiness-review.json       (full per-item review)
+  dashboard/deduped-publishing-shortlist.json       (consolidated shortlist)
+  dashboard/mainline-publishing-status.json         (updated with 6C section)
+  scripts/validate-publishing-readiness.ts          (validator)
+  reports/publishing-readiness-review.md            (human-readable review)
+  reports/deduped-publishing-shortlist.md          (human-readable shortlist)
+
+Assets:
+  publishing/shortlists/x-ready-shortlist.json     (X ready shortlist mirror)
+  publishing/shortlists/blog-shortlist.json        (blog shortlist mirror)
+  publishing/shortlists/image-generation-candidates.json (image gen candidates mirror)
+  publishing/shortlists/README.md                   (shortlists directory docs)
+
+_辛 🔮 — Phase 6C complete. PUBLISHING_READINESS=pass._

@@ -1,0 +1,83 @@
+{
+  "phase": "6C",
+  "mode": "publishing_readiness_dedup_policy",
+  "generated_at": "2026-06-15T20:55:00+08:00",
+  "based_on_phase": "6B",
+  "no_platform_publish": true,
+  "no_model_call": true,
+  "no_media_generation": true,
+  "no_x_api": true,
+  "no_external_llm": true,
+  "no_timer": true,
+  "no_auto_publish": true,
+  "problem_statement": "Phase 6B HIGH_PRIORITY_QUEUE top 5 all share the same topic (Flaws in the LLM Automation Narrative). The raw 25-post queue is heavily skewed by content-pack runs (5 variants per topic). Publishing all 5 duplicates would flood a single channel and burn audience trust. A dedup policy is required before any manual posting.",
+  "policy_rules": [
+    {
+      "id": "POL-1",
+      "name": "unique_topic_per_first_round",
+      "description": "Each unique topic appears at most 1 time in the first-round shortlist (X or blog).",
+      "rationale": "Avoid topic flooding on the first publish round; preserve audience trust."
+    },
+    {
+      "id": "POL-2",
+      "name": "ready_preferred_over_needs_asset",
+      "description": "X shortlist must prefer posts with publish_status=ready (post text + image) over needs_asset.",
+      "rationale": "Ready posts can be human-reviewed and posted immediately; needs_asset posts require an extra image-generation cycle."
+    },
+    {
+      "id": "POL-3",
+      "name": "source_type_diversity",
+      "description": "Within the first round, shortlist should maximize unique source_type coverage (academic / ai-ecosystem / code / culture-art / dev-community).",
+      "rationale": "Mirror Phase 6B's 5 source types in the first round to demonstrate cross-domain coverage."
+    },
+    {
+      "id": "POL-4",
+      "name": "prefer_existing_generated_image",
+      "description": "When multiple ready posts exist for the same topic, prefer the one with linked_image_url (already reviewed).",
+      "rationale": "Reuse Phase 6B canary/gen images; avoid generating duplicates."
+    },
+    {
+      "id": "POL-5",
+      "name": "needs_asset_routes_to_image_generation_candidate",
+      "description": "Posts with publish_status=needs_asset MUST NOT enter the immediate X shortlist. They are routed to the image generation candidate list and only return to the X shortlist after image generation.",
+      "rationale": "Do not publish text-only on a single channel when visual assets are a published norm."
+    },
+    {
+      "id": "POL-6",
+      "name": "blog_drafts_separate_shortlist",
+      "description": "Blog drafts are kept on a separate shortlist, with priority=high or quality_score>=94 only in the first round.",
+      "rationale": "Blog and X have different audience expectations and posting cadences."
+    },
+    {
+      "id": "POL-7",
+      "name": "no_auto_publish",
+      "description": "All shortlist items are read-only artefacts for human review. No platform API call. No timer. No Telegram digest.",
+      "rationale": "Preserve human-in-the-loop; honor Phase 6A/B boundary contract."
+    }
+  ],
+  "dedup_method": {
+    "key": "title_slug",
+    "tie_breaker": [
+      "publish_status == ready (true wins)",
+      "linked_image_url present (true wins)",
+      "quality_score descending",
+      "linked_content_pack alphabetical ascending"
+    ]
+  },
+  "topic_count_target": {
+    "ready_x_shortlist": 5,
+    "blog_shortlist": 5,
+    "image_generation_candidates": 5
+  },
+  "phase_6c_outputs": [
+    "dashboard/publishing-readiness-review.json",
+    "dashboard/deduped-publishing-shortlist.json",
+    "reports/publishing-readiness-review.md",
+    "reports/deduped-publishing-shortlist.md",
+    "scripts/validate-publishing-readiness.ts",
+    "publishing/shortlists/x-ready-shortlist.json (assets)",
+    "publishing/shortlists/blog-shortlist.json (assets)",
+    "publishing/shortlists/image-generation-candidates.json (assets)",
+    "publishing/shortlists/README.md (assets)"
+  ]
+}
