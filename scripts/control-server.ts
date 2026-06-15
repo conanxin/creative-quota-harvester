@@ -1497,6 +1497,106 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5N5: Approved-for-future-promote state record endpoint (POST, real state transition) ---
+  if (pathname === "/api/daily-digest/human-approval/approve-for-future-promote" && req.method === "POST") {
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_approved_for_future_promote",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "APPROVE DAILY DIGEST FOR FUTURE PROMOTE";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_approved_for_future_promote",
+            result: "blocked",
+            blocked_reason: "confirm_phrase_mismatch",
+            message: `Approve-for-future-promote endpoint blocked: phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_approved_for_future_promote",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        // Record the real state transition
+        const { recordApprovedForFuturePromote } = require("./daily-digest-approved-for-future-promote");
+        const result = recordApprovedForFuturePromote({ confirmPhrase });
+
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_approved_for_future_promote",
+          risk_level: "low",
+          confirm_ok: result.confirm_phrase_matched,
+          real_execution: result.transition_executed,
+          result: result.transition_executed ? "success" : "blocked",
+          reason: result.blocked_reason || "state_recorded",
+        });
+
+        if (!result.transition_executed) {
+          jsonResponse(res, {
+            action_id: "daily_digest_approved_for_future_promote",
+            result: "blocked",
+            blocked_reason: result.blocked_reason || "evidence_or_state_incomplete",
+            record: result,
+          });
+        } else {
+          jsonResponse(res, {
+            action_id: "daily_digest_approved_for_future_promote",
+            result: "success",
+            real_execution: true,
+            real_approval: true,
+            real_promote_allowed: false,
+            production_write_allowed: false,
+            telegram_send_allowed: false,
+            approved_for_future_promote: true,
+            previous_state: result.previous_state,
+            new_state: result.new_state,
+            history_json_path: result.history_json_path,
+            history_md_path: result.history_md_path,
+            audit_summary: result.audit_log_entry_summary,
+            next_step: result.next_step,
+          });
+        }
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_approved_for_future_promote",
+          result: "failed",
+          blocked_reason: "invalid_request",
+          error: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // --- Phase 5C-2C-C5N3: Human review pending record endpoint (POST, state record only) ---
   if (pathname === "/api/daily-digest/human-approval/begin-review" && req.method === "POST") {
     if (!acquireExecutionLock()) {
@@ -2593,6 +2693,72 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/approved-for-future-promote-status": {
+      // Phase 5C-2C-C5N5: Approved-for-future-promote status (read-only, current state + recent history)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const configPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-human-approval-state.json");
+      if (!fs.existsSync(configPath)) {
+        notFound(res, "human-approval-state.json not found; run check:daily-digest-human-approval-scaffold first");
+        return;
+      }
+      const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+      // Find latest approved-for-future-promote history entry
+      const historyDir = path.join(HARVESTER_DIR, "reports/human-approval-history");
+      let latestHistoryPath: string | null = null;
+      let latestHistory: any = null;
+      try {
+        if (fs.existsSync(historyDir)) {
+          const files = fs.readdirSync(historyDir)
+            .filter(f => f.startsWith("daily-digest-approved-for-future-promote-") && f.endsWith(".json"))
+            .sort();
+          if (files.length > 0) {
+            latestHistoryPath = path.join(historyDir, files[files.length - 1]);
+            latestHistory = JSON.parse(fs.readFileSync(latestHistoryPath, "utf-8"));
+          }
+        }
+      } catch {
+        // ignore — return config only
+      }
+      const safe = {
+        phase: "5C-2C-C5N5",
+        mode: "approved_for_future_promote_state_record",
+        current_state: config.approval_state,
+        approved_for_future_promote: config.approval_state === "approved_for_future_promote",
+        real_approval: latestHistory?.real_approval === true,
+        real_promote_allowed: false,
+        production_write_allowed: false,
+        telegram_send_allowed: false,
+        required_confirm_phrase: "APPROVE DAILY DIGEST FOR FUTURE PROMOTE",
+        required_env_gate: config.required_env_gate,
+        latest_history_json_path: latestHistoryPath,
+        latest_history_timestamp_utc: latestHistory?.timestamp_utc || null,
+        latest_history_previous_state: latestHistory?.previous_state || null,
+        latest_history_new_state: latestHistory?.new_state || null,
+        transition_history: config.transition_history || [],
+        blocked_next_transitions: [
+          "approved_for_future_promote -> promote",
+          "any automatic promote",
+          "any unattended promote",
+        ],
+        blocked_actions: [
+          "production_write",
+          "telegram_send",
+          "timer",
+          "collect",
+          "generate",
+          "git",
+          "unattended_promote",
+          "model_call",
+          "media_generation",
+        ],
+      };
+      jsonResponse(res, safe);
+      return;
+    }
+
     case "/api/daily-digest/promote-gate": {
       // Phase 5C-2C-C5J: Read promote gate (read-only, no execution)
       if (req.method !== "GET") {
@@ -2661,13 +2827,14 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /api/daily-digest/approved-for-future-promote-status, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);
   console.log(`[control-server] POST /api/daily-digest/execute-validation-stage (confirmed low-risk stage execution, rate limited, execution locked)`);
   console.log(`[control-server] POST /api/daily-digest/sandbox/create (confirmed sandbox directory creation, rate limited, execution locked)`);
 console.log(`[control-server] POST /api/daily-digest/sandbox/build-pilot (confirmed pilot sandbox build execution, rate limited, execution locked)`);
+  console.log(`[control-server] POST /api/daily-digest/human-approval/approve-for-future-promote (state-record only, NOT enabled for production write or Telegram, rate limited, execution locked)`);
   console.log(`[control-server] Actions enabled: ${CONTROL_CONFIG.actionsEnabled}, Token configured: ${!!CONTROL_CONFIG.token}`);
 });
 

@@ -1,0 +1,84 @@
+Phase 5C-2C-C5N5 complete.
+
+**Mode:** approved_for_future_promote_state_record
+**Phase:** 5C-2C-C5N5
+**Status:** PASS — REAL state transition executed
+
+**State machine advance:**
+- previous_state = human_review_pending
+- new_state = approved_for_future_promote
+- transition_executed = true
+- transition_kind = approved_for_future_promote_state_record
+- confirm_phrase_matched = true ("APPROVE DAILY DIGEST FOR FUTURE PROMOTE")
+
+**Real-approval status:**
+- real_approval = true (state-record only, no side effects)
+- real_promote_allowed = false
+- production_write_allowed = false
+- telegram_send_allowed = false
+
+**Protected paths (md5-verified unchanged):**
+- reports/daily-digest.md — UNCHANGED
+- reports/telegram-digest.txt — UNCHANGED
+- dashboard/status.json — UNCHANGED
+
+**Validation: 16/16 PASS**
+- validate:daily-digest-approved-for-future-promote (32/32)
+- validate:daily-digest-approval-dry-run (29/29)
+- validate:daily-digest-human-review-pending (26/26)
+- validate:daily-digest-human-approval-transition-dry-run (28/28)
+- validate:daily-digest-human-approval-scaffold (26/26)
+- validate:daily-digest-continuous-promote-workflow (27/27)
+- validate:dashboard-control-safety (12/12)
+- dashboard:control:validate
+- validate:daily-digest-promote-approval-pack
+- validate:daily-digest-promote-executor-disabled
+- validate:daily-digest-promote-execution-review
+- validate:daily-digest-promote-gate
+- validate:sanitizer-secret-completeness
+- validate:sanitizer-false-positives
+- validate:telegram-sanitizer
+- validate:project-report-send
+
+**Smoke test:** PASS
+- GET /api/daily-digest/approved-for-future-promote-status — current_state=approved_for_future_promote
+- POST /api/daily-digest/human-approval/approve-for-future-promote — wrong phrase blocked, wrong token blocked, correct phrase executed via CLI (real state transition), subsequent HTTP POST blocked on previous_state_mismatch (expected)
+- Audit log: no tokens recorded
+- Server cleanly shut down (port 8795 free)
+
+**Boundary compliance:**
+- ❌ No model call
+- ❌ No media generation
+- ❌ No sandbox rebuild / re-promote
+- ❌ No collect / digest:send / report:send (except final)
+- ❌ No timer / generate / git/push/pull (except this phase commit+push)
+- ❌ No build/deploy/release
+- ❌ No overwriting reports/daily-digest.md or reports/telegram-digest.txt or dashboard/status.json
+- ❌ No writing reports/daily/
+- ❌ No modifying systemd timer / gateway
+- ❌ No committing .env / .env.telegram.local / .control.local / audit log
+- ❌ No committing sandbox runtime / promote-backups dirs
+- ❌ No printing tokens
+- ❌ No leftover server process
+
+**Files added:**
+- dashboard/daily-digest-approved-for-future-promote-policy.json
+- scripts/daily-digest-approved-for-future-promote.ts
+- scripts/validate-daily-digest-approved-for-future-promote.ts
+- reports/human-approval-history/daily-digest-approved-for-future-promote-20260615-042602.json
+- reports/human-approval-history/daily-digest-approved-for-future-promote-20260615-042602.md
+- reports/approved-for-future-promote-state-record.md
+
+**Files modified:**
+- dashboard/daily-digest-human-approval-state.json (state flipped, history appended)
+- scripts/control-server.ts (+2 endpoints: GET status + POST approve)
+- dashboard/control.html (+1 panel + JS loader)
+- package.json (+2 scripts)
+- docs/PRIVATE_CONTROL_SERVER_RUNBOOK.md (+1 phase section)
+- README.md (+1 row)
+- ROADMAP.md (+1 row)
+
+**Next phase proposal (C5N-6, not implemented):**
+approved_for_future_promote → promote (real production write + Telegram send). Would require a future promote runner that re-verifies the env gate AND an explicit per-promote confirm phrase BEFORE any production write or Telegram send. All transitions remain manual-initiation gated; no timer / cron / auto-trigger.
+
+Full report: projects/creative-quota-harvester/reports/approved-for-future-promote-state-record.md

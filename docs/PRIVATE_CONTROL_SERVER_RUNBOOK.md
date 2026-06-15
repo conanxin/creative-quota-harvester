@@ -2469,3 +2469,62 @@ npm run validate:daily-digest-approval-dry-run
 
 ---
 *Runbook v5.26 — Phase 5C-2C-C5N4*
+
+## Phase 5C-2C-C5N5 — Approved-for-future-promote State Record
+
+Phase 5C-2C-C5N5 **actually records** the approved-for-future-promote state
+transition (`human_review_pending → approved_for_future_promote`). This is a
+**real state machine advance** — NOT a dry-run. It does NOT promote, does NOT
+write production, does NOT send Telegram, and does NOT add any timer.
+
+### Configuration: `dashboard/daily-digest-approved-for-future-promote-policy.json`
+
+- `real_approval_allowed`: `true` (state-record only, no side effects)
+- `real_promote_allowed`: `false`
+- `production_write_allowed`: `false`
+- `telegram_send_allowed`: `false`
+- `allowed_transition`: `{from: "human_review_pending", to: "approved_for_future_promote"}`
+- `required_confirm_phrase`: `APPROVE DAILY DIGEST FOR FUTURE PROMOTE`
+- `required_env_gate`: `CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1`
+- `env_gate_evaluated`: `false` (executor does not read process.env)
+- `blocked_transitions`: approved_for_future_promote → promote, automatic promote, unattended promote
+- `blocked_actions`: production_write, telegram_send, timer, collect, generate, git, unattended_promote, model_call, media_generation, real_promote, auto_promote
+
+### Endpoints
+
+- `GET /api/daily-digest/approved-for-future-promote-status` — read-only, returns the current approval state + recent approved_for_future_promote history.
+- `POST /api/daily-digest/human-approval/approve-for-future-promote` — token + confirm-phrase gated; performs the **real** state transition. **Never** promotes, **never** writes production, **never** sends Telegram.
+
+### Script entry points
+
+```bash
+# Record the real state transition (requires confirm phrase)
+npx tsx scripts/daily-digest-approved-for-future-promote.ts --confirm-phrase "APPROVE DAILY DIGEST FOR FUTURE PROMOTE"
+
+# Validate config + executor safety
+npm run validate:daily-digest-approved-for-future-promote
+
+# Run all validations
+npm run check:daily-digest-approved-for-future-promote
+npm run validate:daily-digest-approved-for-future-promote
+```
+
+### Files
+
+- `dashboard/daily-digest-approved-for-future-promote-policy.json` — policy
+- `scripts/daily-digest-approved-for-future-promote.ts` — real state recorder (no env reads, no network, no production writes, no Telegram send)
+- `scripts/validate-daily-digest-approved-for-future-promote.ts` — 32-check validator
+- `reports/human-approval-history/daily-digest-approved-for-future-promote-<ts>.json` — history record
+- `reports/human-approval-history/daily-digest-approved-for-future-promote-<ts>.md` — history record (markdown)
+- `reports/approved-for-future-promote-state-record.md` — phase closeout report
+
+### Why this is real-but-still-safe
+
+- The state transition **is real** — `approval_state` in `dashboard/daily-digest-human-approval-state.json` is updated to `approved_for_future_promote`, and a new entry is appended to `transition_history[]`. The state machine IS advanced.
+- The state transition is **still safe** — `real_promote_allowed=false`, `production_write_allowed=false`, `telegram_send_allowed=false`, `timer_allowed=false`. No side effects beyond the approval state itself.
+- Even at `approved_for_future_promote`, the **next** transition (`→ promote`) is in `blocked_transitions`. A future orchestrator (C5N-6, not yet implemented) would need to re-verify the env gate (`CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1`) AND require an explicit per-promote confirm phrase BEFORE any production write or Telegram send.
+- The executor does **not** read `process.env` (per safety contract); `env_gate_evaluated` is conservatively reported as `false`.
+- The executor does **not** write to `reports/daily-digest.md`, `reports/telegram-digest.txt`, or `dashboard/status.json` (the production-protected paths).
+
+---
+*Runbook v5.27 — Phase 5C-2C-C5N5*

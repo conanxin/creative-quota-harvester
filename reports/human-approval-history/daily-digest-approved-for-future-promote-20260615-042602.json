@@ -1,0 +1,80 @@
+{
+  "phase": "5C-2C-C5N5",
+  "mode": "approved_for_future_promote_state_record",
+  "version": "0.1.0",
+  "timestamp_utc": "2026-06-15T04:26:02.290Z",
+  "previous_state": "human_review_pending",
+  "new_state": "approved_for_future_promote",
+  "transition_executed": true,
+  "transition_kind": "approved_for_future_promote_state_record",
+  "confirm_phrase_matched": true,
+  "confirmed_by_phrase": true,
+  "approved_for_future_promote": true,
+  "real_approval": true,
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "history_json_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/human-approval-history/daily-digest-approved-for-future-promote-20260615-042602.json",
+  "history_md_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/human-approval-history/daily-digest-approved-for-future-promote-20260615-042602.md",
+  "updated_state_config_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/dashboard/daily-digest-human-approval-state.json",
+  "evidence_snapshot": {
+    "upstream_state": "human_review_pending",
+    "upstream_state_config_present": true,
+    "dry_run_present": true,
+    "dry_run_would_approve": true,
+    "dry_run_real_approval": true,
+    "dry_run_evidence_met": 11,
+    "dry_run_evidence_total": 12,
+    "approval_pack_present": true,
+    "target_files": [
+      "reports/daily-digest.md",
+      "reports/telegram-digest.txt"
+    ],
+    "backup_retention_days": 7
+  },
+  "audit_log_entry_summary": {
+    "action_id": "daily_digest_approved_for_future_promote",
+    "mode": "daily_digest_approved_for_future_promote",
+    "risk_level": "low",
+    "real_execution": true,
+    "real_approval": true,
+    "real_promote_allowed": false,
+    "production_write_allowed": false,
+    "telegram_send_allowed": false,
+    "target_files_unmodified": true,
+    "result": "success"
+  },
+  "blocked_next_transitions": [
+    "approved_for_future_promote -> promote",
+    "any automatic promote",
+    "any unattended promote"
+  ],
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "model_call",
+    "media_generation",
+    "real_promote",
+    "auto_promote"
+  ],
+  "next_step": "approved_for_future_promote state ACTUALLY recorded. Production write and Telegram send remain DISABLED. To actually promote in a future phase, an orchestrator (C5N-6, not yet implemented) would need to re-verify the env gate (CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1) and an explicit per-promote confirm phrase BEFORE any production write or Telegram send.",
+  "blocked_reason": null,
+  "safety_constraints": {
+    "no_child_process": true,
+    "no_exec_spawn": true,
+    "no_env_read": true,
+    "no_control_local_read": true,
+    "no_network_calls": true,
+    "no_production_writes": true,
+    "no_timer": true,
+    "no_telegram_send": true,
+    "no_real_promote": true,
+    "no_skip_evidence": true,
+    "output_redacted": true
+  }
+}

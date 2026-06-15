@@ -5,7 +5,7 @@
   "generated_at": "2026-06-15T08:33:00+08:00",
   "purpose": "Define the Human-in-loop approval state model for the continuous controlled promote workflow (Phase 5C-2C-C5N1). This phase ONLY scaffolds the UI, state model, evidence checklist, and audit log wiring. It does NOT enable human approval, does NOT approve, does NOT execute promote, and does NOT write to production.",
   "approval_enabled": false,
-  "approval_state": "human_review_pending",
+  "approval_state": "approved_for_future_promote",
   "real_promote_allowed": false,
   "production_write_allowed": false,
   "telegram_send_allowed": false,
@@ -102,6 +102,19 @@
       "real_promote": false,
       "production_write": false,
       "telegram_send": false
+    },
+    {
+      "from": "human_review_pending",
+      "to": "approved_for_future_promote",
+      "timestamp_utc": "2026-06-15T04:26:02.290Z",
+      "transition_kind": "approved_for_future_promote_state_record",
+      "confirm_phrase": "APPROVE DAILY DIGEST FOR FUTURE PROMOTE",
+      "approved_for_future_promote": true,
+      "real_approval": true,
+      "real_promote": false,
+      "production_write": false,
+      "telegram_send": false,
+      "confirmed_by_phrase": true
     }
   ]
 }

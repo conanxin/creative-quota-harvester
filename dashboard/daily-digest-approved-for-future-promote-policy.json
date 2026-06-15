@@ -1,0 +1,79 @@
+{
+  "phase": "5C-2C-C5N5",
+  "mode": "approved_for_future_promote_state_record",
+  "version": "0.1.0",
+  "generated_at": "2026-06-15T12:10:00+08:00",
+  "purpose": "Record the REAL human approval state transition human_review_pending → approved_for_future_promote. This phase IS a real state machine advance (not a dry-run), but it does NOT promote, does NOT write to production, does NOT send Telegram, and does NOT add any timer. The approval_state field in the config IS changed.",
+  "real_approval_allowed": true,
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "collect_allowed": false,
+  "generate_allowed": false,
+  "timer_allowed": false,
+  "model_call_allowed": false,
+  "media_generation_allowed": false,
+  "git_allowed": false,
+  "auto_approval_allowed": false,
+  "allowed_transition": {
+    "from": "human_review_pending",
+    "to": "approved_for_future_promote"
+  },
+  "required_confirm_phrase": "APPROVE DAILY DIGEST FOR FUTURE PROMOTE",
+  "required_env_gate": "CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1",
+  "env_gate_evaluated": false,
+  "env_gate_evaluated_note": "this script does not read process.env; env_gate_evaluated is conservatively false; an external orchestrator must verify the env gate before any future real promote",
+  "blocked_transitions": [
+    "approved_for_future_promote -> promote",
+    "any automatic promote",
+    "any unattended promote"
+  ],
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "model_call",
+    "media_generation",
+    "real_promote",
+    "auto_promote"
+  ],
+  "evidence_required_for_transition": [
+    "previous_state_eq_human_review_pending",
+    "c5n4_dry_run_record_present",
+    "c5n4_dry_run_would_approve_true",
+    "c5n3_human_review_pending_recorded",
+    "human_review_recorded",
+    "human_confirms_target_files",
+    "human_confirms_backup_retention_acceptable",
+    "real_approval_policy_acknowledged",
+    "real_promote_allowed_false",
+    "production_write_allowed_false",
+    "telegram_send_allowed_false",
+    "confirm_phrase_matched"
+  ],
+  "audit_log_policy": {
+    "audit_log_file": "reports/control-action-audit.jsonl",
+    "modes_emitted": [
+      "daily_digest_approved_for_future_promote"
+    ],
+    "real_execution_field_reflects_actual": true,
+    "real_approval_field_reflects_actual": true,
+    "real_promote_field_reflects_actual": false,
+    "production_write_allowed_field_reflects_actual": true,
+    "telegram_send_allowed_field_reflects_actual": true,
+    "token_field_present": false,
+    "secret_field_present": false
+  },
+  "ui_indicators": {
+    "show_in_dashboard": true,
+    "panel_label_zh": "已批准等待后续推送",
+    "panel_label_en": "Approved for Future Promote",
+    "primary_warning_zh": "本阶段真实记录人工批准状态（human_review_pending → approved_for_future_promote），但不执行 promote，不覆盖 production，不发送 Telegram，不新增 timer。",
+    "primary_warning_en": "This phase actually records the human approval state (human_review_pending → approved_for_future_promote), but does not execute promote, does not overwrite production, does not send Telegram, and does not add any timer."
+  },
+  "next_phase_proposal": "C5N-6 (proposed only, not implemented): would require an explicit future promote runner that re-verifies the env gate (CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1) and an explicit per-promote confirm phrase BEFORE any production write or Telegram send. Even at approved_for_future_promote in a future phase, production write remains blocked until a future orchestrator performs the env-gate + confirm-phrase double check."
+}
