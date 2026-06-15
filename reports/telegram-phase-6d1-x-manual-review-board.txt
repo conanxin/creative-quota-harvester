@@ -1,0 +1,89 @@
+PHASE-6D-1 X MANUAL REVIEW BOARD ✅
+====================================
+STATUS: COMPLETE | VALIDATION: PASS (100/100)
+Generated: 2026-06-15T21:35:00+08:00
+Based on: Phase 6D (Harvester=0bb8702, Assets=6deb519)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION: PASS (100/100 checks)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+validate:x-manual-review-board    ✅ 100 checks PASS
+validate:x-human-review-pack      ✅ PASS (6D preserved)
+validate:publishing-readiness    ✅ PASS (6C preserved)
+validate:publishing-pack         ✅ PASS
+validate:mainline-recovery       ✅ PASS
+validate:dashboard-control-safety ✅ PASS
+dashboard:control:validate      ✅ PASS
+validate:telegram-sanitizer      ✅ PASS
+validate:project-report-send     ✅ PASS
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REVIEW BOARD (5/5 unique topics, 5/5 source types)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+total_items:       5
+needs_review:      5 (all)
+reviewed:          0
+approved:          0
+needs_edit:        0
+rejected:          0
+posted_manually:   0
+
+#1 Flaws in the LLM Automation Narrative  [academic]       risk=low
+#2 stabilityai/stable-video-diffusion      [ai-ecosystem]   risk=low
+#3 SamurAIGPT/Generative-Media-Skills     [code]           risk=low
+#4 River AI                               [dev-community]  risk=MEDIUM ⚠️ founder-attributed
+#5 The Penitence of Saint Jerome          [culture-art]    risk=MEDIUM ⚠️ public-domain artwork
+
+All: review_status=needs_review | publish_status=not_published | human_decision=pending
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BOUNDARY STATUS (all enforced)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+no_platform_publish:      ✅ true (all items)
+platform_publish_enabled:  ✅ false
+no_x_api:                  ✅ true
+no_baoyu_post_to_x:        ✅ true
+no_model_call:             ✅ true (passthrough from 6D)
+no_media_generation:       ✅ true (passthrough from 6D)
+no_timer:                   ✅ true
+no_telegram_digest:         ✅ true (except final report)
+no_auto_publish:            ✅ true
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEW FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Harvester:
+  dashboard/x-manual-review-board.json  (central state tracker)
+  scripts/validate-x-manual-review-board.ts  (100 checks)
+  dashboard/index.html  (added 6D-1 card)
+  dashboard/mainline-publishing-status.json  (added 6D-1 section)
+
+Assets:
+  publishing/review/x/phase-6d/review-board.json
+  publishing/review/x/phase-6d/review-board.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEXT PHASE PROPOSAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Phase 6D-2: Human Review State Update
+  - Human marks human_decision in review-board.json
+  - Human updates reviewed/approved/counter
+  - For approved items: manual post via X UI
+  - Human updates posted_manually counter
+  ⚠️ Phase 6E (image generation) NOT triggered here
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT DID NOT CHANGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ No post_text rewritten (verbatim from 6D)
+❌ No image_url changed (verbatim from 6D)
+❌ No model called
+❌ No media generated
+❌ No X API called
+❌ No baoyu-post-to-x called
+❌ No publish button added
+❌ No timer modified
+❌ No .env / .control.local committed
+
+Full report: reports/phase-6d1-x-manual-review-board.md
+_辛 🔮 — Phase 6D-1 complete. X_REVIEW_BOARD=pass._
