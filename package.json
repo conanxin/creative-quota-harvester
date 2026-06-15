@@ -90,6 +90,8 @@
     "validate:daily-digest-human-approval-transition-dry-run": "tsx scripts/validate-daily-digest-human-approval-transition-dry-run.ts",
     "check:daily-digest-human-review-pending": "tsx scripts/daily-digest-human-review-pending.ts",
     "validate:daily-digest-human-review-pending": "tsx scripts/validate-daily-digest-human-review-pending.ts",
+    "check:daily-digest-approval-dry-run": "tsx scripts/daily-digest-approval-dry-run.ts",
+    "validate:daily-digest-approval-dry-run": "tsx scripts/validate-daily-digest-approval-dry-run.ts",
     "promote:daily-digest:controlled": "tsx scripts/daily-digest-controlled-promote.ts",
     "promote:daily-digest:rollback-plan": "tsx scripts/daily-digest-controlled-rollback.ts",
     "check:daily-digest-promote-approval-pack": "tsx scripts/daily-digest-promote-approval-pack.ts",

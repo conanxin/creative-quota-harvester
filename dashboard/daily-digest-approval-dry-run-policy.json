@@ -1,0 +1,79 @@
+{
+  "phase": "5C-2C-C5N4",
+  "mode": "approved_for_future_promote_dry_run_only",
+  "version": "0.1.0",
+  "generated_at": "2026-06-15T11:35:00+08:00",
+  "purpose": "Define the dry-run policy for the approval transition human_review_pending → approved_for_future_promote. This phase ONLY simulates the transition; it does NOT modify the real approval state, does NOT approve, does NOT promote, and does NOT write to production.",
+  "real_approval_allowed": false,
+  "real_transition_allowed": false,
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "collect_allowed": false,
+  "generate_allowed": false,
+  "timer_allowed": false,
+  "model_call_allowed": false,
+  "media_generation_allowed": false,
+  "git_allowed": false,
+  "auto_approval_allowed": false,
+  "allowed_dry_run_transition": {
+    "from": "human_review_pending",
+    "to": "approved_for_future_promote"
+  },
+  "required_confirm_phrase": "DRY RUN DAILY APPROVAL",
+  "required_env_gate": "CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1",
+  "env_gate_evaluated": false,
+  "env_gate_evaluated_note": "this script does not read process.env; env_gate_evaluated is conservatively false; an external orchestrator must verify the env gate before any real approval",
+  "blocked_transitions": [
+    "approved_for_future_promote -> promote",
+    "any automatic approval",
+    "any unattended promote",
+    "any unattended transition"
+  ],
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "model_call",
+    "media_generation",
+    "real_approval",
+    "auto_approval"
+  ],
+  "evidence_required_for_transition": [
+    "previous_state_eq_human_review_pending",
+    "c5n3_history_record_present",
+    "c5n3_human_review_pending_recorded",
+    "approval_pack_reviewed_by_human",
+    "human_confirms_target_files",
+    "human_confirms_backup_retention_acceptable",
+    "human_decision_recorded",
+    "dry_run_only_mode",
+    "real_approval_allowed_false",
+    "production_write_allowed_false",
+    "telegram_send_allowed_false",
+    "confirm_phrase_matched"
+  ],
+  "audit_log_policy": {
+    "audit_log_file": "reports/control-action-audit.jsonl",
+    "modes_emitted": [
+      "daily_digest_approval_dry_run"
+    ],
+    "real_execution_field_reflects_actual": true,
+    "real_approval_field_reflects_actual": true,
+    "production_write_allowed_field_reflects_actual": true,
+    "token_field_present": false,
+    "secret_field_present": false
+  },
+  "ui_indicators": {
+    "show_in_dashboard": true,
+    "panel_label_zh": "批准预演",
+    "panel_label_en": "Approval Dry-run",
+    "primary_warning_zh": "本阶段只做 human_review_pending → approved_for_future_promote 的 dry-run，不真实 approve，不 promote，不写 production，不发送 Telegram。",
+    "primary_warning_en": "This phase only simulates the human_review_pending → approved_for_future_promote transition. It does not actually approve, does not enable promote, does not write production, and does not send Telegram."
+  },
+  "next_phase_proposal": "C5N-5 (proposed only, not implemented): real human-approval transition (would require a separate human-approver runner, env gate verification, and an explicit per-transition audit log entry — all gated by manual initiation, never by any timer)."
+}

@@ -1389,6 +1389,114 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5N4: Approval dry-run endpoint (POST, dry-run only) ---
+  if (pathname === "/api/daily-digest/human-approval/approval-dry-run" && req.method === "POST") {
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const fromState = String(payload?.from_state || "").trim();
+        const toState = String(payload?.to_state || "").trim();
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_approval_dry_run",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "DRY RUN DAILY APPROVAL";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_approval_dry_run",
+            result: "blocked",
+            blocked_reason: "confirm_phrase_mismatch",
+            message: `Dry-run endpoint blocked: phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_approval_dry_run",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        // Re-run the dry-run planner with the provided phrase
+        const { planApprovalDryRun } = require("./daily-digest-approval-dry-run");
+        const result = planApprovalDryRun({ confirmPhrase });
+
+        // Additional from/to check
+        if (fromState && toState) {
+          if (fromState !== "human_review_pending" || toState !== "approved_for_future_promote") {
+            jsonResponse(res, {
+              action_id: "daily_digest_approval_dry_run",
+              result: "blocked",
+              blocked_reason: "invalid_from_or_to_state",
+              message: "Dry-run only supports from=human_review_pending and to=approved_for_future_promote",
+            });
+            writeAuditLogLowRisk({
+              action_id: "daily_digest_approval_dry_run",
+              risk_level: "low",
+              confirm_ok: true,
+              real_execution: false,
+              result: "blocked",
+              reason: "invalid_from_or_to_state",
+            });
+            releaseExecutionLock();
+            return;
+          }
+        }
+
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_approval_dry_run",
+          risk_level: "low",
+          confirm_ok: true,
+          real_execution: false,
+          result: "success",
+          reason: "dry_run_only",
+        });
+        jsonResponse(res, {
+          action_id: "daily_digest_approval_dry_run",
+          result: "success",
+          real_execution: false,
+          real_approval: false,
+          real_promote_allowed: false,
+          production_write_allowed: false,
+          telegram_send_allowed: false,
+          dry_run: result,
+        });
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_approval_dry_run",
+          result: "failed",
+          blocked_reason: "invalid_request",
+          error: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // --- Phase 5C-2C-C5N3: Human review pending record endpoint (POST, state record only) ---
   if (pathname === "/api/daily-digest/human-approval/begin-review" && req.method === "POST") {
     if (!acquireExecutionLock()) {
@@ -2466,6 +2574,22 @@ const server = http.createServer((req, res) => {
         transition_history: config.transition_history || [],
       };
       jsonResponse(res, safe);
+      return;
+    }
+
+    case "/api/daily-digest/approval-dry-run": {
+      // Phase 5C-2C-C5N4: Approval Dry-run (read-only)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const dryRunPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-approval-dry-run.json");
+      if (!fs.existsSync(dryRunPath)) {
+        notFound(res, "approval-dry-run.json not found; run check:daily-digest-approval-dry-run first");
+        return;
+      }
+      const dryRun = JSON.parse(fs.readFileSync(dryRunPath, "utf-8"));
+      jsonResponse(res, dryRun);
       return;
     }
 

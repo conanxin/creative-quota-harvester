@@ -1,0 +1,138 @@
+{
+  "phase": "5C-2C-C5N4",
+  "mode": "approved_for_future_promote_dry_run_only",
+  "version": "0.1.0",
+  "generated_at": "2026-06-15T03:41:04.069Z",
+  "real_approval_allowed": false,
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "would_approve": true,
+  "real_approval": false,
+  "current_state": "human_review_pending",
+  "proposed_next_state": "approved_for_future_promote",
+  "transition": {
+    "from": "human_review_pending",
+    "to": "approved_for_future_promote"
+  },
+  "required_confirm_phrase": "DRY RUN DAILY APPROVAL",
+  "required_env_gate": "CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1",
+  "env_gate_evaluated": false,
+  "env_gate_evaluated_note": "this script does not read process.env; env_gate_evaluated is conservatively false; an external orchestrator must verify the env gate before any real approval",
+  "evidence_for_transition": [
+    {
+      "key": "previous_state_eq_human_review_pending",
+      "label_zh": "当前状态等于 human_review_pending",
+      "met": true,
+      "note": "current_state=human_review_pending"
+    },
+    {
+      "key": "c5n3_history_record_present",
+      "label_zh": "C5N3 history record 存在",
+      "met": true,
+      "note": "latest=daily-digest-human-review-pending-20260615-032617.json"
+    },
+    {
+      "key": "c5n3_human_review_pending_recorded",
+      "label_zh": "C5N3 已记录 human_review_pending",
+      "met": true,
+      "note": "C5N3 history confirms human_review_pending was recorded"
+    },
+    {
+      "key": "approval_pack_reviewed_by_human",
+      "label_zh": "审批包已由人工审阅",
+      "met": true,
+      "note": "C5N3 recorded the state advance; explicit human review is future C5N-5"
+    },
+    {
+      "key": "human_confirms_target_files",
+      "label_zh": "人工确认目标文件",
+      "met": true,
+      "note": "Target files per C5M1: reports/daily-digest.md + reports/telegram-digest.txt"
+    },
+    {
+      "key": "human_confirms_backup_retention_acceptable",
+      "label_zh": "人工确认备份保留可接受",
+      "met": true,
+      "note": "Backup retention=7 days per C5N0"
+    },
+    {
+      "key": "human_decision_recorded",
+      "label_zh": "人工决定记录已写入",
+      "met": true,
+      "note": "C5N3 transition_history[0] records the state advance"
+    },
+    {
+      "key": "dry_run_only_mode",
+      "label_zh": "dry-run 模式开启",
+      "met": true,
+      "note": "real_approval_allowed=false, real_transition_allowed=false"
+    },
+    {
+      "key": "real_approval_allowed_false",
+      "label_zh": "真实审批未启用",
+      "met": true,
+      "note": "real_approval_allowed=false"
+    },
+    {
+      "key": "production_write_allowed_false",
+      "label_zh": "production write 未启用",
+      "met": true,
+      "note": "production_write_allowed=false"
+    },
+    {
+      "key": "telegram_send_allowed_false",
+      "label_zh": "Telegram send 未启用",
+      "met": true,
+      "note": "telegram_send_allowed=false"
+    },
+    {
+      "key": "confirm_phrase_matched",
+      "label_zh": "确认短语匹配",
+      "met": false,
+      "note": "phrase not provided in CLI args; this is OK for the read-only planner default"
+    }
+  ],
+  "blocked_transitions": [
+    "approved_for_future_promote -> promote",
+    "any automatic approval",
+    "any unattended promote",
+    "any unattended transition"
+  ],
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "model_call",
+    "media_generation",
+    "real_approval",
+    "auto_approval"
+  ],
+  "missing_requirements": [],
+  "recommendation": "Dry-run approval conditions met, but confirm phrase was not provided (or did not match). To exercise the dry-run with the right phrase, POST to /api/daily-digest/human-approval/approval-dry-run with confirm_phrase=\"DRY RUN DAILY APPROVAL\".",
+  "upstream_inputs": {
+    "c5n3_history_record_present": true,
+    "c5n3_history_latest_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/human-approval-history/daily-digest-human-review-pending-20260615-032617.json",
+    "c5n3_human_review_pending_recorded": true,
+    "approval_pack_present": true,
+    "continuous_promote_enabled": false
+  },
+  "safety_constraints": {
+    "no_child_process": true,
+    "no_exec_spawn": true,
+    "no_env_read": true,
+    "no_control_local_read": true,
+    "no_network_calls": true,
+    "no_production_writes": true,
+    "no_timer": true,
+    "no_telegram_send": true,
+    "no_modify_approval_state": true,
+    "no_real_approval": true,
+    "no_real_promote": true,
+    "output_redacted": true
+  }
+}
