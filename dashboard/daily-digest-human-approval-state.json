@@ -5,7 +5,7 @@
   "generated_at": "2026-06-15T08:33:00+08:00",
   "purpose": "Define the Human-in-loop approval state model for the continuous controlled promote workflow (Phase 5C-2C-C5N1). This phase ONLY scaffolds the UI, state model, evidence checklist, and audit log wiring. It does NOT enable human approval, does NOT approve, does NOT execute promote, and does NOT write to production.",
   "approval_enabled": false,
-  "approval_state": "not_requested",
+  "approval_state": "human_review_pending",
   "real_promote_allowed": false,
   "production_write_allowed": false,
   "telegram_send_allowed": false,
@@ -90,5 +90,18 @@
     "primary_warning_zh": "本阶段只建立人工审批状态、审批包展示、确认短语展示、审计记录和 UI 状态，不执行 promote，不覆盖 production，不发送 Telegram，不新增 timer。",
     "primary_warning_en": "This phase only scaffolds the human approval state, approval-pack display, confirm-phrase display, audit logging, and UI status. It does not promote, does not write production, does not send Telegram, and does not add any timer."
   },
-  "next_phase_proposal": "C5N-2 (proposed only, not implemented): manual approval UI flow with explicit human record + env gate + audit; would require a separate human-approver runner (e.g. CLI command or web UI) and would not be auto-triggered by any timer."
+  "next_phase_proposal": "C5N-2 (proposed only, not implemented): manual approval UI flow with explicit human record + env gate + audit; would require a separate human-approver runner (e.g. CLI command or web UI) and would not be auto-triggered by any timer.",
+  "transition_history": [
+    {
+      "from": "approval_pack_ready",
+      "to": "human_review_pending",
+      "timestamp_utc": "2026-06-15T03:26:17.355Z",
+      "transition_kind": "state_record_only",
+      "confirm_phrase": "BEGIN DAILY HUMAN REVIEW",
+      "real_approval": false,
+      "real_promote": false,
+      "production_write": false,
+      "telegram_send": false
+    }
+  ]
 }

@@ -2344,3 +2344,74 @@ npm run validate:daily-digest-human-approval-transition-dry-run
 
 ---
 *Runbook v5.24 — Phase 5C-2C-C5N2*
+
+## Phase 5C-2C-C5N3 — Human Review Pending State Record
+
+Phase 5C-2C-C5N3 **actually records** the human review pending state
+transition (approval_pack_ready → human_review_pending). It does NOT
+approve, does NOT promote, does NOT write to production, and does NOT
+send Telegram.
+
+### Configuration: `dashboard/daily-digest-human-review-pending-policy.json`
+
+- `real_approval_allowed`: `false`
+- `real_promote_allowed`: `false`
+- `production_write_allowed`: `false`
+- `telegram_send_allowed`: `false`
+- `transition`: `{from: "approval_pack_ready", to: "human_review_pending", kind: "state_record_only"}`
+- `required_confirm_phrase`: `BEGIN DAILY HUMAN REVIEW`
+- `required_env_gate`: `CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1`
+- `env_gate_evaluated`: `false` (recorder does not read process.env)
+- `blocked_next_transitions`: human_review_pending → approved_for_future_promote, any automatic approval, any unattended transition
+- `blocked_actions`: production_write, telegram_send, timer, collect, generate, git, unattended_promote, model_call, media_generation, auto_approval, skip_evidence, forge_history
+
+### What actually happens on state transition
+
+1. `dashboard/daily-digest-human-approval-state.json` is updated: `approval_state` flips from `approval_pack_ready` to `human_review_pending`; a new entry is appended to `transition_history[]`.
+2. A history record is written to `reports/human-approval-history/daily-digest-human-review-pending-<utc-ts>.{json,md}`.
+3. A state record MD is written to `reports/human-review-pending-state-record.md`.
+4. The audit log is appended with `action_id=daily_digest_human_review_pending_record`.
+
+### What does NOT happen
+
+- No `reports/daily-digest.md` write (md5 verified unchanged)
+- No `reports/telegram-digest.txt` write (md5 verified unchanged)
+- No `dashboard/status.json` write (md5 verified unchanged)
+- No Telegram send
+- No timer / cron / systemd modification
+- No collect, generate, model_call, media_generation
+- No git push/pull except commit/push
+- No build/deploy/release
+
+### Endpoints
+
+- `GET /api/daily-digest/human-review-pending-status` — read-only, returns the current approval state + transition_history (secrets stripped).
+- `POST /api/daily-digest/human-approval/begin-review` — token + confirm-phrase gated; re-runs the recorder. **Never** approves, **never** promotes, **never** writes production, **never** sends Telegram.
+
+### Script entry points
+
+```bash
+# Record the state transition
+npx tsx scripts/daily-digest-human-review-pending.ts --confirm-phrase "BEGIN DAILY HUMAN REVIEW"
+
+# Validate config + recorder safety
+npm run validate:daily-digest-human-review-pending
+```
+
+### Files
+
+- `dashboard/daily-digest-human-review-pending-policy.json` — transition policy
+- `scripts/daily-digest-human-review-pending.ts` — state recorder
+- `scripts/validate-daily-digest-human-review-pending.ts` — 26-check validator
+- `reports/human-approval-history/daily-digest-human-review-pending-<ts>.{json,md}` — history records
+- `reports/human-review-pending-state-record.md` — latest state record MD
+
+### Why this is state-record-only (not approval)
+
+- Even after C5N3, the state is `human_review_pending` — NOT `approved_for_future_promote`.
+- A future phase (C5N-4) would be required to advance to `approved_for_future_promote`, with explicit human review + env gate + audit.
+- The actual production write is still blocked at the `human_review_pending` state; even at `approved_for_future_promote`, the C5M1 controlled promote executor would be invoked separately.
+- The recorder does **not** read `process.env` (per safety contract); `env_gate_evaluated` is conservatively reported as `false`.
+
+---
+*Runbook v5.25 — Phase 5C-2C-C5N3*

@@ -1,0 +1,167 @@
+{
+  "phase": "5C-2C-C5N3",
+  "mode": "human_review_pending_state_record",
+  "version": "0.1.0",
+  "timestamp_utc": "2026-06-15T03:26:17.355Z",
+  "previous_state": "approval_pack_ready",
+  "new_state": "human_review_pending",
+  "transition_executed": true,
+  "transition_kind": "state_record_only",
+  "confirm_phrase_matched": true,
+  "real_approval": false,
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "history_json_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/human-approval-history/daily-digest-human-review-pending-20260615-032617.json",
+  "history_md_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/human-approval-history/daily-digest-human-review-pending-20260615-032617.md",
+  "updated_state_config_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/dashboard/daily-digest-human-approval-state.json",
+  "evidence_snapshot": {
+    "upstream_state": "approval_pack_ready",
+    "pack_ready_evidence_met": 8,
+    "pack_ready_evidence_total": 8,
+    "pack_ready_evidence": [
+      {
+        "key": "latest_sandbox_run_present",
+        "label_zh": "最新沙盒运行存在",
+        "met": true,
+        "evidence_path": "reports/sandbox/daily-digest/latest.json",
+        "note": "run_id=sandbox-2026-06-14-06-50-12"
+      },
+      {
+        "key": "sandbox_output_validation_pass",
+        "label_zh": "沙盒输出校验通过",
+        "met": true,
+        "evidence_path": "dashboard/daily-digest-continuous-promote-workflow-status.json",
+        "note": "stage ready"
+      },
+      {
+        "key": "diff_check_pass",
+        "label_zh": "diff 检查通过",
+        "met": true,
+        "evidence_path": "dashboard/daily-digest-continuous-promote-workflow-status.json",
+        "note": "stage ready"
+      },
+      {
+        "key": "promote_readiness_pass",
+        "label_zh": "推送就绪度通过",
+        "met": true,
+        "evidence_path": "dashboard/daily-digest-continuous-promote-workflow-status.json",
+        "note": "stage ready"
+      },
+      {
+        "key": "promote_gate_pass",
+        "label_zh": "推送门禁通过",
+        "met": true,
+        "evidence_path": "dashboard/daily-digest-continuous-promote-workflow-status.json",
+        "note": "stage ready"
+      },
+      {
+        "key": "shadow_copy_present",
+        "label_zh": "影子备份存在",
+        "met": true,
+        "evidence_path": "reports/sandbox/daily-digest/<run>/reports/promote-shadow/",
+        "note": "promote_gate pass implies shadow copy present"
+      },
+      {
+        "key": "rollback_manifest_present",
+        "label_zh": "回滚清单存在",
+        "met": true,
+        "evidence_path": "reports/sandbox/daily-digest/<run>/reports/promote-shadow/rollback-manifest.json",
+        "note": "rollback manifest present"
+      },
+      {
+        "key": "approval_pack_generated",
+        "label_zh": "审批包已生成",
+        "met": true,
+        "evidence_path": "dashboard/daily-digest-promote-approval-pack.json",
+        "note": "approval pack present for run sandbox-2026-06-14-06-50-12"
+      }
+    ],
+    "approval_pack_present": true,
+    "approval_pack_run_id": "sandbox-2026-06-14-06-50-12"
+  },
+  "review_checklist": [
+    {
+      "key": "approval_pack_reviewed_by_human",
+      "label_zh": "审批包已由人工审阅",
+      "required": true,
+      "status": "pending",
+      "note": "In C5N-4 (future), human reviewer marks this as reviewed"
+    },
+    {
+      "key": "human_confirms_target_files",
+      "label_zh": "人工确认目标文件",
+      "required": true,
+      "status": "pending",
+      "note": "Targets: reports/daily-digest.md + reports/telegram-digest.txt (per C5M1 contract)"
+    },
+    {
+      "key": "human_confirms_backup_retention_acceptable",
+      "label_zh": "人工确认备份保留可接受",
+      "required": true,
+      "status": "pending",
+      "note": "Backup retention = 7 days (per C5N0); human must confirm"
+    },
+    {
+      "key": "human_confirms_no_telegram_send",
+      "label_zh": "人工确认不发送 Telegram",
+      "required": true,
+      "status": "pending",
+      "note": "human_review_pending does NOT trigger Telegram send"
+    },
+    {
+      "key": "human_decision_recorded",
+      "label_zh": "人工决定记录已写入",
+      "required": false,
+      "status": "pending",
+      "note": "Will be recorded when human marks approved/rejected in C5N-4"
+    }
+  ],
+  "blocked_next_transitions": [
+    "human_review_pending -> approved_for_future_promote",
+    "approved_for_future_promote -> promote",
+    "any automatic approval",
+    "any unattended transition"
+  ],
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "model_call",
+    "media_generation",
+    "auto_approval",
+    "skip_evidence",
+    "forge_history"
+  ],
+  "audit_log_entry_summary": {
+    "action_id": "daily_digest_human_review_pending_record",
+    "risk_level": "low",
+    "real_execution": false,
+    "real_transition": true,
+    "real_approval": false,
+    "real_promote_allowed": false,
+    "production_write_allowed": false,
+    "telegram_send_allowed": false,
+    "target_files_unmodified": true,
+    "result": "success"
+  },
+  "next_step": "human_review_pending state recorded. To advance to approved_for_future_promote, a future phase (C5N-4) would be required with explicit human review + env gate + audit. This phase does NOT trigger any production write or Telegram send.",
+  "blocked_reason": null,
+  "safety_constraints": {
+    "no_child_process": true,
+    "no_exec_spawn": true,
+    "no_env_read": true,
+    "no_control_local_read": true,
+    "no_network_calls": true,
+    "no_production_writes": true,
+    "no_timer": true,
+    "no_telegram_send": true,
+    "no_approve": true,
+    "no_skip_evidence": true,
+    "output_redacted": true
+  }
+}

@@ -1,0 +1,30 @@
+PHASE-5C-2C-C5N3-HUMAN-REVIEW-PENDING-STATE-RECORD COMPLETE
+
+状态：PASS (real state transition)
+
+- PREVIOUS_STATE: approval_pack_ready (from C5N1, 8/8 evidence met)
+- NEW_STATE: human_review_pending (written to config + history)
+- TRANSITION_RESULT: transition_executed=true, transition_kind=state_record_only, confirm_phrase_matched=true (BEGIN DAILY HUMAN REVIEW)
+- REAL_APPROVAL_STATUS: real_approval=false (always); real_approval_allowed=false (policy); no approval granted
+- REAL_PROMOTE_STATUS: real_promote_allowed=false (always); production_write_allowed=false (always); no promote triggered; no production paths written
+- PROTECTED_PATH_CHECK (md5 unchanged): daily-digest.md=735002a3969746aefabc57c75b5220e8, telegram-digest.txt=53c2a73d440eb32967d1a9185763a6b3, status.json=d98c500cb52c78f57edd941cdedc7b49
+- API_ENDPOINTS:
+  * GET /api/daily-digest/human-review-pending-status: read-only, returns current state + transition_history (secrets stripped)
+  * POST /api/daily-digest/human-approval/begin-review: token+phrase, re-runs recorder
+- VALIDATION_RESULTS: 13/13 PASS (26/26 review-pending, 28/28 dry-run, 26/26 scaffold, 27/27 workflow, 12/12 dashboard safety, 16/16 control catalog, +C5M1)
+- SMOKE_TEST: server 127.0.0.1:18794; GET 200 OK with approval_state=human_review_pending, transition_history length=1; POST blocked by token check (real token in .control.local); recorder CLI: npx tsx scripts/daily-digest-human-review-pending.ts --confirm-phrase "BEGIN DAILY HUMAN REVIEW" → success, transition_executed=true, history record written
+- AUDIT: 2 entries with action_id=daily_digest_human_review_pending_record, real_execution=false, no-token
+- MODEL_CALL_STATUS: NONE
+- GENERATED_MEDIA_STATUS: NONE
+- LIMITATIONS:
+  (1) State transition IS a real state machine advance (NOT dry-run); approval_state IS changed
+  (2) Recorder does not read process.env; env_gate_evaluated conservatively false
+  (3) POST smoke test blocked by token check (expected behavior); recorder invoked via CLI
+  (4) Even after C5N3, state is human_review_pending (not approved_for_future_promote); C5N-4 needed for that
+  (5) Validator regex precise to avoid false positives on property names
+  (6) Smoke test on port 18794; server cleanly shut down
+- NEXT_PHASE_PROPOSAL: C5N-4 — human_review_pending → approved_for_future_promote (or rejected) via CLI cqa-approve + POST /grant endpoint, all manual-initiation gated, env gate verified
+
+报告路径：
+~/.openclaw/workspace/projects/creative-quota-harvester/reports/human-review-pending-state-record.md
+~/.openclaw/workspace/projects/creative-quota-harvester/reports/human-approval-history/

@@ -1389,6 +1389,106 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5N3: Human review pending record endpoint (POST, state record only) ---
+  if (pathname === "/api/daily-digest/human-approval/begin-review" && req.method === "POST") {
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_human_review_pending_record",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "BEGIN DAILY HUMAN REVIEW";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_human_review_pending_record",
+            result: "blocked",
+            blocked_reason: "confirm_phrase_mismatch",
+            message: `Begin-review endpoint blocked: phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_human_review_pending_record",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        // Record the state transition
+        const { recordHumanReviewPending } = require("./daily-digest-human-review-pending");
+        const result = recordHumanReviewPending({ confirmPhrase });
+
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_human_review_pending_record",
+          risk_level: "low",
+          confirm_ok: result.confirm_phrase_matched,
+          real_execution: result.transition_executed,
+          result: result.transition_executed ? "success" : "blocked",
+          reason: result.blocked_reason || "state_recorded",
+        });
+
+        if (!result.transition_executed) {
+          jsonResponse(res, {
+            action_id: "daily_digest_human_review_pending_record",
+            result: "blocked",
+            blocked_reason: result.blocked_reason || "evidence_or_state_incomplete",
+            record: result,
+          });
+        } else {
+          jsonResponse(res, {
+            action_id: "daily_digest_human_review_pending_record",
+            result: "success",
+            real_execution: false,
+            real_transition: true,
+            real_approval: false,
+            real_promote_allowed: false,
+            production_write_allowed: false,
+            telegram_send_allowed: false,
+            previous_state: result.previous_state,
+            new_state: result.new_state,
+            history_json_path: result.history_json_path,
+            history_md_path: result.history_md_path,
+            audit_summary: result.audit_log_entry_summary,
+            next_step: result.next_step,
+          });
+        }
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_human_review_pending_record",
+          result: "failed",
+          blocked_reason: "invalid_request",
+          error: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // --- Phase 5C-2C-C5N2: Human approval transition dry-run endpoint (POST, dry-run only) ---
   if (pathname === "/api/daily-digest/human-approval/transition-dry-run" && req.method === "POST") {
     if (!acquireExecutionLock()) {
@@ -2335,6 +2435,37 @@ const server = http.createServer((req, res) => {
       }
       const dryRun = JSON.parse(fs.readFileSync(dryRunPath, "utf-8"));
       jsonResponse(res, dryRun);
+      return;
+    }
+
+    case "/api/daily-digest/human-review-pending-status": {
+      // Phase 5C-2C-C5N3: Human Review Pending State (read-only, current state snapshot)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const configPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-human-approval-state.json");
+      if (!fs.existsSync(configPath)) {
+        notFound(res, "human-approval-state.json not found; run check:daily-digest-human-approval-scaffold first");
+        return;
+      }
+      const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+      // Strip sensitive fields
+      const safe = {
+        phase: config.phase,
+        mode: config.mode,
+        approval_state: config.approval_state,
+        approval_enabled: config.approval_enabled,
+        real_promote_allowed: config.real_promote_allowed,
+        production_write_allowed: config.production_write_allowed,
+        telegram_send_allowed: config.telegram_send_allowed,
+        required_confirm_phrase: config.required_confirm_phrase,
+        required_env_gate: config.required_env_gate,
+        approval_transitions: config.approval_transitions,
+        blocked_actions: config.blocked_actions,
+        transition_history: config.transition_history || [],
+      };
+      jsonResponse(res, safe);
       return;
     }
 

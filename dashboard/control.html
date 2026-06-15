@@ -1364,6 +1364,46 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5N3: Human Review Pending State Panel -->
+<div id="human-review-pending-panel" class="human-review-pending-panel" style="display:none;">
+  <div class="section" style="background:#fef9c3;border:1px solid #ca8a04;">
+    <h2>👁️ Human Review Pending / 人工审核待处理</h2>
+    <div id="hrp-status" style="margin-bottom:12px;"></div>
+    <div id="hrp-details" style="margin-top:10px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#dc2626;color:#fff;padding:12px 16px;border-radius:8px;font-size:0.9rem;font-weight:600;">
+      ⚠️ 本阶段真实记录人工审核待处理状态，不真正 approve，不开启 promote，不写 production，不发送 Telegram。
+    </div>
+    <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;">
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ca8a04;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Current state</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="hrp-state">—</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Real approval</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Real promote</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Production write</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Telegram send</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Required confirm phrase:</strong> <code>BEGIN DAILY HUMAN REVIEW</code>
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Blocked next transitions:</strong> human_review_pending → approved_for_future_promote, any automatic approval, any unattended transition
+    </div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5G: Load promote readiness
     function loadPromoteReadiness() {
@@ -1835,6 +1875,44 @@
         .catch(function(e) { console.log('Human approval transition dry-run load failed:', e); });
     }
 
+    // Phase 5C-2C-C5N3: Load human review pending state (read-only)
+    function loadHumanReviewPending() {
+      var base = location.protocol + '//' + location.host;
+      var panel = document.getElementById('human-review-pending-panel');
+      if (panel) panel.style.display = 'block';
+      var statusDiv = document.getElementById('hrp-status');
+      var detailsDiv = document.getElementById('hrp-details');
+      if (!statusDiv) return;
+      fetch(base + '/api/daily-digest/human-review-pending-status')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var sHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:10px;">';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.approval_state || 'unknown') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Current state</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#dc2626;">' + (data.real_promote_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Real promote</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#dc2626;">' + (data.production_write_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Production write</div></div>';
+          var hist = data.transition_history || [];
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + hist.length + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Transitions recorded</div></div>';
+          sHtml += '</div>';
+          statusDiv.innerHTML = sHtml;
+          var stateEl = document.getElementById('hrp-state');
+          if (stateEl) stateEl.innerHTML = (data.approval_state || 'unknown');
+          var dHtml = '<div style="margin-top:10px;font-size:0.85rem;color:#555;">';
+          dHtml += '<div><strong>Mode:</strong> human_review_pending_state_record (Phase 5C-2C-C5N3)</div>';
+          dHtml += '<div><strong>Real approval:</strong> <span style="color:#dc2626;">DISABLED (state record only)</span></div>';
+          dHtml += '<div><strong>Required confirm phrase:</strong> <code>BEGIN DAILY HUMAN REVIEW</code></div>';
+          dHtml += '<div><strong>Required env gate:</strong> <code>' + data.required_env_gate + '</code></div>';
+          if (hist.length > 0) {
+            dHtml += '<div style="margin-top:6px;"><strong>Latest transition:</strong> ';
+            var last = hist[hist.length - 1];
+            dHtml += '<code>' + last.from + '</code> → <code>' + last.to + '</code> at ' + last.timestamp_utc + ' (real_approval=' + last.real_approval + ', production_write=' + last.production_write + ')';
+            dHtml += '</div>';
+          }
+          dHtml += '</div>';
+          if (detailsDiv) detailsDiv.innerHTML = dHtml;
+        })
+        .catch(function(e) { console.log('Human review pending load failed:', e); });
+    }
+
     // Phase 5C-2C-C5N-0: Load continuous promote workflow (read-only)
     function loadContinuousPromoteWorkflow() {
       var base = location.protocol + '//' + location.host;
@@ -1882,6 +1960,7 @@
     loadContinuousPromoteWorkflow();
     loadHumanApproval();
     loadHumanApprovalTransitionDryRun();
+    loadHumanReviewPending();
   </script>
 
   <script>
