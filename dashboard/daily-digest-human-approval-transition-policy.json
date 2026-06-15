@@ -1,0 +1,73 @@
+{
+  "phase": "5C-2C-C5N2",
+  "mode": "approval_transition_dry_run_only",
+  "version": "0.1.0",
+  "generated_at": "2026-06-15T10:42:00+08:00",
+  "purpose": "Define the dry-run policy for a single human-approval state transition (approval_pack_ready → human_review_pending). This phase ONLY simulates the transition; it does NOT modify the real approval state, does NOT approve, does NOT promote, and does NOT write to production.",
+  "real_approval_allowed": false,
+  "real_transition_allowed": false,
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "collect_allowed": false,
+  "generate_allowed": false,
+  "timer_allowed": false,
+  "model_call_allowed": false,
+  "media_generation_allowed": false,
+  "git_allowed": false,
+  "allowed_dry_run_transition": {
+    "from": "approval_pack_ready",
+    "to": "human_review_pending"
+  },
+  "required_confirm_phrase": "DRY RUN DAILY HUMAN APPROVAL TRANSITION",
+  "required_env_gate": "CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1",
+  "env_gate_evaluated": false,
+  "env_gate_evaluated_note": "this script does not read process.env; env_gate_evaluated is conservatively false; an external orchestrator must verify the env gate before any real transition",
+  "blocked_transitions": [
+    "human_review_pending -> approved_for_future_promote",
+    "approved_for_future_promote -> promote",
+    "any automatic approval",
+    "any unattended transition"
+  ],
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "model_call",
+    "media_generation",
+    "real_approval",
+    "auto_approval"
+  ],
+  "evidence_required_for_transition": [
+    "current_state_eq_approval_pack_ready",
+    "all_pack_ready_evidence_met",
+    "dry_run_only_mode",
+    "real_approval_allowed_false",
+    "production_write_allowed_false",
+    "telegram_send_allowed_false",
+    "confirm_phrase_matched"
+  ],
+  "audit_log_policy": {
+    "audit_log_file": "reports/control-action-audit.jsonl",
+    "modes_emitted": [
+      "daily_digest_human_approval_transition_dry_run"
+    ],
+    "real_execution_field_reflects_actual": true,
+    "real_transition_field_reflects_actual": true,
+    "production_write_allowed_field_reflects_actual": true,
+    "token_field_present": false,
+    "secret_field_present": false
+  },
+  "ui_indicators": {
+    "show_in_dashboard": true,
+    "panel_label_zh": "审批状态转换预演",
+    "panel_label_en": "Approval Transition Dry-run",
+    "primary_warning_zh": "本阶段只模拟 approval_pack_ready → human_review_pending 的状态转换，不真正 approve，不开启 promote，不写 production，不发送 Telegram。",
+    "primary_warning_en": "This phase only simulates the approval_pack_ready → human_review_pending transition. It does not actually approve, does not enable promote, does not write production, and does not send Telegram."
+  },
+  "next_phase_proposal": "C5N-3 (proposed only, not implemented): real human-approval transition (would require a separate human-approver runner, env gate verification, and an explicit per-transition audit log entry — all gated by manual initiation, never by any timer)."
+}

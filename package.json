@@ -86,6 +86,8 @@
     "validate:daily-digest-continuous-promote-workflow": "tsx scripts/validate-daily-digest-continuous-promote-workflow.ts",
     "check:daily-digest-human-approval-scaffold": "tsx scripts/daily-digest-human-approval-planner.ts",
     "validate:daily-digest-human-approval-scaffold": "tsx scripts/validate-daily-digest-human-approval-scaffold.ts",
+    "check:daily-digest-human-approval-transition-dry-run": "tsx scripts/daily-digest-human-approval-transition-dry-run.ts",
+    "validate:daily-digest-human-approval-transition-dry-run": "tsx scripts/validate-daily-digest-human-approval-transition-dry-run.ts",
     "promote:daily-digest:controlled": "tsx scripts/daily-digest-controlled-promote.ts",
     "promote:daily-digest:rollback-plan": "tsx scripts/daily-digest-controlled-rollback.ts",
     "check:daily-digest-promote-approval-pack": "tsx scripts/daily-digest-promote-approval-pack.ts",

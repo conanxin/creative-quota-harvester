@@ -1328,6 +1328,42 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5N2: Approval Transition Dry-run Panel -->
+<div id="human-approval-transition-dry-run-panel" class="human-approval-transition-dry-run-panel" style="display:none;">
+  <div class="section" style="background:#fff7ed;border:1px solid #f97316;">
+    <h2>🔁 Approval Transition Dry-run / 审批状态转换预演</h2>
+    <div id="hatdr-status" style="margin-bottom:12px;"></div>
+    <div id="hatdr-details" style="margin-top:10px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#dc2626;color:#fff;padding:12px 16px;border-radius:8px;font-size:0.9rem;font-weight:600;">
+      ⚠️ 本阶段只模拟 approval_pack_ready → human_review_pending 的状态转换，不真正 approve，不开启 promote，不写 production，不发送 Telegram。
+    </div>
+    <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;">
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Would transition?</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="hatdr-would">—</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Real transition (executed)</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">false (always)</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Real approval</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Production write</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Required confirm phrase:</strong> <code>DRY RUN DAILY HUMAN APPROVAL TRANSITION</code>
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Blocked transitions:</strong> human_review_pending → approved_for_future_promote, approved_for_future_promote → promote, any automatic approval, any unattended transition
+    </div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5G: Load promote readiness
     function loadPromoteReadiness() {
@@ -1762,6 +1798,43 @@
         .catch(function(e) { console.log('Human approval load failed:', e); });
     }
 
+    // Phase 5C-2C-C5N2: Load human approval transition dry-run (read-only)
+    function loadHumanApprovalTransitionDryRun() {
+      var base = location.protocol + '//' + location.host;
+      var panel = document.getElementById('human-approval-transition-dry-run-panel');
+      if (panel) panel.style.display = 'block';
+      var statusDiv = document.getElementById('hatdr-status');
+      var detailsDiv = document.getElementById('hatdr-details');
+      if (!statusDiv) return;
+      fetch(base + '/api/daily-digest/human-approval-transition-dry-run')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var sHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:10px;">';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:' + (data.would_transition ? '#16a34a' : '#f59e0b') + ';">' + (data.would_transition ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Would transition</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#dc2626;">false (always)</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Real transition</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.current_state || 'unknown') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Current state</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.proposed_next_state || '—') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Proposed next</div></div>';
+          var ev = data.evidence_for_transition || [];
+          var met = ev.filter(function(e) { return e.met; }).length;
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + met + '/' + ev.length + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Evidence met</div></div>';
+          sHtml += '</div>';
+          statusDiv.innerHTML = sHtml;
+          var wouldEl = document.getElementById('hatdr-would');
+          if (wouldEl) wouldEl.innerHTML = (data.would_transition ? 'YES (dry-run)' : 'NO (blocked)');
+          var dHtml = '<div style="margin-top:10px;font-size:0.85rem;color:#555;">';
+          dHtml += '<div><strong>Mode:</strong> ' + data.mode + ' (Phase 5C-2C-C5N2)</div>';
+          if (data.transition) {
+            dHtml += '<div><strong>Transition:</strong> <code>' + data.transition.from + '</code> → <code>' + data.transition.to + '</code></div>';
+          }
+          dHtml += '<div><strong>Required confirm phrase:</strong> <code>' + data.required_confirm_phrase + '</code></div>';
+          dHtml += '<div><strong>Required env gate:</strong> <code>' + data.required_env_gate + '</code> (env_gate_evaluated: ' + data.env_gate_evaluated + ')</div>';
+          dHtml += '<div style="margin-top:6px;"><strong>Audit recommendation:</strong> ' + data.audit_recommendation + '</div>';
+          dHtml += '</div>';
+          if (detailsDiv) detailsDiv.innerHTML = dHtml;
+        })
+        .catch(function(e) { console.log('Human approval transition dry-run load failed:', e); });
+    }
+
     // Phase 5C-2C-C5N-0: Load continuous promote workflow (read-only)
     function loadContinuousPromoteWorkflow() {
       var base = location.protocol + '//' + location.host;
@@ -1808,6 +1881,7 @@
     loadControlledPromoteStatus();
     loadContinuousPromoteWorkflow();
     loadHumanApproval();
+    loadHumanApprovalTransitionDryRun();
   </script>
 
   <script>

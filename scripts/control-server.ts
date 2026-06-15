@@ -1389,6 +1389,112 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5N2: Human approval transition dry-run endpoint (POST, dry-run only) ---
+  if (pathname === "/api/daily-digest/human-approval/transition-dry-run" && req.method === "POST") {
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const fromState = String(payload?.from_state || "").trim();
+        const toState = String(payload?.to_state || "").trim();
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_human_approval_transition_dry_run",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "DRY RUN DAILY HUMAN APPROVAL TRANSITION";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_human_approval_transition_dry_run",
+            result: "blocked",
+            blocked_reason: "confirm_phrase_mismatch",
+            message: `Dry-run endpoint blocked: phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_human_approval_transition_dry_run",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        // Re-run the dry-run planner with the provided phrase
+        const { planTransitionDryRun } = require("./daily-digest-human-approval-transition-dry-run");
+        const result = planTransitionDryRun({ confirmPhrase });
+
+        // Additional from/to check
+        if (fromState && toState) {
+          if (fromState !== "approval_pack_ready" || toState !== "human_review_pending") {
+            jsonResponse(res, {
+              action_id: "daily_digest_human_approval_transition_dry_run",
+              result: "blocked",
+              blocked_reason: "invalid_from_or_to_state",
+              message: "Dry-run only supports from=approval_pack_ready and to=human_review_pending",
+            });
+            writeAuditLogLowRisk({
+              action_id: "daily_digest_human_approval_transition_dry_run",
+              risk_level: "low",
+              confirm_ok: true,
+              real_execution: false,
+              result: "blocked",
+              reason: "invalid_from_or_to_state",
+            });
+            releaseExecutionLock();
+            return;
+          }
+        }
+
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_human_approval_transition_dry_run",
+          risk_level: "low",
+          confirm_ok: true,
+          real_execution: false,
+          result: "success",
+          reason: "dry_run_only",
+        });
+        jsonResponse(res, {
+          action_id: "daily_digest_human_approval_transition_dry_run",
+          result: "success",
+          real_execution: false,
+          real_transition: false,
+          production_write_allowed: false,
+          dry_run: result,
+        });
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_human_approval_transition_dry_run",
+          result: "failed",
+          blocked_reason: "invalid_request",
+          error: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // --- Phase 5C-2C-C5N1: Human approval plan endpoint (POST, plan-only) ---
   if (pathname === "/api/daily-digest/human-approval/plan" && req.method === "POST") {
     if (!acquireExecutionLock()) {
@@ -2213,6 +2319,22 @@ const server = http.createServer((req, res) => {
       }
       const state = JSON.parse(fs.readFileSync(statePath, "utf-8"));
       jsonResponse(res, state);
+      return;
+    }
+
+    case "/api/daily-digest/human-approval-transition-dry-run": {
+      // Phase 5C-2C-C5N2: Approval Transition Dry-run (read-only)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const dryRunPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-human-approval-transition-dry-run.json");
+      if (!fs.existsSync(dryRunPath)) {
+        notFound(res, "human-approval-transition-dry-run.json not found; run check:daily-digest-human-approval-transition-dry-run first");
+        return;
+      }
+      const dryRun = JSON.parse(fs.readFileSync(dryRunPath, "utf-8"));
+      jsonResponse(res, dryRun);
       return;
     }
 
