@@ -1,0 +1,86 @@
+PHASE-6D X HUMAN REVIEW PACK ✅
+===================================
+STATUS: COMPLETE | VALIDATION: PASS (8/8 validators)
+Generated: 2026-06-15T21:15:00+08:00
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION: 8/8 PASS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+validate:x-human-review-pack    ✅ 302 checks PASS
+validate:publishing-readiness    ✅ 221 checks PASS
+validate:publishing-pack         ✅ PASS
+validate:mainline-recovery       ✅ PASS
+validate:dashboard-control-safety ✅ PASS
+dashboard:control:validate        ✅ PASS
+validate:telegram-sanitizer      ✅ PASS
+validate:project-report-send     ✅ PASS
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REVIEW ITEMS (5/5 unique topics, 5/5 source types)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#1 Flaws in the LLM Automation Narrative  [academic]      Q=96
+#2 stabilityai/stable-video-diffusion     [ai-ecosystem]  Q=94
+#3 SamurAIGPT/Generative-Media-Skills     [code]          Q=97
+#4 River AI                              [dev-community] Q=97 risk=MEDIUM
+   ⚠️ founder-attributed (Igor Babuschkin, River AI CEO)
+#5 The Penitence of Saint Jerome         [culture-art]   Q=96 risk=MEDIUM
+   ⚠️ public-domain artwork (Patinir ca. 1515)
+
+All 5: review_status=ready_for_human_review
+       publish_status=not_published
+       no_platform_publish=true
+       have image_url + gallery_url + review_url
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+KEY METRICS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+total_review_items: 5
+reviewed: 0
+approved_for_manual_publish: 0
+published_externally: 0
+unique_topics: 5/5 = 100%
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BOUNDARY STATUS (all enforced)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Model call:        ❌ NO (post_text verbatim from Phase 6C)
+Media generated:   ❌ NO (image_url verbatim from Phase 6C)
+Platform publish:  ❌ NO (no_platform_publish=true everywhere)
+X API called:      ❌ NO
+baoyu-post-to-x:   ❌ NO
+Telegram digest:   ❌ NO (except final project report)
+Timer:             ❌ NO
+Publish button:    ❌ NO (HTML dashboard unchanged in this regard)
+X API integration: ❌ NO
+Secrets committed: ❌ NO
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MANUAL PUBLISH STEPS (6 steps, human in browser)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open X in browser
+2. Click 'Post' to open composer
+3. Paste X Post Text (exactly as shown)
+4. Upload image from image_url
+5. Review preview, click 'Post'
+6. Mark publish_status=published in future review JSON
+
+DO NOT: baoyu-post-to-x, X API, model call, timer, telegram digest
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OUTPUTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Assets: publishing/review/x/phase-6d/{index.json,README.md,posts/*.md}
+Harvester: dashboard/x-{human-review-pack,manual-publish-checklist}.json
+  + dashboard/mainline-publishing-status.json (updated +6D)
+  + dashboard/index.html (added 6D card)
+  + scripts/validate-x-human-review-pack.ts
+  + reports/{x-human-review-pack,x-manual-publish-checklist,phase-6d-x-human-review-pack}.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEXT PHASE PROPOSAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Phase 6E: After human posts items, update reviewed/approved/published counters.
+  ⚠️ Phase 6D did NOT trigger 6E — review pack is ready only.
+
+Full report: reports/phase-6d-x-human-review-pack.md
+_辛 🔮 — Phase 6D complete. REVIEW_PACK=pass._

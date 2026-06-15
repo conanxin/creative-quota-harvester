@@ -1,0 +1,181 @@
+{
+  "phase": "6D",
+  "mode": "x_manual_publish_checklist",
+  "generated_at": "2026-06-15T21:15:00+08:00",
+  "based_on_phase": "6C",
+  "based_on_assets_commit": "9c153aa",
+  "based_on_harvester_commit": "44a0af8",
+  "no_platform_publish": true,
+  "no_model_call": true,
+  "no_media_generation": true,
+  "no_x_api": true,
+  "no_baoyu_post_to_x": true,
+  "no_external_llm": true,
+  "no_timer": true,
+  "no_telegram_digest": true,
+  "no_auto_publish": true,
+  "purpose": "Pre-publish safety checklist for human reviewer. Every item must be ticked before manual posting.",
+  "global_checklist": [
+    {
+      "id": "GLOBAL-1",
+      "item": "All 5 review items have review_status=ready_for_human_review",
+      "verification": "Check dashboard/x-human-review-pack.json",
+      "status": "met"
+    },
+    {
+      "id": "GLOBAL-2",
+      "item": "All 5 review items have publish_status=not_published",
+      "verification": "Check dashboard/x-human-review-pack.json",
+      "status": "met"
+    },
+    {
+      "id": "GLOBAL-3",
+      "item": "All 5 review items have no_platform_publish=true",
+      "verification": "Check dashboard/x-human-review-pack.json",
+      "status": "met"
+    },
+    {
+      "id": "GLOBAL-4",
+      "item": "No review item has been auto-posted",
+      "verification": "Check published_externally counter in x-human-review-pack.json (should be 0)",
+      "status": "met"
+    },
+    {
+      "id": "GLOBAL-5",
+      "item": "No X API call has been made",
+      "verification": "Search git log for 'api.twitter.com' or 'api.x.com' (should be empty)",
+      "status": "met"
+    },
+    {
+      "id": "GLOBAL-6",
+      "item": "No baoyu-post-to-x call has been made",
+      "verification": "Search git log for 'baoyu-post-to-x' (should be empty in new commits)",
+      "status": "met"
+    },
+    {
+      "id": "GLOBAL-7",
+      "item": "No model call has been made",
+      "verification": "Check model_call_status fields (should all be not_called or absent)",
+      "status": "met"
+    },
+    {
+      "id": "GLOBAL-8",
+      "item": "No media has been generated",
+      "verification": "Check image_url fields (should all be Phase 6B pre-existing URLs)",
+      "status": "met"
+    },
+    {
+      "id": "GLOBAL-9",
+      "item": "No timer has been started",
+      "verification": "No systemd / cron / setTimeout changes in git diff",
+      "status": "met"
+    },
+    {
+      "id": "GLOBAL-10",
+      "item": "No Telegram digest has been sent",
+      "verification": "No telegram-send in recent logs (except the final Phase 6D report)",
+      "status": "met"
+    }
+  ],
+  "per_item_checklist_template": [
+    {
+      "section": "Factual check",
+      "items": [
+        "Verify the topic / title / hashtag in the linked content pack",
+        "Confirm the post's framing matches the content pack",
+        "Verify all hashtags are accurate"
+      ]
+    },
+    {
+      "section": "Tone check",
+      "items": [
+        "Post text is in Chinese with English topic name — confirm acceptable",
+        "Question-style ending is intentionally engaging — confirm acceptable",
+        "No aggressive marketing language"
+      ]
+    },
+    {
+      "section": "Image relevance check",
+      "items": [
+        "Confirm the image is visually appropriate for the topic",
+        "Read the image review note (review_url)",
+        "Confirm the image does NOT misrepresent the topic"
+      ]
+    },
+    {
+      "section": "Link check",
+      "items": [
+        "linked_content_pack URL is the canonical content pack page",
+        "If adding a link in the X post reply, use linked_content_pack URL",
+        "gallery_url points to the same image (no broken alt-text)"
+      ]
+    },
+    {
+      "section": "No sensitive leak check",
+      "items": [
+        "No personal data (PII) of the topic's authors / creators / founders",
+        "No proprietary research / business data beyond public sources",
+        "No internal company strategy",
+        "No screenshots that include private dashboards"
+      ]
+    },
+    {
+      "section": "Final human approval",
+      "items": [
+        "Reviewed by: __________________ (name)",
+        "Date: __________________",
+        "Decision: APPROVE / EDIT / REJECT (circle one)",
+        "Notes: _____________________________________________"
+      ]
+    }
+  ],
+  "manual_publish_steps": [
+    {
+      "step": 1,
+      "action": "Open X (twitter.com) in browser",
+      "automated": false
+    },
+    {
+      "step": 2,
+      "action": "Click 'Post' to open the new post composer",
+      "automated": false
+    },
+    {
+      "step": 3,
+      "action": "Paste the X Post Text block (exactly as shown in the review markdown)",
+      "automated": false
+    },
+    {
+      "step": 4,
+      "action": "Click the image icon and upload the image from image_url (download first if needed)",
+      "automated": false
+    },
+    {
+      "step": 5,
+      "action": "Review the preview, then click 'Post'",
+      "automated": false
+    },
+    {
+      "step": 6,
+      "action": "After posting, mark publish_status: published in a future review JSON. Do NOT change this file.",
+      "automated": false
+    }
+  ],
+  "do_not_do": [
+    "Do NOT call baoyu-post-to-x",
+    "Do NOT call X API",
+    "Do NOT call any model (LLM, image, video, music)",
+    "Do NOT start any timer / cron / systemd unit",
+    "Do NOT send any Telegram digest",
+    "Do NOT modify any .env / .control.local / control-action-audit.jsonl file",
+    "Do NOT overwrite any daily-digest.md / telegram-digest.txt / status.json file"
+  ],
+  "summary": {
+    "total_global_checklist_items": 10,
+    "global_checklist_met": 10,
+    "per_item_checklist_sections": 6,
+    "manual_publish_steps": 6,
+    "do_not_do_count": 7,
+    "ready_for_human_review": true
+  }
+}
