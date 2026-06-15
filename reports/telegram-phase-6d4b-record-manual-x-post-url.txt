@@ -1,0 +1,76 @@
+Phase 6D-4B: Record First Manual X Post URL — Closeout Report
+
+Phase: 6D-4B
+Status: COMPLETE
+Mode: manual_post_logging_record
+Generated: 2026-06-16T06:51:00+08:00
+Based on: Phase 6D-4A (Harvester commit=5e6efa1, Assets commit=c933309)
+
+---
+
+POSTED_MANUALLY: 1/5
+
+Item recorded:
+- item_id: Q-6B-X-brief-brief-mq8c6kp5-u-flaws-i
+- title: Flaws in the LLM Automation Narrative
+- source_type: academic
+- risk_level: low
+- publish_status: manually_posted
+- posted_manually: true
+- x_post_url: https://x.com/porco7161/status/2066654295135822139?s=46
+- posted_at: 2026-06-16T06:51:00+08:00
+- posted_by: @Porco7161
+
+AWAITING_MANUAL_POST: 4/5
+(stabilityai, samuraigpt, river-ai, the-penitence-of-saint-jerome)
+
+---
+
+DUPLICATE_SEND_AUDIT
+
+Two Telegram messages were sent for the same Phase 6D-4B completion:
+- message_id=50694
+- message_id=50695
+
+Classification: harmless_duplicate_report_send=true
+Root cause: model fallback (M2.7) re-ran closeout after M3 timeout.
+Underlying state unchanged between sends. No double post recorded.
+
+---
+
+BOUNDARY: all enforced
+
+no_x_api=true, no_baoyu_post_to_x=true, no_auto_publish=true,
+no_model_call=true, no_media_generation=true, platform_publish_enabled=false,
+manual_only=true, no_timer=true, no_telegram_digest=true (except final report).
+
+post_text / image_url / risk_level: UNCHANGED from 6D-3.
+
+---
+
+FILE_CHANGES
+
+Assets (creative-quota-assets, fc09d1c):
+- publishing/review/x/phase-6d/manual-post-log/index.json
+- publishing/review/x/phase-6d/manual-post-log/pending-posts.md
+- publishing/review/x/phase-6d/manual-post-log/phase-6d-4b-report.md
+
+Harvester (creative-quota-harvester, pending):
+- dashboard/x-manual-post-log.json
+- dashboard/mainline-publishing-status.json
+- scripts/validate-x-manual-post-log-record.ts
+- reports/phase-6d4b-record-manual-x-post-url.md
+- reports/telegram-phase-6d4b-record-manual-x-post-url.txt
+
+---
+
+NEXT_HUMAN_ACTION
+
+Post remaining 4 approved items manually in X UI.
+Then provide item_id + x_post_url + posted_at + posted_by + optional note.
+
+NO_TRIGGERS: does not auto-trigger 6D-4C, 6E, timer, digest, or C5N.
+
+---
+
+辛 🔮 — Phase 6D-4B closeout complete. 1/5 recorded.
