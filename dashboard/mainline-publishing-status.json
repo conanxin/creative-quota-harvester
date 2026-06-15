@@ -362,19 +362,4 @@
       "generate_allowed": false
     }
   }
-    "boundaries_enforced": {
-      "model_call_allowed": false,
-      "media_generation_allowed": false,
-      "x_api_called": false,
-      "baoyu_post_to_x_called": false,
-      "platform_publish_executed": false,
-      "platform_publish_enabled": false,
-      "auto_publish": false,
-      "auto_posted_manually": false,
-      "collect_allowed": false,
-      "digest_send_allowed": false,
-      "timer_allowed": false,
-      "generate_allowed": false
-    }
-  }
 }

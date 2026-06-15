@@ -54,7 +54,7 @@
     "validate:image-prompts": "tsx scripts/validate-image-prompt-enhancement.ts",
     "dashboard:build": "tsx scripts/build-dashboard-status.ts",
     "dashboard:validate": "tsx scripts/validate-dashboard.ts",
-        "dashboard:control:generate": "tsx scripts/generate-control-catalog.ts",
+    "dashboard:control:generate": "tsx scripts/generate-control-catalog.ts",
     "dashboard:control:drift-check": "tsx scripts/validate-control-catalog-generated.ts",
     "dashboard:control:validate": "tsx scripts/validate-control-catalog.ts",
     "dashboard:policy:build": "tsx scripts/build-policy-review.ts",
@@ -138,7 +138,8 @@
     "report:send": "tsx scripts/send-project-report.ts",
     "validate:project-report-send": "tsx scripts/validate-project-report-send.ts",
     "validate:sanitizer-false-positives": "tsx scripts/validate-sanitizer-false-positives.ts",
-    "validate:sanitizer-secret-completeness": "tsx scripts/validate-sanitizer-secret-completeness.ts"
+    "validate:sanitizer-secret-completeness": "tsx scripts/validate-sanitizer-secret-completeness.ts",
+    "validate:x-manual-post-log-record": "tsx scripts/validate-x-manual-post-log-record.ts"
   },
   "keywords": [
     "ai",
