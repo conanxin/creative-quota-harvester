@@ -9,7 +9,7 @@
  *   - assets decision-sheet.md exists
  *   - assets decision-cards/ has 5 markdown files
  *   - total_items=5
- *   - all current_decision=pending
+ *   - all current_decision in {pending, approved} (Phase 6D-3 may have moved to approved)
  *   - no_platform_publish=true
  *   - platform_publish_enabled=false
  *   - no published_externally=true
@@ -99,19 +99,19 @@ if (!exists("dashboard/x-human-review-decision-sheet.json")) {
   try {
     const d = readJson("dashboard/x-human-review-decision-sheet.json");
     addCheck("harvester_decision_sheet_exists", true, "valid JSON");
-    addCheck("harvester_decision_sheet_phase_6D-2", d.phase === "6D-2", "phase=6D-2");
+    addCheck("harvester_decision_sheet_phase_6D-2_or_6D-3", d.phase === "6D-2" || d.phase === "6D-3", "phase in {6D-2, 6D-3}");
     addCheck("harvester_decision_sheet_no_platform_publish", d.no_platform_publish === true, "no_platform_publish=true");
     addCheck("harvester_decision_sheet_platform_publish_disabled", d.platform_publish_enabled === false, "platform_publish_enabled=false");
-    addCheck("harvester_decision_sheet_awaiting_human", d.decision_status === "awaiting_human_input", "decision_status=awaiting_human_input");
+    addCheck("harvester_decision_sheet_decision_status_acceptable", d.decision_status === "awaiting_human_input" || d.decision_status === "human_decisions_recorded_awaiting_manual_post" || d.decision_status === "all_approved", "decision_status in {awaiting_human_input, human_decisions_recorded_awaiting_manual_post, all_approved}");
     addCheck("harvester_decision_sheet_total_5", d.total_items === 5, "total_items=5");
-    addCheck("harvester_decision_sheet_approved_0", d.approved === 0, "approved=0");
+    addCheck("harvester_decision_sheet_approved_in_range", d.approved >= 0 && d.approved <= 5, "approved in 0..5");
     addCheck("harvester_decision_sheet_needs_edit_0", d.needs_edit === 0, "needs_edit=0");
     addCheck("harvester_decision_sheet_rejected_0", d.rejected === 0, "rejected=0");
     addCheck("harvester_decision_sheet_hold_0", d.hold === 0, "hold=0");
     addCheck("harvester_decision_sheet_5_items", Array.isArray(d.items) && d.items.length === 5, "items=5");
 
     const items = d.items || [];
-    const itemsAllPending = items.every((i: any) => i.current_decision === "pending");
+    const itemsAllPending = items.every((i: any) => i.current_decision === "pending" || i.current_decision === "approved");
     const itemsNotPublished = items.every((i: any) => i.current_publish_status === "not_published");
     const itemsHaveAvailableDecisions = items.every((i: any) =>
       Array.isArray(i.available_decisions) &&
@@ -124,7 +124,7 @@ if (!exists("dashboard/x-human-review-decision-sheet.json")) {
       i.id && i.title && i.source_type && i.risk_level &&
       i.post_text && i.image_url && i.gallery_url && i.review_file
     );
-    addCheck("harvester_decision_sheet_all_pending", itemsAllPending, "all current_decision=pending");
+    addCheck("harvester_decision_sheet_all_pending", itemsAllPending, "all current_decision in {pending, approved}");
     addCheck("harvester_decision_sheet_all_not_published", itemsNotPublished, "all current_publish_status=not_published");
     addCheck("harvester_decision_sheet_all_have_options", itemsHaveAvailableDecisions, "all items have 4 available_decisions");
     addCheck("harvester_decision_sheet_all_have_fields", itemsHaveFields, "all items have required fields");
@@ -156,13 +156,13 @@ if (!exists(assetsSheetPath, ASSETS)) {
   try {
     const d = readJson(assetsSheetPath, ASSETS);
     addCheck("assets_decision_sheet_json_exists", true, "valid JSON");
-    addCheck("assets_decision_sheet_phase_6D-2", d.phase === "6D-2", "phase=6D-2");
+    addCheck("assets_decision_sheet_phase_6D-2_or_6D-3", d.phase === "6D-2" || d.phase === "6D-3", "phase in {6D-2, 6D-3}");
     addCheck("assets_decision_sheet_no_platform_publish", d.no_platform_publish === true, "no_platform_publish=true");
     addCheck("assets_decision_sheet_total_5", d.total_items === 5, "total_items=5");
     addCheck("assets_decision_sheet_5_items", Array.isArray(d.items) && d.items.length === 5, "items=5");
     const items = d.items || [];
-    const itemsAllPending = items.every((i: any) => i.current_decision === "pending");
-    addCheck("assets_decision_sheet_all_pending", itemsAllPending, "all current_decision=pending");
+    const itemsAllPending = items.every((i: any) => i.current_decision === "pending" || i.current_decision === "approved");
+    addCheck("assets_decision_sheet_all_pending", itemsAllPending, "all current_decision in {pending, approved}");
   } catch (e: any) {
     addCheck("assets_decision_sheet_json_valid", false, "parse error: " + e.message);
   }

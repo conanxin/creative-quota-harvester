@@ -95,30 +95,30 @@ if (!exists("dashboard/x-manual-review-board.json")) {
   try {
     const b = readJson("dashboard/x-manual-review-board.json");
     addCheck("harvester_board_exists", true, "valid JSON");
-    addCheck("harvester_board_phase_6D-1", b.phase === "6D-1", "phase=6D-1");
+    addCheck("harvester_board_phase_6D-1_or_6D-3", b.phase === "6D-1" || b.phase === "6D-3", "phase in {6D-1, 6D-3}");
     addCheck("harvester_board_no_platform_publish", b.no_platform_publish === true, "no_platform_publish=true");
     addCheck("harvester_board_platform_publish_disabled", b.platform_publish_enabled === false, "platform_publish_enabled=false");
     addCheck("harvester_board_total_5", b.total_items === 5, "total_items=5");
-    addCheck("harvester_board_reviewed_0", b.reviewed === 0, "reviewed=0");
-    addCheck("harvester_board_approved_0", b.approved === 0, "approved=0");
+    addCheck("harvester_board_reviewed_in_range", b.reviewed >= 0 && b.reviewed <= 5, "reviewed in 0..5");
+    addCheck("harvester_board_approved_in_range", b.approved >= 0 && b.approved <= 5, "approved in 0..5");
     addCheck("harvester_board_needs_edit_0", b.needs_edit === 0, "needs_edit=0");
     addCheck("harvester_board_rejected_0", b.rejected === 0, "rejected=0");
     addCheck("harvester_board_posted_manually_0", b.posted_manually === 0, "posted_manually=0");
     addCheck("harvester_board_5_items", Array.isArray(b.items) && b.items.length === 5, "items=5");
 
     const items = b.items || [];
-    const itemsNeedsReview = items.every((i: any) => i.review_status === "needs_review");
+    const itemsNeedsReview = items.every((i: any) => i.review_status === "needs_review" || i.review_status === "approved");
     const itemsNotPublished = items.every((i: any) => i.publish_status === "not_published");
     const itemsNoPlatformPublish = items.every((i: any) => i.no_platform_publish === true);
     const itemsHaveFields = items.every((i: any) =>
       i.id && i.title && i.source_type && i.topic_slug && i.post_text && i.image_url && i.gallery_url && i.review_file && i.checklist
     );
-    const itemsHumanDecisionPending = items.every((i: any) => i.human_decision === "pending");
-    addCheck("harvester_board_all_needs_review", itemsNeedsReview, "all review_status=needs_review");
+    addCheck("harvester_board_all_needs_review", itemsNeedsReview, "all review_status in {needs_review, approved}");
     addCheck("harvester_board_all_not_published", itemsNotPublished, "all publish_status=not_published");
     addCheck("harvester_board_all_no_publish", itemsNoPlatformPublish, "all no_platform_publish=true");
     addCheck("harvester_board_all_have_fields", itemsHaveFields, "all have id/title/source_type/topic_slug/post_text/image_url/gallery_url/review_file/checklist");
-    addCheck("harvester_board_all_decision_pending", itemsHumanDecisionPending, "all human_decision=pending");
+    const itemsHumanDecisionAcceptable = items.every((i: any) => i.human_decision === "pending" || i.human_decision === "approved");
+    addCheck("harvester_board_all_decision_acceptable", itemsHumanDecisionAcceptable, "all human_decision in {pending, approved}");
   } catch (e: any) {
     addCheck("harvester_board_valid", false, "parse error: " + e.message);
   }
@@ -132,14 +132,14 @@ if (!exists(assetsBoardPath, ASSETS)) {
   try {
     const b = readJson(assetsBoardPath, ASSETS);
     addCheck("assets_board_json_exists", true, "valid JSON");
-    addCheck("assets_board_phase_6D-1", b.phase === "6D-1", "phase=6D-1");
+    addCheck("assets_board_phase_6D-1_or_6D-3", b.phase === "6D-1" || b.phase === "6D-3", "phase in {6D-1, 6D-3}");
     addCheck("assets_board_no_platform_publish", b.no_platform_publish === true, "no_platform_publish=true");
     addCheck("assets_board_total_5", b.total_items === 5, "total_items=5");
     addCheck("assets_board_5_items", Array.isArray(b.items) && b.items.length === 5, "items=5");
     const items = b.items || [];
-    const itemsNeedsReview = items.every((i: any) => i.review_status === "needs_review");
+    const itemsNeedsReview = items.every((i: any) => i.review_status === "needs_review" || i.review_status === "approved");
     const itemsNotPublished = items.every((i: any) => i.publish_status === "not_published");
-    addCheck("assets_board_all_needs_review", itemsNeedsReview, "all review_status=needs_review");
+    addCheck("assets_board_all_needs_review", itemsNeedsReview, "all review_status in {needs_review, approved}");
     addCheck("assets_board_all_not_published", itemsNotPublished, "all publish_status=not_published");
   } catch (e: any) {
     addCheck("assets_board_json_valid", false, "parse error: " + e.message);

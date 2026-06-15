@@ -1,0 +1,96 @@
+PHASE-6D-3 HUMAN DECISION UPDATE ✅
+======================================
+STATUS: COMPLETE | DECISION: 5/5 APPROVED
+Generated: 2026-06-15T22:10:00+08:00
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HUMAN DECISION: 5/5 APPROVED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#1 Flaws in the LLM Automation Narrative  [academic]       risk=low    APPROVED
+#2 stabilityai/stable-video-diffusion      [ai-ecosystem]   risk=low    APPROVED
+#3 SamurAIGPT/Generative-Media-Skills     [code]           risk=low    APPROVED
+#4 River AI                               [dev-community]  risk=MEDIUM  APPROVED
+#5 The Penitence of Saint Jerome          [culture-art]    risk=MEDIUM  APPROVED
+
+Risk level preserved (medium stays medium).
+All: publish_status=not_published, posted_manually=false.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COUNTERS (before → after)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+reviewed:        0 → 5
+approved:        0 → 5
+needs_edit:      0 → 0
+rejected:        0 → 0
+hold:            0 → 0
+posted_manually: 0 → 0 (none auto-posted)
+pending:         5 → 0
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION: 10/10 PASS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+validate:x-human-review-decision-sheet ✅
+validate:x-manual-review-board        ✅
+validate:x-human-review-pack          ✅
+validate:publishing-readiness          ✅
+validate:publishing-pack               ✅
+validate:mainline-recovery             ✅
+validate:dashboard-control-safety      ✅
+dashboard:control:validate              ✅
+validate:telegram-sanitizer            ✅
+validate:project-report-send           ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BOUNDARY STATUS (all enforced)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+no_platform_publish:    ✅ true (all items)
+platform_publish_enabled: ✅ false
+no_x_api:                ✅ true
+no_baoyu_post_to_x:      ✅ true
+no_model_call:           ✅ true
+no_media_generation:     ✅ true
+no_auto_publish:         ✅ true
+no_auto_posted_manually: ✅ true
+no_timer:                ✅ true
+no_telegram_digest:      ✅ true (except final report)
+post_text:               ✅ UNCHANGED from 6D-2
+image_url:               ✅ UNCHANGED from 6D-2
+risk_level:              ✅ preserved (medium stays medium)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEW + UPDATED FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Harvester (updated):
+  dashboard/x-human-review-decision-sheet.json
+  dashboard/x-manual-review-board.json
+  dashboard/mainline-publishing-status.json (added 6D-3 section)
+Assets (updated):
+  publishing/review/x/phase-6d/decision-sheet.{json,md}
+  publishing/review/x/phase-6d/review-board.{json,md}
+  publishing/review/x/phase-6d/decision-cards/<5 slugs>.md
+Assets (new):
+  publishing/review/x/phase-6d/approved/index.json
+  publishing/review/x/phase-6d/approved/README.md
+  publishing/review/x/phase-6d/approved/posts/<5 slugs>.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEXT PHASE PROPOSAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Phase 6D-4: Manual Post Logging
+  - Human posts approved items via X UI
+  - Human reports post URL + timestamp
+  - Future log JSON records post URL
+  - posted_manually counter increments
+  ⚠️ Phase 6E (image gen) NOT triggered here
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT DID NOT CHANGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ No post_text rewritten
+❌ No image_url changed
+❌ No model / media / X API / baoyu-post-to-x
+❌ No publish button / auto-publish / auto-posted
+❌ No timer / digest / .env / .control.local
+
+Full report: reports/phase-6d3-human-decision-update.md
+_辛 🔮 — Phase 6D-3 complete. 5/5 APPROVED. Awaiting manual X UI post._
