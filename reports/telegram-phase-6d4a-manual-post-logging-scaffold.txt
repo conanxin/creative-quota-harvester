@@ -1,0 +1,95 @@
+PHASE-6D-4A MANUAL POST LOGGING SCAFFOLD ✅
+================================================
+STATUS: COMPLETE | VALIDATION: PASS (120/120)
+Generated: 2026-06-15T23:00:00+08:00
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COUNTERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+approved_total:               5
+awaiting_manual_post_total:   5
+posted_manually_total:         0
+missing_url_total:             5
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION: 12/12 PASS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+validate:x-manual-post-log            ✅ 120 checks
+validate:x-human-decision-update      ✅ 157 checks
+validate:x-human-review-decision-sheet ✅
+validate:x-manual-review-board        ✅
+validate:x-human-review-pack          ✅
+validate:publishing-readiness          ✅
+validate:publishing-pack               ✅
+validate:mainline-recovery             ✅
+validate:dashboard-control-safety      ✅
+dashboard:control:validate              ✅ 17/17
+validate:telegram-sanitizer            ✅ 43/43
+validate:project-report-send           ✅ 11/11
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MANUAL LOG FILES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Assets (new):
+  publishing/review/x/phase-6d/manual-post-log/index.json
+  publishing/review/x/phase-6d/manual-post-log/README.md
+  publishing/review/x/phase-6d/manual-post-log/pending-posts.md
+  publishing/review/x/phase-6d/manual-post-log/template.md
+Harvester (new):
+  dashboard/x-manual-post-log.json
+Harvester (updated):
+  dashboard/mainline-publishing-status.json (added 6D-4A section)
+  dashboard/index.html (added 6D-4A card)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BOUNDARY STATUS (all enforced)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+no_platform_publish:        ✅ true (all items)
+platform_publish_enabled:    ✅ false
+no_x_api:                    ✅ true
+no_baoyu_post_to_x:          ✅ true
+no_model_call:               ✅ true
+no_media_generation:         ✅ true
+no_auto_publish:             ✅ true
+no_auto_posted_manually:     ✅ true
+manual_only:                 ✅ true
+no_timer:                    ✅ true
+no_telegram_digest:          ✅ true (except final report)
+posted_manually:             ✅ all false (0/5)
+publish_status:              ✅ all not_published
+x_post_url:                  ✅ all null
+posted_at:                   ✅ all null
+posted_by:                   ✅ all null
+post_text:                   ✅ UNCHANGED from 6D-3
+image_url:                   ✅ UNCHANGED from 6D-3
+risk_level:                  ✅ UNCHANGED from 6D-3 (medium stays medium)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEXT_HUMAN_ACTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Human manually posts approved items in X UI, then provides:
+  - item_id
+  - x_post_url (REAL post URL, no placeholders)
+  - posted_at (ISO 8601 timestamp)
+  - posted_by (account handle)
+  - notes (optional)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEXT_PHASE_PROPOSAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Phase 6D-4B: Record Manual X Post URLs
+  - Only after human provides real X post URLs
+  - Phase 6D-4A does NOT trigger 6D-4B
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHAT DID NOT CHANGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ No post_text / image_url / risk_level changes
+❌ No model / media / X API / baoyu-post-to-x
+❌ No auto-publish / auto-posted-manually
+❌ No x_post_url / posted_at / posted_by set
+❌ No publish_status changed
+❌ No timer / digest / .env / .control.local
+
+Full report: reports/phase-6d4a-manual-post-logging-scaffold.md
+_辛 🔮 — Phase 6D-4A complete. SCAFFOLD=ready. 5/5 awaiting manual X UI post._
