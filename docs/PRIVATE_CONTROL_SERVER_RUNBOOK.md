@@ -2594,4 +2594,107 @@ npm run validate:daily-digest-approved-promote-preflight
 - The planner does **not** write to `reports/daily-digest.md`, `reports/telegram-digest.txt`, or `dashboard/status.json` (the production-protected paths).
 
 ---
-*Runbook v5.28 — Phase 5C-2C-C5N6-A*
+## Phase 5C-2C-C5N4A — Approval State Integrity Audit (Read-only)
+
+Phase 5C-2C-C5N4A audits the C5N4 commit to verify that the dry-run boundary held (i.e., C5N4 did NOT modify `dashboard/daily-digest-human-approval-state.json`).
+
+### Configuration: read-only audit (no policy)
+
+C5N4A does not introduce a new policy; it audits existing C5N4 artifacts.
+
+### Endpoints
+
+None. C5N4A is a one-shot audit that produces a markdown report; it does not add new endpoints.
+
+### Script entry points
+
+```bash
+# Audit (read-only)
+npx tsx scripts/validate-daily-digest-approval-dry-run.ts  # confirm C5N4 dry-run boundary
+
+# Read C5N4A audit report
+cat reports/c5n4-approval-state-integrity-audit.md
+```
+
+### Files
+
+- `reports/c5n4-approval-state-integrity-audit.md` — audit report (C5N4A)
+- `reports/telegram-phase-5c2c-c5n4a-approval-state-integrity-audit.txt` — Telegram summary
+
+### Verdict (committed in `959aca6`)
+
+- `DRY_RUN_BOUNDARY_BREACH=false`
+- C5N4 commit `b76dfd4` did NOT modify `dashboard/daily-digest-human-approval-state.json`
+- The current `approval_state=approved_for_future_promote` was set by C5N5 (`bb7333d`)
+- Production paths md5-verified unchanged
+- Promote is blocked at every layer
+
+---
+*Runbook v5.29 — Phase 5C-2C-C5N4A*
+
+## Phase 5C-2C-C5N4B — Freeze & Decision Record
+
+Phase 5C-2C-C5N4B freezes the C5N continuous promote workflow. It does NOT modify approval_state, does NOT rollback, does NOT promote, does NOT add any timer, and does NOT send Telegram. It records the current state, the C5N4 dry-run boundary verification, the C5N5 real-state-transition attribution, and presents three decision options for explicit human review.
+
+### Configuration: `dashboard/daily-digest-c5n-decision-record.json`
+
+- `mode`: `freeze_and_decide`
+- `frozen`: `true`
+- `freeze_scope`: C5N continuous promote workflow (C5N-6-B and beyond)
+- `approval_state`: `approved_for_future_promote` (set by C5N5)
+- `dry_run_boundary_breach`: `false` (verified by C5N4A)
+- `promote_block_status.real_promote_allowed`: `false`
+- `promote_block_status.production_write_allowed`: `false`
+- `promote_block_status.telegram_send_allowed`: `false`
+- `promote_block_status.timer_allowed`: `false`
+- `human_decision_required`: `true`
+- `default_recommendation`: `keep_approved_for_future_promote_but_do_not_promote_yet`
+- `decision_options`:
+  1. `keep_approved_for_future_promote` (low risk)
+  2. `rollback_to_human_review_pending` (medium risk; requires new C5N-5R phase)
+  3. `proceed_to_next_promote_gate` (high risk; requires new C5N-6-B phase)
+
+### Endpoints
+
+- `GET /api/daily-digest/c5n-decision-record` — read-only, returns the freeze record.
+- No POST / no execute / no rollback endpoint is added in this phase.
+
+### Script entry points
+
+```bash
+# Generate freeze record (read-only, writes only the record + MD + telegram text)
+npx tsx scripts/daily-digest-c5n-decision-record.ts
+
+# Validate record + generator safety
+npm run validate:daily-digest-c5n-decision-record
+
+# Run all validations
+npm run check:daily-digest-c5n-decision-record
+npm run validate:daily-digest-c5n-decision-record
+```
+
+### Files
+
+- `dashboard/daily-digest-c5n-decision-record.json` — freeze record (committed; not a runtime lock, but a documentation-level marker)
+- `scripts/daily-digest-c5n-decision-record.ts` — freeze record generator (no env reads, no network, no production writes, no approval state writes)
+- `scripts/validate-daily-digest-c5n-decision-record.ts` — 32-check validator
+- `reports/c5n-freeze-and-decision-record.md` — phase report
+- `reports/telegram-phase-5c2c-c5n4b-freeze-decision-record.txt` — Telegram summary
+
+### Why this is safe
+
+- The generator is **read-only**: it reads the approval state, C5N4A audit report, promote block configs, and production protected paths. It writes only the freeze record, the MD report, and the Telegram text.
+- It does **not** modify `dashboard/daily-digest-human-approval-state.json` (verified by validator: `generator_no_approval_state_write`).
+- It does **not** write to `reports/daily-digest.md`, `reports/telegram-digest.txt`, or `dashboard/status.json` (the production-protected paths).
+- It does **not** call any timer / cron / auto-trigger.
+- The decision options are advisory; the actual decision is reserved for explicit human action.
+- The freeze is a documentation-level marker. The underlying enforcement is the `promote_block_status` flags (all false) and the absence of any timer/cron/auto-trigger.
+
+### Next phase proposals (none implemented)
+
+- **C5N-5R** (not designed): rollback transition (only if user selects `rollback_to_human_review_pending`).
+- **C5N-6-B** (not designed): real promote runner (only if user selects `proceed_to_next_promote_gate`).
+- **C5N-6-A** (DONE, commit `4f1e81b`): approved promote preflight.
+
+---
+*Runbook v5.30 — Phase 5C-2C-C5N4B*

@@ -1,0 +1,170 @@
+{
+  "phase": "5C-2C-C5N4B",
+  "mode": "freeze_and_decide",
+  "version": "0.1.0",
+  "generated_at": "2026-06-15T07:45:17.091Z",
+  "frozen": true,
+  "freeze_scope": "C5N continuous promote workflow (C5N-6-B and beyond) until a human decision is made from decision_options.",
+  "approval_state": "approved_for_future_promote",
+  "approval_state_origin": {
+    "transition_index": 1,
+    "from": "human_review_pending",
+    "to": "approved_for_future_promote",
+    "transitioned_at_utc": "2026-06-15T04:26:02.290Z",
+    "phase": "approved_for_future_promote_state_record",
+    "confirm_phrase": "APPROVE DAILY DIGEST FOR FUTURE PROMOTE",
+    "real_approval": true,
+    "real_promote": false,
+    "production_write": false,
+    "telegram_send": false,
+    "commit": "bb7333d"
+  },
+  "dry_run_boundary_breach": false,
+  "c5n4_audit_reference": {
+    "phase": "5C-2C-C5N4A",
+    "commit": "959aca6",
+    "report_path": "reports/c5n4-approval-state-integrity-audit.md",
+    "verdict": "C5N4 dry-run did not modify dashboard/daily-digest-human-approval-state.json; the visible state transition was performed by C5N5 (bb7333d), not by C5N4 (b76dfd4)."
+  },
+  "promote_block_status": {
+    "real_promote_allowed": false,
+    "production_write_allowed": false,
+    "telegram_send_allowed": false,
+    "timer_allowed": false,
+    "collect_allowed": false,
+    "generate_allowed": false,
+    "model_call_allowed": false,
+    "media_generation_allowed": false,
+    "git_allowed": false,
+    "auto_promote_allowed": true,
+    "approval_enabled": false,
+    "continuous_promote_enabled": false,
+    "execution_enabled": false
+  },
+  "production_protected_paths": {
+    "reports/daily-digest.md": "c43bc22fe5e75e26",
+    "reports/telegram-digest.txt": "de89425d568ecb8d",
+    "dashboard/status.json": "c06441d18e3c859a",
+    "reports/daily/": "absent (correct)"
+  },
+  "decision_options": [
+    {
+      "id": "keep_approved_for_future_promote",
+      "label": "Keep approved_for_future_promote (do not promote yet)",
+      "description": "Maintain the current approval_state. Production paths stay unchanged. No promote is triggered. The state remains a flag for human attention; the actual promote still requires a future phase (C5N-6-B) with a separate confirm phrase and env-var gate.",
+      "expected_risk": "low",
+      "requires_human_action": true,
+      "triggers_modify": false,
+      "triggers_rollback": false,
+      "triggers_promote": false,
+      "next_phase_after_choice": "none (stay frozen until human starts a new phase)"
+    },
+    {
+      "id": "rollback_to_human_review_pending",
+      "label": "Rollback approval_state to human_review_pending",
+      "description": "Add a new phase (e.g., C5N-5R) that transitions the approval state from approved_for_future_promote back to human_review_pending. This would write a new transition_history entry (real_transition=true for the rollback, real_promote=false). Production paths are NOT changed. The rollback phase would require its own confirm phrase.",
+      "expected_risk": "medium",
+      "requires_human_action": true,
+      "triggers_modify": true,
+      "triggers_rollback": true,
+      "triggers_promote": false,
+      "next_phase_after_choice": "C5N-5R (rollback transition, not yet designed; requires new policy + planner + validator + history record)"
+    },
+    {
+      "id": "proceed_to_next_promote_gate",
+      "label": "Proceed to next promote gate (C5N-6-B)",
+      "description": "Design and implement C5N-6-B: a real promote runner that re-verifies the env gate AND uses the future_promote_confirm_phrase ('PROMOTE DAILY DIGEST FROM SANDBOX') BEFORE any production write or Telegram send. Manual-initiation gated; no timer/cron/auto-trigger.",
+      "expected_risk": "high",
+      "requires_human_action": true,
+      "triggers_modify": true,
+      "triggers_rollback": false,
+      "triggers_promote": "future_phase_only (C5N-6-B is NOT a promote itself; it is a gate that requires confirm_phrase and env-var verification before any actual promote)",
+      "next_phase_after_choice": "C5N-6-B (real promote runner, not yet designed)"
+    }
+  ],
+  "default_recommendation": "keep_approved_for_future_promote_but_do_not_promote_yet",
+  "default_recommendation_rationale": "The current state is internally consistent: C5N4 dry-run held its boundary, C5N5 performed the real transition, production paths are unchanged, promote is blocked at every layer. Rolling back the state would discard a valid human decision (the C5N5 transition) without addressing any concrete issue. Proceeding to C5N-6-B without additional design would skip the safety gate. Keeping the current state freezes further C5N phases and gives humans time to decide deliberately.",
+  "human_decision_required": true,
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "auto_promote",
+    "model_call",
+    "media_generation",
+    "approval_state_modification",
+    "rollback",
+    "promote",
+    "send_telegram_digest"
+  ],
+  "audit_log_policy": {
+    "audit_log_path": "reports/control-action-audit.jsonl",
+    "audit_log_in_git": false,
+    "token_field_present": false,
+    "real_execution_field_reflects_actual": true,
+    "real_approval_field_reflects_actual": true,
+    "production_write_allowed_field_reflects_actual": true
+  },
+  "phase_progression_rules": {
+    "no_automatic_transitions": true,
+    "no_timer_transitions": true,
+    "no_cron_transitions": true,
+    "no_unattended_transitions": true,
+    "all_transitions_require_human_initiation": true,
+    "all_transitions_require_confirm_phrase": true
+  },
+  "out_of_scope": [
+    "rollback_approval_state (C5N-5R, not implemented)",
+    "real_promote_runner (C5N-6-B, not implemented)",
+    "auto_collect (C5N-7, not designed)",
+    "auto_telegram_send (C5N-8, not designed)",
+    "model_call (any phase, never allowed in C5N)",
+    "media_generation (any phase, never allowed in C5N)"
+  ],
+  "next_phase_proposals": [
+    {
+      "id": "C5N-5R",
+      "purpose": "Rollback approval_state from approved_for_future_promote to human_review_pending (optional, only if user selects decision_option=rollback_to_human_review_pending)",
+      "design_status": "not_designed",
+      "blocked_until_human_decision": true
+    },
+    {
+      "id": "C5N-6-B",
+      "purpose": "Real promote runner (optional, only if user selects decision_option=proceed_to_next_promote_gate)",
+      "design_status": "not_designed",
+      "blocked_until_human_decision": true
+    },
+    {
+      "id": "C5N-6-A",
+      "purpose": "Approved promote preflight (DONE, commit=4f1e81b); already available for future C5N-6-B to consume",
+      "design_status": "complete"
+    }
+  ],
+  "boundary_compliance": {
+    "model_call_used": false,
+    "media_generated": false,
+    "sandbox_rebuilt": false,
+    "re_promoted": false,
+    "collect_called": false,
+    "digest_send_called": false,
+    "timer_added": false,
+    "generate_called": false,
+    "git_force_pushed": false,
+    "build_called": false,
+    "deploy_called": false,
+    "release_called": false,
+    "production_digest_overwritten": false,
+    "telegram_digest_overwritten": false,
+    "dashboard_status_overwritten": false,
+    "reports_daily_written": false,
+    "systemd_timer_modified": false,
+    "gateway_modified": false,
+    "approval_state_modified": false,
+    "tokens_committed": false,
+    "tokens_printed": false
+  }
+}

@@ -1,0 +1,48 @@
+Phase 5C-2C-C5N4B complete.
+
+**Mode:** freeze_and_decide
+**Phase:** 5C-2C-C5N4B
+**Status:** PASS — freeze recorded, decision options presented, no action taken
+
+**Freeze:**
+- frozen = true
+- freeze_scope = C5N continuous promote workflow (C5N-6-B and beyond)
+- approval_state = approved_for_future_promote
+- dry_run_boundary_breach = false
+- approval_state_origin = human_review_pending → approved_for_future_promote (approved_for_future_promote_state_record, commit=bb7333d)
+
+**Promote block status (all BLOCKED):**
+- real_promote_allowed = false
+- production_write_allowed = false
+- telegram_send_allowed = false
+- timer_allowed = false
+- approval_enabled = false
+- continuous_promote_enabled = false
+
+**Production protected paths (md5-verified unchanged):**
+- reports/daily-digest.md = c43bc22fe5e75e26
+- reports/telegram-digest.txt = de89425d568ecb8d
+- dashboard/status.json = c06441d18e3c859a
+- reports/daily/ = absent (correct)
+
+**Decision options:**
+1. keep_approved_for_future_promote — do not promote yet (low risk)
+2. rollback_to_human_review_pending — new C5N-5R phase required (medium risk)
+3. proceed_to_next_promote_gate — new C5N-6-B phase required (high risk)
+
+**Default recommendation:** keep_approved_for_future_promote_but_do_not_promote_yet
+**Human decision required:** true
+
+**Boundary compliance:** all 20 boundary conditions met (no model call, no media, no sandbox rebuild, no re-promote, no collect/digest/timer/generate, no production overwrite, no approval_state modification, no tokens committed/printed).
+
+**Next phase proposals (none implemented, all blocked_until_human_decision):**
+- C5N-5R: rollback transition (not_designed)
+- C5N-6-B: real promote runner (not_designed)
+- C5N-6-A: approved promote preflight (DONE, commit=4f1e81b)
+
+**Files generated:**
+- dashboard/daily-digest-c5n-decision-record.json
+- reports/c5n-freeze-and-decision-record.md
+- reports/telegram-phase-5c2c-c5n4b-freeze-decision-record.txt (this report)
+
+Full report: projects/creative-quota-harvester/reports/c5n-freeze-and-decision-record.md

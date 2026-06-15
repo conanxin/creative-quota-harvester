@@ -1548,7 +1548,79 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5N4B: Freeze & Decision Record Panel -->
+<div id="c5n-decision-record-panel" class="c5n-decision-record-panel" style="display:none;">
+  <div class="section" style="background:#f5f3ff;border:1px solid #7c3aed;">
+    <h2>❄️ C5N Decision Record / C5N 冻结决策记录</h2>
+    <div style="margin-top:8px;background:#ede9fe;border:1px solid #7c3aed;color:#5b21b6;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      本阶段冻结 C5N continuous promote workflow，提供三个决策选项供人工选择。不修改 approval_state，不 rollback，不 promote，不发送 Telegram digest。
+    </div>
+    <div id="c5n-decision-status" style="margin-top:10px;"></div>
+    <div id="c5n-decision-details" style="margin-top:10px;font-size:0.85rem;"></div>
+  </div>
+</div>
+
   <script>
+    // Phase 5C-2C-C5N4B: Load C5N decision record (read-only, freeze)
+    function loadC5NDecisionRecord() {
+      var base = location.protocol + '//' + location.host;
+      var panel = document.getElementById('c5n-decision-record-panel');
+      if (panel) panel.style.display = 'block';
+      var statusDiv = document.getElementById('c5n-decision-status');
+      var detailsDiv = document.getElementById('c5n-decision-details');
+      if (!statusDiv) return;
+      fetch(base + '/api/daily-digest/c5n-decision-record')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var sHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:10px;">';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid ' + (data.frozen ? '#7c3aed' : '#e0e0e0') + ';text-align:center;"><div style="font-size:1.1rem;font-weight:700;color:#7c3aed;">' + (data.frozen ? 'FROZEN ❄️' : 'ACTIVE') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Freeze status</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.approval_state || 'unknown') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Approval state</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid ' + (data.dry_run_boundary_breach ? '#ef4444' : '#16a34a') + ';text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:' + (data.dry_run_boundary_breach ? '#dc2626' : '#16a34a') + ';">' + (data.dry_run_boundary_breach ? 'BREACH' : 'NONE') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Dry-run breach</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.promote_block_status && data.promote_block_status.real_promote_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Promote allowed</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.promote_block_status && data.promote_block_status.production_write_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Production write</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.promote_block_status && data.promote_block_status.telegram_send_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Telegram send</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.promote_block_status && data.promote_block_status.timer_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Timer allowed</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid ' + (data.human_decision_required ? '#f59e0b' : '#16a34a') + ';text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:' + (data.human_decision_required ? '#f59e0b' : '#16a34a') + ';">' + (data.human_decision_required ? 'REQUIRED' : 'NONE') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Human decision</div></div>';
+          sHtml += '</div>';
+          statusDiv.innerHTML = sHtml;
+          var dHtml = '<div style="margin-top:10px;">';
+          if (data.approval_state_origin) {
+            dHtml += '<div><strong>Approval state origin:</strong> ' + data.approval_state_origin.from + ' → ' + data.approval_state_origin.to + ' (' + data.approval_state_origin.phase + ', commit=' + data.approval_state_origin.commit + ', real_approval=' + data.approval_state_origin.real_approval + ', real_promote=' + data.approval_state_origin.real_promote + ')</div>';
+          }
+          if (data.c5n4_audit_reference) {
+            dHtml += '<div><strong>C5N4 audit:</strong> ' + data.c5n4_audit_reference.verdict + ' (commit=' + data.c5n4_audit_reference.commit + ')</div>';
+          }
+          dHtml += '<div style="margin-top:10px;"><strong>Decision options:</strong></div>';
+          if (data.decision_options && data.decision_options.length > 0) {
+            for (var i = 0; i < data.decision_options.length; i++) {
+              var o = data.decision_options[i];
+              dHtml += '<div style="background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:8px;margin-top:6px;">';
+              dHtml += '<div style="font-weight:700;">' + (i + 1) + '. ' + o.label + ' <span style="color:#7c3aed;">(risk: ' + o.expected_risk + ')</span></div>';
+              dHtml += '<div style="font-size:0.8rem;color:#555;margin-top:4px;">' + o.description + '</div>';
+              dHtml += '<div style="font-size:0.75rem;color:#7f8c8d;margin-top:2px;">next_phase_after_choice: ' + o.next_phase_after_choice + '</div>';
+              dHtml += '</div>';
+            }
+          }
+          dHtml += '<div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">';
+          dHtml += '<strong>Default recommendation:</strong> ' + data.default_recommendation + '<br/>';
+          dHtml += '<span style="font-size:0.8rem;">' + data.default_recommendation_rationale + '</span>';
+          dHtml += '</div>';
+          dHtml += '<div style="margin-top:10px;background:#dcfce7;border:1px solid #16a34a;color:#14532d;padding:10px 14px;border-radius:8px;font-size:0.85rem;">';
+          dHtml += '<strong>Production protected paths (md5-verified unchanged):</strong><br/>';
+          if (data.production_protected_paths) {
+            for (var p in data.production_protected_paths) {
+              if (Object.prototype.hasOwnProperty.call(data.production_protected_paths, p)) {
+                dHtml += '<code>' + p + ' = ' + data.production_protected_paths[p] + '</code><br/>';
+              }
+            }
+          }
+          dHtml += '</div>';
+          dHtml += '</div>';
+          if (detailsDiv) detailsDiv.innerHTML = dHtml;
+        })
+        .catch(function(e) { console.log('C5N decision record load failed:', e); });
+    }
+
     // Phase 5C-2C-C5N6-A: Load approved promote preflight status (read-only)
     function loadApprovedPromotePreflight() {
       var base = location.protocol + '//' + location.host;
@@ -2248,6 +2320,7 @@
     loadApprovalDryRun();
     loadApprovedForFuturePromote();
     loadApprovedPromotePreflight();
+    loadC5NDecisionRecord();
   </script>
 
   <script>

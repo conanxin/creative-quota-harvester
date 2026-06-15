@@ -2884,6 +2884,44 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/c5n-decision-record": {
+      // Phase 5C-2C-C5N4B: Freeze & Decision Record (read-only)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const decisionPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-c5n-decision-record.json");
+      if (!fs.existsSync(decisionPath)) {
+        notFound(res, "c5n-decision-record.json not found; run check:daily-digest-c5n-decision-record first");
+        return;
+      }
+      const decision = JSON.parse(fs.readFileSync(decisionPath, "utf-8"));
+      const safe = {
+        phase: decision.phase,
+        mode: decision.mode,
+        frozen: decision.frozen,
+        freeze_scope: decision.freeze_scope,
+        approval_state: decision.approval_state,
+        approval_state_origin: decision.approval_state_origin,
+        dry_run_boundary_breach: decision.dry_run_boundary_breach,
+        c5n4_audit_reference: decision.c5n4_audit_reference,
+        promote_block_status: decision.promote_block_status,
+        production_protected_paths: decision.production_protected_paths,
+        decision_options: decision.decision_options,
+        default_recommendation: decision.default_recommendation,
+        default_recommendation_rationale: decision.default_recommendation_rationale,
+        human_decision_required: decision.human_decision_required,
+        blocked_actions: decision.blocked_actions,
+        phase_progression_rules: decision.phase_progression_rules,
+        out_of_scope: decision.out_of_scope,
+        next_phase_proposals: decision.next_phase_proposals,
+        boundary_compliance: decision.boundary_compliance,
+        generated_at: decision.generated_at,
+      };
+      jsonResponse(res, safe);
+      return;
+    }
+
     case "/api/daily-digest/promote-gate": {
       // Phase 5C-2C-C5J: Read promote gate (read-only, no execution)
       if (req.method !== "GET") {
@@ -2952,7 +2990,7 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /api/daily-digest/approved-for-future-promote-status, /api/daily-digest/approved-promote-preflight, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /api/daily-digest/approved-for-future-promote-status, /api/daily-digest/approved-promote-preflight, /api/daily-digest/c5n-decision-record, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);
