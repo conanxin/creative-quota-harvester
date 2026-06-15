@@ -1,0 +1,49 @@
+📦 Phase 6B — X/Blog Publishing Pack: COMPLETE
+
+STATUS
+✅ 6B complete · no_platform_publish=true · no_model_call=true
+
+WHAT_CHANGED
+• creative-quota-assets: publishing/{x,blog}/ with posts + drafts
+• creative-quota-harvester: status/queue JSON + dashboard + validator
+
+X_POSTS_INVENTORY
+• Total: 25 posts (all with verbatim text from x-post.zh.md)
+• High priority: 25
+• Ready (post+image): 5
+• Needs asset: 20
+
+BLOG_DRAFTS_INVENTORY
+• Total: 25 drafts (outline_only / draft_ready)
+• Needs expansion: 10
+
+READY_TO_PUBLISH_COUNT
+• X: 5 (awaiting human review)
+• Blog: 15 drafts
+
+NEEDS_ASSET_COUNT: 20 (X posts without generated images)
+
+HIGH_PRIORITY_QUEUE (top 5 X posts):
+• Flaws in the LLM Automation Narrative [academic] — needs_asset
+• Flaws in the LLM Automation Narrative [academic] — ready
+• Flaws in the LLM Automation Narrative [academic] — needs_asset
+• Flaws in the LLM Automation Narrative [academic] — needs_asset
+• Flaws in the LLM Automation Narrative [academic] — needs_asset
+
+GALLERY_LINKS
+• Base: https://conanxin.github.io/creative-quota-assets
+• Flaws in the LLM Automation Narrative (score 96)
+• stabilityai/stable-video-diffusion-img2vid-xt (score 94)
+• SamurAIGPT/Generative-Media-Skills (score 97)
+• The Penitence of Saint Jerome (score 96)
+• River AI (score 97)
+
+MODEL_CALL_STATUS: 0 calls ✅
+GENERATED_MEDIA_STATUS: 0 generated ✅
+PLATFORM_PUBLISH_STATUS: 0 published externally ✅
+TIMER_STATUS: blocked ✅
+TELEGRAM_SEND_STATUS: blocked ✅
+
+NEXT_PHASE_PROPOSAL: Phase 6C (controlled image generation, 20 packs)
+
+VALIDATION: 142+ALL-PASS expected

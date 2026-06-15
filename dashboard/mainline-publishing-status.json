@@ -1,0 +1,59 @@
+{
+  "phase": "6B",
+  "mode": "x_blog_publishing_pack",
+  "generated_at": "2026-06-15T09:17:26.192Z",
+  "assets_repo": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-assets",
+  "gallery_base_url": "https://conanxin.github.io/creative-quota-assets",
+  "no_platform_publish": true,
+  "no_model_call": true,
+  "no_media_generation": true,
+  "no_x_api": true,
+  "no_external_llm": true,
+  "no_timer": true,
+  "no_telegram_digest": true,
+  "stats": {
+    "total_packs": 25,
+    "has_x_post": 25,
+    "has_image_prompt": 25,
+    "has_music_prompt": 25,
+    "has_video_prompt": 25,
+    "has_webpage_outline": 15,
+    "has_facts_enriched": 25,
+    "has_content_summary": 25,
+    "has_generated_image": 5,
+    "ready_to_publish": 5,
+    "needs_asset": 20,
+    "blocked": 0,
+    "high_priority": 25,
+    "medium_priority": 0,
+    "low_priority": 0
+  },
+  "unique_topics": [
+    "stabilityai-stable-video-diffusion-img2vid-xt",
+    "samuraigpt-generative-media-skills",
+    "flaws-in-the-llm-automation-narrative",
+    "river-ai",
+    "the-penitence-of-saint-jerome"
+  ],
+  "source_type_counts": {
+    "ai-ecosystem": 5,
+    "code": 5,
+    "academic": 5,
+    "dev-community": 5,
+    "culture-art": 5
+  },
+  "recommended_next_action": "manual_review_then_publish_via_existing_tools",
+  "boundaries_enforced": {
+    "model_call_allowed": false,
+    "media_generation_allowed": false,
+    "x_api_called": false,
+    "platform_publish_executed": false,
+    "collect_allowed": false,
+    "digest_send_allowed": false,
+    "timer_allowed": false,
+    "generate_allowed": false,
+    "production_digest_overwrite": false,
+    "systemd_change": false,
+    "token_commit": false
+  }
+}
