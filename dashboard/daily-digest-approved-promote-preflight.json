@@ -1,0 +1,211 @@
+{
+  "phase": "5C-2C-C5N6-A",
+  "mode": "approved_promote_preflight_only",
+  "version": "0.1.0",
+  "generated_at": "2026-06-15T05:15:42.652Z",
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "would_promote": true,
+  "real_promote": false,
+  "current_state": "approved_for_future_promote",
+  "required_current_state": "approved_for_future_promote",
+  "required_env_gate": "CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1",
+  "env_gate_evaluated": false,
+  "env_gate_evaluated_note": "this script does not read process.env; env_gate_evaluated is conservatively false; an external orchestrator must verify the env gate before any real promote",
+  "required_confirm_phrase": "PREFLIGHT DAILY PROMOTE",
+  "future_promote_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "evidence_for_promote": [
+    {
+      "key": "current_state_eq_approved_for_future_promote",
+      "label_zh": "当前状态等于 approved_for_future_promote",
+      "met": true,
+      "note": "current_state=approved_for_future_promote"
+    },
+    {
+      "key": "c5n5_approved_history_record_present",
+      "label_zh": "C5N5 approved_for_future_promote history record 存在",
+      "met": true,
+      "note": "latest=daily-digest-approved-for-future-promote-20260615-042602.json"
+    },
+    {
+      "key": "promote_gate_pass",
+      "label_zh": "Promote gate = pass",
+      "met": true,
+      "note": "gate_status=pass"
+    },
+    {
+      "key": "approval_pack_present",
+      "label_zh": "Approval pack 存在",
+      "met": true,
+      "note": "approval pack present"
+    },
+    {
+      "key": "rollback_manifest_present",
+      "label_zh": "Rollback manifest 存在",
+      "met": true,
+      "note": "rollback_supported=true, backup_manifest=/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/promote-backups/daily-digest/sandbox-2026-06-14-06-50-12-20260614-223423/backup-manifest.json"
+    },
+    {
+      "key": "promote_history_present",
+      "label_zh": "Promote history 存在",
+      "met": true,
+      "note": "total=1, latest_run_id=sandbox-2026-06-14-06-50-12"
+    },
+    {
+      "key": "sandbox_latest_run_present",
+      "label_zh": "Sandbox latest run 存在",
+      "met": true,
+      "note": "run_id=sandbox-2026-06-14-06-50-12"
+    },
+    {
+      "key": "sandbox_candidates_exist",
+      "label_zh": "Sandbox candidate outputs 存在",
+      "met": true,
+      "note": "all 2 candidates readable"
+    },
+    {
+      "key": "production_targets_exist",
+      "label_zh": "Production targets 存在",
+      "met": true,
+      "note": "all 2 targets readable"
+    },
+    {
+      "key": "backup_manifest_present",
+      "label_zh": "Backup manifest 存在",
+      "met": true,
+      "note": "2/2 backup files"
+    },
+    {
+      "key": "sandbox_production_hash_diff_computed",
+      "label_zh": "Sandbox vs production hash diff 已计算",
+      "met": true,
+      "note": "2 identical, 0 different"
+    },
+    {
+      "key": "real_promote_disabled",
+      "label_zh": "real_promote_allowed = false",
+      "met": true,
+      "note": "real_promote_allowed=false"
+    },
+    {
+      "key": "production_write_disabled",
+      "label_zh": "production_write_allowed = false",
+      "met": true,
+      "note": "production_write_allowed=false"
+    },
+    {
+      "key": "telegram_send_disabled",
+      "label_zh": "telegram_send_allowed = false",
+      "met": true,
+      "note": "telegram_send_allowed=false"
+    },
+    {
+      "key": "timer_disabled",
+      "label_zh": "timer_allowed = false",
+      "met": true,
+      "note": "timer_allowed=false"
+    }
+  ],
+  "candidate_files": [
+    {
+      "name": "daily-digest.md",
+      "source_label": "sandbox (sandbox-2026-06-14-06-50-12)",
+      "source_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/sandbox/daily-digest/sandbox-2026-06-14-06-50-12/outputs/daily-digest.md",
+      "source_hash_short": "c43bc22fe5e75e26",
+      "target_label": "production",
+      "target_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/daily-digest.md",
+      "target_hash_short": "c43bc22fe5e75e26",
+      "backup_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/promote-backups/daily-digest/sandbox-2026-06-14-06-50-12-20260614-223423/daily-digest.md",
+      "backup_hash_short": "40aeed2d1905e6cf",
+      "hashes_match": true,
+      "diff_detected": false,
+      "would_overwrite": false
+    },
+    {
+      "name": "telegram-digest.txt",
+      "source_label": "sandbox (sandbox-2026-06-14-06-50-12)",
+      "source_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/sandbox/daily-digest/sandbox-2026-06-14-06-50-12/outputs/telegram-digest.txt",
+      "source_hash_short": "de89425d568ecb8d",
+      "target_label": "production",
+      "target_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/telegram-digest.txt",
+      "target_hash_short": "de89425d568ecb8d",
+      "backup_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/promote-backups/daily-digest/sandbox-2026-06-14-06-50-12-20260614-223423/telegram-digest.txt",
+      "backup_hash_short": "cd5e5d3d1005ac36",
+      "hashes_match": true,
+      "diff_detected": false,
+      "would_overwrite": false
+    }
+  ],
+  "production_targets": [
+    {
+      "name": "daily-digest.md",
+      "path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/daily-digest.md",
+      "hash_short": "c43bc22fe5e75e26"
+    },
+    {
+      "name": "telegram-digest.txt",
+      "path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/telegram-digest.txt",
+      "hash_short": "de89425d568ecb8d"
+    }
+  ],
+  "hash_comparison_summary": {
+    "total_files": 2,
+    "identical": 2,
+    "different": 0,
+    "would_promote_anything": false
+  },
+  "backup_status": {
+    "backup_manifest_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/promote-backups/daily-digest/sandbox-2026-06-14-06-50-12-20260614-223423/backup-manifest.json",
+    "backup_manifest_present": true,
+    "backup_files_present": 2,
+    "backup_files_total": 2,
+    "rollback_supported": true,
+    "rollback_command_preview": "cp \"/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/p..."
+  },
+  "rollback_status": {
+    "rollback_manifest_present": true,
+    "restore_command_available": true,
+    "manual_rollback_supported": true
+  },
+  "promote_history_status": {
+    "history_present": true,
+    "history_latest_path": "/home/ubuntu/.openclaw/workspace/projects/creative-quota-harvester/reports/promote-history/daily-digest-promote-sandbox-2026-06-14-06-50-12-20260614-223423.json",
+    "history_total": 1,
+    "latest_promote_run_id": "sandbox-2026-06-14-06-50-12"
+  },
+  "missing_requirements": [],
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "model_call",
+    "media_generation"
+  ],
+  "recommendation": "Preflight PASS. approved_for_future_promote state is set, all evidence met. However, sandbox and production hashes are IDENTICAL for all 2 candidate files. A future promote would be a no-op. No real promote was performed.",
+  "upstream_inputs": {
+    "approval_state_present": true,
+    "c5n5_approved_history_record_present": true,
+    "promote_gate_present": true,
+    "promote_gate_status": "pass",
+    "approval_pack_present": true,
+    "sandbox_latest_run_id": "sandbox-2026-06-14-06-50-12"
+  },
+  "safety_constraints": {
+    "no_child_process": true,
+    "no_exec_spawn": true,
+    "no_env_read": true,
+    "no_control_local_read": true,
+    "no_network_calls": true,
+    "no_production_writes": true,
+    "no_telegram_send": true,
+    "no_real_promote": true,
+    "no_timer": true,
+    "no_sandbox_copy_to_production": true,
+    "output_redacted": true
+  }
+}

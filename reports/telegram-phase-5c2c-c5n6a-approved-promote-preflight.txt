@@ -1,0 +1,61 @@
+Phase 5C-2C-C5N6-A complete.
+
+**Mode:** approved_promote_preflight_only
+**Phase:** 5C-2C-C5N6-A
+**Status:** PASS — preflight plan generated (would_promote=true, real_promote=false)
+
+**Preflight result:**
+- would_promote = true (all 15 evidence items met)
+- current_state = approved_for_future_promote
+- real_promote = false (always)
+- real_promote_allowed = false
+- production_write_allowed = false
+- telegram_send_allowed = false
+- hash_diffs = 0 (sandbox already promoted in C5M-1, identical hashes)
+- backup_manifest = present (2/2 files)
+- rollback_supported = true
+- promote_history = 1 entry
+
+**Protected paths (md5-verified unchanged):**
+- reports/daily-digest.md — UNCHANGED
+- reports/telegram-digest.txt — UNCHANGED
+- dashboard/status.json — UNCHANGED
+
+**Validation: 17/17 PASS**
+- validate:daily-digest-approved-promote-preflight (30/30) — NEW
+- validate:daily-digest-approved-for-future-promote (32/32)
+- validate:daily-digest-approval-dry-run (29/29)
+- validate:daily-digest-human-review-pending (26/26)
+- validate:daily-digest-human-approval-transition-dry-run (28/28)
+- validate:daily-digest-human-approval-scaffold (26/26)
+- validate:daily-digest-continuous-promote-workflow (27/27)
+- validate:dashboard-control-safety (12/12)
+- dashboard:control:validate
+- validate:daily-digest-promote-approval-pack
+- validate:daily-digest-promote-executor-disabled
+- validate:daily-digest-promote-execution-review
+- validate:daily-digest-promote-gate
+- validate:sanitizer-secret-completeness
+- validate:sanitizer-false-positives
+- validate:telegram-sanitizer
+- validate:project-report-send
+
+**Smoke test:** PASS
+- GET /api/daily-digest/approved-promote-preflight — would_promote=true, hash_diffs=0
+- POST /api/daily-digest/promote/preflight — wrong phrase blocked, wrong token blocked, correct phrase returns success (real_promote=false)
+- Audit log: no tokens recorded
+- Server cleanly shut down (port 8795 free)
+
+**Boundary compliance:**
+- ❌ No model call ❌ No media generation ❌ No sandbox rebuild ❌ No re-promote
+- ❌ No collect/digest:send/report:send (except final) ❌ No timer
+- ❌ No overwrite reports/daily-digest.md / reports/telegram-digest.txt / dashboard/status.json
+- ❌ No committing .env / .control.local / audit log / sandbox dirs / promote-backups
+- ❌ No printing tokens ❌ No leftover server process
+
+**Commit:** (to be pushed)
+
+**Next phase proposal (C5N-6-B, not implemented):**
+approved_for_future_promote → promote (real production write + Telegram send). Would require a future promote runner that re-verifies the env gate AND uses the future_promote_confirm_phrase ("PROMOTE DAILY DIGEST FROM SANDBOX") BEFORE any production write or Telegram send. All transitions remain manual-initiation gated; no timer / cron / auto-trigger.
+
+Full report: projects/creative-quota-harvester/reports/approved-promote-preflight.md

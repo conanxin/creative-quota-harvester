@@ -1597,6 +1597,92 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // --- Phase 5C-2C-C5N6-A: Approved promote preflight endpoint (POST, preflight-only, dry-run) ---
+  if (pathname === "/api/daily-digest/promote/preflight" && req.method === "POST") {
+    if (!acquireExecutionLock()) {
+      conflict(res, "Another execution is in progress. Please wait.");
+      return;
+    }
+    let body = "";
+    req.on("data", (chunk) => { body += chunk; });
+    req.on("end", () => {
+      try {
+        const payload = JSON.parse(body);
+        const confirmPhrase = String(payload?.confirm_phrase || "").trim();
+        const token = String(payload?.token || "").trim();
+
+        if (CONTROL_CONFIG.token && token !== CONTROL_CONFIG.token) {
+          forbidden(res, "Invalid or missing control token");
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_approved_promote_preflight",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "invalid_token",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        const expectedPhrase = "PREFLIGHT DAILY PROMOTE";
+        if (confirmPhrase !== expectedPhrase) {
+          jsonResponse(res, {
+            action_id: "daily_digest_approved_promote_preflight",
+            result: "blocked",
+            blocked_reason: "confirm_phrase_mismatch",
+            message: `Preflight endpoint blocked: phrase mismatch. Expected: "${expectedPhrase}"`,
+          });
+          writeAuditLogLowRisk({
+            action_id: "daily_digest_approved_promote_preflight",
+            risk_level: "low",
+            confirm_ok: false,
+            real_execution: false,
+            result: "blocked",
+            reason: "confirm_phrase_mismatch",
+          });
+          releaseExecutionLock();
+          return;
+        }
+
+        // Run the preflight planner
+        const { planApprovedPromotePreflight } = require("./daily-digest-approved-promote-preflight");
+        const result = planApprovedPromotePreflight({ confirmPhrase });
+
+        writeAuditLogLowRisk({
+          action_id: "daily_digest_approved_promote_preflight",
+          risk_level: "low",
+          confirm_ok: true,
+          real_execution: false,
+          result: result.would_promote ? "success" : "blocked",
+          reason: result.missing_requirements.join(",") || "preflight_plan_generated",
+        });
+
+        jsonResponse(res, {
+          action_id: "daily_digest_approved_promote_preflight",
+          result: result.would_promote ? "success" : "blocked",
+          real_execution: false,
+          real_promote: false,
+          production_write_allowed: false,
+          telegram_send_allowed: false,
+          would_promote: result.would_promote,
+          missing_requirements: result.missing_requirements,
+          recommendation: result.recommendation,
+        });
+      } catch (err: any) {
+        jsonResponse(res, {
+          action_id: "daily_digest_approved_promote_preflight",
+          result: "failed",
+          blocked_reason: "invalid_request",
+          error: err.message || "unknown",
+        });
+      } finally {
+        releaseExecutionLock();
+      }
+    });
+    return;
+  }
+
   // --- Phase 5C-2C-C5N3: Human review pending record endpoint (POST, state record only) ---
   if (pathname === "/api/daily-digest/human-approval/begin-review" && req.method === "POST") {
     if (!acquireExecutionLock()) {
@@ -2759,6 +2845,45 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/approved-promote-preflight": {
+      // Phase 5C-2C-C5N6-A: Approved promote preflight (read-only, no execution)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const preflightPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-approved-promote-preflight.json");
+      if (!fs.existsSync(preflightPath)) {
+        notFound(res, "approved-promote-preflight.json not found; run check:daily-digest-approved-promote-preflight first");
+        return;
+      }
+      const preflight = JSON.parse(fs.readFileSync(preflightPath, "utf-8"));
+      const safe = {
+        phase: preflight.phase,
+        mode: preflight.mode,
+        would_promote: preflight.would_promote,
+        real_promote: false,
+        real_promote_allowed: false,
+        production_write_allowed: false,
+        telegram_send_allowed: false,
+        current_state: preflight.current_state,
+        required_current_state: preflight.required_current_state,
+        required_env_gate: preflight.required_env_gate,
+        env_gate_evaluated: preflight.env_gate_evaluated,
+        required_confirm_phrase: preflight.required_confirm_phrase,
+        future_promote_confirm_phrase: preflight.future_promote_confirm_phrase,
+        hash_comparison_summary: preflight.hash_comparison_summary,
+        backup_status: preflight.backup_status,
+        rollback_status: preflight.rollback_status,
+        promote_history_status: preflight.promote_history_status,
+        missing_requirements: preflight.missing_requirements,
+        blocked_actions: preflight.blocked_actions,
+        recommendation: preflight.recommendation,
+        upstream_inputs: preflight.upstream_inputs,
+      };
+      jsonResponse(res, safe);
+      return;
+    }
+
     case "/api/daily-digest/promote-gate": {
       // Phase 5C-2C-C5J: Read promote gate (read-only, no execution)
       if (req.method !== "GET") {
@@ -2827,7 +2952,7 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /api/daily-digest/approved-for-future-promote-status, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /api/daily-digest/approved-for-future-promote-status, /api/daily-digest/approved-promote-preflight, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);
@@ -2835,6 +2960,7 @@ server.listen(PORT, HOST, () => {
   console.log(`[control-server] POST /api/daily-digest/sandbox/create (confirmed sandbox directory creation, rate limited, execution locked)`);
 console.log(`[control-server] POST /api/daily-digest/sandbox/build-pilot (confirmed pilot sandbox build execution, rate limited, execution locked)`);
   console.log(`[control-server] POST /api/daily-digest/human-approval/approve-for-future-promote (state-record only, NOT enabled for production write or Telegram, rate limited, execution locked)`);
+  console.log(`[control-server] POST /api/daily-digest/promote/preflight (preflight-only, does NOT promote, does NOT write production, rate limited, execution locked)`);
   console.log(`[control-server] Actions enabled: ${CONTROL_CONFIG.actionsEnabled}, Token configured: ${!!CONTROL_CONFIG.token}`);
 });
 

@@ -1486,7 +1486,124 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5N6-A: Approved Promote Preflight Panel -->
+<div id="approved-promote-preflight-panel" class="approved-promote-preflight-panel" style="display:none;">
+  <div class="section" style="background:#f0f9ff;border:1px solid #0284c7;">
+    <h2>🛫 Approved Promote Preflight / 已批准推送预检</h2>
+    <div id="preflight-status" style="margin-bottom:12px;"></div>
+    <div id="preflight-details" style="margin-top:10px;font-size:0.85rem;"></div>
+    <div style="margin-top:10px;background:#0284c7;color:#fff;padding:12px 16px;border-radius:8px;font-size:0.9rem;font-weight:600;">
+      ℹ️ 本阶段只在 approved_for_future_promote 状态下做 promote 的 preflight / dry-run，比较 sandbox candidate 与 production 的 hash、检查 backup/rollback 可用性、生成 would-promote plan。不真正 promote，不写 production，不发送 Telegram，不新增 timer。
+    </div>
+    <div style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;">
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Current state</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="preflight-current-state">—</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Would promote</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="preflight-would-promote">—</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Real promote</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Production write</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #ef4444;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Telegram send</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#dc2626;">DISABLED</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Hash diff count</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="preflight-diff-count">—</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Backup available</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="preflight-backup-ok">—</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Rollback supported</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="preflight-rollback-ok">—</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px;border:1px solid #16a34a;">
+        <div style="font-size:0.75rem;color:#7f8c8d;">Promote history</div>
+        <div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;" id="preflight-promote-history-count">—</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Required confirm phrase:</strong> <code>PREFLIGHT DAILY PROMOTE</code>
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Future promote confirm phrase:</strong> <code>PROMOTE DAILY DIGEST FROM SANDBOX</code> (only in a future C5N-6-B phase, not implemented)
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Blocked actions:</strong> production_write, telegram_send, timer, collect, generate, git, unattended_promote, model_call, media_generation
+    </div>
+    <div style="margin-top:10px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      <strong>Recommendation:</strong> <span id="preflight-recommendation">Loading...</span>
+    </div>
+  </div>
+</div>
+
   <script>
+    // Phase 5C-2C-C5N6-A: Load approved promote preflight status (read-only)
+    function loadApprovedPromotePreflight() {
+      var base = location.protocol + '//' + location.host;
+      var panel = document.getElementById('approved-promote-preflight-panel');
+      if (panel) panel.style.display = 'block';
+      var statusDiv = document.getElementById('preflight-status');
+      var detailsDiv = document.getElementById('preflight-details');
+      if (!statusDiv) return;
+      fetch(base + '/api/daily-digest/approved-promote-preflight')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var sHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:10px;">';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:' + (data.would_promote ? '#16a34a' : '#ef4444') + ';">' + (data.would_promote ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Would promote</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.current_state || 'unknown') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Current state</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.hash_comparison_summary?.different || 0) + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Hash diffs</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.backup_status?.backup_files_present || 0) + '/' + (data.backup_status?.backup_files_total || 0) + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Backup files</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:1rem;font-weight:700;color:#dc2626;">' + (data.rollback_status?.restore_command_available ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Rollback supported</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.promote_history_status?.history_total || 0) + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Promote history entries</div></div>';
+          sHtml += '</div>';
+          statusDiv.innerHTML = sHtml;
+          var stateEl = document.getElementById('preflight-current-state');
+          if (stateEl) stateEl.innerHTML = (data.current_state || 'unknown');
+          var wouldPromoteEl = document.getElementById('preflight-would-promote');
+          if (wouldPromoteEl) wouldPromoteEl.innerHTML = (data.would_promote ? 'YES (all evidence met)' : 'NO (missing requirements)');
+          var diffEl = document.getElementById('preflight-diff-count');
+          if (diffEl) diffEl.innerHTML = String(data.hash_comparison_summary?.different || 0) + ' of ' + String(data.hash_comparison_summary?.total_files || 0) + ' files';
+          var backupOkEl = document.getElementById('preflight-backup-ok');
+          if (backupOkEl) backupOkEl.innerHTML = (data.backup_status?.backup_manifest_present ? 'YES' : 'NO');
+          var rollbackOkEl = document.getElementById('preflight-rollback-ok');
+          if (rollbackOkEl) rollbackOkEl.innerHTML = (data.rollback_status?.restore_command_available ? 'YES' : 'NO');
+          var historyEl = document.getElementById('preflight-promote-history-count');
+          if (historyEl) historyEl.innerHTML = String(data.promote_history_status?.history_total || 0);
+          var recEl = document.getElementById('preflight-recommendation');
+          if (recEl) recEl.innerHTML = (data.recommendation || 'No recommendation available.');
+          var dHtml = '<div style="margin-top:10px;font-size:0.85rem;color:#555;">';
+          dHtml += '<div><strong>Mode:</strong> ' + data.mode + ' (Phase ' + data.phase + ')</div>';
+          dHtml += '<div><strong>Real promote:</strong> <span style="color:#dc2626;">' + data.real_promote + ' (always false)</span></div>';
+          dHtml += '<div><strong>Real promote allowed:</strong> <span style="color:#dc2626;">' + data.real_promote_allowed + '</span></div>';
+          dHtml += '<div><strong>Production write allowed:</strong> <span style="color:#dc2626;">' + data.production_write_allowed + '</span></div>';
+          dHtml += '<div><strong>Telegram send allowed:</strong> <span style="color:#dc2626;">' + data.telegram_send_allowed + '</span></div>';
+          dHtml += '<div><strong>Env gate:</strong> <code>' + data.required_env_gate + '</code> (evaluated: ' + data.env_gate_evaluated + ')</div>';
+          dHtml += '<div><strong>Required confirm phrase:</strong> <code>' + data.required_confirm_phrase + '</code></div>';
+          dHtml += '<div><strong>Future promote confirm phrase:</strong> <code>' + data.future_promote_confirm_phrase + '</code></div>';
+          if (data.missing_requirements && data.missing_requirements.length > 0) {
+            dHtml += '<div style="margin-top:6px;color:#dc2626;"><strong>Missing requirements:</strong></div>';
+            for (var i = 0; i < data.missing_requirements.length; i++) {
+              dHtml += '<div style="color:#dc2626;">- ' + data.missing_requirements[i] + '</div>';
+            }
+          }
+          dHtml += '</div>';
+          if (detailsDiv) detailsDiv.innerHTML = dHtml;
+        })
+        .catch(function(e) { console.log('Approved promote preflight load failed:', e); });
+    }
+
     // Phase 5C-2C-C5G: Load promote readiness
     function loadPromoteReadiness() {
       var base = location.protocol + '//' + location.host;
@@ -2130,6 +2247,7 @@
     loadHumanReviewPending();
     loadApprovalDryRun();
     loadApprovedForFuturePromote();
+    loadApprovedPromotePreflight();
   </script>
 
   <script>

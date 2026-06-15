@@ -1,0 +1,78 @@
+{
+  "phase": "5C-2C-C5N6-A",
+  "mode": "approved_promote_preflight_only",
+  "version": "0.1.0",
+  "generated_at": "2026-06-15T13:12:00+08:00",
+  "purpose": "Preflight / dry-run for a future promote from the approved_for_future_promote state. This phase ONLY simulates the promote by comparing sandbox candidates with production targets, computing hash diffs, checking backup/rollback availability, and producing a would_promote plan. It does NOT promote, does NOT write production, does NOT send Telegram, and does NOT add any timer.",
+  "real_promote_allowed": false,
+  "production_write_allowed": false,
+  "telegram_send_allowed": false,
+  "collect_allowed": false,
+  "generate_allowed": false,
+  "timer_allowed": false,
+  "model_call_allowed": false,
+  "media_generation_allowed": false,
+  "git_allowed": false,
+  "auto_promote_allowed": false,
+  "required_current_state": "approved_for_future_promote",
+  "required_env_gate": "CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1",
+  "env_gate_evaluated": false,
+  "env_gate_evaluated_note": "this script does not read process.env; env_gate_evaluated is conservatively false; an external orchestrator must verify the env gate before any real promote",
+  "required_confirm_phrase": "PREFLIGHT DAILY PROMOTE",
+  "future_promote_confirm_phrase": "PROMOTE DAILY DIGEST FROM SANDBOX",
+  "candidate_targets": [
+    "reports/daily-digest.md",
+    "reports/telegram-digest.txt"
+  ],
+  "candidate_source_root": "reports/sandbox/daily-digest",
+  "backup_root": "reports/promote-backups/daily-digest",
+  "promote_history_dir": "reports/promote-history",
+  "blocked_actions": [
+    "production_write",
+    "telegram_send",
+    "timer",
+    "collect",
+    "generate",
+    "git",
+    "unattended_promote",
+    "model_call",
+    "media_generation"
+  ],
+  "evidence_required_for_promote": [
+    "current_state_eq_approved_for_future_promote",
+    "c5n5_approved_history_record_present",
+    "promote_gate_pass",
+    "approval_pack_present",
+    "rollback_manifest_present",
+    "promote_history_present",
+    "sandbox_latest_run_present",
+    "sandbox_candidates_exist",
+    "production_targets_exist",
+    "backup_manifest_present",
+    "sandbox_production_hash_diff_computed",
+    "real_promote_disabled",
+    "production_write_disabled",
+    "telegram_send_disabled",
+    "timer_disabled"
+  ],
+  "audit_log_policy": {
+    "audit_log_file": "reports/control-action-audit.jsonl",
+    "modes_emitted": [
+      "daily_digest_approved_promote_preflight"
+    ],
+    "real_execution_field_reflects_actual": false,
+    "real_promote_field_reflects_actual": false,
+    "production_write_allowed_field_reflects_actual": false,
+    "telegram_send_allowed_field_reflects_actual": false,
+    "token_field_present": false,
+    "secret_field_present": false
+  },
+  "ui_indicators": {
+    "show_in_dashboard": true,
+    "panel_label_zh": "已批准推送预检",
+    "panel_label_en": "Approved Promote Preflight",
+    "primary_warning_zh": "本阶段只做 approved_for_future_promote → promote 的 preflight / dry-run，不真正 promote，不写 production，不发送 Telegram，不新增 timer。",
+    "primary_warning_en": "This phase only simulates a future promote from the approved_for_future_promote state. It does not actually promote, does not write production, does not send Telegram, and does not add any timer."
+  },
+  "next_phase_proposal": "C5N-6-B (proposed only, not implemented): would require an explicit future promote runner that re-verifies the env gate (CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1) AND requires the future_promote_confirm_phrase (PROMOTE DAILY DIGEST FROM SANDBOX) BEFORE any production write or Telegram send. Even at approved_for_future_promote in this phase, the actual production write is blocked; the runner would have to re-verify the env gate + confirm phrase before any write."
+}

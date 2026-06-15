@@ -2528,3 +2528,70 @@ npm run validate:daily-digest-approved-for-future-promote
 
 ---
 *Runbook v5.27 — Phase 5C-2C-C5N5*
+
+## Phase 5C-2C-C5N6-A — Approved Promote Execution Preflight (Preflight-only, Dry-run)
+
+Phase 5C-2C-C5N6-A performs a **preflight / dry-run** of a future promote from the
+`approved_for_future_promote` state. It **simulates** the promote by comparing
+sandbox candidate files with production targets, computing hash diffs, checking
+backup/rollback availability, and producing a `would_promote` plan. It does **NOT**
+promote, does **NOT** write production, does **NOT** send Telegram, and does **NOT**
+add any timer.
+
+### Configuration: `dashboard/daily-digest-approved-promote-preflight-policy.json`
+
+- `mode`: `approved_promote_preflight_only`
+- `real_promote_allowed`: `false`
+- `production_write_allowed`: `false`
+- `telegram_send_allowed`: `false`
+- `required_current_state`: `approved_for_future_promote`
+- `required_confirm_phrase`: `PREFLIGHT DAILY PROMOTE`
+- `future_promote_confirm_phrase`: `PROMOTE DAILY DIGEST FROM SANDBOX` (for a future C5N-6-B phase)
+- `required_env_gate`: `CQA_DAILY_DIGEST_CONTINUOUS_PROMOTE=1`
+- `env_gate_evaluated`: `false` (executor does not read process.env)
+- `blocked_actions`: production_write, telegram_send, timer, collect, generate, git, unattended_promote, model_call, media_generation
+
+### Endpoints
+
+- `GET /api/daily-digest/approved-promote-preflight` — read-only, returns preflight result (would_promote, hash comparison, backup/rollback status, recommendation).
+- `POST /api/daily-digest/promote/preflight` — token + confirm-phrase gated; runs the preflight planner and regenerates the preflight JSON. **Never** promotes, **never** writes production, **never** sends Telegram.
+
+### Script entry points
+
+```bash
+# Generate preflight plan (reads all upstream data, no side effects)
+npx tsx scripts/daily-digest-approved-promote-preflight.ts
+
+# Validate config + planner safety
+npm run validate:daily-digest-approved-promote-preflight
+
+# Run all validations
+npm run check:daily-digest-approved-promote-preflight
+npm run validate:daily-digest-approved-promote-preflight
+```
+
+### Files
+
+- `dashboard/daily-digest-approved-promote-preflight-policy.json` — policy
+- `scripts/daily-digest-approved-promote-preflight.ts` — preflight planner (no env reads, no network, no production writes, no Telegram send)
+- `scripts/validate-daily-digest-approved-promote-preflight.ts` — 30-check validator
+- `dashboard/daily-digest-approved-promote-preflight.json` — preflight result (read-only, updated by planner)
+- `reports/approved-promote-preflight.md` — phase closeout report
+- `reports/human-approval-history/daily-digest-approved-for-future-promote-<ts>.json` — C5N5 history (upstream input)
+- `reports/promote-history/` — promote history (upstream input)
+- `reports/promote-backups/` — backup manifests (upstream input)
+- `reports/sandbox/daily-digest/` — sandbox candidates (upstream input)
+
+### Why this is safe
+
+- The planner is **read-only**: it reads the approval state, sandbox outputs, production targets, backup manifests, and promote history, but it only writes to the preflight JSON and MD report.
+- It computes **hash comparisons** between sandbox candidates and production targets using SHA-256.
+- It checks **backup/rollback availability** without executing any rollback.
+- It reports `would_promote=true` only when **all** evidence requirements are met (current state, gate pass, approval pack, sandbox candidates, backup manifest, rollback supported, etc.).
+- Even if `would_promote=true`, the `real_promote` flag is always `false`.
+- The `future_promote_confirm_phrase` (`PROMOTE DAILY DIGEST FROM SANDBOX`) is reserved for a future C5N-6-B phase; this phase does not use it.
+- The planner does **not** read `process.env` (per safety contract); `env_gate_evaluated` is conservatively reported as `false`.
+- The planner does **not** write to `reports/daily-digest.md`, `reports/telegram-digest.txt`, or `dashboard/status.json` (the production-protected paths).
+
+---
+*Runbook v5.28 — Phase 5C-2C-C5N6-A*
