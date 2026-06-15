@@ -2922,6 +2922,47 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/c5n-human-decision": {
+      // Phase 5C-2C-C5N4C: Human Decision Record (read-only)
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const humanDecisionPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-c5n-human-decision.json");
+      if (!fs.existsSync(humanDecisionPath)) {
+        notFound(res, "c5n-human-decision.json not found; run check:daily-digest-c5n-human-decision first");
+        return;
+      }
+      const humanDecision = JSON.parse(fs.readFileSync(humanDecisionPath, "utf-8"));
+      const safe = {
+        phase: humanDecision.phase,
+        mode: humanDecision.mode,
+        decision: humanDecision.decision,
+        decision_label: humanDecision.decision_label,
+        decision_rationale: humanDecision.decision_rationale,
+        approval_state: humanDecision.approval_state,
+        c5n_frozen: humanDecision.c5n_frozen,
+        real_promote_allowed: humanDecision.real_promote_allowed,
+        production_write_allowed: humanDecision.production_write_allowed,
+        telegram_send_allowed: humanDecision.telegram_send_allowed,
+        timer_allowed: humanDecision.timer_allowed,
+        rollback_requested: humanDecision.rollback_requested,
+        proceed_to_promote_requested: humanDecision.proceed_to_promote_requested,
+        human_decision_required: humanDecision.human_decision_required,
+        next_allowed_phase: humanDecision.next_allowed_phase,
+        c5n4b_decision_record_reference: humanDecision.c5n4b_decision_record_reference,
+        c5n4a_audit_reference: humanDecision.c5n4a_audit_reference,
+        c5n5_transition_reference: humanDecision.c5n5_transition_reference,
+        production_protected_paths: humanDecision.production_protected_paths,
+        blocked_actions: humanDecision.blocked_actions,
+        next_phase_proposals: humanDecision.next_phase_proposals,
+        boundary_compliance: humanDecision.boundary_compliance,
+        generated_at: humanDecision.generated_at,
+      };
+      jsonResponse(res, safe);
+      return;
+    }
+
     case "/api/daily-digest/promote-gate": {
       // Phase 5C-2C-C5J: Read promote gate (read-only, no execution)
       if (req.method !== "GET") {
@@ -2990,7 +3031,7 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /api/daily-digest/approved-for-future-promote-status, /api/daily-digest/approved-promote-preflight, /api/daily-digest/c5n-decision-record, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /api/daily-digest/approved-for-future-promote-status, /api/daily-digest/approved-promote-preflight, /api/daily-digest/c5n-decision-record, /api/daily-digest/c5n-human-decision, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);

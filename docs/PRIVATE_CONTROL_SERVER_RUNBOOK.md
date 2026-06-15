@@ -2697,4 +2697,60 @@ npm run validate:daily-digest-c5n-decision-record
 - **C5N-6-A** (DONE, commit `4f1e81b`): approved promote preflight.
 
 ---
-*Runbook v5.30 — Phase 5C-2C-C5N4B*
+## Phase 5C-2C-C5N4C — Human Decision Record (Keep Approved, Frozen)
+
+Phase 5C-2C-C5N4C records the human decision: keep the `approved_for_future_promote` state, remain frozen, do not promote, do not rollback. This phase does NOT modify `approval_state`, does NOT rollback, does NOT promote, does NOT enable any timer, collect, generate, git, or model-call.
+
+### Configuration: `dashboard/daily-digest-c5n-human-decision.json`
+
+- `mode`: `human_decision_record`
+- `decision`: `keep_approved_for_future_promote_but_do_not_promote_yet`
+- `approval_state`: `approved_for_future_promote`
+- `c5n_frozen`: `true`
+- `real_promote_allowed`: `false`
+- `production_write_allowed`: `false`
+- `telegram_send_allowed`: `false`
+- `timer_allowed`: `false`
+- `rollback_requested`: `false`
+- `proceed_to_promote_requested`: `false`
+- `human_decision_required`: `false`
+- `next_allowed_phase`: `C5N-6-A review only`
+
+### Endpoints
+
+- `GET /api/daily-digest/c5n-human-decision` — read-only, returns the human decision record.
+- No POST / no execute / no rollback / no promote endpoint.
+
+### Script entry points
+
+```bash
+# Generate human decision record (read-only, writes only the record + MD + telegram text)
+npx tsx scripts/daily-digest-c5n-human-decision.ts
+
+# Validate record + recorder safety
+npm run validate:daily-digest-c5n-human-decision
+
+# Run all validations
+npm run check:daily-digest-c5n-human-decision
+npm run validate:daily-digest-c5n-human-decision
+```
+
+### Files
+
+- `dashboard/daily-digest-c5n-human-decision.json` — human decision record
+- `scripts/daily-digest-c5n-human-decision.ts` — human decision recorder
+- `scripts/validate-daily-digest-c5n-human-decision.ts` — 43-check validator
+- `reports/c5n-human-decision-keep-approved-frozen.md` — phase report
+- `reports/telegram-phase-5c2c-c5n4c-human-decision.txt` — Telegram summary
+
+### Why this is safe
+
+- The recorder is **read-only** in terms of production state: it reads the freeze record and approval state, writes only the human decision JSON, MD report, and Telegram text.
+- It does **not** modify `dashboard/daily-digest-human-approval-state.json`.
+- It does **not** write to `reports/daily-digest.md`, `reports/telegram-digest.txt`, or `dashboard/status.json`.
+- `rollback_requested=false` and `proceed_to_promote_requested=false` are explicitly recorded.
+- The `next_allowed_phase` is `C5N-6-A review only` — meaning humans can read the C5N6-A preflight result, but cannot execute a promote from this phase alone.
+- The freeze is a documentation-level marker; the underlying enforcement is the `promote_block_status` flags (all false) and the absence of any timer/cron/auto-trigger.
+
+---
+*Runbook v5.31 — Phase 5C-2C-C5N4C*

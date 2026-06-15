@@ -98,6 +98,8 @@
     "validate:daily-digest-approved-promote-preflight": "tsx scripts/validate-daily-digest-approved-promote-preflight.ts",
     "check:daily-digest-c5n-decision-record": "tsx scripts/daily-digest-c5n-decision-record.ts",
     "validate:daily-digest-c5n-decision-record": "tsx scripts/validate-daily-digest-c5n-decision-record.ts",
+    "check:daily-digest-c5n-human-decision": "tsx scripts/daily-digest-c5n-human-decision.ts",
+    "validate:daily-digest-c5n-human-decision": "tsx scripts/validate-daily-digest-c5n-human-decision.ts",
     "promote:daily-digest:controlled": "tsx scripts/daily-digest-controlled-promote.ts",
     "promote:daily-digest:rollback-plan": "tsx scripts/daily-digest-controlled-rollback.ts",
     "check:daily-digest-promote-approval-pack": "tsx scripts/daily-digest-promote-approval-pack.ts",

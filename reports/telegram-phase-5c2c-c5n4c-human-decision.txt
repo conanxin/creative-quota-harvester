@@ -1,0 +1,42 @@
+Phase 5C-2C-C5N4C complete.
+
+**Mode:** human_decision_record
+**Phase:** 5C-2C-C5N4C
+**Status:** PASS - human decision recorded; state kept frozen; no promote; no rollback
+
+**Decision:**
+- decision = keep_approved_for_future_promote_but_do_not_promote_yet
+- approval_state = approved_for_future_promote
+- c5n_frozen = true
+- rollback_requested = false
+- proceed_to_promote_requested = false
+- human_decision_required = false
+- next_allowed_phase = C5N-6-A review only
+
+**Promote block status (all BLOCKED):**
+- real_promote_allowed = false
+- production_write_allowed = false
+- telegram_send_allowed = false
+- timer_allowed = false
+
+**Production protected paths (md5-verified unchanged):**
+- reports/daily-digest.md = c43bc22fe5e75e26
+- reports/telegram-digest.txt = de89425d568ecb8d
+- dashboard/status.json = c06441d18e3c859a
+- reports/daily/ = absent (correct)
+
+**Boundary compliance:** all 20 boundary conditions met (no model call, no media, no sandbox rebuild, no re-promote, no rollback executed, no approval_state modified, no collect/digest/timer/generate, no production overwrite, no tokens committed/printed).
+
+**Decision rationale:** The current state is internally consistent: C5N4 dry-run held its boundary, C5N5 performed the real transition, production paths are unchanged, promote is blocked at every layer. Rolling back the state would discard a valid human decision (the C5N5 transition) without addressing any concrete issue.
+
+**Next phase proposals:**
+- C5N-6-A-review: read-only preflight result review (available now; no promote)
+- C5N-5R: rollback (not_designed; blocked_until_human_decision)
+- C5N-6-B: real promote runner (not_designed; blocked_until_human_decision)
+
+**Files generated:**
+- dashboard/daily-digest-c5n-human-decision.json
+- reports/c5n-human-decision-keep-approved-frozen.md
+- reports/telegram-phase-5c2c-c5n4c-human-decision.txt (this report)
+
+Full report: projects/creative-quota-harvester/reports/c5n-human-decision-keep-approved-frozen.md

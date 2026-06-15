@@ -1560,6 +1560,18 @@
   </div>
 </div>
 
+<!-- Phase 5C-2C-C5N4C: Human Decision Record Panel -->
+<div id="c5n-human-decision-panel" class="c5n-human-decision-panel" style="display:none;">
+  <div class="section" style="background:#fef3c7;border:1px solid #f59e0b;">
+    <h2>❄️ C5N Human Decision / C5N 人工决策</h2>
+    <div style="margin-top:8px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      本阶段记录人工决策：保留 approved_for_future_promote 状态，继续冻结 C5N 后续推进。不 rollback，不 promote，不发送 Telegram digest。
+    </div>
+    <div id="c5n-human-decision-status" style="margin-top:10px;"></div>
+    <div id="c5n-human-decision-details" style="margin-top:10px;font-size:0.85rem;"></div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5N4B: Load C5N decision record (read-only, freeze)
     function loadC5NDecisionRecord() {
@@ -1619,6 +1631,63 @@
           if (detailsDiv) detailsDiv.innerHTML = dHtml;
         })
         .catch(function(e) { console.log('C5N decision record load failed:', e); });
+    }
+
+    // Phase 5C-2C-C5N4C: Load C5N Human Decision record (read-only)
+    function loadC5NHumanDecision() {
+      var base = location.protocol + '//' + location.host;
+      var panel = document.getElementById('c5n-human-decision-panel');
+      if (panel) panel.style.display = 'block';
+      var statusDiv = document.getElementById('c5n-human-decision-status');
+      var detailsDiv = document.getElementById('c5n-human-decision-details');
+      if (!statusDiv) return;
+      fetch(base + '/api/daily-digest/c5n-human-decision')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var sHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:10px;">';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #f59e0b;text-align:center;"><div style="font-size:1.1rem;font-weight:700;color:#f59e0b;">' + (data.decision || 'unknown').substring(0, 20) + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Decision</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.approval_state || 'unknown') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Approval state</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid ' + (data.c5n_frozen ? '#f59e0b' : '#16a34a') + ';text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:' + (data.c5n_frozen ? '#f59e0b' : '#16a34a') + ';">' + (data.c5n_frozen ? 'FROZEN' : 'ACTIVE') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">C5N frozen</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid ' + (data.rollback_requested ? '#ef4444' : '#16a34a') + ';text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:' + (data.rollback_requested ? '#dc2626' : '#16a34a') + ';">' + (data.rollback_requested ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Rollback requested</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid ' + (data.proceed_to_promote_requested ? '#ef4444' : '#16a34a') + ';text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:' + (data.proceed_to_promote_requested ? '#dc2626' : '#16a34a') + ';">' + (data.proceed_to_promote_requested ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Promote requested</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid ' + (!data.human_decision_required ? '#16a34a' : '#ef4444') + ';text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:' + (!data.human_decision_required ? '#16a34a' : '#dc2626') + ';">' + (!data.human_decision_required ? 'MADE' : 'REQUIRED') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Human decision</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.8rem;font-weight:700;color:#1e3a5f;">' + (data.next_allowed_phase || 'none') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Next allowed phase</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.real_promote_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Real promote</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.production_write_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Production write</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.telegram_send_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Telegram send</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.timer_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Timer allowed</div></div>';
+          sHtml += '</div>';
+          statusDiv.innerHTML = sHtml;
+          var dHtml = '<div style="margin-top:10px;">';
+          if (data.decision_rationale) {
+            dHtml += '<div style="background:#fef3c7;border:1px solid #f59e0b;color:#92400e;padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:0.85rem;"><strong>Decision rationale:</strong><br/>' + data.decision_rationale + '</div>';
+          }
+          dHtml += '<div style="margin-top:8px;"><strong>Blocked actions:</strong> ' + ((data.blocked_actions || []).join(', ')) + '</div>';
+          dHtml += '<div style="margin-top:8px;"><strong>Next phase proposals:</strong></div>';
+          if (data.next_phase_proposals && data.next_phase_proposals.length > 0) {
+            for (var i = 0; i < data.next_phase_proposals.length; i++) {
+              var p = data.next_phase_proposals[i];
+              dHtml += '<div style="background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:8px;margin-top:6px;">';
+              dHtml += '<div style="font-weight:700;">' + p.id + ' <span style="color:' + (p.blocked_until_human_decision ? '#ef4444' : '#16a34a') + ';">(' + (p.blocked_until_human_decision ? 'BLOCKED' : 'available') + ')</span></div>';
+              dHtml += '<div style="font-size:0.8rem;color:#555;margin-top:4px;">' + p.purpose + '</div>';
+              dHtml += '<div style="font-size:0.75rem;color:#7f8c8d;">design_status: ' + p.design_status + '</div>';
+              dHtml += '</div>';
+            }
+          }
+          dHtml += '<div style="margin-top:10px;background:#dcfce7;border:1px solid #16a34a;color:#14532d;padding:10px 14px;border-radius:8px;font-size:0.85rem;">';
+          dHtml += '<strong>Production protected paths (md5-verified unchanged):</strong><br/>';
+          if (data.production_protected_paths) {
+            for (var k in data.production_protected_paths) {
+              if (Object.prototype.hasOwnProperty.call(data.production_protected_paths, k)) {
+                dHtml += '<code>' + k + ' = ' + data.production_protected_paths[k] + '</code><br/>';
+              }
+            }
+          }
+          dHtml += '</div>';
+          dHtml += '</div>';
+          if (detailsDiv) detailsDiv.innerHTML = dHtml;
+        })
+        .catch(function(e) { console.log('C5N human decision load failed:', e); });
     }
 
     // Phase 5C-2C-C5N6-A: Load approved promote preflight status (read-only)
@@ -2321,6 +2390,7 @@
     loadApprovedForFuturePromote();
     loadApprovedPromotePreflight();
     loadC5NDecisionRecord();
+    loadC5NHumanDecision();
   </script>
 
   <script>
