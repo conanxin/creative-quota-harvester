@@ -1572,6 +1572,18 @@
   </div>
 </div>
 
+<!-- Phase C5N-6A-Review: Approved Promote Preflight Review Panel -->
+<div id="approved-promote-preflight-review-panel" class="approved-promote-preflight-review-panel" style="display:none;">
+  <div class="section" style="background:#e0f2fe;border:1px solid #0284c7;">
+    <h2>🔍 Approved Promote Preflight Review / 已批准推送预检审查</h2>
+    <div style="margin-top:8px;background:#e0f2fe;border:1px solid #0284c7;color:#0c4a6e;padding:10px 14px;border-radius:8px;font-size:0.85rem;">
+      本阶段只读审查 approved_for_future_promote 状态下的 promote preflight evidence。不执行 promote，不 rollback，不发送 Telegram digest。
+    </div>
+    <div id="preflight-review-status" style="margin-top:10px;"></div>
+    <div id="preflight-review-details" style="margin-top:10px;font-size:0.85rem;"></div>
+  </div>
+</div>
+
   <script>
     // Phase 5C-2C-C5N4B: Load C5N decision record (read-only, freeze)
     function loadC5NDecisionRecord() {
@@ -1688,6 +1700,91 @@
           if (detailsDiv) detailsDiv.innerHTML = dHtml;
         })
         .catch(function(e) { console.log('C5N human decision load failed:', e); });
+    }
+
+    // Phase C5N-6A-Review: Load approved promote preflight review (read-only)
+    function loadApprovedPromotePreflightReview() {
+      var base = location.protocol + '//' + location.host;
+      var panel = document.getElementById('approved-promote-preflight-review-panel');
+      if (panel) panel.style.display = 'block';
+      var statusDiv = document.getElementById('preflight-review-status');
+      var detailsDiv = document.getElementById('preflight-review-details');
+      if (!statusDiv) return;
+      fetch(base + '/api/daily-digest/approved-promote-preflight-review')
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(data) {
+          var sHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:10px;">';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid ' + (data.evidence_summary && data.evidence_summary.all_met ? '#16a34a' : '#ef4444') + ';text-align:center;"><div style="font-size:1.1rem;font-weight:700;color:' + (data.evidence_summary && data.evidence_summary.all_met ? '#16a34a' : '#dc2626') + ';">' + (data.evidence_summary ? data.evidence_summary.met + '/' + data.evidence_summary.total : '?') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Evidence met</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #e0e0e0;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#1e3a5f;">' + (data.approval_state || 'unknown') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Approval state</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid ' + (data.c5n_frozen ? '#0284c7' : '#16a34a') + ';text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:' + (data.c5n_frozen ? '#0284c7' : '#16a34a') + ';">' + (data.c5n_frozen ? 'FROZEN' : 'ACTIVE') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">C5N frozen</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.real_promote_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Real promote</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.production_write_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Production write</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.telegram_send_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Telegram send</div></div>';
+          sHtml += '<div style="background:#fff;border-radius:8px;padding:12px;border:1px solid #ef4444;text-align:center;"><div style="font-size:0.9rem;font-weight:700;color:#dc2626;">' + (data.timer_allowed ? 'YES' : 'NO') + '</div><div style="font-size:0.75rem;color:#7f8c8d;margin-top:4px;">Timer allowed</div></div>';
+          sHtml += '</div>';
+          statusDiv.innerHTML = sHtml;
+          var dHtml = '<div style="margin-top:10px;">';
+          if (data.evidence) {
+            dHtml += '<div style="margin-top:8px;"><strong>Evidence checklist:</strong></div>';
+            for (var k in data.evidence) {
+              if (Object.prototype.hasOwnProperty.call(data.evidence, k)) {
+                var e = data.evidence[k];
+                dHtml += '<div style="background:#fff;border:1px solid ' + (e.met ? '#16a34a' : '#ef4444') + ';border-radius:6px;padding:6px;margin-top:4px;">';
+                dHtml += '<div style="font-weight:700;color:' + (e.met ? '#16a34a' : '#dc2626') + ';">' + (e.met ? '✓' : '✗') + ' ' + k + '</div>';
+                dHtml += '<div style="font-size:0.8rem;color:#555;margin-top:2px;">' + e.detail + '</div>';
+                dHtml += '</div>';
+              }
+            }
+          }
+          if (data.missing_requirements && data.missing_requirements.length > 0) {
+            dHtml += '<div style="margin-top:8px;color:#dc2626;"><strong>Missing requirements:</strong></div>';
+            for (var m = 0; m < data.missing_requirements.length; m++) {
+              dHtml += '<div style="color:#dc2626;">- ' + data.missing_requirements[m] + '</div>';
+            }
+          } else {
+            dHtml += '<div style="margin-top:8px;color:#16a34a;"><strong>Missing requirements:</strong> none</div>';
+          }
+          if (data.unresolved_risks && data.unresolved_risks.length > 0) {
+            dHtml += '<div style="margin-top:8px;"><strong>Unresolved risks:</strong></div>';
+            for (var r = 0; r < data.unresolved_risks.length; r++) {
+              var rsk = data.unresolved_risks[r];
+              dHtml += '<div style="background:#fff;border:1px solid #f59e0b;border-radius:6px;padding:6px;margin-top:4px;">';
+              dHtml += '<div style="font-weight:700;color:#92400e;">' + rsk.id + ' (' + rsk.severity + ')</div>';
+              dHtml += '<div style="font-size:0.8rem;color:#555;margin-top:2px;">' + rsk.risk + '</div>';
+              dHtml += '<div style="font-size:0.75rem;color:#7f8c8d;margin-top:2px;">Mitigation: ' + rsk.mitigation + '</div>';
+              dHtml += '</div>';
+            }
+          }
+          if (data.next_allowed_phase_options && data.next_allowed_phase_options.length > 0) {
+            dHtml += '<div style="margin-top:8px;"><strong>Next allowed phase options:</strong></div>';
+            for (var o = 0; o < data.next_allowed_phase_options.length; o++) {
+              var opt = data.next_allowed_phase_options[o];
+              dHtml += '<div style="background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:6px;margin-top:4px;">';
+              dHtml += '<div style="font-weight:700;">' + opt.id + ' (risk: ' + opt.expected_risk + ')</div>';
+              dHtml += '<div style="font-size:0.8rem;color:#555;margin-top:2px;">' + opt.label + '</div>';
+              dHtml += '</div>';
+            }
+          }
+          dHtml += '<div style="margin-top:10px;background:#dcfce7;border:1px solid #16a34a;color:#14532d;padding:10px 14px;border-radius:8px;font-size:0.85rem;">';
+          dHtml += '<strong>Recommended next action:</strong> ' + (data.recommended_next_action || 'none') + '<br/>';
+          if (data.recommended_next_action_rationale) {
+            dHtml += '<span style="font-size:0.8rem;">' + data.recommended_next_action_rationale + '</span>';
+          }
+          dHtml += '</div>';
+          dHtml += '<div style="margin-top:10px;background:#dcfce7;border:1px solid #16a34a;color:#14532d;padding:10px 14px;border-radius:8px;font-size:0.85rem;">';
+          dHtml += '<strong>Production protected paths (md5-verified unchanged):</strong><br/>';
+          if (data.production_protected_paths) {
+            for (var p in data.production_protected_paths) {
+              if (Object.prototype.hasOwnProperty.call(data.production_protected_paths, p)) {
+                dHtml += '<code>' + p + ' = ' + data.production_protected_paths[p] + '</code><br/>';
+              }
+            }
+          }
+          dHtml += '</div>';
+          dHtml += '</div>';
+          if (detailsDiv) detailsDiv.innerHTML = dHtml;
+        })
+        .catch(function(e) { console.log('Approved promote preflight review load failed:', e); });
     }
 
     // Phase 5C-2C-C5N6-A: Load approved promote preflight status (read-only)
@@ -2391,6 +2488,7 @@
     loadApprovedPromotePreflight();
     loadC5NDecisionRecord();
     loadC5NHumanDecision();
+    loadApprovedPromotePreflightReview();
   </script>
 
   <script>

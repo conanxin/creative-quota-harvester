@@ -2963,6 +2963,47 @@ const server = http.createServer((req, res) => {
       return;
     }
 
+    case "/api/daily-digest/approved-promote-preflight-review": {
+      // Phase C5N-6A-Review: Read-only review of approved promote preflight evidence
+      if (req.method !== "GET") {
+        methodNotAllowed(res, "GET");
+        return;
+      }
+      const reviewPath = path.join(HARVESTER_DIR, "dashboard", "daily-digest-approved-promote-preflight-review.json");
+      if (!fs.existsSync(reviewPath)) {
+        notFound(res, "approved-promote-preflight-review.json not found; run check:daily-digest-approved-promote-preflight-review first");
+        return;
+      }
+      const review = JSON.parse(fs.readFileSync(reviewPath, "utf-8"));
+      const safe = {
+        phase: review.phase,
+        mode: review.mode,
+        approval_state: review.approval_state,
+        c5n_frozen: review.c5n_frozen,
+        c5n_human_decision: review.c5n_human_decision,
+        real_promote_allowed: review.real_promote_allowed,
+        production_write_allowed: review.production_write_allowed,
+        telegram_send_allowed: review.telegram_send_allowed,
+        timer_allowed: review.timer_allowed,
+        evidence: review.evidence,
+        evidence_summary: review.evidence_summary,
+        missing_requirements: review.missing_requirements,
+        unresolved_risks: review.unresolved_risks,
+        next_allowed_phase_options: review.next_allowed_phase_options,
+        recommended_next_action: review.recommended_next_action,
+        recommended_next_action_rationale: review.recommended_next_action_rationale,
+        telegram_send_should_remain_independently_gated: review.telegram_send_should_remain_independently_gated,
+        timer_should_remain_independently_gated: review.timer_should_remain_independently_gated,
+        promote_should_remain_independently_gated: review.promote_should_remain_independently_gated,
+        production_protected_paths: review.production_protected_paths,
+        boundary_compliance: review.boundary_compliance,
+        blocked_actions: review.blocked_actions,
+        generated_at: review.generated_at,
+      };
+      jsonResponse(res, safe);
+      return;
+    }
+
     case "/api/daily-digest/promote-gate": {
       // Phase 5C-2C-C5J: Read promote gate (read-only, no execution)
       if (req.method !== "GET") {
@@ -3031,7 +3072,7 @@ server.on("error", (err) => {
 server.listen(PORT, HOST, () => {
   console.log(`[control-server] Listening on http://${HOST}:${PORT} (localhost-only, dry-run + safe-readonly + confirmed-low-risk + hardened)`);
   console.log(`[control-server] PID: ${process.pid}`);
-  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /api/daily-digest/approved-for-future-promote-status, /api/daily-digest/approved-promote-preflight, /api/daily-digest/c5n-decision-record, /api/daily-digest/c5n-human-decision, /static/dashboard`);
+  console.log(`[control-server] Routes: GET /, /health, /api/status, /api/control-catalog, /api/reports, /api/report, /api/audit-log, /api/control-security-status, /api/workflows, /api/workflow/dry-run, /api/daily-digest/staged-plan, /api/daily-digest/build-sandbox-plan, /api/daily-digest/sandbox-interface, /api/daily-digest/build-readiness, /api/daily-digest/sandbox-status, /api/daily-digest/sandbox/latest-build, /api/daily-digest/sandbox/latest-output-validation, /api/daily-digest/approved-for-future-promote-status, /api/daily-digest/approved-promote-preflight, /api/daily-digest/c5n-decision-record, /api/daily-digest/c5n-human-decision, /api/daily-digest/approved-promote-preflight-review, /static/dashboard`);
   console.log(`[control-server] POST /api/action/dry-run (dry-run only, no real execution)`);
   console.log(`[control-server] POST /api/action/read-only (safe readonly queries, no side effects)`);
   console.log(`[control-server] POST /api/action/execute-low-risk (confirmed low-risk execution, expanded validation allowlist, rate limited, execution locked)`);

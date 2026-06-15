@@ -2753,4 +2753,68 @@ npm run validate:daily-digest-c5n-human-decision
 - The freeze is a documentation-level marker; the underlying enforcement is the `promote_block_status` flags (all false) and the absence of any timer/cron/auto-trigger.
 
 ---
-*Runbook v5.31 — Phase 5C-2C-C5N4C*
+## Phase C5N-6A-Review - Approved Promote Preflight Review (Read-only)
+
+Phase C5N-6A-Review performs a read-only review of the approved_for_future_promote state's promote preflight evidence. It aggregates evidence from C5N-6-A (commit 4f1e81b) and upstream sources, and confirms whether the system has the evidence to enter the next controlled promote gate (C5N-6-B). This phase does NOT execute any promote, does NOT modify approval_state, does NOT send Telegram, and does NOT add any timer.
+
+### Configuration: `dashboard/daily-digest-approved-promote-preflight-review.json`
+
+- `mode`: `approved_promote_preflight_review_only`
+- `approval_state`: `approved_for_future_promote`
+- `c5n_frozen`: `true`
+- `c5n_human_decision`: `keep_approved_for_future_promote_but_do_not_promote_yet`
+- `real_promote_allowed`: `false`
+- `production_write_allowed`: `false`
+- `telegram_send_allowed`: `false`
+- `timer_allowed`: `false`
+- `evidence`: 11 items, all met (sandbox_build_success, sandbox_output_validation_pass, promote_readiness_ready, promote_dry_run_pass, shadow_copy_pass, promote_gate_pass, human_approval_pack_ready, one_shot_controlled_promote_success, post_promote_validation_pass, dashboard_safety_pass, human_decision_keep_approved_frozen)
+- `missing_requirements`: empty
+- `unresolved_risks`: 3 (low/medium/low severity)
+- `recommended_next_action`: `continue_freeze`
+- `telegram_send_should_remain_independently_gated`: `true`
+- `timer_should_remain_independently_gated`: `true`
+- `promote_should_remain_independently_gated`: `true`
+
+### Endpoints
+
+- `GET /api/daily-digest/approved-promote-preflight-review` - read-only, returns the review summary.
+- No POST / no execute / no rollback / no promote endpoint.
+
+### Script entry points
+
+```bash
+# Generate review (read-only, aggregates evidence from existing artifacts)
+npx tsx scripts/daily-digest-approved-promote-preflight-review.ts
+
+# Validate review + reviewer safety
+npm run validate:daily-digest-approved-promote-preflight-review
+
+# Run all validations
+npm run check:daily-digest-approved-promote-preflight-review
+npm run validate:daily-digest-approved-promote-preflight-review
+```
+
+### Files
+
+- `dashboard/daily-digest-approved-promote-preflight-review.json` - review summary
+- `scripts/daily-digest-approved-promote-preflight-review.ts` - reviewer (aggregates evidence, no env reads, no network, no production writes)
+- `scripts/validate-daily-digest-approved-promote-preflight-review.ts` - 44-check validator
+- `reports/approved-promote-preflight-review.md` - phase report
+- `reports/telegram-phase-c5n6a-approved-promote-preflight-review.txt` - Telegram summary
+
+### Why this is safe
+
+- The reviewer is **read-only**: it reads existing artifacts (sandbox, promote-gate, approval-pack, promote-readiness, promote-history, human-decision) and writes only the review JSON, MD report, and Telegram text.
+- It does **not** modify `dashboard/daily-digest-human-approval-state.json`.
+- It does **not** write to `reports/daily-digest.md`, `reports/telegram-digest.txt`, or `dashboard/status.json`.
+- The `recommended_next_action` is `continue_freeze` - meaning humans should not enter C5N-6-B without further deliberation.
+- Telegram send, timer, and promote remain independently gated at the policy level.
+
+### Next phase proposals (none implemented)
+
+- **C5N-6-B-design-only** (not_designed): design only, no execution. Would require its own policy + planner + validator + endpoint + audit log.
+- **C5N-5R** (not_designed): rollback transition.
+- **continue_freeze** (available now): no new C5N phases.
+
+---
+*Runbook v5.32 — Phase C5N-6A-Review*
