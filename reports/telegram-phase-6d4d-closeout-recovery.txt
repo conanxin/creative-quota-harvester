@@ -1,0 +1,85 @@
+Phase 6D-4D: Closeout Recovery — Telegram Channel Error
+
+Phase: 6D-4D (closeout)
+Status: COMPLETE — recovered via read-only audit
+Generated: 2026-06-16T09:40:00+08:00
+Recovery mode: Read-only audit + closeout archive only
+
+---
+
+RECOVERY CONTEXT
+
+Telegram channel returned "Something went wrong while processing your request"
+during Phase 6D-4D execution. HEARTBEAT_OK followed.
+A read-only recovery audit (#50713) confirmed that Phase 6D-4D had actually
+completed successfully on disk and pushed to origin/master.
+
+This closeout archive is the authoritative record. Phase 6D-4D is NOT re-run.
+No new URL is recorded. manual-post-log is NOT modified.
+
+---
+
+VERIFIED STATE
+
+posted_manually_total: 3/5
+awaiting_manual_post: 2/5
+target_item_recorded: true (Q-6B-X-brief-brief-mq8c6kp4-7-samurai)
+x_post_url_present: true (https://x.com/porco7161/status/2066681191529668844?s=46)
+
+Items preserved:
+- #1 flaws-i:        manually_posted (https://x.com/porco7161/status/2066654295135822139?s=46)
+- #2 stabilityai:    manually_posted (https://x.com/porco7161/status/2066673108761853983?s=46)
+- #3 samurai:        manually_posted (https://x.com/porco7161/status/2066681191529668844?s=46)
+
+Items awaiting manual post:
+- #4 river-ai:       not_published, x_post_url=null
+- #5 the-pen:        not_published, x_post_url=null
+
+Duplicates:
+- item_id: 0
+- x_post_url: 0
+
+Passthrough (UNCHANGED from 6D-3):
+- post_text: UNCHANGED
+- image_url: UNCHANGED
+- risk_level: UNCHANGED
+
+---
+
+VERIFIED COMMITS
+
+assets_commit:    e90acf5 (Phase 6D-4D: Record third manual X post URL (3/5))
+harvester_commit: 25e8c4e (Phase 6D-4D: Record third manual X post URL (3/5))
+push:             true (both repos on origin/master)
+
+---
+
+VERIFIED BOUNDARIES
+
+no_x_api=true, no_baoyu_post_to_x=true, no_auto_publish=true,
+no_model_call=true, no_media_generation=true,
+platform_publish_enabled=false, manual_only=true,
+no_timer=true, no_telegram_digest=true.
+
+---
+
+message_id: new (no real Telegram message_id returned for original 6D-4D send;
+                  closeout file is authoritative artifact on disk;
+                  no Telegram re-send attempted).
+
+---
+
+NEXT_HUMAN_ACTION
+
+Post remaining 2 approved items manually in X UI:
+- Q-6B-X-brief-brief-mq8c663q-v-river-a (River AI)
+- Q-6B-X-brief-brief-mq8c6kp5-r-the-pen (The Penitence of Saint Jerome)
+
+Then provide item_id + x_post_url + posted_at + posted_by + optional note.
+
+NO_TRIGGERS: does not auto-trigger 6D-4E, 6E, 6F, timer, digest, or C5N.
+
+---
+
+辛 🔮 — Phase 6D-4D closeout complete. Recovered from Telegram channel error.
+3/5 recorded, 2/5 awaiting. State on disk is correct and pushed.
