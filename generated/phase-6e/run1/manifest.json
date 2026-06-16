@@ -1,22 +1,26 @@
 {
   "phase": "6E-D",
-  "mode": "controlled_image_generation_run1_execution_attempt",
+  "mode": "controlled_image_generation_run1_execution",
   "run_id": "run_1",
-  "generated_at": "2026-06-16T13:50:46+08:00",
-  "generated_by": "Phase 6E-D Run 1 Controlled Image Generation (controlled execution attempt)",
-  "execution_status": "blocked_pre_generation",
-  "block_reason": "minimax_quota_guard_failed",
-  "block_detail": {
-    "minimax_model": "general (image-01)",
-    "current_interval_remaining_percent": 8,
-    "current_weekly_remaining_percent": 65,
-    "interval_remaining_seconds": 3997012,
-    "interval_end_at": "2026-06-16T16:00:00+08:00",
-    "quota_guard_threshold_interval_percent": 50,
-    "quota_guard_decision": "BLOCK",
-    "threshold_pass": false,
-    "human_directive": "Hard limit #15: '如果 quota / token / model config 不满足，立即停止并输出 blocked，不要降级到其他模型，不要伪造图片'",
-    "action_taken": "STOPPED before mmx image generate call. No model call executed. No image generated. No video/music generated. No X publish. No timer/digest/promote/C5N triggered."
+  "generated_at": "2026-06-16T15:06:00+08:00",
+  "generated_by": "Phase 6E-D Run 1 Controlled Image Generation (SUCCESS after quota reset)",
+  "execution_status": "completed_within_budget",
+  "block_history": {
+    "first_attempt_blocked_at": "2026-06-16T13:50:46+08:00",
+    "first_attempt_status": "blocked_pre_generation",
+    "first_attempt_block_reason": "minimax_quota_guard_failed",
+    "first_attempt_quota_at_block": {
+      "general_interval_remaining_percent": 8,
+      "general_weekly_remaining_percent": 65
+    },
+    "retry_at": "2026-06-16T15:05:00+08:00",
+    "retry_quota_at_execution": {
+      "general_interval_remaining_percent": 99,
+      "general_weekly_remaining_percent": 64
+    },
+    "retry_trigger": "User issued '继续' (continue) after MiniMax interval quota reset",
+    "hard_limit_15_in_force_at_block": true,
+    "hard_limit_15_action_at_block": "Stopped before mmx image generate call, no model call, no fabrication"
   },
   "preflight_verified": {
     "image_generation_gates_run_1_approved": true,
@@ -26,7 +30,8 @@
     "image_generation_plan_generation_status_not_started": true,
     "generated_assets_baseline_count": 5,
     "six_d_five_closeout_final_status_closed": true,
-    "no_secrets_read_or_printed": true
+    "no_secrets_read_or_printed": true,
+    "image_generation_gates_validator_pass": true
   },
   "approved_image_count_limit": 2,
   "selected_items_count": 2,
@@ -40,13 +45,17 @@
       "aspect_ratio": "16:9",
       "watermark": true,
       "run_order": 1,
-      "model_recommended": "image-01",
+      "model_used": "image-01",
       "image_prompt_path": "content-packs/2026/06/2026-06-11/brief-brief-mq8swsla-f-samuraigpt-generative-media-skills/image-prompt.enriched.md",
       "image_prompt_meta_path": "content-packs/2026/06/2026-06-11/brief-brief-mq8swsla-f-samuraigpt-generative-media-skills/image-prompt.meta.json",
       "prompt_hash": "d995605e31fa",
-      "intended_asset_id": "cqa-2026-06-16-run1-001",
-      "intended_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
-      "status": "blocked_quota_check"
+      "asset_id": "cqa-2026-06-16-run1-001",
+      "output_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+      "output_filename": "cqa-2026-06-16-run1-001_001.jpg",
+      "file_size_bytes": 217601,
+      "dimensions": "1280x720",
+      "generated_at": "2026-06-16T15:05:00+08:00",
+      "status": "generated"
     },
     {
       "item_id": "Q-6E-B-002",
@@ -57,24 +66,28 @@
       "aspect_ratio": "16:9",
       "watermark": true,
       "run_order": 2,
-      "model_recommended": "image-01",
+      "model_used": "image-01",
       "image_prompt_path": "content-packs/2026/06/2026-06-11/brief-brief-mq8tbqf4-j-flaws-in-the-llm-automation-narrative/image-prompt.enriched.md",
       "image_prompt_meta_path": "content-packs/2026/06/2026-06-11/brief-brief-mq8tbqf4-j-flaws-in-the-llm-automation-narrative/image-prompt.meta.json",
       "prompt_hash": "6d7391a45431",
-      "intended_asset_id": "cqa-2026-06-16-run1-002",
-      "intended_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
-      "status": "blocked_quota_check"
+      "asset_id": "cqa-2026-06-16-run1-002",
+      "output_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "output_filename": "cqa-2026-06-16-run1-002_001.jpg",
+      "file_size_bytes": 258966,
+      "dimensions": "1280x720",
+      "generated_at": "2026-06-16T15:06:00+08:00",
+      "status": "generated"
     }
   ],
   "model_call_allowed": true,
-  "model_calls_made": 0,
-  "media_generated": false,
-  "images_generated_this_run": 0,
-  "images_generated_this_phase": 0,
-  "images_generated_cumulative": 5,
+  "model_calls_made": 2,
+  "media_generated": true,
+  "images_generated_this_run": 2,
+  "images_generated_this_phase": 2,
+  "images_generated_cumulative": 7,
   "images_planned_cumulative_after_6ed_run1": 7,
-  "images_actually_generated_cumulative": 5,
-  "pending_images_after_run1_attempt": 20,
+  "images_actually_generated_cumulative": 7,
+  "pending_images_after_run1": 18,
   "no_x_publish": true,
   "no_timer": true,
   "no_promote": true,
@@ -86,15 +99,15 @@
   "no_video": true,
   "no_music": true,
   "no_env_committed": true,
-  "no_telegram_local_committed": true,
+  "no_env_telegram_local_committed": true,
   "no_control_local_committed": true,
   "no_audit_log_committed": true,
   "boundaries_enforced": {
     "model_call_allowed": true,
-    "model_calls_made": 0,
+    "model_calls_made": 2,
     "media_generation_allowed": true,
-    "media_generation_actually_executed": false,
-    "image_api_called": false,
+    "media_generation_actually_executed": true,
+    "image_api_called": true,
     "video_api_called": false,
     "music_api_called": false,
     "baoyu_post_to_x_called": false,
@@ -111,31 +124,45 @@
     "token_commit": false,
     "secrets_printed": false,
     "quota_bypassed": false,
+    "quota_checked_before_call": true,
     "model_downgraded": false,
-    "image_fabricated": false
+    "image_fabricated": false,
+    "budget_extended_to_run2": false,
+    "budget_extended_to_run3": false
   },
-  "stop_reason_summary": "Hard limit #15 triggered: MiniMax general-model interval remaining is 8%, which is below the project's 50% quota-guard threshold. The user directive in Phase 6E-D explicitly states '如果 quota / token / model config 不满足，立即停止并输出 blocked，不要降级到其他模型，不要伪造图片'. No mmx image generate call was made. No image/video/music was produced. No X publish / timer / digest / promote / C5N was triggered. 6D-5 final_status remains 'closed'. All preflight state is verified unchanged except for this new manifest.",
+  "quota_check_at_execution": {
+    "checked_at": "2026-06-16T15:05:00+08:00",
+    "general_interval_remaining_percent": 99,
+    "general_weekly_remaining_percent": 64,
+    "interval_end_at": "2026-06-16T20:00:00+08:00",
+    "quota_guard_threshold_percent": 50,
+    "quota_guard_decision": "ALLOW",
+    "threshold_pass": true
+  },
+  "stop_reason_summary": "Run 1 completed successfully within budget. No stop required. All boundaries respected. No quota bypass (quota was naturally healthy at 99% after interval reset).",
+  "next_phase_proposal": {
+    "next_phase": "Phase 6E-E (Run 1 Human Image Review)",
+    "next_phase_status": "awaiting_human_review",
+    "next_phase_preconditions": [
+      "Human reviews the 2 generated images",
+      "Quality score recorded (target ≥ 90/100)",
+      "No auto-trigger — requires separate explicit human command"
+    ],
+    "alternative_next_phase": "Phase 6E-F (Approve Run 2 Gate Only)",
+    "alternative_status": "awaiting_human_approval_for_run_2"
+  },
   "next_required_human_decision_options": [
     {
-      "option_id": "option_a_wait",
-      "title": "Wait for quota reset and retry Run 1",
-      "description": "MiniMax general interval resets at 2026-06-16T16:00:00+08:00 (~67 minutes from now). After reset, re-issue Phase 6E-D command to retry Run 1 generation.",
-      "risk": "low",
-      "model_downgrade": false
+      "option_id": "option_a_run1_review",
+      "title": "Phase 6E-E: Run 1 Human Image Review",
+      "description": "Human reviews the 2 generated images and records quality score. Requires separate explicit command. NOT auto-triggered.",
+      "auto_trigger_allowed": false
     },
     {
-      "option_id": "option_b_override",
-      "title": "Override quota guard and proceed",
-      "description": "Human explicitly approves bypassing the project's 50% interval threshold. The mmx image generate call would attempt to use remaining 8% interval quota. Risk: may exhaust the interval completely or hit hard MiniMax backend block.",
-      "risk": "medium",
-      "model_downgrade": false
-    },
-    {
-      "option_id": "option_c_defer_run1",
-      "title": "Defer Run 1 to Phase 6E-D-Retry after quota reset",
-      "description": "Close Phase 6E-D as blocked/deferred. Mark Phase 6E-D as awaiting quota recovery. Run 2/3 remain pending separate approval.",
-      "risk": "low",
-      "model_downgrade": false
+      "option_id": "option_b_run2_approval",
+      "title": "Phase 6E-F: Approve Run 2 Gate Only",
+      "description": "Human approves the Run 2 gate (Q-6E-B-003 River AI + Q-6E-B-004 stabilityai). Run 3 remains pending separate approval. Requires separate explicit command. NOT auto-triggered.",
+      "auto_trigger_allowed": false
     }
   ],
   "based_on_phase": "6E-C",
@@ -146,9 +173,23 @@
     "phase_6eb_plan_unchanged": true,
     "phase_6d5_closeout_unchanged": true,
     "phase_6ec_gates_unchanged": true,
-    "no_model_call": true,
-    "no_media_generated": true,
-    "no_run2_run3": true,
-    "blocked_before_model_call": true
+    "first_attempt_blocked_at_13_50_46": true,
+    "first_attempt_hard_limit_15_triggered": true,
+    "first_attempt_no_model_call": true,
+    "retry_after_quota_reset": true,
+    "second_attempt_quota_healthy_99_percent": true,
+    "second_attempt_generated_2_images": true,
+    "second_attempt_within_approved_budget_2": true,
+    "no_image_generated_for_run_2": true,
+    "no_image_generated_for_run_3": true,
+    "no_video_generated": true,
+    "no_music_generated": true,
+    "no_x_publish": true,
+    "no_timer": true,
+    "no_digest": true,
+    "no_promote": true,
+    "no_c5n_change": true,
+    "no_secrets_committed": true,
+    "no_env_committed": true
   }
 }

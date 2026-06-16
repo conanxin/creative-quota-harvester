@@ -1299,5 +1299,13 @@
     "systemd_change": false,
     "token_commit": false,
     "secrets_printed": false
+  },
+  "status": {
+    "pending_images": 18,
+    "pending_images_pre_6ed": 20,
+    "delta": -2,
+    "generated_after_phase_6ed": 7,
+    "phase_6ed_run_1_completed": true,
+    "last_updated": "2026-06-16T15:06:00+08:00"
   }
 }

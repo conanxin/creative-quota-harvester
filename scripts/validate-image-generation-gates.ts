@@ -274,11 +274,12 @@ function main(): void {
     console.log(`  ⚠️  x-manual-post-log.json not found (skipping 6D-5 check)`);
   }
 
-  // 6. Verify generated-assets.json is unchanged (still 5 baseline images)
+  // 6. Verify generated-assets.json is consistent (5 baseline; or 7 after 6E-D Run 1 success)
   const genAssetsPath = path.join(ASSETS_ROOT, "metadata", "generated-assets.json");
   if (fs.existsSync(genAssetsPath)) {
     const genAssets = JSON.parse(fs.readFileSync(genAssetsPath, "utf-8")) as Array<{ asset_id: string }>;
-    check(`generated-assets.json count === 5`, genAssets.length === 5, `got ${genAssets.length}`);
+    const allowedCounts = [5, 7];
+    check(`generated-assets.json count in [5,7]`, allowedCounts.includes(genAssets.length), `got ${genAssets.length}`);
     const expectedIds = ["cqa-2026-06-11-canary-001", "cqa-2026-06-11-gen-002", "cqa-2026-06-11-gen-003", "cqa-2026-06-11-gen-004", "cqa-2026-06-11-gen-005"];
     const actualIds = genAssets.map((a) => a.asset_id);
     for (const id of expectedIds) {

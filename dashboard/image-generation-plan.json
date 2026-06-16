@@ -374,5 +374,31 @@
     "systemd_change": false,
     "token_commit": false,
     "secrets_printed": false
-  }
+  },
+  "execution_status": {
+    "run_1": {
+      "status": "completed_within_budget",
+      "completed_at": "2026-06-16T15:06:00+08:00",
+      "images_generated": 2,
+      "images_planned": 2,
+      "quota_check_passed": true,
+      "model_used": "image-01",
+      "asset_ids": [
+        "cqa-2026-06-16-run1-001",
+        "cqa-2026-06-16-run1-002"
+      ],
+      "boundaries_respected": true
+    },
+    "run_2": {
+      "status": "pending_human_approval",
+      "human_decision_required": true,
+      "auto_trigger_allowed": false
+    },
+    "run_3": {
+      "status": "pending_human_approval",
+      "human_decision_required": true,
+      "auto_trigger_allowed": false
+    }
+  },
+  "last_updated": "2026-06-16T15:06:00+08:00"
 }

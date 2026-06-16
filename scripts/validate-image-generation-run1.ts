@@ -195,20 +195,20 @@ check(
   watermarks.join(",")
 );
 
-// Step 4: Verify NO Run 2 / Run 3 items
-console.log("\n4. No Run 2 / Run 3 items");
-const allItemsText = JSON.stringify(manifest);
+// Step 4: Verify NO Run 2 / Run 3 items (in selected_items only — not in next-phase descriptions)
+console.log("\n4. No Run 2 / Run 3 items in selected_items");
+const selectedItemsText = JSON.stringify(manifest.selected_items);
 check(
-  "no River AI (Q-6E-B-003, Run 2)",
-  !allItemsText.includes("Q-6E-B-003") && !allItemsText.toLowerCase().includes("river ai")
+  "no River AI (Q-6E-B-003) in selected_items",
+  !selectedItemsText.includes("Q-6E-B-003") && !selectedItemsText.toLowerCase().includes("river ai")
 );
 check(
-  "no stabilityai (Q-6E-B-004, Run 2)",
-  !allItemsText.includes("Q-6E-B-004") && !allItemsText.includes("stabilityai")
+  "no stabilityai (Q-6E-B-004) in selected_items",
+  !selectedItemsText.includes("Q-6E-B-004") && !selectedItemsText.toLowerCase().includes("stabilityai")
 );
 check(
-  "no Penitence (Q-6E-B-005, Run 3)",
-  !allItemsText.includes("Q-6E-B-005") && !allItemsText.toLowerCase().includes("penitence")
+  "no Penitence (Q-6E-B-005) in selected_items",
+  !selectedItemsText.includes("Q-6E-B-005") && !selectedItemsText.toLowerCase().includes("penitence")
 );
 
 // Step 5: Execution outcome
@@ -331,7 +331,12 @@ check("no_promote === true", manifest.no_promote === true);
 check("no_c5n_change === true", manifest.no_c5n_change === true);
 check("no_6d5_modify === true", manifest.no_6d5_modify === true);
 check("no_secrets === true", manifest.no_secrets === true);
-check("image_api_called === false", manifest.boundaries_enforced.image_api_called === false);
+// image_api_called: false if blocked, true if completed
+if (isBlocked) {
+  check("image_api_called === false (blocked path)", manifest.boundaries_enforced.image_api_called === false);
+} else {
+  check("image_api_called === true (completed path)", manifest.boundaries_enforced.image_api_called === true);
+}
 check("video_api_called === false", manifest.boundaries_enforced.video_api_called === false);
 check("music_api_called === false", manifest.boundaries_enforced.music_api_called === false);
 
@@ -367,18 +372,19 @@ if (gates) {
   check("Run 3 approved === false", gates.run_status?.run_3?.approved === false);
 }
 
-// Step 10: generated-assets.json unchanged (5 baseline)
-console.log("\n10. generated-assets.json baseline unchanged (5)");
+// Step 10: generated-assets.json count check (5 if blocked, 7 if completed)
+console.log("\n10. generated-assets.json count (5 baseline -> 7 after success)");
 const genAssets = readJSON<any[]>(path.join(ASSETS_ROOT, "metadata/generated-assets.json"));
 check("generated-assets.json exists", Array.isArray(genAssets));
 if (Array.isArray(genAssets)) {
-  check("count === 5", genAssets.length === 5, String(genAssets.length));
+  const expectedCount = isBlocked ? 5 : 7;
+  check(`count === ${expectedCount}`, genAssets.length === expectedCount, String(genAssets.length));
   check("contains cqa-2026-06-11-canary-001", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-canary-001"));
   check("contains cqa-2026-06-11-gen-002", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-gen-002"));
   check("contains cqa-2026-06-11-gen-003", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-gen-003"));
   check("contains cqa-2026-06-11-gen-004", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-gen-004"));
   check("contains cqa-2026-06-11-gen-005", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-gen-005"));
-  // If blocked, no new asset_ids should exist
+  // If blocked, no new asset_ids should exist; if completed, new asset_ids MUST exist
   if (isBlocked) {
     check(
       "no cqa-2026-06-16-run1-001 (blocked path)",
@@ -387,6 +393,15 @@ if (Array.isArray(genAssets)) {
     check(
       "no cqa-2026-06-16-run1-002 (blocked path)",
       !genAssets.some((a) => a.asset_id === "cqa-2026-06-16-run1-002")
+    );
+  } else {
+    check(
+      "contains cqa-2026-06-16-run1-001 (completed path)",
+      genAssets.some((a) => a.asset_id === "cqa-2026-06-16-run1-001")
+    );
+    check(
+      "contains cqa-2026-06-16-run1-002 (completed path)",
+      genAssets.some((a) => a.asset_id === "cqa-2026-06-16-run1-002")
     );
   }
 }

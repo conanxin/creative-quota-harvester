@@ -1,11 +1,19 @@
 {
   "phase": "6E-D",
-  "mode": "image_generation_run1_execution_attempt_blocked",
-  "generated_at": "2026-06-16T13:50:46+08:00",
-  "generated_by": "Phase 6E-D Run 1 Controlled Image Generation (blocked at quota check)",
-  "execution_status": "blocked_pre_generation",
-  "block_reason": "minimax_quota_guard_failed",
-  "block_summary": "MiniMax general-model interval quota at 8% remaining (< 50% threshold). Run 1 STOPPED before mmx image generate call. No image generated.",
+  "mode": "image_generation_run1_execution_completed",
+  "generated_at": "2026-06-16T15:06:00+08:00",
+  "updated_at": "2026-06-16T15:06:00+08:00",
+  "generated_by": "Phase 6E-D Run 1 Controlled Image Generation (SUCCESS after quota reset)",
+  "execution_status": "completed_within_budget",
+  "block_history": {
+    "first_attempt_blocked_at": "2026-06-16T13:50:46+08:00",
+    "first_attempt_status": "blocked_pre_generation",
+    "first_attempt_block_reason": "minimax_quota_guard_failed",
+    "first_attempt_quota_at_block_pct": 8,
+    "retry_at": "2026-06-16T15:05:00+08:00",
+    "retry_quota_at_execution_pct": 99,
+    "retry_trigger": "User issued '继续' (continue) after MiniMax interval quota reset"
+  },
   "human_decision_source": "Telegram directive from 爸爸 (Xin Conan, chat_id 1540208324) — Phase 6E-D Run 1 Controlled Image Generation",
   "based_on_phase": "6E-C",
   "based_on_assets_commit": "53a2c99ae2b23dc8b12b981490ee43b7db126d6b",
@@ -20,20 +28,17 @@
     "six_d_five_closeout_final_status": "closed",
     "image_generation_gates_validator": "pass"
   },
-  "quota_check": {
-    "minimax_model_for_image_01": "general",
-    "general_interval_remaining_percent": 8,
-    "general_weekly_remaining_percent": 65,
-    "video_interval_remaining_percent": 100,
-    "video_weekly_remaining_percent": 100,
-    "interval_end_at": "2026-06-16T16:00:00+08:00",
-    "interval_remaining_seconds": 3997012,
+  "quota_check_at_execution": {
+    "checked_at": "2026-06-16T15:05:00+08:00",
+    "general_interval_remaining_percent": 99,
+    "general_weekly_remaining_percent": 64,
+    "interval_end_at": "2026-06-16T20:00:00+08:00",
     "quota_guard_threshold_percent": 50,
-    "quota_guard_decision": "BLOCK",
-    "blocked_before_model_call": true,
-    "human_directive_in_force": "Hard limit #15: stop if quota fails, don't downgrade, don't fabricate"
+    "quota_guard_decision": "ALLOW",
+    "blocked_before_model_call": false,
+    "human_directive_in_force": "Hard limit #15 (initially blocked at 8% quota; unblocked after interval reset)"
   },
-  "selected_items": [
+  "generated_images": [
     {
       "item_id": "Q-6E-B-001",
       "pack_id": "brief-brief-mq8swsla-f-samuraigpt-generative-media-skills",
@@ -42,12 +47,15 @@
       "risk_level": "low",
       "aspect_ratio": "16:9",
       "watermark": true,
-      "run_order": 1,
+      "model_used": "image-01",
       "prompt_hash": "d995605e31fa",
-      "intended_asset_id": "cqa-2026-06-16-run1-001",
-      "intended_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
-      "status": "blocked_quota_check",
-      "image_generated": false
+      "asset_id": "cqa-2026-06-16-run1-001",
+      "output_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+      "filename": "cqa-2026-06-16-run1-001_001.jpg",
+      "dimensions": "1280x720",
+      "size_bytes": 217601,
+      "generated_at": "2026-06-16T15:05:00+08:00",
+      "status": "generated"
     },
     {
       "item_id": "Q-6E-B-002",
@@ -57,26 +65,29 @@
       "risk_level": "low",
       "aspect_ratio": "16:9",
       "watermark": true,
-      "run_order": 2,
+      "model_used": "image-01",
       "prompt_hash": "6d7391a45431",
-      "intended_asset_id": "cqa-2026-06-16-run1-002",
-      "intended_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
-      "status": "blocked_quota_check",
-      "image_generated": false
+      "asset_id": "cqa-2026-06-16-run1-002",
+      "output_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "filename": "cqa-2026-06-16-run1-002_001.jpg",
+      "dimensions": "1280x720",
+      "size_bytes": 258966,
+      "generated_at": "2026-06-16T15:06:00+08:00",
+      "status": "generated"
     }
   ],
   "execution_outcome": {
-    "model_calls_made": 0,
-    "images_generated_this_run": 0,
-    "images_generated_this_phase": 0,
-    "images_generated_cumulative": 5,
+    "model_calls_made": 2,
+    "images_generated_this_run": 2,
+    "images_generated_this_phase": 2,
+    "images_generated_cumulative": 7,
     "images_planned_cumulative_after_6ed_run1": 7,
-    "images_actually_generated_cumulative": 5,
-    "pending_images_remaining": 20,
-    "run_1_generated_count": 0,
-    "total_generated_images_unchanged": true,
-    "pending_images_unchanged": true,
-    "baseline_5_unchanged": true,
+    "images_actually_generated_cumulative": 7,
+    "pending_images_remaining": 18,
+    "run_1_generated_count": 2,
+    "total_generated_images_changed": "5 -> 7",
+    "pending_images_changed": "20 -> 18",
+    "baseline_5_to_7": true,
     "no_run_2_items_generated": true,
     "no_run_3_items_generated": true,
     "no_river_ai_generated": true,
@@ -97,14 +108,16 @@
     "no_runtime_audit_log_committed": true,
     "no_model_downgrade": true,
     "no_image_fabrication": true,
-    "all_output_paths_remain_unique": true
+    "no_quota_bypass": true,
+    "quota_checked_before_call": true,
+    "all_output_paths_unique": true
   },
   "boundaries_enforced": {
     "model_call_allowed": true,
-    "model_calls_made": 0,
+    "model_calls_made": 2,
     "media_generation_allowed": true,
-    "media_generation_actually_executed": false,
-    "image_api_called": false,
+    "media_generation_actually_executed": true,
+    "image_api_called": true,
     "video_api_called": false,
     "music_api_called": false,
     "baoyu_post_to_x_called": false,
@@ -121,6 +134,7 @@
     "token_commit": false,
     "secrets_printed": false,
     "quota_bypassed": false,
+    "quota_checked_before_call": true,
     "model_downgraded": false,
     "image_fabricated": false,
     "budget_extended_to_run2": false,
@@ -130,38 +144,42 @@
     "assets_repo": [
       "generated/phase-6e/run1/manifest.json",
       "generated/phase-6e/run1/README.md",
+      "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+      "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "metadata/generated-assets.json (updated 5 -> 7)",
       "dashboard/image-generation-run1.json",
+      "dashboard/image-generation-plan.json (updated)",
+      "dashboard/image-generation-preflight.json (updated pending 20 -> 18)",
       "reports/image-generation-run1.md"
     ],
-    "images_added": [],
-    "metadata_modified": [],
+    "images_added": 2,
+    "metadata_modified": ["generated-assets.json"],
     "dashboard_modified": [
-      "image-generation-run1.json (new)"
+      "image-generation-run1.json (new)",
+      "image-generation-plan.json (updated)",
+      "image-generation-preflight.json (updated)"
     ],
     "dashboard_unchanged": [
-      "image-generation-gates.json",
-      "image-generation-plan.json",
-      "image-generation-preflight.json"
+      "image-generation-gates.json"
     ]
   },
   "next_required_human_decision": {
     "decision_owner": "爸爸",
     "options": [
-      "option_a_wait: Wait for MiniMax interval reset (~67 min) and retry Phase 6E-D",
-      "option_b_override: Explicitly approve quota-guard bypass (not recommended)",
-      "option_c_defer: Mark Phase 6E-D as deferred/blocked, resume after quota recovery"
+      "option_a_run1_review: Phase 6E-E Run 1 Human Image Review (NOT auto-triggered)",
+      "option_b_run2_approval: Phase 6E-F Approve Run 2 Gate Only (NOT auto-triggered)",
+      "option_c_idle: Do nothing, leave Phase 6E-D as completed Run 1"
     ],
-    "default_if_no_response": "option_c_defer",
-    "blocked_until_human_decision": true
+    "default_if_no_response": "option_c_idle",
+    "blocked_until_human_decision": false
   },
   "next_phase_proposal": {
-    "next_phase": "Phase 6E-D-Retry (after quota recovery)",
-    "next_phase_status": "blocked_on_quota_and_human_decision",
+    "next_phase": "Phase 6E-E (Run 1 Human Image Review)",
+    "next_phase_status": "awaiting_human_review",
     "next_phase_preconditions": [
-      "MiniMax general interval remaining >= 50% (or human override)",
-      "Run 1 gate stays approved (unchanged)",
-      "Run 1 budget cap stays approved (unchanged)",
-      "Run 2/3 budgets remain unapproved"
+      "Human reviews the 2 generated images",
+      "Quality score recorded (target ≥ 90/100)",
+      "No auto-trigger — requires separate explicit human command"
     ]
   },
   "audit_trail": {
@@ -169,8 +187,17 @@
     "phase_6eb_plan_unchanged": true,
     "phase_6d5_closeout_unchanged": true,
     "phase_6ec_gates_unchanged": true,
-    "phase_6ed_blocked_before_model_call": true,
-    "no_image_generated": true,
+    "first_attempt_blocked_at_13_50_46": true,
+    "first_attempt_hard_limit_15_triggered": true,
+    "first_attempt_no_model_call": true,
+    "retry_after_quota_reset": true,
+    "second_attempt_quota_healthy_99_percent": true,
+    "second_attempt_generated_2_images": true,
+    "second_attempt_within_approved_budget_2": true,
+    "no_image_generated_for_run_2": true,
+    "no_image_generated_for_run_3": true,
+    "no_video_generated": true,
+    "no_music_generated": true,
     "no_x_publish": true,
     "no_timer": true,
     "no_digest": true,
