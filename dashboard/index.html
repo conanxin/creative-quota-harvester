@@ -678,6 +678,34 @@
   </div>
 
   <div class="card" style="margin-bottom: 30px;">
+    <h2 style="color: #9a3412;"><span class="icon">✅</span> 人工审图决策 · Human Review Decisions (Phase 6E-E Decisions)</h2>
+    <div style="font-size:0.85rem;color:#555;margin-bottom:12px;">
+      Phase 6E-E <strong>human review decisions</strong> recorded. 爸爸 provided 5-dimension scores + decision for both images. Run 1 outcome: <strong>partial_pass</strong> (1 approved, 1 needs_regen). Run 2/3 still pending.
+    </div>
+    <table>
+      <thead>
+        <tr><th>#</th><th>item_id</th><th>title</th><th>scores (pa/vq/ua/fs/risk)</th><th>overall</th><th>decision</th><th>reason</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><code>Q-6E-B-001</code></td><td>SamurAIGPT/Generative-Media-Skills</td><td>8.5 / 9.0 / 8.5 / 8.0 / 6.5</td><td><strong>82.5</strong></td><td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approve</span></td><td>Strong visual quality and good code/workflow alignment. Minor artifact risk.</td></tr>
+        <tr><td>2</td><td><code>Q-6E-B-002</code></td><td>Flaws in the LLM Automation Narrative</td><td>6.0 / 4.5 / 4.0 / 3.5 / 2.5</td><td><strong>43.3</strong></td><td><span style="background:#fed7aa; color:#9a3412; padding:2px 6px; border-radius:4px;">needs_regen</span></td><td>Major text artifacts, unreadable text, fake academic badge feel. Regenerate with cleaner layout.</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px; padding:10px 14px; background:#fef3c7; border:1px solid #d97706; border-radius:8px; font-size:0.8rem; color:#78350f;">
+      <strong>⚠️ Run 1 outcome: partial_pass</strong> — 1 approved (Q-6E-B-001 SamurAIGPT, overall 82.5) · 1 needs_regen (Q-6E-B-002 Flaws LLM, overall 43.3) · 0 rejected · 0 pending.<br/>
+      <strong>📋 Files written:</strong> <code>publishing/review/image/phase-6e/run1/review-board.json</code> (updated) · <code>scoring-sheet.json</code> (updated) · <code>decision-sheet.json</code> (new) · <code>dashboard/image-generation-run1-review-decisions.json</code> (new) · <code>scripts/validate-image-generation-run1-review-decisions.ts</code> (new) · npm script <code>validate:image-generation-run1-review-decisions</code><br/>
+      <strong>📋 Boundaries enforced:</strong> No model call · No media generation · No image overwrite · No regeneration executed (Phase 6E-G NOT triggered) · No Run 2 / Run 3 approval · No X publish / baoyu-post-to-x · No timer / digest / promote / C5N · No secrets committed.<br/>
+      <strong>📋 Recommendation:</strong> "approve image 1, regenerate image 2, do not treat Run 1 as fully approved yet"<br/>
+      <strong>📋 Next phase (NOT auto-triggered):</strong>
+      <ul style="margin:6px 0 0 20px;">
+        <li><strong>Phase 6E-G:</strong> Regenerate Q-6E-B-002 — requires separate human command</li>
+        <li><strong>Idle:</strong> leave needs_regen as pending; do not regenerate</li>
+      </ul>
+      <strong>📋 Run 2 status: pending</strong> · <strong>📋 Run 3 status: pending</strong> · 两者均未批准。
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>
       <thead>

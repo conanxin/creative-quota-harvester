@@ -1,0 +1,127 @@
+{
+  "phase": "6E-E",
+  "subphase": "human_review_decisions_recorded",
+  "mode": "run1_human_review_decisions",
+  "generated_at": "2026-06-16T16:10:00+08:00",
+  "updated_at": "2026-06-16T16:10:00+08:00",
+  "based_on_phase": "6E-E (review pack)",
+  "based_on_assets_commit": "68aaa81",
+  "based_on_harvester_commit": "0464ea1",
+  "human_review_recorded_at": "2026-06-16T16:09:50+08:00",
+  "human_reviewer": "Xin Conan (chat_id 1540208324, message_id 50763)",
+  "total_items": 2,
+  "reviewed": 2,
+  "approved": 1,
+  "needs_regen": 1,
+  "rejected": 0,
+  "pending": 0,
+  "run_1_outcome": "partial_pass",
+  "total_generated_images": 7,
+  "pending_images": 18,
+  "run_2_approved": false,
+  "run_3_approved": false,
+  "run_2_status": "pending",
+  "run_3_status": "pending",
+  "no_model_call": true,
+  "no_media_generation": true,
+  "no_image_fabrication": true,
+  "no_x_publish": true,
+  "no_timer": true,
+  "no_digest": true,
+  "no_promote": true,
+  "no_c5n_change": true,
+  "no_6d5_modify": true,
+  "no_secrets": true,
+  "no_run_2_approval": true,
+  "no_run_3_approval": true,
+  "no_regeneration_executed": true,
+  "regeneration_deferred_to_phase_6eg": true,
+  "items": [
+    {
+      "item_id": "Q-6E-B-001",
+      "asset_id": "cqa-2026-06-16-run1-001",
+      "title": "SamurAIGPT/Generative-Media-Skills",
+      "source_type": "code",
+      "risk_level": "low",
+      "image_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+      "image_url": "https://conanxin.github.io/creative-quota-assets/images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+      "prompt_hash": "d995605e31fa",
+      "generated_at": "2026-06-16T15:05:00+08:00",
+      "review_status": "approved",
+      "human_score": 82.5,
+      "scores": {
+        "prompt_alignment": 8.5,
+        "visual_quality": 9.0,
+        "usefulness_as_asset": 8.5,
+        "factual_safety": 8.0,
+        "brand_text_artifact_risk": 6.5
+      },
+      "decision": "approve",
+      "decision_reason": "Strong visual quality and good code/workflow alignment. Minor artifact risk from small pseudo-text/icons and AI-generated corner label.",
+      "decided_at": "2026-06-16T16:09:50+08:00"
+    },
+    {
+      "item_id": "Q-6E-B-002",
+      "asset_id": "cqa-2026-06-16-run1-002",
+      "title": "Flaws in the LLM Automation Narrative",
+      "source_type": "academic",
+      "risk_level": "low",
+      "image_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "image_url": "https://conanxin.github.io/creative-quota-assets/images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "prompt_hash": "6d7391a45431",
+      "generated_at": "2026-06-16T15:06:00+08:00",
+      "review_status": "needs_regen",
+      "human_score": 43.3,
+      "scores": {
+        "prompt_alignment": 6.0,
+        "visual_quality": 4.5,
+        "usefulness_as_asset": 4.0,
+        "factual_safety": 3.5,
+        "brand_text_artifact_risk": 2.5
+      },
+      "decision": "needs_regen",
+      "decision_reason": "Major text artifact issues, unreadable subtitle/body text, unclear chart semantics, fake academic badge feel. Regenerate with cleaner academic poster layout, readable text, 3-4 clear points, and one simple chart only.",
+      "decided_at": "2026-06-16T16:09:50+08:00",
+      "regeneration_recommendation": {
+        "target_layout": "cleaner academic poster layout",
+        "readable_text": true,
+        "data_points": "3-4 clear points",
+        "charts": "one simple chart only",
+        "no_fake_badges": true
+      }
+    }
+  ],
+  "run_1_summary": {
+    "status": "partial_pass",
+    "approved_items": 1,
+    "needs_regen_items": 1,
+    "recommendation": "approve image 1, regenerate image 2, do not treat Run 1 as fully approved yet"
+  },
+  "next_required_human_decision": {
+    "decision_owner": "爸爸",
+    "options": [
+      "option_a_phase_6eg: Phase 6E-G — Regenerate Q-6E-B-002 (NOT auto-triggered, requires separate human command)",
+      "option_b_idle: leave needs_regen as pending; do not regenerate"
+    ],
+    "default_if_no_response": "option_b_idle"
+  },
+  "next_phase_proposal": {
+    "next_phase_if_regen_approved": "Phase 6E-G (Regenerate Q-6E-B-002 within Run 1 budget) — requires separate human command",
+    "next_phase_if_regen_rejected": "Mark Q-6E-B-002 as terminal_rejected; Q-6E-B-001 remains approved",
+    "next_phase_idle": "Wait for separate decision on Run 2/3 and/or Phase 6E-G",
+    "auto_trigger": false
+  },
+  "validator": {
+    "script": "scripts/validate-image-generation-run1-review-decisions.ts",
+    "npm_script": "validate:image-generation-run1-review-decisions"
+  },
+  "review_pack_paths": {
+    "assets_repo_review_board_json": "publishing/review/image/phase-6e/run1/review-board.json",
+    "assets_repo_review_board_md": "publishing/review/image/phase-6e/run1/review-board.md",
+    "assets_repo_scoring_sheet_json": "publishing/review/image/phase-6e/run1/scoring-sheet.json",
+    "assets_repo_scoring_sheet_md": "publishing/review/image/phase-6e/run1/scoring-sheet.md",
+    "assets_repo_decision_sheet_json": "publishing/review/image/phase-6e/run1/decision-sheet.json",
+    "assets_repo_decision_sheet_md": "publishing/review/image/phase-6e/run1/decision-sheet.md",
+    "assets_repo_readme": "publishing/review/image/phase-6e/run1/README.md"
+  }
+}

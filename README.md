@@ -96,6 +96,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 6E-C** | **✅ Complete** | **Run 1 Gate Approval (gate decision only, no generation; gate_1=approved, gate_4=approved_limited_run1_only, Run 2/3 pending; approved_image_count_limit=2; new validator `validate:image-generation-gates`)** |
 | **Phase 6E-D** | **✅ Complete** | **Run 1 Controlled Image Generation (2/2 images generated within approved budget; cumulative 5→7, pending 20→18; first attempt blocked at 8% quota, retry succeeded at 99%; new validator `validate:image-generation-run1`)** |
 | **Phase 6E-E** | **✅ Complete** | **Run 1 Human Image Review Pack (read-only review pack; 2/2 images pending human scoring; 5-dimension scoring sheet; new validator `validate:image-generation-run1-review` 98/98 PASS; review_status=pending_human_review; Run 2/3 still pending)** |
+| **Phase 6E-E Decisions** | **✅ Complete** | **Run 1 Human Review Decisions Recorded (1 approved Q-6E-B-001 @82.5; 1 needs_regen Q-6E-B-002 @43.3; run_1_outcome=partial_pass; new validator `validate:image-generation-run1-review-decisions` 95/95 PASS; no regeneration executed; Run 2/3 still pending)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

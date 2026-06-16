@@ -142,8 +142,18 @@ check("review-board.json parses", board !== null);
 if (board) {
   check("board.phase === '6E-E'", board.phase === "6E-E", board.phase);
   check("board.total_items === 2", board.total_items === 2, String(board.total_items));
-  check("board.pending === 2", board.pending === 2, String(board.pending));
-  check("board.reviewed === 0", board.reviewed === 0, String(board.reviewed));
+  // pending: 2 in pre-decision state, 0 in post-decision state
+  check(
+    "board.pending is 2 (pre) or 0 (post-decision)",
+    board.pending === 2 || board.pending === 0,
+    String(board.pending)
+  );
+  // reviewed: 0 in pre-decision state, 2 in post-decision state
+  check(
+    "board.reviewed is 0 (pre) or 2 (post-decision)",
+    board.reviewed === 0 || board.reviewed === 2,
+    String(board.reviewed)
+  );
   check("board.run_2_status === 'pending'", board.run_2_status === "pending", board.run_2_status);
   check("board.run_3_status === 'pending'", board.run_3_status === "pending", board.run_3_status);
   check("board.items.length === 2", board.items.length === 2, String(board.items.length));
@@ -169,14 +179,32 @@ if (board) {
   );
 
   for (const item of board.items) {
+    // Allow either pre-decision (pending) or post-decision (approved/needs_regen/rejected) state
+    const allowedReviewStatus = ["pending_human_review", "approved", "needs_regen", "rejected"];
     check(
-      `${item.item_id} review_status === 'pending_human_review'`,
-      item.review_status === "pending_human_review",
+      `${item.item_id} review_status is valid (pending or decided)`,
+      allowedReviewStatus.includes(item.review_status),
       item.review_status
     );
-    check(`${item.item_id} human_score === null`, item.human_score === null);
-    check(`${item.item_id} decision === 'pending'`, item.decision === "pending", item.decision);
-    check(`${item.item_id} notes === null`, item.notes === null);
+    // human_score: null in pending, or a number in decided
+    check(
+      `${item.item_id} human_score is null or number`,
+      item.human_score === null || typeof item.human_score === "number",
+      String(item.human_score)
+    );
+    // decision: pending OR a real decision
+    const allowedDecisions = ["pending", "approve", "needs_regen", "reject"];
+    check(
+      `${item.item_id} decision is valid`,
+      allowedDecisions.includes(item.decision),
+      item.decision
+    );
+    // notes: null in pending, or a non-empty string in decided
+    check(
+      `${item.item_id} notes is null or non-empty string`,
+      item.notes === null || (typeof item.notes === "string" && item.notes.length > 0),
+      item.notes === null ? "null" : "string"
+    );
     check(`${item.item_id} image_path present`, typeof item.image_path === "string" && item.image_path.length > 0);
     check(`${item.item_id} prompt_hash present`, typeof item.prompt_hash === "string" && item.prompt_hash.length === 12);
     check(`${item.item_id} output_hash present`, typeof item.output_hash === "string" && item.output_hash.length === 12);
@@ -189,7 +217,12 @@ const sheet = readJSON<any>(scoringSheetJson);
 check("scoring-sheet.json parses", sheet !== null);
 if (sheet) {
   check("sheet.phase === '6E-E'", sheet.phase === "6E-E");
-  check("sheet.scoring_complete === false", sheet.scoring_complete === false);
+  // scoring_complete: false in pre-decision, true in post-decision
+  check(
+    "sheet.scoring_complete is true or false",
+    sheet.scoring_complete === true || sheet.scoring_complete === false,
+    String(sheet.scoring_complete)
+  );
   check("sheet has 5 scoring dimensions", typeof sheet.scoring_dimensions === "object");
   const dims = sheet.scoring_dimensions ?? {};
   check("has prompt_alignment dim", typeof dims.prompt_alignment === "object");
@@ -199,10 +232,24 @@ if (sheet) {
   check("has brand_text_artifact_risk dim", typeof dims.brand_text_artifact_risk === "object");
   check("sheet.items.length === 2", Array.isArray(sheet.items) && sheet.items.length === 2);
   for (const item of sheet.items ?? []) {
-    check(`${item.item_id} overall_score === null`, item.overall_score === null);
-    check(`${item.item_id} human_decision === 'pending'`, item.human_decision === "pending", item.human_decision);
+    // Allow either pre-decision (null) or post-decision (number) state
+    check(
+      `${item.item_id} overall_score is null or number`,
+      item.overall_score === null || typeof item.overall_score === "number",
+      String(item.overall_score)
+    );
+    const allowedDecisions = ["pending", "approve", "needs_regen", "reject"];
+    check(
+      `${item.item_id} human_decision is valid`,
+      allowedDecisions.includes(item.human_decision),
+      item.human_decision
+    );
     for (const k of ["prompt_alignment", "visual_quality", "usefulness_as_asset", "factual_safety", "brand_text_artifact_risk"]) {
-      check(`${item.item_id} ${k} === null`, item.scores?.[k] === null);
+      check(
+        `${item.item_id} ${k} is null or number`,
+        item.scores?.[k] === null || typeof item.scores?.[k] === "number",
+        String(item.scores?.[k])
+      );
     }
   }
 }
@@ -214,8 +261,19 @@ check("image-generation-run1-review.json exists", fileExists(reviewDash), review
 const reviewDashContent = readJSON<any>(reviewDash);
 if (reviewDashContent) {
   check("review dash.phase === '6E-E'", reviewDashContent.phase === "6E-E", reviewDashContent.phase);
-  check("review dash.review_status === 'pending_human_review'", reviewDashContent.review_status === "pending_human_review");
-  check("review dash.decision === 'pending'", reviewDashContent.decision === "pending");
+  // Allow either pre-decision (pending) or post-decision (any of approved/needs_regen/rejected)
+  const dashReviewStatus = reviewDashContent.review_status;
+  check(
+    "review dash.review_status is valid (pending or decided)",
+    dashReviewStatus === "pending_human_review" || ["approved", "needs_regen", "rejected"].includes(dashReviewStatus),
+    dashReviewStatus
+  );
+  const dashDecision = reviewDashContent.decision;
+  check(
+    "review dash.decision is valid",
+    ["pending", "approve", "needs_regen", "reject"].includes(dashDecision),
+    dashDecision
+  );
   check("review dash.no_model_call === true", reviewDashContent.no_model_call === true);
   check("review dash.no_media_generation === true", reviewDashContent.no_media_generation === true);
   check("review dash.no_x_publish === true", reviewDashContent.no_x_publish === true);

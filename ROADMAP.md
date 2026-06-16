@@ -950,3 +950,65 @@ Assets repo:
 Harvester repo:
   Phase 6E-E: Add Run 1 human image review pack
 ```
+
+---
+
+## Phase 6E-E — Run 1 Human Image Review Pack + Decisions ✅
+
+**Mode:** read-only review pack + decision recording · **No model call** · **No media generation** · **No regeneration**
+
+### Sub-phase 1: Review Pack Created (15:30)
+
+- 5 review artefacts in assets-repo
+- 1 harvester dashboard
+- 1 validator (`validate:image-generation-run1-review` 98/98 PASS)
+- All `decision=pending`, `review_status=pending_human_review`
+
+### Sub-phase 2: Human Review Decisions Recorded (16:10)
+
+**Reviewer:** Xin Conan (chat_id 1540208324, message_id 50763)
+
+**Run 1 outcome:** `partial_pass`
+
+| # | item_id | title | scores (pa/vq/ua/fs/risk) | overall | decision |
+|---|---------|-------|---------------------------|---------|----------|
+| 1 | Q-6E-B-001 | SamurAIGPT/Generative-Media-Skills | 8.5 / 9.0 / 8.5 / 8.0 / 6.5 | **82.5** | **approve** |
+| 2 | Q-6E-B-002 | Flaws in the LLM Automation Narrative | 6.0 / 4.5 / 4.0 / 3.5 / 2.5 | **43.3** | **needs_regen** |
+
+**Human recommendation:** "approve image 1, regenerate image 2, do not treat Run 1 as fully approved yet"
+
+**Files written:**
+- assets-repo: `publishing/review/image/phase-6e/run1/decision-sheet.json` (new)
+- assets-repo: `publishing/review/image/phase-6e/run1/decision-sheet.md` (new)
+- assets-repo: `publishing/review/image/phase-6e/run1/{review-board,scoring-sheet}.{json,md}` (updated)
+- harvester: `dashboard/image-generation-run1-review-decisions.json` (new)
+- harvester: `dashboard/mainline-production-queue.json` (added `run1_review_decisions` block)
+- harvester: `dashboard/index.html` (added decisions card)
+- harvester: `scripts/validate-image-generation-run1-review-decisions.ts` (new)
+- harvester: `package.json` (added `validate:image-generation-run1-review-decisions`)
+- harvester: `reports/phase-6ee-run1-human-review-decisions.md` (new)
+- harvester: `reports/telegram-phase-6ee-run1-human-review-decisions.txt` (new)
+- harvester: `README.md` (modified)
+- harvester: `ROADMAP.md` (modified)
+
+**Validations:** `validate:image-generation-run1-review-decisions` 95/95 PASS · `validate:image-generation-run1-review` 98/98 · `validate:image-generation-run1` 56/56 · `validate:image-generation-gates` 161/161 · `validate:image-generation-plan` 125/125 · `validate:image-generation-preflight` 66/66 · `validate:x-manual-publishing-closeout` 89/89 · `validate:dashboard-control-safety` PASS · `dashboard:control:validate` 17/17 · `validate:telegram-sanitizer` 43/43 · `validate:project-report-send` 11/11
+
+### Next Phase (NOT auto-triggered)
+
+- **Option A:** Phase 6E-G (Regenerate Q-6E-B-002 within Run 1 budget) — requires separate human command
+- **Option B:** Mark Q-6E-B-002 as terminal_rejected; Q-6E-B-001 remains approved
+- **Option C (idle):** Wait for separate decision on Run 2/3 and/or Phase 6E-G
+- **Default if no action:** `idle`; Run 1 remains `partial_pass`; Run 2/3 not approved
+- **Auto-trigger:** false
+
+### Commits
+
+```
+Assets repo:
+  Phase 6E-E: Add Run 1 human image review pack
+  Phase 6E-E: Record Run 1 human review decisions (1 approve, 1 needs_regen)
+
+Harvester repo:
+  Phase 6E-E: Add Run 1 human image review pack
+  Phase 6E-E: Record Run 1 human review decisions (1 approve, 1 needs_regen)
+```

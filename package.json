@@ -149,6 +149,7 @@
     "validate:image-generation-plan": "tsx scripts/validate-image-generation-plan.ts",
     "validate:image-generation-run1": "tsx scripts/validate-image-generation-run1.ts",
     "validate:image-generation-run1-review": "tsx scripts/validate-image-generation-run1-review.ts",
+    "validate:image-generation-run1-review-decisions": "tsx scripts/validate-image-generation-run1-review-decisions.ts",
     "validate:image-generation-gates": "tsx scripts/validate-image-generation-gates.ts"
   },
   "keywords": [

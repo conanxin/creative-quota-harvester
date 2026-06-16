@@ -1,0 +1,63 @@
+PHASE-6EE-RUN1-HUMAN-REVIEW-DECISIONS COMPLETE
+
+状态：PASS
+
+简要：
+• Phase 6E-E 人工审图决策已记录（read-only decision recording）
+• Run 1 outcome: partial_pass
+• 1 approved (Q-6E-B-001 SamurAIGPT, overall 82.5)
+• 1 needs_regen (Q-6E-B-002 Flaws LLM, overall 43.3)
+• 0 rejected · 0 pending
+• Run 2 / Run 3 仍 pending（未批准）
+• no_model_call=true · no_media_generation=true
+• no_regeneration_executed=true（Phase 6E-G 未触发）
+• total_generated_images 仍 7 · pending_images 仍 18
+• 6D-5 final_status=closed（未修改）
+• 全部 12 项 validation PASS
+
+详细评分：
+
+1) Q-6E-B-001 SamurAIGPT/Generative-Media-Skills (code, low, 16:9)
+   - prompt_alignment: 8.5
+   - visual_quality: 9.0
+   - usefulness_as_asset: 8.5
+   - factual_safety: 8.0
+   - brand_text_artifact_risk: 6.5
+   - overall_score: 82.5
+   - decision: APPROVE
+   - 理由: Strong visual quality and good code/workflow alignment. Minor artifact risk from small pseudo-text/icons and AI-generated corner label.
+
+2) Q-6E-B-002 Flaws in the LLM Automation Narrative (academic, low, 16:9)
+   - prompt_alignment: 6.0
+   - visual_quality: 4.5
+   - usefulness_as_asset: 4.0
+   - factual_safety: 3.5
+   - brand_text_artifact_risk: 2.5
+   - overall_score: 43.3
+   - decision: NEEDS_REGEN
+   - 理由: Major text artifact issues, unreadable subtitle/body text, unclear chart semantics, fake academic badge feel. Regenerate with cleaner academic poster layout, readable text, 3-4 clear points, and one simple chart only.
+
+两张图片路径（未修改）：
+• images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg (217KB)
+• images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg (259KB)
+
+新增文件：
+• assets-repo: publishing/review/image/phase-6e/run1/decision-sheet.json
+• assets-repo: publishing/review/image/phase-6e/run1/decision-sheet.md
+• harvester: dashboard/image-generation-run1-review-decisions.json
+• harvester: scripts/validate-image-generation-run1-review-decisions.ts
+• harvester: reports/phase-6ee-run1-human-review-decisions.md
+• harvester: reports/telegram-phase-6ee-run1-human-review-decisions.txt
+
+npm script 新增：
+• validate:image-generation-run1-review-decisions (95/95 PASS)
+
+下一步必须由人类决策：
+1. Phase 6E-G: 重新生成 Q-6E-B-002（需独立批准）
+2. Mark Q-6E-B-002 为 terminal_rejected
+3. Idle（等待独立决策）
+
+Recommendation: "approve image 1, regenerate image 2, do not treat Run 1 as fully approved yet"
+
+报告路径：
+~/.openclaw/workspace/projects/creative-quota-harvester/reports/phase-6ee-run1-human-review-decisions.md
