@@ -3,7 +3,7 @@
   "subphase": "regen_human_review_decision_recorded",
   "mode": "run1_regen_human_review_decision",
   "generated_at": "2026-06-16T16:33:00+08:00",
-  "updated_at": "2026-06-16T16:55:32+08:00",
+  "updated_at": "2026-06-16T18:01:00+08:00",
   "based_on_phase": "6E-E (Run 1 human review decisions)",
   "based_on_assets_commit": "68aaa81",
   "based_on_harvester_commit": "446b024",
@@ -160,14 +160,16 @@
     "blocked_until_human_decision": false
   },
   "next_phase_proposal": {
-    "next_phase": "Phase 6E-F (Approve Run 2 Gate Only) — if approved, then Phase 6E-I (Run 2 Controlled Image Generation)",
-    "next_phase_status": "awaiting_human_decision",
+    "next_phase": "Phase 6E-I (Run 1 Final Closeout)",
+    "next_phase_status": "completed",
+    "next_phase_recorded_at": "2026-06-16T18:01:00+08:00",
+    "next_phase_assets_commit": "pending",
+    "next_phase_harvester_commit": "pending",
+    "run1_final_outcome": "approved_after_regen",
+    "usable_run1_images": 2,
     "auto_trigger": false,
-    "preconditions": [
-      "爸爸 explicitly approves Run 2 budget",
-      "No auto-trigger — requires separate explicit human command",
-      "Run 3 still pending — must NOT auto-trigger"
-    ]
+    "requires_separate_human_decision": true,
+    "human_decision_required": true
   },
   "validator": {
     "script": "scripts/validate-image-generation-regen-review-decision.ts",
@@ -190,5 +192,14 @@
   "no_new_image_generated": true,
   "no_run2_trigger": true,
   "no_run3_trigger": true,
-  "selected_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg"
+  "selected_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg",
+  "phase_6e_i_reference": "6E-I",
+  "run_1_final_closeout": {
+    "phase": "6E-I",
+    "status": "closed",
+    "recorded_at": "2026-06-16T18:01:00+08:00",
+    "usable_run1_images": 2,
+    "no_model_call": true,
+    "no_media_generation": true
+  }
 }

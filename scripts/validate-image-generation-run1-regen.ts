@@ -377,10 +377,10 @@ if (queue) {
     check("queue.run1_regen.no_secrets === true", r.no_secrets === true);
   }
   // current_phase / status
-  check("queue.current_phase === '6E-G' or '6E-H' (6E-H after regen review)", queue.current_phase === "6E-G" || queue.current_phase === "6E-H", queue.current_phase);
+  check("queue.current_phase === '6E-G' or '6E-H' or '6E-I' (advanced after Phase 6E-I Run 1 final closeout)", queue.current_phase === "6E-G" || queue.current_phase === "6E-H" || queue.current_phase === "6E-I", queue.current_phase);
   check(
-    "queue.current_phase_status === 'completed_within_budget' or 'regen_reviewed_approved'",
-    queue.current_phase_status === "completed_within_budget" || queue.current_phase_status === "regen_reviewed_approved",
+    "queue.current_phase_status === 'completed_within_budget' or 'regen_reviewed_approved' or 'run1_final_closed' (after 6E-I)",
+    queue.current_phase_status === "completed_within_budget" || queue.current_phase_status === "regen_reviewed_approved" || queue.current_phase_status === "run1_final_closed",
     queue.current_phase_status
   );
 }

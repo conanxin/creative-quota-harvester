@@ -3,7 +3,7 @@
   "subphase": "regen_human_review_decision_recorded",
   "mode": "run1_regen_human_review_decision",
   "generated_at": "2026-06-16T16:10:00+08:00",
-  "updated_at": "2026-06-16T16:55:32+08:00",
+  "updated_at": "2026-06-16T18:01:00+08:00",
   "based_on_phase": "6E-E (review pack)",
   "based_on_assets_commit": "68aaa81",
   "based_on_harvester_commit": "0464ea1",
@@ -158,5 +158,18 @@
   "run_1_final_outcome": "approved_after_regen",
   "usable_run1_images": 2,
   "usable_run1_total": 2,
-  "no_new_image_generated": true
+  "no_new_image_generated": true,
+  "run1_closeout": {
+    "phase": "6E-I",
+    "status": "closed",
+    "recorded_at": "2026-06-16T18:01:00+08:00",
+    "run1_final_outcome": "approved_after_regen",
+    "usable_run1_images": 2,
+    "no_model_call": true,
+    "no_media_generation": true,
+    "no_new_image_generated": true,
+    "selected_images_count": 2,
+    "superseded_parent_retained": true
+  },
+  "run1_closeout_phase": "6E-I"
 }

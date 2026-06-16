@@ -804,6 +804,65 @@
     </div>
   </div>
 
+  <div class="card" style="margin-bottom: 30px; background: #ecfeff; border: 1px solid #0e7490;">
+    <h2 style="color: #155e75;"><span class="icon">🏁</span> Run 1 Final Closeout · Phase 6E-I — CLOSED</h2>
+    <p style="color:#155e75; font-size:0.9rem; margin-bottom:12px;">
+      Phase 6E-I <strong>Run 1 final closeout</strong> recorded. <strong>run1_final_status=closed</strong>, <strong>run1_final_outcome=approved_after_regen</strong>, <strong>usable_run1_images=2 / 2</strong>. <strong>Run 1 is now CLOSED and frozen</strong>. Run 2 / Run 3 remain pending separate approval — no auto-trigger.<br/>
+      <strong>execution_status=run1_final_closed</strong> · <strong>based_on_phase=6E-H</strong> · <strong>based_on_assets_commit=4388abf</strong> · <strong>based_on_harvester_commit=4e0d35a</strong> · <strong>recorded_at=2026-06-16T18:01:00+08:00</strong><br/>
+      <strong>total_generated_image_files=8</strong> (5 baseline + 2 from 6E-D Run 1 + 1 from 6E-G regen) · <strong>pending_images=18</strong> (unchanged from 6E-G)<br/>
+      <strong>no_model_call=true</strong> · <strong>no_media_generation=true</strong> · <strong>no_new_image_generated=true</strong> · <strong>no_image_fabrication=true</strong> · <strong>no_existing_image_overwrite=true</strong> · <strong>no_existing_image_delete=true</strong><br/>
+      <strong>no_x_publish=true</strong> · <strong>no_timer=true</strong> · <strong>no_promote=true</strong> · <strong>no_c5n_change=true</strong> · <strong>no_6d5_modify=true</strong> · <strong>no_secrets=true</strong>
+    </p>
+    <table>
+      <thead>
+        <tr><th>#</th><th>item_id</th><th>title</th><th>selected_image_path</th><th>score</th><th>source</th><th>final state</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><code>Q-6E-B-001</code></td>
+          <td>SamurAIGPT/Generative-Media-Skills</td>
+          <td><code>images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg</code></td>
+          <td><strong>82.5</strong></td>
+          <td>original</td>
+          <td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approved</span></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><code>Q-6E-B-002</code></td>
+          <td>Flaws in the LLM Automation Narrative</td>
+          <td><code>images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg</code></td>
+          <td><strong>76.6</strong></td>
+          <td>regen</td>
+          <td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approved_after_regen</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <table style="margin-top:10px;">
+      <thead>
+        <tr><th>Parent image (Q-6E-B-002)</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>parent_image_path</td><td><code>images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg</code> (259KB, 1280×720)</td></tr>
+        <tr><td>parent_status</td><td><code>superseded_by_regen</code> (still exists, NOT overwritten, NOT deleted)</td></tr>
+        <tr><td>parent_retained</td><td><strong>true</strong> (historical artefact)</td></tr>
+        <tr><td>selected_replacement</td><td><code>images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg</code> (87KB, 1280×720, 76.6)</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px; padding:10px 14px; background:#cffafe; border:1px solid #0e7490; border-radius:8px; font-size:0.8rem; color:#155e75;">
+      <strong>✅ Phase 6E-I Run 1 CLOSED:</strong> 2 / 2 usable images locked in. Parent image (Q-6E-B-002 first attempt) retained as historical artefact (<code>superseded_by_regen</code>) — NOT overwritten, NOT deleted. Run 1 frozen at <strong>approved_after_regen</strong>. Run 2 / Run 3 still pending separate approval.<br/>
+      <strong>📋 Boundaries enforced:</strong> No model call (in 6E-I) · No media generation · No new image generated · No regeneration executed in 6E-I (regen was in 6E-G) · No X publish / baoyu-post-to-x · No timer / digest / promote / C5N · No 6D-5 final_status modification · No model downgrade · No image fabrication · No quota bypass · No secrets committed · No original image overwritten or deleted · No Run 2 / Run 3 approval.<br/>
+      <strong>📋 Files written:</strong> assets-repo: <code>generated/phase-6e/run1/final-summary.json</code> (new) · <code>generated/phase-6e/run1/final-summary.md</code> (new) · <code>generated/phase-6e/run1/README.md</code> (updated) · <code>dashboard/image-generation-run1-final.json</code> (new) · <code>reports/image-generation-run1-final-closeout.md</code> (new). harvester-repo: <code>dashboard/image-generation-run1-final.json</code> (new) · <code>dashboard/image-generation-run1-regen.json</code> (updated) · <code>dashboard/image-generation-run1-review-decisions.json</code> (updated) · <code>dashboard/image-generation-plan.json</code> (updated) · <code>dashboard/mainline-production-queue.json</code> (updated, current_phase=6E-I) · <code>scripts/validate-image-generation-run1-final.ts</code> (new) · <code>package.json</code> (new script <code>validate:image-generation-run1-final</code>) · <code>reports/phase-6ei-run1-final-closeout.md</code> (new) · <code>reports/telegram-phase-6ei-run1-final-closeout.txt</code> (new).<br/>
+      <strong>📋 Validators (15/15 PASS):</strong> <code>validate:image-generation-run1-final</code> (new) PASS · <code>validate:image-generation-regen-review-decision</code> 214/214 · <code>validate:image-generation-run1-regen</code> 203/203 · <code>validate:image-generation-run1-review-decisions</code> PASS · <code>validate:image-generation-run1-review</code> 98/98 · <code>validate:image-generation-run1</code> 56/56 · <code>validate:image-generation-gates</code> 161/161 · <code>validate:image-generation-plan</code> 125/125 · <code>validate:image-generation-preflight</code> 66/66 · <code>validate:x-manual-publishing-closeout</code> 89/89 · <code>validate:mainline-recovery</code> PASS · <code>validate:dashboard-control-safety</code> PASS · <code>dashboard:control:validate</code> 17/17 · <code>validate:telegram-sanitizer</code> PASS · <code>validate:project-report-send</code> 11/11.<br/>
+      <strong>📋 Next phase (NOT auto-triggered):</strong>
+      <ul style="margin:6px 0 0 20px;">
+        <li><strong>Phase 6E-F:</strong> Approve Run 2 Gate Only — Run 2 (River AI, stabilityai — 2 images) still pending separate approval</li>
+        <li><strong>Idle:</strong> Stop here. Leave Phase 6E-I as completed. Run 1 closed.</li>
+      </ul>
+      <strong>📋 Run 2 status: pending</strong> · <strong>📋 Run 3 status: pending</strong> · 两者均未批准 budget，需要单独人工批准。
+    </div>
+  </div>
+
   <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>

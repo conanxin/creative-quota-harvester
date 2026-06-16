@@ -363,6 +363,14 @@
       "media_generation_allowed": false,
       "image_api_called": false,
       "auto_trigger_allowed": false
+    },
+    "run1_closeout": {
+      "phase": "6E-I",
+      "status": "closed",
+      "recorded_at": "2026-06-16T18:01:00+08:00",
+      "usable_run1_images": 2,
+      "no_model_call": true,
+      "no_media_generation": true
     }
   },
   "boundaries_enforced": {
@@ -399,7 +407,37 @@
       "final_outcome": "approved_after_regen",
       "final_decision": "approved",
       "usable_images": 2,
-      "parent_superseded_items": 1
+      "parent_superseded_items": 1,
+      "run1_closeout_phase": "6E-I",
+      "run1_closeout_recorded_at": "2026-06-16T18:01:00+08:00",
+      "closeout_status": "closed",
+      "usable_run1_images": 2,
+      "usable_run1_total": 2,
+      "selected_image_paths": [
+        "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+        "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg"
+      ],
+      "selected_images_count": 2,
+      "superseded_parent_retained": true,
+      "superseded_parent_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "superseded_parent_status": "superseded_by_regen",
+      "no_new_image_generated": true,
+      "no_model_call": true,
+      "no_media_generation": true,
+      "no_run_2_trigger": true,
+      "no_run_3_trigger": true,
+      "no_x_publish": true,
+      "no_timer": true,
+      "no_promote": true,
+      "no_c5n_change": true,
+      "no_6d5_modify": true,
+      "no_secrets": true,
+      "total_generated_image_files_after_closeout": 8,
+      "pending_images_after_closeout": 18,
+      "next_phase_options": [
+        "Phase 6E-F (Approve Run 2 Gate Only) — requires separate explicit human command",
+        "Idle — stop here"
+      ]
     },
     "run_2": {
       "status": "pending_human_approval",
@@ -439,5 +477,6 @@
       "usable_run1_images": 2
     }
   },
-  "last_updated": "2026-06-16T16:55:32+08:00"
+  "last_updated": "2026-06-16T16:55:32+08:00",
+  "updated_at": "2026-06-16T18:01:00+08:00"
 }

@@ -360,8 +360,8 @@ if (queueHarvester) {
   check("queue.run1_regen.usable_run1_images === 2", r?.usable_run1_images === 2, String(r?.usable_run1_images));
   check("queue.run1_regen.no_new_image_generated === true", r?.no_new_image_generated === true);
   check("queue.run1_regen.no_model_call_unused_check === true", r?.no_model_call_unused_check === true);
-  check("queue.current_phase === '6E-H'", queueHarvester.current_phase === "6E-H", queueHarvester.current_phase);
-  check("queue.current_phase_status === 'regen_reviewed_approved'", queueHarvester.current_phase_status === "regen_reviewed_approved", queueHarvester.current_phase_status);
+  check("queue.current_phase === '6E-H' or '6E-I' (advanced after Phase 6E-I Run 1 final closeout)", queueHarvester.current_phase === "6E-H" || queueHarvester.current_phase === "6E-I", queueHarvester.current_phase);
+  check("queue.current_phase_status === 'regen_reviewed_approved' or 'run1_final_closed' (after 6E-I closeout)", queueHarvester.current_phase_status === "regen_reviewed_approved" || queueHarvester.current_phase_status === "run1_final_closed", queueHarvester.current_phase_status);
 }
 
 // Step 7: 6D-5 closeout unchanged

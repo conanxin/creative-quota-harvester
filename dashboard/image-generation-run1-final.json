@@ -1,0 +1,142 @@
+{
+  "phase": "6E-I",
+  "subphase": "run_1_final_closeout",
+  "mode": "phase_6e_run1_final_closeout_dashboard_harvester",
+  "run": "run_1",
+  "generated_at": "2026-06-16T18:01:00+08:00",
+  "updated_at": "2026-06-16T18:01:00+08:00",
+  "generated_by": "Phase 6E-I Run 1 Final Closeout Dashboard (harvester-repo mirror)",
+  "based_on_phase": "6E-H (regen human review approved)",
+  "based_on_assets_commit": "4388abf",
+  "based_on_harvester_commit": "4e0d35a",
+
+  "run1_final_status": "closed",
+  "run1_final_outcome": "approved_after_regen",
+  "run1_completion_recorded_at": "2026-06-16T18:01:00+08:00",
+  "run1_completed_phase": "6E-I",
+
+  "usable_run1_images": 2,
+  "usable_run1_total": 2,
+  "usable_run1_image_paths": [
+    "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+    "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg"
+  ],
+
+  "selected_images": [
+    {
+      "item_id": "Q-6E-B-001",
+      "asset_id": "cqa-2026-06-16-run1-001",
+      "title": "SamurAIGPT/Generative-Media-Skills",
+      "source_type": "code",
+      "risk_level": "low",
+      "image_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+      "image_status": "approved",
+      "selected_image_source": "original",
+      "decision": "approve",
+      "overall_score": 82.5,
+      "decision_source": "human_reviewer (Xin Conan, message_id 50763)",
+      "decided_at": "2026-06-16T16:09:50+08:00"
+    },
+    {
+      "item_id": "Q-6E-B-002",
+      "asset_id": "cqa-2026-06-16-run1-002",
+      "title": "Flaws in the LLM Automation Narrative",
+      "source_type": "academic",
+      "risk_level": "low",
+      "parent_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "parent_image_status": "superseded_by_regen",
+      "parent_retained": true,
+      "parent_image_still_exists": true,
+      "parent_image_not_overwritten": true,
+      "parent_image_not_deleted": true,
+      "selected_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg",
+      "selected_image_source": "regen",
+      "regen_asset_id": "cqa-2026-06-16-run1-002-regen1",
+      "regen_phase": "6E-G",
+      "regen_decision": "approve",
+      "regen_score": 76.6,
+      "regen_review_decision_message_id": "50775"
+    }
+  ],
+
+  "superseded_parent_images": [
+    {
+      "item_id": "Q-6E-B-002",
+      "parent_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "parent_status": "superseded_by_regen",
+      "parent_retained": true,
+      "parent_image_still_exists": true,
+      "parent_image_not_overwritten": true,
+      "parent_image_not_deleted": true,
+      "selected_replacement": "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg"
+    }
+  ],
+
+  "totals": {
+    "total_generated_image_files": 8,
+    "total_generated_image_files_baseline_pre_6e": 5,
+    "images_added_by_6ed_run1": 2,
+    "images_added_by_6eg_regen": 1,
+    "pending_images": 18,
+    "pending_images_baseline_pre_6e": 20,
+    "pending_images_remaining": 18
+  },
+
+  "run_2_status": "pending",
+  "run_3_status": "pending",
+  "run_2_approved": false,
+  "run_3_approved": false,
+  "run_2_approval_changed": false,
+  "run_3_approval_changed": false,
+
+  "no_model_call": true,
+  "no_media_generation": true,
+  "no_new_image_generated": true,
+  "no_regeneration_executed_in_this_phase": true,
+  "no_image_fabrication": true,
+  "no_existing_image_overwrite": true,
+  "no_existing_image_delete": true,
+  "no_run_2_approval": true,
+  "no_run_3_approval": true,
+  "no_run_2_trigger": true,
+  "no_run_3_trigger": true,
+  "no_x_publish": true,
+  "no_timer": true,
+  "no_digest": true,
+  "no_promote": true,
+  "no_c5n_change": true,
+  "no_6d5_modify": true,
+  "no_secrets": true,
+
+  "six_d_five_final_status": "closed",
+  "six_d_five_posted_manually_total": 5,
+
+  "phase_progression": {
+    "current_phase": "6E-I",
+    "current_phase_status": "run1_final_closed",
+    "next_phase_options": [
+      {
+        "phase": "6E-F",
+        "description": "Approve Run 2 Gate Only — Run 2 (River AI, stabilityai) still pending",
+        "requires": "separate explicit human command",
+        "auto_trigger": false
+      },
+      {
+        "phase": "idle",
+        "description": "Stop here. Leave Phase 6E-I as completed. Run 1 closed.",
+        "requires": "no action",
+        "auto_trigger": false
+      }
+    ],
+    "blocked_until_human_decision": true,
+    "auto_trigger": false
+  },
+
+  "audit_trail": [
+    "6E-D Run 1: 2 images generated within approved budget (cum 5 -> 7, pending 20 -> 18)",
+    "6E-E Run 1 review: 1 approve (Q-6E-B-001 82.5), 1 needs_regen (Q-6E-B-002 43.3)",
+    "6E-G Regen: Q-6E-B-002 only, 1 image regenerated (cum 7 -> 8)",
+    "6E-H Regen review: Q-6E-B-002 regen approved (76.6), parent superseded_by_regen",
+    "6E-I Run 1 final closeout: 2/2 usable images, Run 1 closed"
+  ]
+}
