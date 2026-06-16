@@ -1,10 +1,9 @@
-Phase 6D-5: Manual X Publishing Final Closeout — Closeout Report
+Phase 6D-5: Manual X Publishing Final Closeout
 
 Phase: 6D-5
 Status: CLOSED
 Generated: 2026-06-16T10:12:00+08:00
-Based on: Phase 6D-4F (Harvester commit=c777495, Assets commit=b00db34)
-Series: Phase 6D manual X publishing — CLOSED
+Based on: Phase 6D-4F (Assets commit=b00db34, Harvester commit=932d6ba)
 
 ---
 
@@ -20,27 +19,18 @@ final_status: closed
 
 ---
 
-POSTED_ITEMS_TABLE
+POSTED_ITEMS
 
-| # | item_id | title | risk | posted_at |
-|---|---------|-------|------|-----------|
-| 1 | Q-6B-X-brief-brief-mq8c6kp5-u-flaws-i | Flaws in the LLM Automation Narrative | low | 2026-06-16T06:51 |
-| 2 | Q-6B-X-brief-brief-mq8c663q-4-stabili | stabilityai/stable-video-diffusion-img2vid-xt | low | 2026-06-16T08:05 |
-| 3 | Q-6B-X-brief-brief-mq8c6kp4-7-samurai | SamurAIGPT/Generative-Media-Skills | low | 2026-06-16T08:36 |
-| 4 | Q-6B-X-brief-brief-mq8c663q-v-river-a | River AI | medium | 2026-06-16T09:47 |
-| 5 | Q-6B-X-brief-brief-mq8c6kp5-r-the-pen | The Penitence of Saint Jerome | medium | 2026-06-16T10:04 |
-
----
-
-RECORDED_X_URLS
-
-https://x.com/porco7161/status/2066654295135822139?s=46
-https://x.com/porco7161/status/2066673108761853983?s=46
-https://x.com/porco7161/status/2066681191529668844?s=46
-https://x.com/Porco7161/status/2066699053195550978?s=20
-https://x.com/Porco7161/status/2066702239537000945?s=20
-
-All 5 URLs are real, unique, and human-recorded.
+1. Q-6B-X-brief-brief-mq8c6kp5-u-flaws-i (Flaws in the LLM Automation Narrative, low) 6D-4B 06:51
+   https://x.com/porco7161/status/2066654295135822139?s=46
+2. Q-6B-X-brief-brief-mq8c663q-4-stabili (stabilityai/stable-video-diffusion-img2vid-xt, low) 6D-4C 08:05
+   https://x.com/porco7161/status/2066673108761853983?s=46
+3. Q-6B-X-brief-brief-mq8c6kp4-7-samurai (SamurAIGPT/Generative-Media-Skills, low) 6D-4D 08:36
+   https://x.com/porco7161/status/2066681191529668844?s=46
+4. Q-6B-X-brief-brief-mq8c663q-v-river-a (River AI, medium) 6D-4E 09:47
+   https://x.com/Porco7161/status/2066699053195550978?s=20
+5. Q-6B-X-brief-brief-mq8c6kp5-r-the-pen (The Penitence of Saint Jerome, medium) 6D-4F 10:04
+   https://x.com/Porco7161/status/2066702239537000945?s=20
 
 ---
 
@@ -54,10 +44,15 @@ flaws, stabilityai, samurai: low — preserved ✅
 
 BOUNDARY_STATUS
 
-no_x_api=true, no_baoyu_post_to_x=true, no_auto_publish=true,
-no_model_call=true, no_media_generation=true,
-platform_publish_enabled=false, manual_only=true,
-no_timer=true, no_telegram_digest=true.
+no_x_api=true ✅
+no_baoyu_post_to_x=true ✅
+no_auto_publish=true ✅
+no_model_call=true ✅
+no_media_generation=true ✅
+platform_publish_enabled=false ✅
+manual_only=true ✅
+no_timer=true ✅
+no_telegram_digest=true ✅
 
 ---
 
@@ -76,17 +71,9 @@ dashboard:control:validate: 17/17 PASS ✅
 validate:telegram-sanitizer: 43/43 PASS ✅
 validate:project-report-send: 11/11 PASS ✅
 
-(Note: per-phase record validators 6D-4A through 6D-4F are historical
-phase-specific validators. They correctly report phase mismatch because
-the state has progressed to 5/5. The 6D-5 closeout validator is the
-authoritative one for the final state.)
-
----
-
-COMMITS
-
-Assets: b00db34 (Phase 6D-5: Close out manual X publishing log)
-Harvester: (this commit)
+Per-phase record validators (6D-4A/4B/4C/4D/4E/4F) are historical
+phase-specific; they correctly report phase mismatch because state
+has progressed to 5/5. The 6D-5 closeout validator is authoritative.
 
 ---
 
@@ -104,17 +91,15 @@ WHAT_DID_NOT_CHANGE
 NEXT_PHASE_OPTIONS (NOT auto-triggered)
 
 Option A: Phase 6E-A — Controlled Image Generation Readiness Preflight
-  - Only perform quota/queue/risk checks
-  - Do NOT generate any image directly
+  - Only quota/queue/risk checks, no direct image generation
   - Trigger: human says "run 6E-A preflight"
 
 Option B: Phase 6F — X Publishing Reflection / Content Performance Manual Review
-  - Only perform review AFTER human provides data
-  - Do NOT collect automatically
+  - Only review AFTER human provides engagement data
   - Trigger: human says "run 6F review" AND provides metrics
 
-NO_TRIGGERS: Phase 6D-5 does NOT trigger 6E, 6E-A, 6F, timer, digest, promote, or C5N.
+NO_TRIGGERS: Phase 6D-5 does NOT trigger 6E, 6E-A, 6F, timer, digest, promote, C5N.
 
 ---
 
-辛 🔮 — Phase 6D-5 Manual X Publishing Final Closeout. Status: closed. 5/5 manually posted. No auto-publish. No X API. No triggers.
+辛 🔮 — Phase 6D-5 Manual X Publishing Final Closeout. Status: closed. 5/5 manually posted.
