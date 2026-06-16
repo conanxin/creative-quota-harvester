@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-06-14T06:08:32.250Z",
+  "generated_at": "2026-06-16T13:17:44.781Z",
   "phase": "4C-3A",
   "mode": "real-send",
-  "file": "reports/telegram-phase-5c2c-c5c-digest-builder-sandbox-interface.txt",
-  "label": "Phase 5C-2C-C5C",
-  "char_count": 2978,
+  "file": "reports/telegram-phase-6ej-run2-controlled-image-generation.txt",
+  "label": "Phase 6E-J",
+  "char_count": 2170,
   "max_allowed": 3500,
   "sanitizer_pass": true,
   "forbidden_hits": [],
   "send_attempted": true,
   "send_result": {
     "ok": true,
-    "message_id": 50466
+    "message_id": 50821
   },
   "reason": "sent successfully"
 }

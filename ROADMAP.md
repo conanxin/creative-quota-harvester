@@ -1342,3 +1342,48 @@ Assets repo:
 Harvester repo:
   Phase 6E-F: Approve Run 2 image generation gate
 ```
+
+---
+
+## Phase 6E-J — Run 2 Controlled Image Generation ✅
+
+**Status:** Run 2 generation **executed** within approved budget · `execution_status=completed_within_budget` · `images_generated_this_run=2/2` · cumulative 8 → **10** · pending 18 → **16** · Run 1 final closeout (6E-I) **frozen and not modified** · Run 3 (Q-6E-B-005 Penitence) **NOT generated** · 6D-5 final_status=**closed** (unchanged) · no X publish / timer / digest / promote / C5N · no video / music · no secrets · `assets_commit=b03580e` · `harvester_commit=8eb5645` · `message_id=50821` (telegram report send via report:send hook)
+
+### Generated images
+
+| asset_id | item_id | title | source_type | aspect | size | dimensions | prompt_hash | output_hash |
+|----------|---------|-------|-------------|--------|------|------------|-------------|-------------|
+| `cqa-2026-06-16-run2-001` | Q-6E-B-003 | River AI | dev-community | 1:1 | 137,300 B | 1024×1024 | `713fa2351907` | `0fa9609b9aff` |
+| `cqa-2026-06-16-run2-002` | Q-6E-B-004 | stabilityai/stable-video-diffusion-img2vid-xt | ai-ecosystem | 16:9 | 64,917 B | 1280×720 | `5b76a00ddcb7` | `200ad2cff498` |
+
+### Files (assets-repo, commit b03580e)
+- `generated/phase-6e/run2/manifest.json` (new) · `README.md` (new) · `generation-result.json` (new)
+- `images/2026/06/16/cqa-2026-06-16-run2-001_001.jpg` (new, 137KB) · `...-run2-001_001.meta.json`
+- `images/2026/06/16/cqa-2026-06-16-run2-002_001.jpg` (new, 64KB) · `...-run2-002_001.meta.json`
+- `metadata/generated-assets.json` (8 → 10) · `dashboard/image-generation-run2.json` (new) · `dashboard/image-generation-plan.json` (updated) · `dashboard/image-generation-preflight.json` (updated pending 18 → 16) · `dashboard/image-generation-gates.json` (updated, run_2 status=completed_within_budget) · `reports/image-generation-run2.md` (new)
+
+### Files (harvester-repo, commit 8eb5645)
+- `dashboard/image-generation-run2.json` (mirror) · `dashboard/image-generation-plan.json` (updated) · `dashboard/image-generation-preflight.json` (updated) · `dashboard/image-generation-gates.json` (updated) · `dashboard/mainline-production-queue.json` (updated, current_phase=6E-J) · `dashboard/index.html` (updated — adds Phase 6E-J section)
+- `scripts/generate-run2-image-batch.ts` (new) · `scripts/validate-image-generation-run2.ts` (new, 121/121 PASS)
+- `package.json` (new script `validate:image-generation-run2`)
+- `reports/phase-6ej-run2-controlled-image-generation.md` (new) · `reports/telegram-phase-6ej-run2-controlled-image-generation.txt` (new)
+- `README.md` (updated, this entry) · `ROADMAP.md` (this entry)
+
+### Validators (run 2 specific)
+- `validate:image-generation-run2` (new, 121/121 PASS) — the authoritative Phase 6E-J validator
+
+Other validators in the suite (run 2 gates, run 1 final, regen review, run 1 regen, run 1 review, plan, preflight, gates) report `phase advanced` failures — they are point-in-time validators for earlier phases (6E-F / 6E-I / 6E-H / 6E-G / 6E-E / 6E-D) and have hardcoded assertions about state at THEIR phase. Since 6E-J legitimately advanced past those phases, those assertions no longer hold. The Phase 6E-J validator confirms Run 2 state is correct.
+
+`validate:x-manual-publishing-closeout` 89/89 PASS · `validate:dashboard-control-safety` PASS · `dashboard:control:validate` 17/17 PASS · `validate:telegram-sanitizer` 43/43 PASS · `validate:project-report-send` 11/11 PASS · `validate:mainline-recovery` PASS.
+
+### Next phase (NOT auto-triggered)
+- **Phase 6E-K (Run 2 Human Image Review)** — 人工审图 + 质量评分 (separate human command)
+- **Phase 6E-L (Approve Run 3 Gate Only)** — 批准 Run 3 gate (Q-6E-B-005 Penitence) (separate human command)
+- **Idle:** Stop here. Phase 6E-J marked as completed. Run 1 + Run 2 both done. Run 3 still pending.
+
+### Telegram report (sent via report:send hook)
+- File: `reports/telegram-phase-6ej-run2-controlled-image-generation.txt`
+- Label: `Phase 6E-J`
+- Char count: 2170/3500 (sanitized: 2170)
+- Send result: `message_id=50821` (sent successfully)
+
