@@ -1,7 +1,7 @@
 {
   "phase": "6E-F",
   "mode": "image_generation_run2_gate_approval",
-  "generated_at": "2026-06-16T20:15:00+08:00",
+  "generated_at": "2026-06-16T20:59:00+08:00",
   "generated_by": "Phase 6E-F Run 2 gate approval (human decision record)",
   "no_model_call": true,
   "no_media_generation": true,
@@ -105,7 +105,7 @@
       "not_reopened_in_6ef": true
     },
     "run_2": {
-      "status": "approved_pending_generation",
+      "status": "completed_within_budget",
       "approved": true,
       "gate_approved_in_phase": "6E-F",
       "gate_decision_message_id": 50791,
@@ -116,10 +116,10 @@
         "Q-6E-B-004"
       ],
       "approved_image_count_limit": 2,
-      "generation_status": "not_started",
-      "model_call_made": false,
-      "media_generated": false,
-      "next_required_action": "separate human command required (Phase 6E-J Run 2 Controlled Image Generation)",
+      "generation_status": "completed",
+      "model_call_made": true,
+      "media_generated": true,
+      "next_required_action": "Phase 6E-K Run 2 Human Image Review OR Phase 6E-L Run 3 Gate Approval (NOT auto-triggered)",
       "approved_items_detail": [
         {
           "item_id": "Q-6E-B-003",
@@ -135,7 +135,27 @@
           "aspect_ratio": "16:9",
           "risk_level": "low"
         }
-      ]
+      ],
+      "completed_at": "2026-06-16T20:59:00+08:00",
+      "completed_in_phase": "6E-J",
+      "images_generated_count": 2,
+      "asset_ids": [
+        "cqa-2026-06-16-run2-001",
+        "cqa-2026-06-16-run2-002"
+      ],
+      "model_used": "image-01",
+      "quota_at_execution": {
+        "general_interval_percent": 52,
+        "general_weekly_percent": 54,
+        "decision": "ALLOW"
+      },
+      "no_run_1_reopen": true,
+      "no_run_3_trigger": true,
+      "no_penitence_generation": true,
+      "run_1_final_closeout_unchanged": true,
+      "six_d_five_final_status_unchanged": true,
+      "not_reopened_in_6ej": true,
+      "execution_status": "completed_within_budget"
     },
     "run_3": {
       "status": "pending_human_approval",
@@ -188,12 +208,17 @@
       "Q-6E-B-005"
     ]
   },
-  "generation_status": "not_started (Run 2 gate approved, generation requires separate Phase 6E-J command)",
+  "generation_status": "completed_run_2_in_6ej (Run 3 not approved)",
   "generated_images_unchanged": {
-    "total_generated_image_files": 8,
-    "pending_images": 18,
+    "total_generated_image_files": 10,
+    "pending_images": 16,
     "no_new_images_in_6ef": true,
-    "no_run_2_generation_in_6ef": true
+    "no_run_2_generation_in_6ef": true,
+    "after_phase_6ej_run2": 10,
+    "pending_images_after_6ej": 16,
+    "no_new_images_in_6ej_outside_run2_approved": true,
+    "run_2_generation_executed_in_6ej": true,
+    "run_3_not_generated_in_6ej": true
   },
   "six_d_five_closeout_unchanged": {
     "verified": true,
@@ -256,7 +281,7 @@
     "6E-I: Run 1 final closeout (closed, usable_run1_images=2/2)",
     "6E-F (now): Run 2 gate approved (HUMAN_APPROVES_RUN_2_AND_LIMITED_SPEND_2_IMAGES) — generation NOT executed, requires separate Phase 6E-J command"
   ],
-  "updated_at": "2026-06-16T20:15:00+08:00",
+  "updated_at": "2026-06-16T20:59:00+08:00",
   "run1_final_closeout_record": {
     "phase": "6E-I",
     "status": "closed",
@@ -281,5 +306,19 @@
     "6D-5 final_status modification",
     "X publish",
     "timer / digest / promote / C5N"
-  ]
+  ],
+  "phase_6e_j_execution": {
+    "phase": "6E-J",
+    "completed_at": "2026-06-16T20:59:00+08:00",
+    "images_generated": 2,
+    "images_planned": 2,
+    "asset_ids": [
+      "cqa-2026-06-16-run2-001",
+      "cqa-2026-06-16-run2-002"
+    ],
+    "model": "image-01",
+    "quota_decision": "ALLOW",
+    "execution_status": "completed_within_budget",
+    "auto_trigger": false
+  }
 }
