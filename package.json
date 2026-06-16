@@ -140,7 +140,8 @@
     "validate:sanitizer-false-positives": "tsx scripts/validate-sanitizer-false-positives.ts",
     "validate:sanitizer-secret-completeness": "tsx scripts/validate-sanitizer-secret-completeness.ts",
     "validate:x-manual-post-log-record": "tsx scripts/validate-x-manual-post-log-record.ts",
-    "validate:x-manual-post-log-record-4c": "tsx scripts/validate-x-manual-post-log-record-4c.ts"
+    "validate:x-manual-post-log-record-4c": "tsx scripts/validate-x-manual-post-log-record-4c.ts",
+    "validate:x-manual-post-log-record-4d": "tsx scripts/validate-x-manual-post-log-record-4d.ts"
   },
   "keywords": [
     "ai",
