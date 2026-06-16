@@ -686,3 +686,161 @@ Regression checks:
 ```
 Phase 5C-1: Add localhost-only private control server
 ```
+
+---
+
+## Phase 6E-A — Image Generation Readiness Preflight ✅
+
+**Mode:** read-only preflight · **No model call** · **No media generation**
+
+### What Changed
+
+- `dashboard/image-generation-preflight.json` (new in both repos)
+- `scripts/validate-image-generation-preflight.ts` (new)
+- `package.json` (added `validate:image-generation-preflight` script)
+- `dashboard/index.html` (added Phase 6E-A card)
+
+### Boundaries
+
+- MiniMax image API called: **No**
+- Image model called: **No**
+- Video model called: **No**
+- Music model called: **No**
+- LLM called: **No**
+- New media generated: **No**
+- New audio generated: **No**
+- Existing `generated-assets.json` modified: **No**
+- 6D-5 `final_status` modified: **No**
+- Telegram / timer / digest / promote triggered: **No**
+
+### Next Phase
+
+- **Phase 6E-B**: Controlled Image Generation Plan
+
+---
+
+## Phase 6E-B — Controlled Image Generation Plan ✅
+
+**Mode:** plan-only · **No model call** · **No media generation**
+
+### What Changed
+
+- `dashboard/image-generation-plan.json` (new in both repos)
+- `scripts/validate-image-generation-plan.ts` (new)
+- `package.json` (added `validate:image-generation-plan` script)
+
+### Plan Summary
+
+- 5 items selected (one per source_type: code / academic / ai-ecosystem / dev-community / culture-art)
+- 3 runs planned (Run 1: 2 low-risk; Run 2: 2 low-risk; Run 3: 1 medium-risk culture-art)
+- 4 human gates defined (gate_1_approve_batch_1, gate_2_approve_batch_2, gate_3_approve_batch_3, gate_4_approve_model_spend)
+- All gates default to `pending` — execution is blocked on human approval
+
+### Boundaries
+
+- MiniMax image API called: **No**
+- Image model called: **No**
+- Video model called: **No**
+- Music model called: **No**
+- LLM called: **No**
+- New media generated: **No**
+- Existing `generated-assets.json` modified: **No**
+- 6D-5 `final_status` modified: **No**
+- Telegram / timer / digest / promote triggered: **No**
+
+### Next Phase
+
+- **Phase 6E-C**: Run 1 Gate Approval (human decision record only)
+
+---
+
+## Phase 6E-C — Approve Run 1 Image Generation Gate ✅
+
+**Mode:** gate decision only · **No model call** · **No media generation**
+
+### What Changed
+
+**Assets repo:**
+
+- `dashboard/image-generation-gates.json` (new)
+- `docs/PHASE_6EC_RUN1_GATE_APPROVAL.md` (new)
+- `reports/image-generation-run1-gate-approval.md` (new)
+
+**Harvester repo:**
+
+- `dashboard/image-generation-gates.json` (new — mirror)
+- `dashboard/image-generation-plan.json` (modified — `phase_6e_c_gate_status` block added)
+- `dashboard/mainline-production-queue.json` (modified — `phase_6e_c` block added)
+- `dashboard/index.html` (modified — Phase 6E-C card added)
+- `scripts/validate-image-generation-gates.ts` (new)
+- `package.json` (modified — added `validate:image-generation-gates` script)
+- `reports/phase-6ec-run1-gate-approval.md` (new)
+- `reports/telegram-phase-6ec-run1-gate-approval.txt` (new)
+- `README.md` (modified — Phase 6E-C row added)
+- `ROADMAP.md` (modified — Phase 6E-C section added)
+
+### Human Decision
+
+**Decision text:** `HUMAN_APPROVES_RUN_1_AND_LIMITED_SPEND_2_IMAGES`
+
+| Gate | Decision | Scope |
+|------|----------|-------|
+| `gate_1_approve_batch_1` | **approved** | Run 1 only (Q-6E-B-001 + Q-6E-B-002, 2 images) |
+| `gate_2_approve_batch_2` | **pending** | Run 2 NOT approved |
+| `gate_3_approve_batch_3` | **pending** | Run 3 NOT approved (culture-art / medium-risk) |
+| `gate_4_approve_model_spend` | **approved_limited_run1_only** | Budget cap = 2 images, Run 2/3 budgets NOT approved |
+
+### Run 1 Approved Items
+
+| item_id | Title | source_type | risk | aspect |
+|---------|-------|-------------|------|--------|
+| Q-6E-B-001 | SamurAIGPT/Generative-Media-Skills | code | low | 16:9 |
+| Q-6E-B-002 | Flaws in the LLM Automation Narrative | academic | low | 16:9 |
+
+### Boundaries
+
+- MiniMax image API called: **No**
+- Image model called: **No**
+- Video model called: **No**
+- Music model called: **No**
+- LLM called: **No**
+- New media generated: **No**
+- New audio generated: **No**
+- Existing `generated-assets.json` modified: **No** (still 5 baseline)
+- 6D-5 `final_status` modified: **No** (still closed)
+- 6D-5 `posted_manually_total` modified: **No** (still 5)
+- Telegram / timer / digest / promote triggered: **No**
+- baoyu-post-to-x / X API called: **No**
+- Secrets printed: **No**
+- Run 2 / Run 3 approved: **No** (gates stay pending)
+- Run 1 generation executed: **No** (this phase records the decision only)
+
+### Validators Executed
+
+- `validate:image-generation-gates` (new — Phase 6E-C specific)
+- `validate:image-generation-plan`
+- `validate:image-generation-preflight`
+- `validate:x-manual-publishing-closeout`
+- `validate:mainline-recovery`
+- `validate:dashboard-control-safety`
+- `dashboard:control:validate`
+- `validate:telegram-sanitizer`
+- `validate:project-report-send`
+
+All validators: PASS
+
+### Next Phase
+
+- **Phase 6E-D**: Run 1 Controlled Image Generation — requires separate explicit human command
+  - Run 1 (2 images) approved; budget cap = 2 images; Run 2/3 budgets stay unapproved
+  - **NOT auto-triggered** by Phase 6E-C completion
+
+### Commits
+
+```
+Assets repo:
+  Phase 6E-C: Approve Run 1 image generation gate
+
+Harvester repo:
+  Phase 6E-C: Approve Run 1 image generation gate
+```

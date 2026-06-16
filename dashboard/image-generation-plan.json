@@ -335,6 +335,28 @@
   },
   "next_phase_proposal": "Phase 6E-B execution is gated on human approval; no auto-trigger. After all 3 runs complete, Phase 6E-C (image asset review) and Phase 6F (X performance reflection) can run.",
   "recommended_next_action": "wait_for_human_approval_batch_1_2_3_and_spend",
+  "phase_6e_c_gate_status": {
+    "phase": "6E-C",
+    "mode": "run1_gate_approval_only",
+    "decision_recorded_at": "2026-06-16T13:25:46+08:00",
+    "gate_1_approve_batch_1": "approved",
+    "gate_2_approve_batch_2": "pending",
+    "gate_3_approve_batch_3": "pending",
+    "gate_4_approve_model_spend": "approved_limited_run1_only",
+    "approved_run": "run_1",
+    "approved_image_count_limit": 2,
+    "generation_status": "not_started",
+    "no_model_call": true,
+    "no_media_generation": true,
+    "gates_record_path": "dashboard/image-generation-gates.json",
+    "next_phase": "Phase 6E-D Run 1 Controlled Image Generation (requires separate explicit command)",
+    "boundaries_enforced": {
+      "model_call_allowed": false,
+      "media_generation_allowed": false,
+      "image_api_called": false,
+      "auto_trigger_allowed": false
+    }
+  },
   "boundaries_enforced": {
     "model_call_allowed": false,
     "media_generation_allowed": false,

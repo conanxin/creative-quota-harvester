@@ -1,0 +1,60 @@
+PHASE_6EC_RUN1_GATE_APPROVAL COMPLETE
+
+状态：PASS
+
+简要：
+• Run 1 gate approved (2 images: code + academic)
+• gate_4 spend approved_limited_run1_only (budget cap = 2 images)
+• Run 2 / Run 3 still pending (not approved)
+• no_model_call=true · no_media_generation=true
+• generated_images unchanged (5 baseline)
+• 6D-5 final_status=closed (unchanged)
+• no_timer / no_promote / no_x_publish / no_secrets
+
+批准项目：
+1. Q-6E-B-001 SamurAIGPT/Generative-Media-Skills (code, low, 16:9)
+2. Q-6E-B-002 Flaws in the LLM Automation Narrative (academic, low, 16:9)
+
+未批准：
+• Run 2 (Q-6E-B-003 River AI + Q-6E-B-004 stabilityai img2vid xt)
+• Run 3 (Q-6E-B-005 Penitence of Saint Jerome, culture-art/medium)
+
+变更摘要：
+• 新增 dashboard/image-generation-gates.json（双仓）
+• 更新 dashboard/image-generation-plan.json（加 phase_6e_c_gate_status 块）
+• 更新 dashboard/mainline-production-queue.json（加 phase_6e_c 块）
+• 更新 dashboard/index.html（加 Phase 6E-C 卡片）
+• 新增 scripts/validate-image-generation-gates.ts（73 项校验）
+• package.json 加 npm 脚本 validate:image-generation-gates
+• 文档 docs/PHASE_6EC_RUN1_GATE_APPROVAL.md
+• 报告 reports/phase-6ec-run1-gate-approval.md
+• Telegram 摘要 reports/telegram-phase-6ec-run1-gate-approval.txt
+
+验证（全部 PASS）：
+• validate:image-generation-gates（新）
+• validate:image-generation-plan
+• validate:image-generation-preflight
+• validate:x-manual-publishing-closeout
+• validate:mainline-recovery
+• validate:dashboard-control-safety
+• dashboard:control:validate
+• validate:telegram-sanitizer
+• validate:project-report-send
+
+报告路径：
+projects/creative-quota-assets/dashboard/image-generation-gates.json
+projects/creative-quota-harvester/dashboard/image-generation-gates.json
+projects/creative-quota-harvester/reports/phase-6ec-run1-gate-approval.md
+projects/creative-quota-harvester/scripts/validate-image-generation-gates.ts
+
+下一阶段（不自动触发）：
+Phase 6E-D Run 1 Controlled Image Generation
+需要显式指令：
+"Phase 6E-D Run 1 Controlled Image Generation"
+
+禁止项（6E-D 执行时仍受约束）：
+• 不要扩展预算到 Run 2 / Run 3
+• 不要触发 X publish / timer / digest / promote / C5N
+• 不要修改 6D-5 final_status
+
+Phase 6E-C 是 governance-only 阶段：记录 gate 决策、写入 dashboard、通过所有校验、commit + push。没有任何 image 被生成。Run 1 执行必须等待 Phase 6E-D 的显式指令。

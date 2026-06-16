@@ -567,6 +567,45 @@
     </div>
   </div>
 
+  <div class="card" style="margin-bottom: 30px; background: #f0f9ff; border: 1px solid #0369a1;">
+    <h2 style="color: #0c4a6e;"><span class="icon">🚦</span> 图像生成 Gate 决策 · Image Generation Gate Approval (Phase 6E-C)</h2>
+    <p style="color:#0c4a6e; font-size:0.9rem; margin-bottom:12px;">
+      Phase 6E-C records the <strong>Run 1 gate decision only</strong>.<br/>
+      <strong>gate_1_approve_batch_1=approved</strong> · <strong>gate_4_approve_model_spend=approved_limited_run1_only</strong> · <strong>approved_run=run_1</strong> · <strong>approved_image_count_limit=2</strong><br/>
+      <strong>run_2_status=pending</strong> · <strong>run_3_status=pending</strong> · <strong>generation_status=not_started</strong> · <strong>no_model_call=true</strong> · <strong>no_media_generation=true</strong> · <strong>no_timer=true</strong> · <strong>no_promote=true</strong> · <strong>no_x_publish=true</strong> · <strong>no_secrets=true</strong>
+    </p>
+    <table>
+      <thead>
+        <tr><th>Gate</th><th>Decision</th><th>Scope</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>gate_1_approve_batch_1</code></td><td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approved</span></td><td>Run 1 only (2 images: Q-6E-B-001 + Q-6E-B-002)</td></tr>
+        <tr><td><code>gate_2_approve_batch_2</code></td><td><span style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px;">pending</span></td><td>NOT approved — Run 2 blocked</td></tr>
+        <tr><td><code>gate_3_approve_batch_3</code></td><td><span style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px;">pending</span></td><td>NOT approved — Run 3 blocked (culture-art / medium-risk)</td></tr>
+        <tr><td><code>gate_4_approve_model_spend</code></td><td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approved_limited_run1_only</span></td><td>Budget cap limited to 2 images. Run 2/3 budgets NOT approved.</td></tr>
+      </tbody>
+    </table>
+    <table style="margin-top:12px;">
+      <thead>
+        <tr><th>#</th><th>item_id</th><th>Title</th><th>source_type</th><th>risk</th><th>aspect</th><th>run</th><th>approval</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Q-6E-B-001</td><td>SamurAIGPT/Generative-Media-Skills</td><td>code</td><td>low</td><td>16:9</td><td>1</td><td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approved</span></td></tr>
+        <tr><td>2</td><td>Q-6E-B-002</td><td>Flaws in the LLM Automation Narrative</td><td>academic</td><td>low</td><td>16:9</td><td>1</td><td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approved</span></td></tr>
+        <tr><td>3</td><td>Q-6E-B-003</td><td>River AI</td><td>dev-community</td><td>low</td><td>1:1</td><td>2</td><td><span style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px;">pending</span></td></tr>
+        <tr><td>4</td><td>Q-6E-B-004</td><td>stabilityai/stable-video-diffusion-img2vid-xt</td><td>ai-ecosystem</td><td>low</td><td>16:9</td><td>2</td><td><span style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px;">pending</span></td></tr>
+        <tr><td>5</td><td>Q-6E-B-005</td><td>The Penitence of Saint Jerome</td><td>culture-art</td><td>medium</td><td>16:9</td><td>3</td><td><span style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px;">pending</span></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px; padding:10px 14px; background:#dbeafe; border:1px solid #0369a1; border-radius:8px; font-size:0.8rem; color:#0c4a6e;">
+      <strong>✅ Phase 6E-C Run 1 gate approval:</strong> Human decision <code>HUMAN_APPROVES_RUN_1_AND_LIMITED_SPEND_2_IMAGES</code> recorded. Run 1 (2 images) approved. Run 2 (2 images) and Run 3 (1 image) remain pending separate approval. Budget cap is LIMITED to Run 1's 2 images — Run 2/3 budgets NOT approved.<br/>
+      <strong>📋 Idempotence preserved:</strong> generated_images count=5 (unchanged) · 6D-5 final_status=closed (unchanged) · 6D-5 posted_manually_total=5 (unchanged) · no_secrets=true · generated-assets.json unmodified.<br/>
+      <strong>📋 Validator:</strong> <code>scripts/validate-image-generation-gates.ts</code> (new) · npm script <code>validate:image-generation-gates</code><br/>
+      <strong>📋 Next phase (NOT auto-triggered):</strong> <strong>Phase 6E-D Run 1 Controlled Image Generation</strong> — requires separate explicit human command.<br/>
+      <strong>❌ 不要做:</strong> 不要调用 image model · 不要调用 video/music model · 不要生成任何图片/视频/音乐 · 不要进入 Phase 6E-D 自动执行 · 不要调用 X API · 不要触发 timer / digest / promote / C5N · 不要修改 6D-5 final_status · 不要扩展预算到 Run 2/3.
+    </div>
+  </div>
+
   <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>

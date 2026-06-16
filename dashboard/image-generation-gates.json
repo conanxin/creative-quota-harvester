@@ -1,0 +1,242 @@
+{
+  "phase": "6E-C",
+  "mode": "image_generation_run1_gate_approval",
+  "generated_at": "2026-06-16T13:25:00+08:00",
+  "generated_by": "Phase 6E-C Run 1 gate approval (human decision record)",
+  "no_model_call": true,
+  "no_media_generation": true,
+  "no_telegram": true,
+  "no_timer": true,
+  "no_x_publish": true,
+  "no_promote": true,
+  "no_c5n_change": true,
+  "no_6d5_modify": true,
+  "no_secrets": true,
+  "based_on_phase": "6E-B",
+  "based_on_assets_commit": "c5c5e963c4608cabd98816f462f634a5ad150e0b",
+  "based_on_harvester_commit": "6e306915b9c8d16184e6e7eb33c4363230bf0306",
+  "human_decision_source": "Telegram directive from 爸爸 (Xin Conan, chat_id 1540208324)",
+  "human_decision_record": {
+    "decision_text": "HUMAN_APPROVES_RUN_1_AND_LIMITED_SPEND_2_IMAGES",
+    "approve_batch_1": true,
+    "approve_model_spend": true,
+    "approved_image_count_limit": 2,
+    "approved_run": "run_1",
+    "run_2_decision": "pending",
+    "run_3_decision": "pending",
+    "total_5_image_plan_approval": "partial (Run 1 only, 2 of 5 images)"
+  },
+  "gates": {
+    "gate_1_approve_batch_1": {
+      "decision": "approved",
+      "approved_run": "run_1",
+      "approved_image_count_limit": 2,
+      "approved_items": [
+        "Q-6E-B-001",
+        "Q-6E-B-002"
+      ],
+      "decision_owner": "爸爸",
+      "decided_at": "2026-06-16T13:25:46+08:00",
+      "blocker_if_not_approved": "Run 1 image generation will not start (default_decision was pending)",
+      "scope_boundary": "approval covers ONLY Q-6E-B-001 + Q-6E-B-002; Run 2 items Q-6E-B-003/004 and Run 3 item Q-6E-B-005 remain unapproved"
+    },
+    "gate_2_approve_batch_2": {
+      "decision": "pending",
+      "approved_run": null,
+      "approved_image_count_limit": null,
+      "approved_items": [],
+      "decision_owner": "爸爸",
+      "decided_at": null,
+      "blocker_if_not_approved": "Run 2 image generation will not start",
+      "scope_boundary": "NOT approved in 6E-C; requires separate human decision in future phase"
+    },
+    "gate_3_approve_batch_3": {
+      "decision": "pending",
+      "approved_run": null,
+      "approved_image_count_limit": null,
+      "approved_items": [],
+      "decision_owner": "爸爸",
+      "decided_at": null,
+      "blocker_if_not_approved": "Run 3 image generation will not start",
+      "scope_boundary": "NOT approved in 6E-C; requires separate human decision in future phase. culture-art medium-risk human review path must also be ready."
+    },
+    "gate_4_approve_model_spend": {
+      "decision": "approved_limited_run1_only",
+      "approved_scope": "Run 1 only (2 images maximum)",
+      "approved_image_count_limit": 2,
+      "total_5_image_budget_approval": false,
+      "run_2_budget_approval": false,
+      "run_3_budget_approval": false,
+      "decision_owner": "爸爸",
+      "decided_at": "2026-06-16T13:25:46+08:00",
+      "blocker_if_not_approved": "No image generation runs would execute; image model would not be called",
+      "scope_boundary": "Budget cap is LIMITED to Run 1 only. Run 2 (2 images) and Run 3 (1 image) budgets are NOT approved. Any model call beyond Run 1's 2 images must trigger a new gate approval."
+    }
+  },
+  "run_status": {
+    "run_1": {
+      "status": "approved_pending_generation",
+      "approved": true,
+      "items_count": 2,
+      "item_ids": [
+        "Q-6E-B-001",
+        "Q-6E-B-002"
+      ],
+      "generation_status": "not_started",
+      "model_call_made": false,
+      "media_generated": false
+    },
+    "run_2": {
+      "status": "pending_human_approval",
+      "approved": false,
+      "items_count": 2,
+      "item_ids": [
+        "Q-6E-B-003",
+        "Q-6E-B-004"
+      ],
+      "generation_status": "not_started",
+      "model_call_made": false,
+      "media_generated": false,
+      "next_required_action": "separate human approval required (Phase TBD)"
+    },
+    "run_3": {
+      "status": "pending_human_approval",
+      "approved": false,
+      "items_count": 1,
+      "item_ids": [
+        "Q-6E-B-005"
+      ],
+      "generation_status": "not_started",
+      "model_call_made": false,
+      "media_generated": false,
+      "next_required_action": "separate human approval required (Phase TBD). culture-art medium-risk path also requires readiness."
+    }
+  },
+  "approved_items": {
+    "run_1_approved_items": [
+      {
+        "item_id": "Q-6E-B-001",
+        "title": "SamurAIGPT/Generative-Media-Skills",
+        "source_type": "code",
+        "risk_level": "low",
+        "aspect_ratio": "16:9",
+        "run_order": 1,
+        "model_recommended": "image-01",
+        "watermark": true,
+        "review_required": false,
+        "approved_in_phase": "6E-C"
+      },
+      {
+        "item_id": "Q-6E-B-002",
+        "title": "Flaws in the LLM Automation Narrative",
+        "source_type": "academic",
+        "risk_level": "low",
+        "aspect_ratio": "16:9",
+        "run_order": 2,
+        "model_recommended": "image-01",
+        "watermark": true,
+        "review_required": false,
+        "approved_in_phase": "6E-C"
+      }
+    ],
+    "run_2_approved_items": [],
+    "run_3_approved_items": [],
+    "total_approved_count": 2,
+    "total_unapproved_count": 3
+  },
+  "generation_status": {
+    "overall_status": "not_started",
+    "current_run": null,
+    "images_generated_this_phase": 0,
+    "images_planned_this_phase": 2,
+    "images_generated_cumulative": 5,
+    "images_planned_cumulative_run1_2_3": 5,
+    "images_planned_cumulative_after_6ec_approval": 7,
+    "explanation": "5 already exist from earlier canary/baseline phases. 6E-C approves 2 more (Run 1). 3 more (Run 2/3) still pending separate approval."
+  },
+  "generated_images_unchanged": {
+    "verified": true,
+    "expected_count": 5,
+    "expected_asset_ids": [
+      "cqa-2026-06-11-canary-001",
+      "cqa-2026-06-11-gen-002",
+      "cqa-2026-06-11-gen-003",
+      "cqa-2026-06-11-gen-004",
+      "cqa-2026-06-11-gen-005"
+    ],
+    "verification_path": "creative-quota-assets/metadata/generated-assets.json",
+    "no_new_images_added": true,
+    "no_existing_images_modified": true
+  },
+  "six_d_five_closeout_unchanged": {
+    "verified": true,
+    "verification_path": "creative-quota-harvester/dashboard/x-manual-post-log.json",
+    "expected_phase": "6D-5",
+    "expected_final_status": "closed",
+    "expected_posted_manually_total": 5,
+    "modification_made": false
+  },
+  "boundaries_enforced": {
+    "model_call_allowed": false,
+    "media_generation_allowed": false,
+    "image_api_called": false,
+    "baoyu_post_to_x_called": false,
+    "platform_publish_executed": false,
+    "platform_publish_enabled": false,
+    "auto_publish": false,
+    "auto_decide_allowed": false,
+    "collect_allowed": false,
+    "digest_send_allowed": false,
+    "timer_allowed": false,
+    "c5n_promote_allowed": false,
+    "production_digest_overwrite": false,
+    "systemd_change": false,
+    "token_commit": false,
+    "secrets_printed": false
+  },
+  "next_phase_proposal": {
+    "next_phase": "Phase 6E-D Run 1 Controlled Image Generation",
+    "next_phase_status": "blocked_on_separate_command",
+    "next_phase_preconditions": [
+      "explicit human command 'Phase 6E-D Run 1 Controlled Image Generation'",
+      "Run 1 gate stays approved",
+      "Run 1 budget cap stays approved (limited to 2 images)",
+      "Run 2/3 budgets remain unapproved and must NOT be touched"
+    ],
+    "next_phase_explicit_blockers": [
+      "DO NOT auto-start Run 1 generation from this 6E-C completion",
+      "DO NOT extend budget to Run 2 or Run 3 without separate approval",
+      "DO NOT trigger X publish / timer / digest / promote / C5N",
+      "DO NOT modify 6D-5 final_status"
+    ]
+  },
+  "out_of_scope_for_6ec": {
+    "image_generation_execution": "not in 6E-C; only gate decision record + validations",
+    "video_generation": "not in 6E-C; separate phase 6J",
+    "music_generation": "not in 6E-C; separate phase 6K",
+    "run_2_approval": "NOT in 6E-C",
+    "run_3_approval": "NOT in 6E-C",
+    "republishing_to_x": "not in 6E-C; 6F separate",
+    "blog_drafts": "not in 6E-C; 6G-blog separate",
+    "changing_6d5_closeout": "not allowed in 6E-C; 6D-5 final_status=closed must remain",
+    "x_publish": "not in 6E-C; explicit blocker"
+  },
+  "recommended_next_action": "wait_for_separate_command_phase_6ed_run_1_controlled_image_generation",
+  "audit_trail": {
+    "phase_6ea_preflight_unchanged": true,
+    "phase_6eb_plan_unchanged": true,
+    "phase_6d5_closeout_unchanged": true,
+    "phase_6ec_changes_only": [
+      "dashboard/image-generation-gates.json (new in both repos)",
+      "dashboard/image-generation-plan.json (gate_4 decision updated in both repos)",
+      "dashboard/mainline-production-queue.json (phase_6e_c section added)",
+      "dashboard/index.html (Phase 6E-C card added)",
+      "docs/PHASE_6EC_RUN1_GATE_APPROVAL.md (new)",
+      "reports/image-generation-run1-gate-approval.md (new)",
+      "reports/phase-6ec-run1-gate-approval.md (new)",
+      "reports/telegram-phase-6ec-run1-gate-approval.txt (new)",
+      "scripts/validate-image-generation-gates.ts (new)",
+      "package.json (validate:image-generation-gates script added)"
+    ]
+  }
+}

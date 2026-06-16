@@ -279,5 +279,65 @@
       "token_commit": false,
       "auto_decide_allowed": false
     }
+  },
+  "phase_6e_c": {
+    "phase": "6E-C",
+    "mode": "run1_gate_approval_only",
+    "added_at": "2026-06-16T13:25:46+08:00",
+    "added_by": "Phase 6E-C Run 1 gate approval (human decision record)",
+    "no_model_call": true,
+    "no_media_generation": true,
+    "no_telegram": true,
+    "no_timer": true,
+    "no_x_publish": true,
+    "no_promote": true,
+    "no_c5n_change": true,
+    "no_6d5_modify": true,
+    "no_secrets": true,
+    "human_decision_text": "HUMAN_APPROVES_RUN_1_AND_LIMITED_SPEND_2_IMAGES",
+    "gates": {
+      "gate_1_approve_batch_1": "approved",
+      "gate_2_approve_batch_2": "pending",
+      "gate_3_approve_batch_3": "pending",
+      "gate_4_approve_model_spend": "approved_limited_run1_only"
+    },
+    "approved_run": "run_1",
+    "approved_image_count_limit": 2,
+    "run_1_approved_items": [
+      "Q-6E-B-001",
+      "Q-6E-B-002"
+    ],
+    "run_2_status": "pending",
+    "run_3_status": "pending",
+    "run_2_approved_items": [],
+    "run_3_approved_items": [],
+    "total_5_image_plan_approval": "partial (Run 1 only, 2 of 5 images)",
+    "generation_status": "not_started",
+    "images_generated_this_phase": 0,
+    "images_planned_this_phase": 2,
+    "images_generated_cumulative": 5,
+    "images_planned_cumulative_after_6ec_approval": 7,
+    "generated_images_unchanged": true,
+    "gates_record_path": "dashboard/image-generation-gates.json",
+    "next_action": "wait_for_separate_command_phase_6ed_run_1_controlled_image_generation",
+    "auto_trigger_allowed": false,
+    "recommended_next_phase": "6E-D Run 1 Controlled Image Generation (blocked on separate explicit command)",
+    "recommended_next_phase_after_run_1_execution": "6E-E image asset review / quality score for Run 1 outputs",
+    "run_2_next_action": "wait_for_separate_human_approval_for_run_2",
+    "run_3_next_action": "wait_for_separate_human_approval_for_run_3",
+    "boundaries_enforced": {
+      "model_call_allowed": false,
+      "media_generation_allowed": false,
+      "image_api_called": false,
+      "platform_publish_executed": false,
+      "collect_allowed": false,
+      "digest_send_allowed": false,
+      "timer_allowed": false,
+      "c5n_promote_allowed": false,
+      "production_digest_overwrite": false,
+      "systemd_change": false,
+      "token_commit": false,
+      "auto_decide_allowed": false
+    }
   }
 }
