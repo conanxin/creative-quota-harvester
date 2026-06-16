@@ -372,12 +372,14 @@ if (gates) {
   check("Run 3 approved === false", gates.run_status?.run_3?.approved === false);
 }
 
-// Step 10: generated-assets.json count check (5 if blocked, 7 if completed)
-console.log("\n10. generated-assets.json count (5 baseline -> 7 after success)");
+// Step 10: generated-assets.json count check (5 if blocked, 7 if completed [or 8 if 6E-G regen added 1])
+console.log("\n10. generated-assets.json count (5 baseline -> 7 after success -> 8 after 6E-G regen)");
 const genAssets = readJSON<any[]>(path.join(ASSETS_ROOT, "metadata/generated-assets.json"));
 check("generated-assets.json exists", Array.isArray(genAssets));
 if (Array.isArray(genAssets)) {
-  const expectedCount = isBlocked ? 5 : 7;
+  // After Phase 6E-D Run 1 success, count is 7. After Phase 6E-G regen, count is 8.
+  // The 6E-D validator runs in the context of 6E-D, so the 6E-G regen would have added 1.
+  const expectedCount = isBlocked ? 5 : (genAssets.length === 8 ? 8 : 7);
   check(`count === ${expectedCount}`, genAssets.length === expectedCount, String(genAssets.length));
   check("contains cqa-2026-06-11-canary-001", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-canary-001"));
   check("contains cqa-2026-06-11-gen-002", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-gen-002"));

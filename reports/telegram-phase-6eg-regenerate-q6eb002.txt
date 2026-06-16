@@ -1,0 +1,71 @@
+Phase 6E-G · Regenerate Q-6E-B-002 COMPLETE
+
+状态：PASS（completed_within_budget）
+
+📌 摘要
+- 目标：Q-6E-B-002 (Flaws in the LLM Automation Narrative)
+- 父图：cqa-2026-06-16-run1-002_001.jpg (259KB, needs_regen, score 43.3)
+- 新图：cqa-2026-06-16-run1-002-regen1_001.jpg (86KB, 1280×720)
+- 模型：image-01（未降级）
+- Aspect：16:9 · Watermark：true
+- Quota：general 55% interval / 61% weekly · ALLOW（≥50%）
+
+🔐 Hash
+- prompt_hash: 83a4a9b43c1b
+- output_hash: 4b66c35d3c78
+
+📊 文件计数
+- total_generated_image_files: 7 → 8
+- pending_images: 18（未变）
+- approved_regen_limit: 1
+- regen_count_executed: 1
+- model_calls_made: 1
+- image_api_called: true
+- video_api_called: false
+- music_api_called: false
+
+🛡️ 边界（全部尊重）
+- 仅 Q-6E-B-002 重生（no SamurAIGPT, no River AI, no stabilityai, no Penitence）
+- 原图保留，未覆盖，未删除
+- Run 2 / Run 3 仍 pending（无自动触发）
+- 6D-5 final_status=closed（未变）
+- 无 X publish · 无 timer · 无 digest · 无 promote · 无 C5N
+- 无视频 · 无音乐 · 无 secrets
+- 无模型降级 · 无 quota 绕过
+
+✅ 验证（13 项）
+- validate:image-generation-run1-regen: 203/203
+- validate:image-generation-run1-review-decisions: 95/95
+- validate:image-generation-run1-review: 97/97
+- validate:image-generation-run1: 55/55
+- validate:image-generation-gates: 161/161
+- validate:image-generation-plan: 125/125
+- validate:image-generation-preflight: 66/66
+- validate:x-manual-publishing-closeout: 89/89
+- validate:mainline-recovery: PASS
+- validate:dashboard-control-safety: PASS
+- dashboard:control:validate: 17/17
+- validate:telegram-sanitizer: 43/43
+- validate:project-report-send: 11/11
+
+📁 关键文件
+- assets: generated/phase-6e/run1/regen/q-6e-b-002/{manifest.json, README.md, generation-result.json}
+- image: images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg
+- metadata: metadata/generated-assets.json (7 → 8)
+- dashboards: image-generation-run1-regen.json (new), image-generation-run1-review-decisions.json (mirror), image-generation-plan.json (regen_1 block), mainline-production-queue.json (run1_regen block)
+- harvester: scripts/validate-image-generation-run1-regen.ts (new, 203 checks), package.json (new script)
+
+🎯 Prompt 修正（避免原失败模式）
+- 单幅干净学术研究封面
+- 单一概念图（横向 pipeline 在右侧收窄）
+- 无面孔几何人形代表 human oversight
+- 3 个极简可读标签：Automation Limits / Reliability Gap / Human Oversight
+- 仅标题单行，无 badge / seal / logo / body text
+- 深海军蓝 + 暖米白 + 暗金（Edward Tufte 数据油墨比）
+
+➡️ 下一步
+- Phase 6E-H (Regenerated Image Human Review) — 等待爸爸人工审核重生图
+- Run 2 / Run 3 仍 pending（需独立人工批准）
+- 默认若爸爸无回应：Phase 6E-G 视为完成，Run 1 仍 partial_pass，Run 2/3 仍 pending
+
+报告路径：reports/phase-6eg-regenerate-q6eb002.md

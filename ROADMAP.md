@@ -1012,3 +1012,113 @@ Harvester repo:
   Phase 6E-E: Add Run 1 human image review pack
   Phase 6E-E: Record Run 1 human review decisions (1 approve, 1 needs_regen)
 ```
+
+---
+
+## Phase 6E-G — Controlled Regeneration for Q-6E-B-002 ✅
+
+**Generated at:** 2026-06-16T16:33:00+08:00
+**Status:** ✅ Complete (within human-approved limit of 1 image)
+**Parent review:** 6E-E (Q-6E-B-002 decision=needs_regen, score 43.3)
+**Decision message_id:** 50769 (Telegram direct, HUMAN_APPROVES_REGEN_Q_6E_B_002_LIMIT_1_IMAGE)
+
+### What was done
+
+- Generated exactly 1 image for Q-6E-B-002 (Flaws in the LLM Automation Narrative) — academic source_type, 16:9, watermark=true, image-01 model (no downgrade).
+- New image: `images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg` (87634 bytes, 1280×720)
+- prompt_hash: `83a4a9b43c1b`, output_hash: `4b66c35d3c78`
+- Quota at execution: 55% interval / 61% weekly → ALLOW (≥50%)
+
+### What was NOT done (boundaries)
+
+- No SamurAIGPT regen (Q-6E-B-001 left untouched)
+- No River AI (Q-6E-B-003)
+- No stabilityai (Q-6E-B-004)
+- No Penitence (Q-6E-B-005)
+- No Run 2 / Run 3 triggered (still pending human approval)
+- No video, no music
+- No X publish, no timer, no digest, no promote, no C5N
+- 6D-5 final_status=closed (unchanged)
+- Original failed image (cqa-2026-06-16-run1-002_001.jpg, 259KB) NOT overwritten, NOT deleted
+- No model downgrade, no quota bypass, no image fabrication, no secrets
+
+### Counts
+
+| Metric | Before | After |
+|--------|--------|-------|
+| total_generated_image_files | 7 | 8 |
+| pending_images | 18 | 18 (unchanged) |
+| model_calls_made (this phase) | — | 1 |
+| approved_regen_limit | — | 1 |
+| regen_count_executed | — | 1 |
+
+### Prompt re-design (avoiding previous failure modes)
+
+Previous run (overall 43.3) failed because of: text artifacts, unreadable subtitle/body text, fake academic badge feel, complex pseudo-academic poster layout.
+
+This regen uses:
+- Single clean 16:9 academic research cover
+- One simple conceptual diagram (horizontal pipeline narrowing at the right)
+- Faceless geometric human silhouette for the human-oversight layer
+- 3 minimal readable labels: "Automation Limits", "Reliability Gap", "Human Oversight"
+- Title only at top: "Flaws in the LLM Automation Narrative" (single line)
+- No fake badges, no fake seals, no fake logos, no body paragraphs
+- Deep navy + warm off-white + muted gold (Edward Tufte inspired data-ink ratio)
+
+### Validators (all PASS)
+
+- `validate:image-generation-run1-regen` (new, 203/203)
+- `validate:image-generation-run1-review-decisions` (95/95)
+- `validate:image-generation-run1-review` (97/97)
+- `validate:image-generation-run1` (55/55)
+- `validate:image-generation-gates` (161/161)
+- `validate:image-generation-plan` (125/125)
+- `validate:image-generation-preflight` (66/66)
+- `validate:x-manual-publishing-closeout` (89/89)
+- `validate:mainline-recovery` (PASS)
+- `validate:dashboard-control-safety` (PASS)
+- `dashboard:control:validate` (17/17)
+- `validate:telegram-sanitizer` (43/43)
+- `validate:project-report-send` (11/11)
+
+### Files
+
+Assets repo:
+- `generated/phase-6e/run1/regen/q-6e-b-002/manifest.json` (new)
+- `generated/phase-6e/run1/regen/q-6e-b-002/README.md` (new)
+- `generated/phase-6e/run1/regen/q-6e-b-002/generation-result.json` (new)
+- `images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg` (new, 87634 bytes)
+- `images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.meta.json` (new)
+- `metadata/generated-assets.json` (updated 7 → 8)
+- `dashboard/image-generation-run1-regen.json` (new)
+- `dashboard/image-generation-run1-review-decisions.json` (mirror)
+- `dashboard/image-generation-plan.json` (regen_1 block added)
+- `reports/image-generation-run1-regen.md` (new)
+
+Harvester repo:
+- `scripts/validate-image-generation-run1-regen.ts` (new, 203 checks)
+- `package.json` (new script `validate:image-generation-run1-regen`)
+- `dashboard/image-generation-run1-regen.json` (mirror)
+- `dashboard/image-generation-plan.json` (regen_1 block added)
+- `dashboard/mainline-production-queue.json` (run1_regen block added)
+- `dashboard/index.html` (Phase 6E-G section added)
+- `README.md` (Phase 6E-G row added)
+- `ROADMAP.md` (this section)
+- `reports/phase-6eg-regenerate-q6eb002.md` (new)
+- `reports/telegram-phase-6eg-regenerate-q6eb002.txt` (new, sanitized)
+
+### Next Phase (NOT auto-triggered)
+
+- **Phase 6E-H (Regenerated Image Human Review)** — 爸爸 reviews the regen image and provides 5-dimension scores + decision
+- **Phase 6E-F (Approve Run 2 Gate Only)** — still pending, requires separate human command
+- **Idle** — leave Phase 6E-G as completed; no further action
+
+### Commits (planned)
+
+```
+Assets repo:
+  Phase 6E-G: Regenerate Flaws LLM image candidate
+
+Harvester repo:
+  Phase 6E-G: Record Flaws LLM image regeneration
+```

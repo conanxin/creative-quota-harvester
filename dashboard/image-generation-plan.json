@@ -333,7 +333,16 @@
     "blog_drafts": "not in 6E-B; 6G-blog separate",
     "changing_6d5_closeout": "not allowed; 6D-5 final_status=closed must remain"
   },
-  "next_phase_proposal": "Phase 6E-B execution is gated on human approval; no auto-trigger. After all 3 runs complete, Phase 6E-C (image asset review) and Phase 6F (X performance reflection) can run.",
+  "next_phase_proposal": {
+    "next_phase": "Phase 6E-H (Regenerated Image Human Review)",
+    "next_phase_status": "awaiting_human_review",
+    "auto_trigger": false,
+    "preconditions": [
+      "Human reviews the 1 regenerated image for Q-6E-B-002",
+      "No auto-trigger — requires separate explicit human command",
+      "Run 2 / Run 3 still pending — must NOT auto-trigger"
+    ]
+  },
   "recommended_next_action": "wait_for_human_approval_batch_1_2_3_and_spend",
   "phase_6e_c_gate_status": {
     "phase": "6E-C",
@@ -398,7 +407,25 @@
       "status": "pending_human_approval",
       "human_decision_required": true,
       "auto_trigger_allowed": false
+    },
+    "regen_1": {
+      "status": "completed_within_budget",
+      "completed_at": "2026-06-16T16:33:00+08:00",
+      "parent_run": "run_1",
+      "parent_item_id": "Q-6E-B-002",
+      "regen_target_item_id": "Q-6E-B-002",
+      "regen_target_pack_id": "brief-brief-mq8tbqf4-j-flaws-in-the-llm-automation-narrative",
+      "images_generated": 1,
+      "images_planned": 1,
+      "quota_check_passed": true,
+      "model_used": "image-01",
+      "asset_id": "cqa-2026-06-16-run1-002-regen1",
+      "human_approval": "HUMAN_APPROVES_REGEN_Q_6E_B_002_LIMIT_1_IMAGE",
+      "human_approval_message_id": "50769",
+      "boundaries_respected": true,
+      "no_run_2_trigger": true,
+      "no_run_3_trigger": true
     }
   },
-  "last_updated": "2026-06-16T15:06:00+08:00"
+  "last_updated": "2026-06-16T16:33:00+08:00"
 }

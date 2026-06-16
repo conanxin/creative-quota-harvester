@@ -95,7 +95,7 @@ console.log("\n3. generated-assets.json count unchanged (still 7, no new images)
 const genAssets = readJSON<any[]>(path.join(ASSETS_ROOT, "metadata/generated-assets.json"));
 check("generated-assets.json exists", Array.isArray(genAssets));
 if (Array.isArray(genAssets)) {
-  check("count === 7 (no new images)", genAssets.length === 7, String(genAssets.length));
+  check("count === 7 or 8 (no new images from 6E-E; 8 if 6E-G regen)", genAssets.length === 7 || genAssets.length === 8, String(genAssets.length));
 }
 
 // Step 4: Review board content

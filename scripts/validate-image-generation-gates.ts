@@ -278,8 +278,8 @@ function main(): void {
   const genAssetsPath = path.join(ASSETS_ROOT, "metadata", "generated-assets.json");
   if (fs.existsSync(genAssetsPath)) {
     const genAssets = JSON.parse(fs.readFileSync(genAssetsPath, "utf-8")) as Array<{ asset_id: string }>;
-    const allowedCounts = [5, 7];
-    check(`generated-assets.json count in [5,7]`, allowedCounts.includes(genAssets.length), `got ${genAssets.length}`);
+    const allowedCounts = [5, 7, 8];
+    check(`generated-assets.json count in [5,7,8] (5 baseline; 7 after 6E-D Run 1; 8 after 6E-G regen)`, allowedCounts.includes(genAssets.length), `got ${genAssets.length}`);
     const expectedIds = ["cqa-2026-06-11-canary-001", "cqa-2026-06-11-gen-002", "cqa-2026-06-11-gen-003", "cqa-2026-06-11-gen-004", "cqa-2026-06-11-gen-005"];
     const actualIds = genAssets.map((a) => a.asset_id);
     for (const id of expectedIds) {

@@ -132,7 +132,7 @@ console.log("\n3. generated-assets.json count unchanged (still 7)");
 const genAssets = readJSON<any[]>(path.join(ASSETS_ROOT, "metadata/generated-assets.json"));
 check("generated-assets.json exists", Array.isArray(genAssets));
 if (Array.isArray(genAssets)) {
-  check("count === 7 (no new images)", genAssets.length === 7, String(genAssets.length));
+  check("count === 7 or 8 (no new images from 6E-E review; 8 if 6E-G regen)", genAssets.length === 7 || genAssets.length === 8, String(genAssets.length));
 }
 
 // Step 4: Review board content
@@ -282,7 +282,7 @@ if (reviewDashContent) {
   check("review dash.no_c5n_change === true", reviewDashContent.no_c5n_change === true);
   check("review dash.run_2_approved === false", reviewDashContent.run_2_approved === false);
   check("review dash.run_3_approved === false", reviewDashContent.run_3_approved === false);
-  check("review dash.total_generated_images === 7", reviewDashContent.total_generated_images === 7, String(reviewDashContent.total_generated_images));
+  check("review dash.total_generated_images === 7 (unchanged since 6E-E)", reviewDashContent.total_generated_images === 7, String(reviewDashContent.total_generated_images));
   check("review dash.pending_images === 18", reviewDashContent.pending_images === 18, String(reviewDashContent.pending_images));
   check("review dash.items.length === 2", Array.isArray(reviewDashContent.items) && reviewDashContent.items.length === 2);
 }
