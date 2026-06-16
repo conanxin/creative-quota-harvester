@@ -1,11 +1,11 @@
 {
-  "phase": "6D-4D",
+  "phase": "6D-4E",
   "mode": "manual_post_logging_record",
   "generated_at": "2026-06-15T23:00:00+08:00",
-  "updated_at": "2026-06-16T08:36:00+08:00",
-  "based_on_phase": "6D-3",
-  "based_on_assets_commit": "10d740e",
-  "based_on_harvester_commit": "1bcecb2",
+  "updated_at": "2026-06-16T09:47:00+08:00",
+  "based_on_phase": "6D-4D",
+  "based_on_assets_commit": "e90acf5",
+  "based_on_harvester_commit": "25e8c4e",
   "no_platform_publish": true,
   "platform_publish_enabled": false,
   "no_model_call": true,
@@ -19,9 +19,9 @@
   "manual_only": true,
   "log_status": "human_input_received",
   "approved_total": 5,
-  "awaiting_manual_post_total": 2,
-  "posted_manually_total": 3,
-  "missing_url_total": 2,
+  "awaiting_manual_post_total": 1,
+  "posted_manually_total": 4,
+  "missing_url_total": 1,
   "items": [
     {
       "item_id": "Q-6B-X-brief-brief-mq8c6kp5-u-flaws-i",
@@ -84,13 +84,13 @@
       "source_type": "dev-community",
       "risk_level": "medium",
       "approved_status": "approved",
-      "publish_status": "not_published",
-      "manual_post_status": "awaiting_manual_post",
-      "posted_manually": false,
-      "x_post_url": null,
-      "posted_at": null,
-      "posted_by": null,
-      "notes": null,
+      "publish_status": "manually_posted",
+      "manual_post_status": "manually_posted",
+      "posted_manually": true,
+      "x_post_url": "https://x.com/Porco7161/status/2066699053195550978?s=20",
+      "posted_at": "2026-06-16T09:47:00+08:00",
+      "posted_by": "@Porco7161",
+      "notes": "Fourth manual X UI post recorded.",
       "manual_only": true,
       "no_platform_publish": true,
       "approved_pack_file": "creative-quota-assets/publishing/review/x/phase-6d/approved/posts/river-ai.md"
@@ -115,13 +115,13 @@
     }
   ],
   "passthrough_disclaimers": {
-    "post_text": "post_text UNCHANGED from 6D-3 (verbatim from 6D-2/6D-1/6B). Phase 6D-4A/6D-4B/6D-4C/6D-4D did NOT modify any post text.",
-    "image_url": "image_url UNCHANGED from 6D-3. Phase 6D-4A/6D-4B/6D-4C/6D-4D did NOT modify any image_url.",
-    "risk_level": "risk_level UNCHANGED from 6D-3. River AI and Penitence remain medium.",
-    "model_call": "Phase 6D-4D did NOT call any model.",
-    "publish_action": "Phase 6D-4D did NOT call X API, baoyu-post-to-x, or any platform publish. Three items posted manually by human in X UI.",
-    "x_api_call": "Phase 6D-4D did NOT call X API. Human posted in X UI directly."
+    "post_text": "post_text UNCHANGED from 6D-3 (verbatim from 6D-2/6D-1/6B). Phase 6D-4A/6D-4B/6D-4C/6D-4D/6D-4E did NOT modify any post text.",
+    "image_url": "image_url UNCHANGED from 6D-3. Phase 6D-4A/6D-4B/6D-4C/6D-4D/6D-4E did NOT modify any image_url.",
+    "risk_level": "risk_level UNCHANGED from 6D-3. Penitence remains medium.",
+    "model_call": "Phase 6D-4E did NOT call any model.",
+    "publish_action": "Phase 6D-4E did NOT call X API, baoyu-post-to-x, or any platform publish. Item #4 (River AI) posted manually by human in X UI.",
+    "x_api_call": "Phase 6D-4E did NOT call X API. Human posted in X UI directly."
   },
-  "next_required_human_action": "Post remaining 2 approved items manually in X UI, then provide item_id + x_post_url + posted_at + posted_by + optional note to a future log JSON.",
-  "next_phase_proposal": "Phase 6D-4E: Record 4th Manual X Post URL (after human provides real X post URL)"
+  "next_required_human_action": "Post remaining 1 approved item manually in X UI, then provide item_id + x_post_url + posted_at + posted_by + optional note to a future log JSON.",
+  "next_phase_proposal": "Phase 6D-4F: Record 5th Manual X Post URL (after human provides real X post URL for the-pen)"
 }
