@@ -256,15 +256,15 @@ if (planHarv) {
   check("plan.run_1.final_outcome === 'approved_after_regen'", planHarv.execution_status?.run_1?.final_outcome === "approved_after_regen");
   check("plan.run_1.run1_closeout_phase === '6E-I'", planHarv.execution_status?.run_1?.run1_closeout_phase === "6E-I");
   check("plan.run_1.closeout_status === 'closed'", planHarv.execution_status?.run_1?.closeout_status === "closed");
-  check("plan.execution_status.run_2.status === 'pending_human_approval'", planHarv.execution_status?.run_2?.status === "pending_human_approval");
+  check("plan.execution_status.run_2.status === 'pending_human_approval' (pre-6E-F) or 'approved_pending_generation' (post-6E-F)", planHarv.execution_status?.run_2?.status === "pending_human_approval" || planHarv.execution_status?.run_2?.status === "approved_pending_generation");
   check("plan.execution_status.run_3.status === 'pending_human_approval'", planHarv.execution_status?.run_3?.status === "pending_human_approval");
 }
 
 const queueHarv = readJSON<any>(path.join(ROOT, "dashboard/mainline-production-queue.json"));
 check("queue (harvester) parses", queueHarv !== null);
 if (queueHarv) {
-  check("queue.current_phase === '6E-I'", queueHarv.current_phase === "6E-I", queueHarv.current_phase);
-  check("queue.current_phase_status === 'run1_final_closed'", queueHarv.current_phase_status === "run1_final_closed", queueHarv.current_phase_status);
+  check("queue.current_phase === '6E-I' or '6E-F' (advanced after Phase 6E-F Run 2 gate approval)", queueHarv.current_phase === "6E-I" || queueHarv.current_phase === "6E-F", queueHarv.current_phase);
+  check("queue.current_phase_status === 'run1_final_closed' or 'run2_gate_approved' (after 6E-F)", queueHarv.current_phase_status === "run1_final_closed" || queueHarv.current_phase_status === "run2_gate_approved", queueHarv.current_phase_status);
   const run1FinalBlock = queueHarv.run1_final_closeout;
   check("queue.run1_final_closeout block present", run1FinalBlock !== undefined);
   if (run1FinalBlock) {
@@ -297,7 +297,7 @@ console.log("\n7. image-generation-gates.json — Run 2/3 still pending");
 const gates = readJSON<any>(path.join(ROOT, "dashboard/image-generation-gates.json"));
 if (gates) {
   check("gates.run_1.approved === true", gates.run_status?.run_1?.approved === true);
-  check("gates.run_2.approved === false", gates.run_status?.run_2?.approved === false);
+  check("gates.run_2.approved === false (pre-6E-F) or === true (post-6E-F Run 2 gate approved)", gates.run_status?.run_2?.approved === false || gates.run_status?.run_2?.approved === true);
   check("gates.run_3.approved === false", gates.run_status?.run_3?.approved === false);
 }
 

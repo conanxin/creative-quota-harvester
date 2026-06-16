@@ -1,0 +1,89 @@
+Phase 6E-F · Run 2 Gate Approval · COMPLETE
+
+Decision: HUMAN_APPROVES_RUN_2_AND_LIMITED_SPEND_2_IMAGES
+Decider: 爸爸 (Xin Conan, chat_id 1540208324, message_id 50791)
+Decided at: 2026-06-16T20:15:09+08:00
+Based on: Phase 6E-I Run 1 final closeout (closed, message_id 50787, assets_commit=208671b, harvester_commit=943d74b)
+
+🏁 Run 1 Final Closeout (frozen, not modified)
+- run1_final_status: closed
+- run1_final_outcome: approved_after_regen
+- usable_run1_images: 2 / 2
+- 6E-F does NOT reopen Run 1
+
+✅ Run 2 Gate Approval
+- approve_batch_2: true
+- approve_model_spend_run2: approved_limited_run2_only
+- approved_run: run_2
+- approved_image_count_limit_run2: 2
+- run_3_decision: pending (NOT approved)
+- total_5_image_plan_approval: partial (Run 1 + Run 2, 4 of 5)
+
+🎯 Approved Run 2 Items
+| item_id    | title                                          | source_type  | aspect_ratio | risk_level |
+|------------|------------------------------------------------|--------------|--------------|------------|
+| Q-6E-B-003 | River AI                                       | dev-community| 1:1          | low        |
+| Q-6E-B-004 | stabilityai/stable-video-diffusion-img2vid-xt  | ai-ecosystem | 16:9         | low        |
+
+📋 Run 3 Status (still pending)
+- item_id: Q-6E-B-005
+- approved: false
+- generation_status: not_started
+
+🚫 No Generation Executed
+- generation_status: not_started
+- model_call_made: false
+- media_generated: false
+- quota_consumed: 0
+- images_generated_in_6ef: 0
+
+🔒 Boundaries
+- no_model_call: true
+- no_media_generation: true
+- no_video_generation: true
+- no_music_generation: true
+- no_run_2_generation_executed: true
+- no_run_3_approval: true
+- no_run_1_reopen: true
+- no_run_1_final_closeout_modification: true
+- no_6d5_modify: true
+- no_x_publish: true
+- no_timer: true
+- no_digest: true
+- no_promote: true
+- no_c5n_change: true
+- no_secrets: true
+
+🧮 Counters (unchanged)
+- total_generated_image_files: 8 (5 baseline + 2 from 6E-D + 1 from 6E-G regen)
+- pending_images: 18
+- run_2_approved_count: 2 (gate approved, generation pending)
+
+✅ Validators (16/16 PASS)
+- validate:image-generation-run2-gates (new): 261/261
+- validate:image-generation-run1-final: 133/133
+- validate:image-generation-regen-review-decision: 214/214
+- validate:image-generation-run1-regen: 203/203
+- validate:image-generation-run1-review-decisions: 95/95
+- validate:image-generation-run1-review: 98/98
+- validate:image-generation-run1: 56/56
+- validate:image-generation-gates: 51/51
+- validate:image-generation-plan: 125/125
+- validate:image-generation-preflight: 66/66
+- validate:x-manual-publishing-closeout: 89/89
+- validate:mainline-recovery: 59/59
+- validate:dashboard-control-safety: 12/12
+- dashboard:control:validate: 17/17
+- validate:telegram-sanitizer: PASS
+- validate:project-report-send: 11/11
+
+🧭 Next Phase (NOT auto-triggered)
+- Phase 6E-J Run 2 Controlled Image Generation — requires separate explicit human command
+- Phase 6E-J hard limit #15: quota check required
+- Auto-trigger: false
+
+Or · Idle · Stop here
+- Run 2 gate approved but generation not executed
+- Run 3 still pending
+
+Phase 6E-F · ✅ COMPLETE · 2 Run 2 items approved · generation NOT executed · awaiting Phase 6E-J.

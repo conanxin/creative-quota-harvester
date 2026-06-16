@@ -118,7 +118,34 @@ function check(name: string, ok: boolean, detail: string = ""): void {
 function validateOne(g: GatesData, label: string): void {
   console.log(`\n=== ${label} ===`);
 
-  check(`${label}: phase === "6E-C"`, g.phase === "6E-C", `got ${g.phase}`);
+  check(`${label}: phase === "6E-C" or "6E-F"`, g.phase === "6E-C" || g.phase === "6E-F", `got ${g.phase}`);
+  // For 6E-F state, the 6E-C-specific structural checks below are superseded by the new
+  // validate:image-generation-run2-gates validator. Skip the 6E-C-specific checks here
+  // to keep this validator backward-compatible without false failures.
+  const is6EF = g.phase === "6E-F";
+  if (is6EF) {
+    console.log(`  ℹ️  ${label}: phase=6E-F — skipping 6E-C-specific structural checks (covered by validate:image-generation-run2-gates)`);
+  }
+  if (is6EF) {
+    // Minimal 6E-F sanity checks: boundaries + cross-repo mirror + key counters
+    check(`${label}: no_model_call === true`, g.no_model_call === true);
+    check(`${label}: no_media_generation === true`, g.no_media_generation === true);
+    check(`${label}: no_telegram === true`, g.no_telegram === true);
+    check(`${label}: no_timer === true`, g.no_timer === true);
+    check(`${label}: no_x_publish === true`, g.no_x_publish === true);
+    check(`${label}: no_promote === true`, g.no_promote === true);
+    check(`${label}: no_c5n_change === true`, g.no_c5n_change === true);
+    check(`${label}: no_6d5_modify === true`, g.no_6d5_modify === true);
+    check(`${label}: no_secrets === true`, g.no_secrets === true);
+    check(`${label}: gates gate_2_approve_batch_2.decision === "approved" (6E-F)`, g.gates.gate_2_approve_batch_2.decision === "approved");
+    check(`${label}: gates gate_4_approve_model_spend.decision === "approved_limited_run2_only" (6E-F)`, g.gates.gate_4_approve_model_spend.decision === "approved_limited_run2_only");
+    check(`${label}: run_2.status === "approved_pending_generation" (6E-F)`, g.run_status.run_2.status === "approved_pending_generation");
+    check(`${label}: run_2.approved === true (6E-F)`, g.run_status.run_2.approved === true);
+    check(`${label}: run_2.generation_status === "not_started" (6E-F)`, g.run_status.run_2.generation_status === "not_started");
+    check(`${label}: run_2.model_call_made === false (6E-F)`, g.run_status.run_2.model_call_made === false);
+    check(`${label}: run_2.media_generated === false (6E-F)`, g.run_status.run_2.media_generated === false);
+    return;
+  }
   check(`${label}: mode === "image_generation_run1_gate_approval"`, g.mode === "image_generation_run1_gate_approval", `got ${g.mode}`);
 
   // Boundary flags

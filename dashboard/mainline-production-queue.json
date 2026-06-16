@@ -1,7 +1,7 @@
 {
   "phase": "6E-D",
-  "current_phase": "6E-I",
-  "current_phase_status": "run1_final_closed",
+  "current_phase": "6E-F",
+  "current_phase_status": "run2_gate_approved",
   "current_phase_substatus": "run1_closed_awaiting_run2_decision",
   "mode": "run1_controlled_image_generation_execution_completed",
   "generated_at": "2026-06-16T15:06:00+08:00",
@@ -793,5 +793,99 @@
     ],
     "blocked_until_human_decision": true,
     "auto_trigger": false
+  },
+  "run2_gate_approval": {
+    "phase": "6E-F",
+    "mode": "run2_gate_approval_only",
+    "recorded_at": "2026-06-16T20:15:09+08:00",
+    "run1_final_status": "closed",
+    "run1_final_outcome": "approved_after_regen",
+    "run2_gate_status": "approved",
+    "approve_batch_2": true,
+    "approve_model_spend_run2": "approved_limited_run2_only",
+    "approved_run": "run_2",
+    "approved_image_count_limit_run2": 2,
+    "approved_items": [
+      "Q-6E-B-003",
+      "Q-6E-B-004"
+    ],
+    "run3_status": "pending",
+    "generation_status": "not_started",
+    "no_model_call": true,
+    "no_media_generation": true,
+    "no_run_2_generation_executed": true,
+    "gate_decision_message_id": 50791,
+    "run1_final_closeout": {
+      "phase": "6E-I",
+      "mode": "phase_6e_run1_final_closeout",
+      "run": "run_1",
+      "recorded_at": "2026-06-16T18:01:00+08:00",
+      "based_on_phase": "6E-H (regen human review approved)",
+      "run1_final_status": "closed",
+      "run1_final_outcome": "approved_after_regen",
+      "usable_run1_images": 2,
+      "usable_run1_total": 2,
+      "selected_images": [
+        {
+          "item_id": "Q-6E-B-001",
+          "image_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+          "score": 82.5,
+          "source": "original"
+        },
+        {
+          "item_id": "Q-6E-B-002",
+          "image_path": "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg",
+          "score": 76.6,
+          "source": "regen"
+        }
+      ],
+      "superseded_parent": {
+        "item_id": "Q-6E-B-002",
+        "parent_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+        "parent_status": "superseded_by_regen",
+        "parent_retained": true,
+        "parent_image_still_exists": true,
+        "parent_image_not_overwritten": true,
+        "parent_image_not_deleted": true
+      },
+      "total_generated_image_files": 8,
+      "pending_images": 18,
+      "run_2_status": "pending",
+      "run_3_status": "pending",
+      "run_2_approved": false,
+      "run_3_approved": false,
+      "no_new_image_generated": true,
+      "no_model_call": true,
+      "no_media_generation": true,
+      "no_x_publish": true,
+      "no_timer": true,
+      "no_promote": true,
+      "no_c5n_change": true,
+      "no_6d5_modify": true,
+      "no_secrets": true,
+      "six_d_five_final_status": "closed",
+      "six_d_five_posted_manually_total": 5,
+      "next_phase_options": [
+        {
+          "phase": "6E-F",
+          "description": "Approve Run 2 Gate Only — Run 2 (River AI, stabilityai) still pending",
+          "requires": "separate explicit human command",
+          "auto_trigger": false
+        },
+        {
+          "phase": "idle",
+          "description": "Stop here. Leave Phase 6E-I as completed.",
+          "requires": "no action",
+          "auto_trigger": false
+        }
+      ],
+      "blocked_until_human_decision": true,
+      "auto_trigger": false
+    },
+    "next_phase_proposal": {
+      "next_phase": "Phase 6E-J (Run 2 Controlled Image Generation)",
+      "auto_trigger": false,
+      "requires_separate_human_decision": true
+    }
   }
 }

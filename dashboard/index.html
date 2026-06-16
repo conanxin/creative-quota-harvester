@@ -864,6 +864,60 @@
   </div>
 
   <div class="card" style="margin-bottom: 30px;">
+    <h2 style="color: #0c4a6e;"><span class="icon">🚦</span> Run 2 Gate Approval · Phase 6E-F — APPROVED</h2>
+    <p style="color:#0c4a6e; font-size:0.9rem; margin-bottom:12px;">
+      Phase 6E-F records the <strong>Run 2 gate decision</strong>. Run 2 (River AI + stabilityai — 2 images) is now approved pending generation. Run 3 (Penitence) remains pending. Generation requires a <strong>separate explicit human command: Phase 6E-J Run 2 Controlled Image Generation</strong>.<br/>
+      <strong>gate_2_approve_batch_2=approved</strong> · <strong>approve_model_spend_run2=approved_limited_run2_only</strong> · <strong>approved_image_count_limit_run2=2</strong> · <strong>run1_final_status=closed</strong> · <strong>generation_status=not_started</strong> · <strong>no_model_call=true</strong> · <strong>no_media_generation=true</strong> · <strong>no_run_2_generation_executed=true</strong> · <strong>no_timer=true</strong> · <strong>no_x_publish=true</strong> · <strong>no_secrets=true</strong>
+    </p>
+    <table style="width:100%; border-collapse: collapse; font-size:0.85rem;">
+      <thead>
+        <tr style="background:#e0f2fe;">
+          <th style="padding:6px 8px; text-align:left;">item_id</th>
+          <th style="padding:6px 8px; text-align:left;">title</th>
+          <th style="padding:6px 8px; text-align:left;">source_type</th>
+          <th style="padding:6px 8px; text-align:left;">aspect_ratio</th>
+          <th style="padding:6px 8px; text-align:left;">risk_level</th>
+          <th style="padding:6px 8px; text-align:left;">status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;"><code>Q-6E-B-003</code></td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;">River AI</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;">dev-community</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;">1:1</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;">low</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;"><span style="color:#166534;">✅ gate approved</span></td>
+        </tr>
+        <tr>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;"><code>Q-6E-B-004</code></td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;">stabilityai/stable-video-diffusion-img2vid-xt</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;">ai-ecosystem</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;">16:9</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;">low</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #e0f2fe;"><span style="color:#166534;">✅ gate approved</span></td>
+        </tr>
+        <tr style="background:#fef9c3;">
+          <td style="padding:5px 8px;"><code>Q-6E-B-005</code></td>
+          <td style="padding:5px 8px;">Penitence</td>
+          <td style="padding:5px 8px;">culture-art</td>
+          <td style="padding:5px 8px;">—</td>
+          <td style="padding:5px 8px;">medium</td>
+          <td style="padding:5px 8px;"><span style="color:#92400e;">⏳ pending</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    <div style="background:#f0fdf4; border-left:4px solid #16a34a; padding:10px 14px; margin-top:8px;">
+      <strong>✅ Phase 6E-F Run 2 gate approved:</strong> Human decision <code>HUMAN_APPROVES_RUN_2_AND_LIMITED_SPEND_2_IMAGES</code> recorded (message_id 50791). Run 2 (2 images) approved. Run 3 item Q-6E-B-005 (culture-art) remains <strong>pending</strong> separate approval. Budget cap is LIMITED to Run 2's 2 images — Run 3 budget NOT approved. Run 1 final closeout (Phase 6E-I) is <strong>frozen and not modified</strong>.<br/>
+      <strong>📋 Generation NOT executed in 6E-F:</strong> <code>generation_status=not_started</code> · <code>model_call_made=false</code> · <code>no_run_2_generation_executed=true</code> · <code>total_generated_image_files=8</code> (unchanged) · <code>pending_images=18</code> (unchanged). Run 2 generation requires <strong>separate Phase 6E-J command</strong>.<br/>
+      <strong>📋 Validator:</strong> <code>scripts/validate-image-generation-run2-gates.ts</code> (new) · npm script <code>validate:image-generation-run2-gates</code><br/>
+      <strong>📋 Next phase (NOT auto-triggered):</strong> <strong>Phase 6E-J Run 2 Controlled Image Generation</strong> — requires separate explicit human command.<br/>
+      <strong>❌ 不要做:</strong> 不要调用 image model · 不要调用 video/music model · 不要生成任何图片/视频/音乐 · 不要进入 Phase 6E-J 自动执行 · 不要调用 X API · 不要触发 timer / digest / promote / C5N · 不要批准 Run 3 · 不要重新打开 Run 1 · 不要修改 Run 1 final closeout · 不要修改 6D-5 final_status.
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>
       <thead>

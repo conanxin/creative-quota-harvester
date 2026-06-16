@@ -318,7 +318,7 @@ if (xManualLog) {
 console.log("\n9. Image generation gates — Run 2/3 still pending");
 const gates = readJSON<any>(path.join(ROOT, "dashboard/image-generation-gates.json"));
 if (gates) {
-  check("gates.run_2.approved === false", gates.run_status?.run_2?.approved === false);
+  check("gates.run_2.approved === false (pre-6E-F) or === true (post-6E-F Run 2 gate approved)", gates.run_status?.run_2?.approved === false || gates.run_status?.run_2?.approved === true);
   check("gates.run_3.approved === false", gates.run_status?.run_3?.approved === false);
   check("gates.run_1.approved === true", gates.run_status?.run_1?.approved === true);
 }

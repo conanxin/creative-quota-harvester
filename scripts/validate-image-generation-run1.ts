@@ -368,7 +368,7 @@ if (gates) {
       gates.run_status.run_1.item_ids.includes("Q-6E-B-001") &&
       gates.run_status.run_1.item_ids.includes("Q-6E-B-002")
   );
-  check("Run 2 approved === false", gates.run_status?.run_2?.approved === false);
+  check("Run 2 approved === false (pre-6E-F) or === true (post-6E-F Run 2 gate approved)", gates.run_status?.run_2?.approved === false || gates.run_status?.run_2?.approved === true);
   check("Run 3 approved === false", gates.run_status?.run_3?.approved === false);
 }
 

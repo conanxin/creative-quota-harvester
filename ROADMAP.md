@@ -1221,3 +1221,124 @@ Assets repo:
 Harvester repo:
   Phase 6E-H: Record regenerated image review decision
 ```
+
+---
+
+## Phase 6E-I — Run 1 Final Closeout ✅
+
+**Status:** Run 1 closed as `approved_after_regen` · `usable_run1_images=2/2` · No further action
+
+### Decisions recorded
+
+- Q-6E-B-001: `approved` (82.5, first attempt, unchanged since 6E-D)
+- Q-6E-B-002: `approved_after_regen` (76.6, regen from 6E-G/6E-H)
+- Q-6E-B-002 parent image (cqa-2026-06-16-run1-002_001.jpg) marked `superseded_by_regen` but still exists as historical artefact (NOT overwritten, NOT deleted)
+
+### Counters (frozen)
+
+- `total_generated_image_files`: 8 (5 baseline + 2 from 6E-D Run 1 + 1 from 6E-G regen)
+- `pending_images`: 18
+- `usable_run1_images`: 2 / 2
+
+### Files written
+
+- assets-repo: `generated/phase-6e/run1/final-summary.json` (new) · `final-summary.md` (new) · `README.md` (updated) · `dashboard/image-generation-run1-final.json` (new) · `reports/image-generation-run1-final-closeout.md` (new)
+- harvester-repo: `dashboard/image-generation-run1-final.json` (new) · `dashboard/image-generation-run1-regen.json` (updated) · `dashboard/image-generation-run1-review-decisions.json` (updated) · `dashboard/image-generation-plan.json` (updated) · `dashboard/mainline-production-queue.json` (updated, current_phase=6E-I) · `scripts/validate-image-generation-run1-final.ts` (new) · `package.json` (new script `validate:image-generation-run1-final`) · `reports/phase-6ei-run1-final-closeout.md` (new) · `reports/telegram-phase-6ei-run1-final-closeout.txt` (new)
+
+### Boundaries enforced
+
+- No model call · No media generation · No image overwrite · No regeneration · No Run 2 / Run 3 approval · No X publish · No timer / digest / promote / C5N · No secrets committed
+- `6D-5 final_status=closed` (unchanged)
+
+### Next phase (NOT auto-triggered)
+
+- **Phase 6E-F (Approve Run 2 Gate Only)** — requires separate human command
+- **Idle:** Stop here. Run 1 closed. Run 2 / Run 3 still pending.
+
+### Commits
+
+```
+Assets repo:
+  Phase 6E-I: Close out Run 1 approved images
+  (assets_commit=208671b)
+
+Harvester repo:
+  Phase 6E-I: Record Run 1 final image closeout
+  (harvester_commit=943d74b)
+```
+
+Telegram report: `message_id=50787` (Phase 6E-I, sent via `CQA_ALLOW_TELEGRAM_SEND=1 npm run report:send -- --file reports/telegram-phase-6ei-run1-final-closeout.txt --label "Phase 6E-I"`)
+
+---
+
+## Phase 6E-F — Approve Run 2 Image Generation Gate ✅
+
+**Status:** Run 2 gate approved · `approved_image_count_limit_run2=2` · Generation **NOT** executed (awaits separate Phase 6E-J command)
+
+### Human decision
+
+- Decision text: `HUMAN_APPROVES_RUN_2_AND_LIMITED_SPEND_2_IMAGES`
+- Decider: 爸爸 (Xin Conan, chat_id 1540208324, message_id 50791)
+- Decided at: 2026-06-16T20:15:09+08:00
+- `approve_batch_2=true` · `approve_model_spend_run2=approved_limited_run2_only` · `approved_run=run_2`
+
+### Approved Run 2 items (2)
+
+| item_id | title | source_type | aspect_ratio | risk_level |
+|---------|-------|-------------|--------------|------------|
+| Q-6E-B-003 | River AI | dev-community | 1:1 | low |
+| Q-6E-B-004 | stabilityai/stable-video-diffusion-img2vid-xt | ai-ecosystem | 16:9 | low |
+
+> Risk levels taken from `dashboard/image-generation-plan.json` (existing). Phase 6E-F does not rewrite them.
+
+### Run 3 status (NOT approved)
+
+- item_id: Q-6E-B-005 · status: `pending_human_approval` · generation_status: `not_started`
+
+### No generation executed
+
+- `model_call_made=false` · `media_generated=false` · `quota_consumed=0` · `images_generated_in_6ef=0`
+- `total_generated_image_files=8` (unchanged) · `pending_images=18` (unchanged)
+
+### Files written
+
+- assets-repo: `dashboard/image-generation-gates.json` (updated) · `docs/PHASE_6EF_RUN2_GATE_APPROVAL.md` (new) · `reports/image-generation-run2-gate-approval.md` (new)
+- harvester-repo: `dashboard/image-generation-gates.json` (updated, mirror) · `dashboard/image-generation-plan.json` (updated, run_2 status=approved_pending_generation) · `dashboard/mainline-production-queue.json` (updated, current_phase=6E-F, current_phase_status=run2_gate_approved) · `dashboard/index.html` (updated, 6E-F card with approved items table) · `scripts/validate-image-generation-run2-gates.ts` (new, 261/261 PASS) · `package.json` (new script `validate:image-generation-run2-gates`) · `reports/phase-6ef-run2-gate-approval.md` (new) · `reports/telegram-phase-6ef-run2-gate-approval.txt` (new) · `ROADMAP.md` (this entry) · `README.md` (updated)
+
+### Boundaries enforced
+
+- No model call · No media generation · No video / music generation · No Run 2 generation executed · No Run 3 approval · No Run 1 reopen · No Run 1 final closeout modification · No 6D-5 modify · No X publish · No timer / digest / promote / C5N · No secrets committed
+
+### Validators (16/16 PASS)
+
+- `validate:image-generation-run2-gates` (new): 261/261
+- `validate:image-generation-run1-final`: 133/133
+- `validate:image-generation-regen-review-decision`: 214/214
+- `validate:image-generation-run1-regen`: 203/203
+- `validate:image-generation-run1-review-decisions`: 95/95
+- `validate:image-generation-run1-review`: 98/98
+- `validate:image-generation-run1`: 56/56
+- `validate:image-generation-gates`: 51/51
+- `validate:image-generation-plan`: 125/125
+- `validate:image-generation-preflight`: 66/66
+- `validate:x-manual-publishing-closeout`: 89/89
+- `validate:mainline-recovery`: 59/59
+- `validate:dashboard-control-safety`: 12/12
+- `dashboard:control:validate`: 17/17
+- `validate:telegram-sanitizer`: PASS
+- `validate:project-report-send`: 11/11
+
+### Next phase (NOT auto-triggered)
+
+- **Phase 6E-J (Run 2 Controlled Image Generation)** — requires separate explicit human command
+- **Idle:** Stop here. Run 2 gate approved but generation not executed. Run 3 still pending.
+
+### Commits (planned)
+
+```
+Assets repo:
+  Phase 6E-F: Approve Run 2 image generation gate
+
+Harvester repo:
+  Phase 6E-F: Approve Run 2 image generation gate
+```

@@ -377,10 +377,10 @@ if (queue) {
     check("queue.run1_regen.no_secrets === true", r.no_secrets === true);
   }
   // current_phase / status
-  check("queue.current_phase === '6E-G' or '6E-H' or '6E-I' (advanced after Phase 6E-I Run 1 final closeout)", queue.current_phase === "6E-G" || queue.current_phase === "6E-H" || queue.current_phase === "6E-I", queue.current_phase);
+  check("queue.current_phase === '6E-G' or '6E-H' or '6E-I' or '6E-F' (advanced after Phase 6E-F Run 2 gate approval)", queue.current_phase === "6E-G" || queue.current_phase === "6E-H" || queue.current_phase === "6E-I" || queue.current_phase === "6E-F", queue.current_phase);
   check(
-    "queue.current_phase_status === 'completed_within_budget' or 'regen_reviewed_approved' or 'run1_final_closed' (after 6E-I)",
-    queue.current_phase_status === "completed_within_budget" || queue.current_phase_status === "regen_reviewed_approved" || queue.current_phase_status === "run1_final_closed",
+    "queue.current_phase_status === 'completed_within_budget' or 'regen_reviewed_approved' or 'run1_final_closed' or 'run2_gate_approved' (after 6E-F)",
+    queue.current_phase_status === "completed_within_budget" || queue.current_phase_status === "regen_reviewed_approved" || queue.current_phase_status === "run1_final_closed" || queue.current_phase_status === "run2_gate_approved",
     queue.current_phase_status
   );
 }
@@ -406,7 +406,7 @@ if (planHarvester) {
     check("plan.regen_1.no_run_3_trigger === true", r.no_run_3_trigger === true);
   }
   // Run 2 / Run 3 still pending
-  check("plan.execution_status.run_2.status === 'pending_human_approval'", planHarvester.execution_status?.run_2?.status === "pending_human_approval", planHarvester.execution_status?.run_2?.status);
+  check("plan.execution_status.run_2.status === 'pending_human_approval' (pre-6E-F) or 'approved_pending_generation' (post-6E-F)", planHarvester.execution_status?.run_2?.status === "pending_human_approval" || planHarvester.execution_status?.run_2?.status === "approved_pending_generation", planHarvester.execution_status?.run_2?.status);
   check("plan.execution_status.run_3.status === 'pending_human_approval'", planHarvester.execution_status?.run_3?.status === "pending_human_approval", planHarvester.execution_status?.run_3?.status);
 }
 
@@ -428,10 +428,10 @@ const gates = readJSON<any>(path.join(ROOT, "dashboard/image-generation-gates.js
 check("image-generation-gates.json exists", gates !== null);
 if (gates) {
   check("gates.run_1.approved === true", gates.run_status?.run_1?.approved === true);
-  check("gates.run_2.approved === false", gates.run_status?.run_2?.approved === false);
+  check("gates.run_2.approved === false (pre-6E-F) or === true (post-6E-F Run 2 gate approved)", gates.run_status?.run_2?.approved === false || gates.run_status?.run_2?.approved === true);
   check("gates.run_3.approved === false", gates.run_status?.run_3?.approved === false);
   // gate_2 / gate_3 still pending
-  check("gates.gate_2_approve_batch_2.decision === 'pending'", gates.gates?.gate_2_approve_batch_2?.decision === "pending");
+  check("gates.gate_2_approve_batch_2.decision === 'pending' (pre-6E-F) or 'approved' (post-6E-F Run 2 gate approved)", gates.gates?.gate_2_approve_batch_2?.decision === "pending" || gates.gates?.gate_2_approve_batch_2?.decision === "approved");
   check("gates.gate_3_approve_batch_3.decision === 'pending'", gates.gates?.gate_3_approve_batch_3?.decision === "pending");
 }
 

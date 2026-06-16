@@ -360,8 +360,8 @@ if (queueHarvester) {
   check("queue.run1_regen.usable_run1_images === 2", r?.usable_run1_images === 2, String(r?.usable_run1_images));
   check("queue.run1_regen.no_new_image_generated === true", r?.no_new_image_generated === true);
   check("queue.run1_regen.no_model_call_unused_check === true", r?.no_model_call_unused_check === true);
-  check("queue.current_phase === '6E-H' or '6E-I' (advanced after Phase 6E-I Run 1 final closeout)", queueHarvester.current_phase === "6E-H" || queueHarvester.current_phase === "6E-I", queueHarvester.current_phase);
-  check("queue.current_phase_status === 'regen_reviewed_approved' or 'run1_final_closed' (after 6E-I closeout)", queueHarvester.current_phase_status === "regen_reviewed_approved" || queueHarvester.current_phase_status === "run1_final_closed", queueHarvester.current_phase_status);
+  check("queue.current_phase === '6E-H' or '6E-I' or '6E-F' (advanced after Phase 6E-F Run 2 gate approval)", queueHarvester.current_phase === "6E-H" || queueHarvester.current_phase === "6E-I" || queueHarvester.current_phase === "6E-F", queueHarvester.current_phase);
+  check("queue.current_phase_status === 'regen_reviewed_approved' or 'run1_final_closed' or 'run2_gate_approved' (after 6E-F)", queueHarvester.current_phase_status === "regen_reviewed_approved" || queueHarvester.current_phase_status === "run1_final_closed" || queueHarvester.current_phase_status === "run2_gate_approved", queueHarvester.current_phase_status);
 }
 
 // Step 7: 6D-5 closeout unchanged
@@ -379,9 +379,9 @@ console.log("\n8. image-generation-gates.json — Run 2/3 still pending");
 const gates = readJSON<any>(path.join(ROOT, "dashboard/image-generation-gates.json"));
 if (gates) {
   check("gates.run_1.approved === true", gates.run_status?.run_1?.approved === true);
-  check("gates.run_2.approved === false", gates.run_status?.run_2?.approved === false);
+  check("gates.run_2.approved === false (pre-6E-F) or === true (post-6E-F Run 2 gate approved)", gates.run_status?.run_2?.approved === false || gates.run_status?.run_2?.approved === true);
   check("gates.run_3.approved === false", gates.run_status?.run_3?.approved === false);
-  check("gates.gate_2_approve_batch_2.decision === 'pending'", gates.gates?.gate_2_approve_batch_2?.decision === "pending");
+  check("gates.gate_2_approve_batch_2.decision === 'pending' (pre-6E-F) or 'approved' (post-6E-F Run 2 gate approved)", gates.gates?.gate_2_approve_batch_2?.decision === "pending" || gates.gates?.gate_2_approve_batch_2?.decision === "approved");
   check("gates.gate_3_approve_batch_3.decision === 'pending'", gates.gates?.gate_3_approve_batch_3?.decision === "pending");
 }
 
