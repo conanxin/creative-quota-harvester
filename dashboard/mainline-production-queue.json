@@ -1,8 +1,8 @@
 {
   "phase": "6E-D",
-  "current_phase": "6E-F",
-  "current_phase_status": "run2_gate_approved",
-  "current_phase_substatus": "run1_closed_awaiting_run2_decision",
+  "current_phase": "6E-J",
+  "current_phase_status": "run2_generation_completed",
+  "current_phase_substatus": "awaiting_next_phase_human_decision",
   "mode": "run1_controlled_image_generation_execution_completed",
   "generated_at": "2026-06-16T15:06:00+08:00",
   "total_queue_items": 23,
@@ -652,7 +652,7 @@
     "run_1_final_outcome": "approved_after_regen",
     "usable_run1_images": 2
   },
-  "updated_at": "2026-06-16T18:01:00+08:00",
+  "updated_at": "2026-06-16T20:59:00+08:00",
   "run1_regen": {
     "phase": "6E-G",
     "mode": "controlled_regeneration_q6eb002",
@@ -886,6 +886,123 @@
       "next_phase": "Phase 6E-J (Run 2 Controlled Image Generation)",
       "auto_trigger": false,
       "requires_separate_human_decision": true
-    }
+    },
+    "run_2_generation_executed": true,
+    "run_2_generation_phase": "6E-J",
+    "run_2_generation_executed_at": "2026-06-16T20:59:00+08:00",
+    "run_2_generation_assets_commit": "355c02a",
+    "run_2_generation_status": "completed_within_budget"
+  },
+  "run2_execution": {
+    "phase": "6E-J",
+    "mode": "run2_controlled_image_generation_execution",
+    "status": "completed_within_budget",
+    "recorded_at": "2026-06-16T20:59:00+08:00",
+    "based_on_phase": "6E-F (Run 2 gate approved)",
+    "based_on_human_decision": "Telegram directive from 爸爸 (Xin Conan, message_id 50800)",
+    "images_generated": 2,
+    "images_planned": 2,
+    "total_generated_image_files": 10,
+    "total_generated_image_files_pre_6ej": 8,
+    "pending_images": 16,
+    "pending_images_pre_6ej": 18,
+    "quota_check": {
+      "general_interval_percent": 52,
+      "general_weekly_percent": 54,
+      "decision": "ALLOW",
+      "threshold_percent": 50
+    },
+    "model_used": "image-01",
+    "model_downgraded": false,
+    "image_fabricated": false,
+    "quota_bypassed": false,
+    "run1_final_closeout": {
+      "status": "closed",
+      "outcome": "approved_after_regen",
+      "modified_in_6ej": false
+    },
+    "run3_status": "pending",
+    "run3_not_generated": true,
+    "six_d_five_final_status": "closed",
+    "six_d_five_modified_in_6ej": false,
+    "no_x_publish": true,
+    "no_timer": true,
+    "no_promote": true,
+    "no_c5n_change": true,
+    "no_secrets": true,
+    "no_run1_reopen": true,
+    "no_run3_trigger": true,
+    "no_video": true,
+    "no_music": true,
+    "no_digest": true,
+    "no_penitence_generation": true,
+    "selected_images": [
+      {
+        "item_id": "Q-6E-B-003",
+        "asset_id": "cqa-2026-06-16-run2-001",
+        "image_path": "images/2026/06/16/cqa-2026-06-16-run2-001_001.jpg",
+        "title": "River AI",
+        "source_type": "dev-community",
+        "risk_level": "low",
+        "aspect_ratio": "1:1",
+        "file_size_bytes": 137300,
+        "prompt_hash": "713fa2351907",
+        "output_hash": "0fa9609b9aff"
+      },
+      {
+        "item_id": "Q-6E-B-004",
+        "asset_id": "cqa-2026-06-16-run2-002",
+        "image_path": "images/2026/06/16/cqa-2026-06-16-run2-002_001.jpg",
+        "title": "stabilityai/stable-video-diffusion-img2vid-xt",
+        "source_type": "ai-ecosystem",
+        "risk_level": "low",
+        "aspect_ratio": "16:9",
+        "file_size_bytes": 64917,
+        "prompt_hash": "5b76a00ddcb7",
+        "output_hash": "200ad2cff498"
+      }
+    ],
+    "files_written_assets_repo": [
+      "generated/phase-6e/run2/manifest.json",
+      "generated/phase-6e/run2/README.md",
+      "generated/phase-6e/run2/generation-result.json",
+      "images/2026/06/16/cqa-2026-06-16-run2-001_001.jpg",
+      "images/2026/06/16/cqa-2026-06-16-run2-002_001.jpg",
+      "metadata/generated-assets.json (8 -> 10)",
+      "dashboard/image-generation-run2.json",
+      "dashboard/image-generation-plan.json (updated)",
+      "dashboard/image-generation-preflight.json (updated pending 18 -> 16)",
+      "reports/image-generation-run2.md"
+    ],
+    "files_written_harvester_repo": [
+      "dashboard/image-generation-run2.json (mirror)",
+      "dashboard/image-generation-plan.json (updated)",
+      "dashboard/image-generation-preflight.json (updated)",
+      "dashboard/mainline-production-queue.json (updated — this file, current_phase=6E-J)",
+      "dashboard/index.html (updated — adds Phase 6E-J section)",
+      "scripts/validate-image-generation-run2.ts (new)",
+      "package.json (new script validate:image-generation-run2)",
+      "reports/phase-6ej-run2-controlled-image-generation.md (new)",
+      "reports/telegram-phase-6ej-run2-controlled-image-generation.txt (new)"
+    ],
+    "next_phase_options": [
+      {
+        "phase": "6E-K",
+        "description": "Run 2 Human Image Review — requires separate human command",
+        "auto_trigger": false
+      },
+      {
+        "phase": "6E-L",
+        "description": "Run 3 Gate Approval (Q-6E-B-005 Penitence) — requires separate human command",
+        "auto_trigger": false
+      },
+      {
+        "phase": "idle",
+        "description": "Stop here. Phase 6E-J completed. Run 1 closed. Run 2 done. Run 3 still pending.",
+        "auto_trigger": false
+      }
+    ],
+    "blocked_until_human_decision": false,
+    "auto_trigger": false
   }
 }

@@ -28,7 +28,7 @@
   "stats": {
     "total_content_packs": 25,
     "generated_images": 5,
-    "pending_images": 20,
+    "pending_images": 16,
     "unique_topics": 5,
     "source_type_distribution": {
       "academic": 5,
@@ -47,7 +47,8 @@
     "webpage_outline_coverage": 15,
     "ready_count": 20,
     "hold_count": 0,
-    "skip_count": 0
+    "skip_count": 0,
+    "total_generated_image_files": 10
   },
   "duplicate_analysis": {
     "note": "每篇 topic 有 5 个 version（同一 source_type + 不同 signal_id），prompt 高度相似；建议只生成 canonical primary 一个，其他 pack 共享同一 image。",
@@ -1301,11 +1302,70 @@
     "secrets_printed": false
   },
   "status": {
-    "pending_images": 18,
-    "pending_images_pre_6ed": 20,
+    "pending_images": 16,
+    "pending_images_pre_6ej": 18,
     "delta": -2,
-    "generated_after_phase_6ed": 7,
+    "generated_after_phase_6ej": 10,
+    "phase_6ej_run_2_completed": true,
     "phase_6ed_run_1_completed": true,
-    "last_updated": "2026-06-16T15:06:00+08:00"
-  }
+    "phase_6eg_regen_completed": true,
+    "phase_6ei_run1_final_closeout_completed": true,
+    "last_updated": "2026-06-16T20:59:00+08:00"
+  },
+  "updated_at": "2026-06-16T20:59:00+08:00",
+  "phase_6ej_mirror": {
+    "phase": "6E-J",
+    "action": "harvester_mirror_of_assets_run2",
+    "timestamp": "2026-06-16T20:59:00+08:00",
+    "assets_commit": "355c02a",
+    "delta": {
+      "generated_images_before": 8,
+      "generated_images_after": 10,
+      "delta": 2,
+      "pending_images_before": 18,
+      "pending_images_after": 16
+    }
+  },
+  "phase_audit_trail": [
+    {
+      "phase": "6E-J",
+      "action": "run_2_image_generation_completed",
+      "timestamp": "2026-06-16T20:59:00+08:00",
+      "delta": {
+        "generated_images_before": 8,
+        "generated_images_after": 10,
+        "delta": 2,
+        "pending_images_before": 18,
+        "pending_images_after": 16
+      },
+      "items_generated": [
+        {
+          "item_id": "Q-6E-B-003",
+          "asset_id": "cqa-2026-06-16-run2-001",
+          "title": "River AI",
+          "source_type": "dev-community",
+          "aspect_ratio": "1:1"
+        },
+        {
+          "item_id": "Q-6E-B-004",
+          "asset_id": "cqa-2026-06-16-run2-002",
+          "title": "stabilityai/stable-video-diffusion-img2vid-xt",
+          "source_type": "ai-ecosystem",
+          "aspect_ratio": "16:9"
+        }
+      ],
+      "boundaries": {
+        "no_run_1_reopen": true,
+        "no_run_3_trigger": true,
+        "no_video": true,
+        "no_music": true,
+        "no_x_publish": true,
+        "no_timer": true,
+        "no_promote": true,
+        "no_c5n_change": true,
+        "no_6d5_modify": true,
+        "no_secrets": true
+      }
+    }
+  ]
 }

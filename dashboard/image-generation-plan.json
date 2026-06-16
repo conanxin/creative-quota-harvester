@@ -19,7 +19,7 @@
   "stats": {
     "total_content_packs": 25,
     "generated_already": 5,
-    "pending": 20,
+    "pending": 16,
     "first_batch_selected": 5,
     "diversity_coverage": "5/5 source_types",
     "runs_planned": 3,
@@ -28,7 +28,10 @@
       "run_2": 2,
       "run_3": 1
     },
-    "total_estimated_images_run_1_2_3": 5
+    "total_estimated_images_run_1_2_3": 5,
+    "total_generated_now": 10,
+    "runs_completed": 2,
+    "runs_pending_approval": 1
   },
   "selection_criteria": {
     "rule_1_diversity": "one item per source_type (5/5 covered)",
@@ -440,20 +443,54 @@
       ]
     },
     "run_2": {
-      "status": "approved_pending_generation",
-      "human_decision_required": true,
-      "auto_trigger_allowed": false,
-      "gate_approved_in_phase": "6E-F",
-      "gate_decision_message_id": 50791,
-      "gate_approved_at": "2026-06-16T20:15:09+08:00",
-      "approved_run": "run_2",
-      "approved_image_count_limit": 2,
-      "approved_items": [
-        "Q-6E-B-003",
-        "Q-6E-B-004"
+      "status": "completed_within_budget",
+      "completed_at": "2026-06-16T20:59:00+08:00",
+      "images_generated": 2,
+      "images_planned": 2,
+      "quota_check_passed": true,
+      "model_used": "image-01",
+      "asset_ids": [
+        "cqa-2026-06-16-run2-001",
+        "cqa-2026-06-16-run2-002"
       ],
-      "generation_status": "not_started",
-      "next_required_action": "separate human command required (Phase 6E-J Run 2 Controlled Image Generation)"
+      "human_approval": "HUMAN_APPROVES_RUN_2_AND_LIMITED_SPEND_2_IMAGES (Phase 6E-F, message_id 50791)",
+      "human_command_6ej": "Phase 6E-J Run 2 Controlled Image Generation (message_id 50800)",
+      "human_command_6ej_message_id": 50800,
+      "human_decision_source": "Telegram directive from 爸爸 (Xin Conan, chat_id 1540208324)",
+      "boundaries_respected": true,
+      "no_run_1_reopen": true,
+      "no_run_3_trigger": true,
+      "no_penitence_generation": true,
+      "selected_items": [
+        {
+          "item_id": "Q-6E-B-003",
+          "asset_id": "cqa-2026-06-16-run2-001",
+          "title": "River AI",
+          "source_type": "dev-community",
+          "risk_level": "low",
+          "aspect_ratio": "1:1",
+          "output_path": "images/2026/06/16/cqa-2026-06-16-run2-001_001.jpg",
+          "file_size_bytes": 137300,
+          "dimensions": "1024x1024",
+          "prompt_hash": "713fa2351907",
+          "output_hash": "0fa9609b9aff",
+          "generated_at": "2026-06-16T20:59:00+08:00"
+        },
+        {
+          "item_id": "Q-6E-B-004",
+          "asset_id": "cqa-2026-06-16-run2-002",
+          "title": "stabilityai/stable-video-diffusion-img2vid-xt",
+          "source_type": "ai-ecosystem",
+          "risk_level": "low",
+          "aspect_ratio": "16:9",
+          "output_path": "images/2026/06/16/cqa-2026-06-16-run2-002_001.jpg",
+          "file_size_bytes": 64917,
+          "dimensions": "1280x720",
+          "prompt_hash": "5b76a00ddcb7",
+          "output_hash": "200ad2cff498",
+          "generated_at": "2026-06-16T20:59:00+08:00"
+        }
+      ]
     },
     "run_3": {
       "status": "pending_human_approval",
@@ -488,6 +525,80 @@
       "usable_run1_images": 2
     }
   },
-  "last_updated": "2026-06-16T16:55:32+08:00",
-  "updated_at": "2026-06-16T18:01:00+08:00"
+  "last_updated": "2026-06-16T20:59:00+08:00",
+  "updated_at": "2026-06-16T18:01:00+08:00",
+  "phase_6e_j_execution": {
+    "phase": "6E-J",
+    "mode": "run2_controlled_image_generation_execution",
+    "completed_at": "2026-06-16T20:59:00+08:00",
+    "based_on_phase": "6E-F (Run 2 gate approved)",
+    "based_on_human_decision": "Telegram directive from 爸爸 (Xin Conan, message_id 50800)",
+    "images_generated": 2,
+    "images_planned": 2,
+    "total_generated_image_files": 10,
+    "total_generated_image_files_pre_6ej": 8,
+    "pending_images": 16,
+    "pending_images_pre_6ej": 18,
+    "quota_check": {
+      "general_interval_percent": 52,
+      "general_weekly_percent": 54,
+      "video_interval_percent": 100,
+      "video_weekly_percent": 100,
+      "decision": "ALLOW",
+      "threshold_percent": 50
+    },
+    "model_used": "image-01",
+    "model_downgraded": false,
+    "image_fabricated": false,
+    "quota_bypassed": false,
+    "run_1_status": "closed",
+    "run_1_final_closeout_unchanged": true,
+    "run_3_status": "pending",
+    "run_3_not_generated": true,
+    "six_d_five_final_status": "closed",
+    "no_x_publish": true,
+    "no_timer": true,
+    "no_promote": true,
+    "no_c5n_change": true,
+    "no_secrets": true,
+    "no_run_1_reopen": true,
+    "no_run_3_trigger": true,
+    "no_video": true,
+    "no_music": true,
+    "no_digest": true,
+    "no_penitence_generation": true,
+    "files_written": {
+      "assets_repo": [
+        "generated/phase-6e/run2/manifest.json (new)",
+        "generated/phase-6e/run2/README.md (new)",
+        "generated/phase-6e/run2/generation-result.json (new)",
+        "images/2026/06/16/cqa-2026-06-16-run2-001_001.jpg (new)",
+        "images/2026/06/16/cqa-2026-06-16-run2-002_001.jpg (new)",
+        "metadata/generated-assets.json (8 -> 10)",
+        "dashboard/image-generation-run2.json (new)",
+        "dashboard/image-generation-plan.json (updated — this file)",
+        "dashboard/image-generation-preflight.json (updated — pending 18 -> 16)",
+        "reports/image-generation-run2.md (new)"
+      ]
+    },
+    "next_phase_options": [
+      "Phase 6E-K Run 2 Human Image Review (NOT auto-triggered)",
+      "Phase 6E-L Run 3 Gate Approval (Q-6E-B-005, NOT auto-triggered)",
+      "Idle — leave Phase 6E-J as completed"
+    ],
+    "auto_trigger": false,
+    "requires_separate_human_decision": true
+  },
+  "audit_trail": [
+    "6E-A: Preflight (no model call, no media generation)",
+    "6E-B: Plan (5 items, 3 runs, 4 human gates)",
+    "6E-C: Run 1 gate approved (HUMAN_APPROVES_RUN_1_AND_LIMITED_SPEND_2_IMAGES)",
+    "6E-D: Run 1 generated (2 images, cum 5 -> 7, pending 20 -> 18)",
+    "6E-E: Run 1 human review (1 approve 82.5, 1 needs_regen 43.3)",
+    "6E-G: Regen Q-6E-B-002 only (1 image, cum 7 -> 8)",
+    "6E-H: Regen human review (approve 76.6)",
+    "6E-I: Run 1 final closeout (closed, usable_run1_images=2/2)",
+    "6E-F: Run 2 gate approved (HUMAN_APPROVES_RUN_2_AND_LIMITED_SPEND_2_IMAGES, message_id 50791)",
+    "6E-J (now): Run 2 controlled image generation executed (2 images, cum 8 -> 10, pending 18 -> 16) — no Run 1 reopen, no Run 3 trigger, no video/music, no X publish, no timer, no promote, no C5N, no 6D-5 modify, no secrets"
+  ]
 }

@@ -918,6 +918,67 @@
   </div>
 
   <div class="card" style="margin-bottom: 30px;">
+    <h2 style="color: #14532d;"><span class="icon">🎨</span> Run 2 Controlled Image Generation · Phase 6E-J — COMPLETED</h2>
+    <p style="color:#14532d; font-size:0.9rem; margin-bottom:12px;">
+      Phase 6E-J <strong>Run 2 controlled image generation</strong> executed within approved budget. <strong>execution_status=completed_within_budget</strong> · <strong>images_generated_this_run=2/2</strong> · <strong>model=image-01</strong> (NOT downgraded) · <strong>quota 52% ALLOW</strong> · <strong>watermark=true</strong> · <strong>Run 1 final closeout (6E-I) NOT modified</strong> · <strong>Run 3 NOT generated</strong> · <strong>6D-5 final_status=closed</strong> (unchanged). cumulative 8 → 10, pending 18 → 16.
+    </p>
+    <table style="width:100%; border-collapse: collapse; font-size:0.85rem;">
+      <thead>
+        <tr style="background:#dcfce7;">
+          <th style="padding:6px 8px; text-align:left;">item_id</th>
+          <th style="padding:6px 8px; text-align:left;">title</th>
+          <th style="padding:6px 8px; text-align:left;">source_type</th>
+          <th style="padding:6px 8px; text-align:left;">aspect</th>
+          <th style="padding:6px 8px; text-align:left;">asset_id</th>
+          <th style="padding:6px 8px; text-align:left;">path</th>
+          <th style="padding:6px 8px; text-align:left;">prompt_hash</th>
+          <th style="padding:6px 8px; text-align:left;">output_hash</th>
+          <th style="padding:6px 8px; text-align:left;">status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:5px 8px; border-bottom:1px solid #dcfce7;"><code>Q-6E-B-003</code></td>
+          <td style="padding:5px 8px; border-bottom:1px solid #dcfce7;">River AI</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #dcfce7;">dev-community</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #dcfce7;">1:1</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #dcfce7;"><code>cqa-2026-06-16-run2-001</code></td>
+          <td style="padding:5px 8px; border-bottom:1px solid #dcfce7;"><code>images/2026/06/16/cqa-2026-06-16-run2-001_001.jpg</code> (137KB, 1024×1024)</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #dcfce7;"><code>713fa2351907</code></td>
+          <td style="padding:5px 8px; border-bottom:1px solid #dcfce7;"><code>0fa9609b9aff</code></td>
+          <td style="padding:5px 8px; border-bottom:1px solid #dcfce7;"><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">generated</span></td>
+        </tr>
+        <tr>
+          <td style="padding:5px 8px;"><code>Q-6E-B-004</code></td>
+          <td style="padding:5px 8px;">stabilityai/stable-video-diffusion-img2vid-xt</td>
+          <td style="padding:5px 8px;">ai-ecosystem</td>
+          <td style="padding:5px 8px;">16:9</td>
+          <td style="padding:5px 8px;"><code>cqa-2026-06-16-run2-002</code></td>
+          <td style="padding:5px 8px;"><code>images/2026/06/16/cqa-2026-06-16-run2-002_001.jpg</code> (64KB, 1280×720)</td>
+          <td style="padding:5px 8px;"><code>5b76a00ddcb7</code></td>
+          <td style="padding:5px 8px;"><code>200ad2cff498</code></td>
+          <td style="padding:5px 8px;"><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">generated</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    <div style="background:#f0fdf4; border-left:4px solid #16a34a; padding:10px 14px; margin-top:8px;">
+      <strong>✅ Phase 6E-J COMPLETED within approved budget:</strong> 2 of 2 approved images generated. cumulative 8 → 10. pending 18 → 16. Hard Limit #15 was respected (quota 52% interval ≥ 50%, no model downgrade, no image fabrication, no quota bypass).<br/>
+      <strong>📋 Boundaries enforced:</strong> Only Q-6E-B-003 + Q-6E-B-004 (Run 2 only) · No Run 1 items (SamurAIGPT / Flaws LLM) · No Run 3 items (Penitence) · No video/music generated · No X publish / baoyu-post-to-x · No timer / digest / promote / C5N · No 6D-5 final_status modification · No model downgrade · No image fabrication · No quota bypass · No existing image overwrite · No existing image delete · No Run 1 reopen · No Run 1 final closeout modification · No secrets committed.<br/>
+      <strong>📋 Validators:</strong> <code>scripts/validate-image-generation-run2.ts</code> (new) · npm script <code>validate:image-generation-run2</code> · 114+ checks PASS.<br/>
+      <strong>📋 Files written (assets-repo):</strong> <code>generated/phase-6e/run2/manifest.json</code> · <code>generated/phase-6e/run2/README.md</code> · <code>generated/phase-6e/run2/generation-result.json</code> · <code>images/2026/06/16/cqa-2026-06-16-run2-001_001.jpg</code> (137KB) · <code>images/2026/06/16/cqa-2026-06-16-run2-002_001.jpg</code> (64KB) · <code>metadata/generated-assets.json</code> (8 → 10) · <code>dashboard/image-generation-run2.json</code> · <code>dashboard/image-generation-plan.json</code> (updated) · <code>dashboard/image-generation-preflight.json</code> (updated pending 18 → 16) · <code>reports/image-generation-run2.md</code>.<br/>
+      <strong>📋 Files written (harvester-repo):</strong> <code>dashboard/image-generation-run2.json</code> (mirror) · <code>dashboard/image-generation-plan.json</code> (updated) · <code>dashboard/image-generation-preflight.json</code> (updated) · <code>dashboard/mainline-production-queue.json</code> (updated, current_phase=6E-J) · <code>dashboard/index.html</code> (this section) · <code>scripts/validate-image-generation-run2.ts</code> (new) · <code>scripts/generate-run2-image-batch.ts</code> (new) · <code>package.json</code> (new script <code>validate:image-generation-run2</code>) · <code>reports/phase-6ej-run2-controlled-image-generation.md</code> · <code>reports/telegram-phase-6ej-run2-controlled-image-generation.txt</code>.<br/>
+      <strong>📋 Next phase (NOT auto-triggered):</strong>
+      <ul style="margin:6px 0 0 20px;">
+        <li><strong>Phase 6E-K:</strong> Run 2 Human Image Review — 人工审图 + 质量评分</li>
+        <li><strong>Phase 6E-L:</strong> Run 3 Gate Approval (Q-6E-B-005 Penitence) — 批准 Run 3 gate</li>
+        <li><strong>Idle:</strong> Stop here. Phase 6E-J marked as completed. Run 1 closed. Run 2 done. Run 3 still pending.</li>
+      </ul>
+      <strong>📋 Run 1 status: closed</strong> (frozen, not modified) · <strong>📋 Run 3 status: pending</strong> (not generated) · 6D-5 final_status=closed (unchanged).
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>
       <thead>
