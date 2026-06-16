@@ -1,11 +1,11 @@
 {
-  "phase": "6D-4F",
-  "mode": "manual_post_logging_record",
+  "phase": "6D-5",
+  "mode": "manual_post_logging_closeout",
   "generated_at": "2026-06-15T23:00:00+08:00",
-  "updated_at": "2026-06-16T10:04:00+08:00",
-  "based_on_phase": "6D-4E",
-  "based_on_assets_commit": "c79bf0b",
-  "based_on_harvester_commit": "1b64195",
+  "updated_at": "2026-06-16T10:12:00+08:00",
+  "based_on_phase": "6D-4F",
+  "based_on_assets_commit": "b00db34",
+  "based_on_harvester_commit": "c777495",
   "no_platform_publish": true,
   "platform_publish_enabled": false,
   "no_model_call": true,
@@ -122,6 +122,8 @@
     "publish_action": "Phase 6D-4F did NOT call X API, baoyu-post-to-x, or any platform publish. Item #5 (the-penitence-of-saint-jerome) posted manually by human in X UI.",
     "x_api_call": "Phase 6D-4F did NOT call X API. Human posted in X UI directly."
   },
-  "next_required_human_action": "All 5 approved items have been manually posted and recorded. Phase 6D-4 series is complete.",
-  "next_phase_proposal": "Phase 6D-4 series COMPLETE. All 5/5 approved items posted manually via X UI. Next: Phase 6D-5 or Phase 6E (human decision required)."
+  "next_required_human_action": "Phase 6D manual X publishing loop is closed. No further manual post recording required for this batch.",
+  "next_phase_proposal": "Phase 6D-5 CLOSED. Next: Phase 6E-A (image generation preflight, not auto-triggered) or Phase 6F (publishing reflection, not auto-triggered) or end of Phase 6D.",
+  "final_status": "closed",
+  "closeout_at": "2026-06-16T10:12:00+08:00"
 }

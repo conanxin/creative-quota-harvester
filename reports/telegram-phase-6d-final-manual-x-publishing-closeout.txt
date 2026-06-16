@@ -1,0 +1,120 @@
+Phase 6D-5: Manual X Publishing Final Closeout — Closeout Report
+
+Phase: 6D-5
+Status: CLOSED
+Generated: 2026-06-16T10:12:00+08:00
+Based on: Phase 6D-4F (Harvester commit=c777495, Assets commit=b00db34)
+Series: Phase 6D manual X publishing — CLOSED
+
+---
+
+FINAL_COUNTERS
+
+posted_manually_total: 5/5 ✅
+awaiting_manual_post_total: 0
+missing_url_total: 0
+unique_item_ids: 5
+unique_x_post_urls: 5
+placeholder_urls: 0
+final_status: closed
+
+---
+
+POSTED_ITEMS_TABLE
+
+| # | item_id | title | risk | posted_at |
+|---|---------|-------|------|-----------|
+| 1 | Q-6B-X-brief-brief-mq8c6kp5-u-flaws-i | Flaws in the LLM Automation Narrative | low | 2026-06-16T06:51 |
+| 2 | Q-6B-X-brief-brief-mq8c663q-4-stabili | stabilityai/stable-video-diffusion-img2vid-xt | low | 2026-06-16T08:05 |
+| 3 | Q-6B-X-brief-brief-mq8c6kp4-7-samurai | SamurAIGPT/Generative-Media-Skills | low | 2026-06-16T08:36 |
+| 4 | Q-6B-X-brief-brief-mq8c663q-v-river-a | River AI | medium | 2026-06-16T09:47 |
+| 5 | Q-6B-X-brief-brief-mq8c6kp5-r-the-pen | The Penitence of Saint Jerome | medium | 2026-06-16T10:04 |
+
+---
+
+RECORDED_X_URLS
+
+https://x.com/porco7161/status/2066654295135822139?s=46
+https://x.com/porco7161/status/2066673108761853983?s=46
+https://x.com/porco7161/status/2066681191529668844?s=46
+https://x.com/Porco7161/status/2066699053195550978?s=20
+https://x.com/Porco7161/status/2066702239537000945?s=20
+
+All 5 URLs are real, unique, and human-recorded.
+
+---
+
+RISK_PRESERVATION
+
+River AI: medium (founder-attributed) — preserved ✅
+The Penitence: medium (public-domain artwork) — preserved ✅
+flaws, stabilityai, samurai: low — preserved ✅
+
+---
+
+BOUNDARY_STATUS
+
+no_x_api=true, no_baoyu_post_to_x=true, no_auto_publish=true,
+no_model_call=true, no_media_generation=true,
+platform_publish_enabled=false, manual_only=true,
+no_timer=true, no_telegram_digest=true.
+
+---
+
+VALIDATION_RESULTS
+
+validate:x-manual-publishing-closeout (NEW): 89/89 PASS ✅
+validate:x-human-decision-update (6D-3): 157/157 PASS ✅
+validate:x-human-review-decision-sheet (6D-2): 162/162 PASS ✅
+validate:x-manual-review-board (6D-1): 100/100 PASS ✅
+validate:x-human-review-pack (6D): 302/302 PASS ✅
+validate:publishing-readiness (6C): 221/221 PASS ✅
+validate:publishing-pack: PASS ✅
+validate:mainline-recovery: PASS ✅
+validate:dashboard-control-safety: PASS ✅
+dashboard:control:validate: 17/17 PASS ✅
+validate:telegram-sanitizer: 43/43 PASS ✅
+validate:project-report-send: 11/11 PASS ✅
+
+(Note: per-phase record validators 6D-4A through 6D-4F are historical
+phase-specific validators. They correctly report phase mismatch because
+the state has progressed to 5/5. The 6D-5 closeout validator is the
+authoritative one for the final state.)
+
+---
+
+COMMITS
+
+Assets: b00db34 (Phase 6D-5: Close out manual X publishing log)
+Harvester: (this commit)
+
+---
+
+WHAT_DID_NOT_CHANGE
+
+- post_text: UNCHANGED from 6D-3 across all 5 items
+- image_url: UNCHANGED from 6D-3 across all 5 items
+- risk_level: UNCHANGED from 6D-3 (3 low + 2 medium)
+- x_post_url: all 5 URLs preserved
+- approved_status: all 5 remain approved
+- posted_by: all 5 by @Porco7161
+
+---
+
+NEXT_PHASE_OPTIONS (NOT auto-triggered)
+
+Option A: Phase 6E-A — Controlled Image Generation Readiness Preflight
+  - Only perform quota/queue/risk checks
+  - Do NOT generate any image directly
+  - Trigger: human says "run 6E-A preflight"
+
+Option B: Phase 6F — X Publishing Reflection / Content Performance Manual Review
+  - Only perform review AFTER human provides data
+  - Do NOT collect automatically
+  - Trigger: human says "run 6F review" AND provides metrics
+
+NO_TRIGGERS: Phase 6D-5 does NOT trigger 6E, 6E-A, 6F, timer, digest, promote, or C5N.
+
+---
+
+辛 🔮 — Phase 6D-5 Manual X Publishing Final Closeout. Status: closed. 5/5 manually posted. No auto-publish. No X API. No triggers.

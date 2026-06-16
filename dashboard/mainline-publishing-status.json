@@ -521,5 +521,45 @@
       "timer_allowed": false,
       "generate_allowed": false
     }
+  },
+  "x_manual_publishing_closeout_6d5": {
+    "phase": "6D-5",
+    "added_at": "2026-06-16T10:12:00+08:00",
+    "added_by": "Phase 6D-5 manual X publishing final closeout",
+    "no_platform_publish": true,
+    "platform_publish_enabled": false,
+    "no_model_call": true,
+    "no_media_generation": true,
+    "no_x_api": true,
+    "no_baoyu_post_to_x": true,
+    "no_timer": true,
+    "no_telegram_digest": true,
+    "manual_post_logging_closeout": true,
+    "approved_total": 5,
+    "approved_waiting_manual_post": 0,
+    "posted_manually": 5,
+    "auto_publish": false,
+    "x_api_used": false,
+    "final_status": "closed",
+    "manual_post_log_path": "dashboard/x-manual-post-log.json",
+    "assets_manual_post_log_dir": "creative-quota-assets/publishing/review/x/phase-6d/manual-post-log",
+    "validator_script": "scripts/validate-x-manual-publishing-closeout.ts",
+    "validator_command": "npm run validate:x-manual-publishing-closeout",
+    "next_required_human_action": "Phase 6D manual X publishing loop is closed. No further manual post recording required for this batch.",
+    "next_phase_proposal": "Phase 6D-5 CLOSED. Next: Phase 6E-A (image generation preflight, not auto-triggered) or Phase 6F (publishing reflection, not auto-triggered) or end of Phase 6D.",
+    "boundaries_enforced": {
+      "model_call_allowed": false,
+      "media_generation_allowed": false,
+      "x_api_called": false,
+      "baoyu_post_to_x_called": false,
+      "platform_publish_executed": false,
+      "platform_publish_enabled": false,
+      "auto_publish": false,
+      "auto_posted_manually": false,
+      "collect_allowed": false,
+      "digest_send_allowed": false,
+      "timer_allowed": false,
+      "generate_allowed": false
+    }
   }
 }
