@@ -345,15 +345,26 @@ check(
   !assetsGitStatus.includes(".control.local") && !harvGitStatus.includes(".control.local")
 );
 
-// Step 11: No new image files added in this commit
-console.log("\n11. No new image files generated in this phase");
-const assetsLastCommit = execSync(
-  `cd "${ASSETS_ROOT}" && git diff --name-status HEAD~1 HEAD`,
-  { encoding: "utf-8" }
-).trim();
+// Step 11: No new image files added in 6E-E review-pack commit (65d1333)
+console.log("\n11. No new image files generated in 6E-E review-pack phase");
+const PHASE_6EE_REVIEW_PACK_COMMIT = "65d1333";
+let assetsLastCommit = "";
+try {
+  assetsLastCommit = execSync(
+    `cd "${ASSETS_ROOT}" && git diff --name-status ${PHASE_6EE_REVIEW_PACK_COMMIT}~1 ${PHASE_6EE_REVIEW_PACK_COMMIT}`,
+    { encoding: "utf-8" }
+  ).trim();
+} catch (e) {
+  assetsLastCommit = execSync(
+    `cd "${ASSETS_ROOT}" && git diff --name-status HEAD~1 HEAD`,
+    { encoding: "utf-8" }
+  ).trim();
+}
+const hasNewImages = assetsLastCommit.split("\n").some((line: string) => /\.(jpg|jpeg|png|webp|gif)$/i.test(line));
 check(
-  "no .jpg / .png / .webp files in last commit",
-  !assetsLastCommit.split("\n").some((line: string) => /\.(jpg|jpeg|png|webp|gif)$/i.test(line))
+  "no .jpg / .png / .webp files in 6E-E review-pack commit (no new images from review phase)",
+  !hasNewImages,
+  hasNewImages ? `found image in 6E-E review-pack commit` : "no images in 6E-E review-pack commit"
 );
 
 // Step 12: dashboard/index.html updated
