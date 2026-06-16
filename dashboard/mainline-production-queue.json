@@ -1,7 +1,7 @@
 {
-  "phase": "6A",
-  "mode": "mainline_recovery_production_queue",
-  "generated_at": "2026-06-15T08:27:00+08:00",
+  "phase": "6E-D",
+  "mode": "run1_controlled_image_generation_execution_attempt_blocked",
+  "generated_at": "2026-06-16T13:50:46+08:00",
   "total_queue_items": 23,
   "categories": {
     "A_ready_for_image_generation": {
@@ -339,5 +339,123 @@
       "token_commit": false,
       "auto_decide_allowed": false
     }
-  }
+  },
+  "phase_6e_d": {
+    "phase": "6E-D",
+    "mode": "run1_controlled_image_generation_execution_attempt",
+    "added_at": "2026-06-16T13:50:46+08:00",
+    "added_by": "Phase 6E-D Run 1 Controlled Image Generation",
+    "execution_status": "blocked_pre_generation",
+    "block_reason": "minimax_quota_guard_failed",
+    "block_detail": {
+      "general_interval_remaining_percent": 8,
+      "general_weekly_remaining_percent": 65,
+      "interval_end_at": "2026-06-16T16:00:00+08:00",
+      "interval_remaining_seconds": 3997012,
+      "quota_guard_threshold_interval_percent": 50,
+      "quota_guard_decision": "BLOCK",
+      "threshold_pass": false,
+      "human_directive": "Hard limit #15: stop if quota fails, don't downgrade, don't fabricate"
+    },
+    "no_model_call": true,
+    "no_media_generation": true,
+    "no_x_publish": true,
+    "no_timer": true,
+    "no_promote": true,
+    "no_c5n_change": true,
+    "no_6d5_modify": true,
+    "no_secrets": true,
+    "model_calls_made": 0,
+    "media_generated": false,
+    "images_generated_this_run": 0,
+    "images_generated_this_phase": 0,
+    "images_generated_cumulative": 5,
+    "images_planned_cumulative_after_6ed_run1": 7,
+    "images_actually_generated_cumulative": 5,
+    "pending_images_remaining": 20,
+    "run_1_status": "blocked_quota_check",
+    "run_2_status": "pending_human_approval",
+    "run_3_status": "pending_human_approval",
+    "approved_run": "run_1",
+    "approved_image_count_limit": 2,
+    "run_1_approved_items": [
+      "Q-6E-B-001",
+      "Q-6E-B-002"
+    ],
+    "run_2_approved_items": [],
+    "run_3_approved_items": [],
+    "selected_items": [
+      {
+        "item_id": "Q-6E-B-001",
+        "title": "SamurAIGPT/Generative-Media-Skills",
+        "source_type": "code",
+        "risk_level": "low",
+        "aspect_ratio": "16:9",
+        "prompt_hash": "d995605e31fa",
+        "intended_asset_id": "cqa-2026-06-16-run1-001",
+        "status": "blocked_quota_check"
+      },
+      {
+        "item_id": "Q-6E-B-002",
+        "title": "Flaws in the LLM Automation Narrative",
+        "source_type": "academic",
+        "risk_level": "low",
+        "aspect_ratio": "16:9",
+        "prompt_hash": "6d7391a45431",
+        "intended_asset_id": "cqa-2026-06-16-run1-002",
+        "status": "blocked_quota_check"
+      }
+    ],
+    "boundaries_enforced": {
+      "model_call_allowed": true,
+      "model_calls_made": 0,
+      "media_generation_allowed": true,
+      "media_generation_actually_executed": false,
+      "image_api_called": false,
+      "video_api_called": false,
+      "music_api_called": false,
+      "baoyu_post_to_x_called": false,
+      "platform_publish_executed": false,
+      "platform_publish_enabled": false,
+      "auto_publish": false,
+      "auto_decide_allowed": false,
+      "collect_allowed": false,
+      "digest_send_allowed": false,
+      "timer_allowed": false,
+      "c5n_promote_allowed": false,
+      "production_digest_overwrite": false,
+      "systemd_change": false,
+      "token_commit": false,
+      "secrets_printed": false,
+      "quota_bypassed": false,
+      "model_downgraded": false,
+      "image_fabricated": false
+    },
+    "stop_reason_summary": "Hard limit #15 triggered: MiniMax general-model interval remaining is 8%, below the project's 50% quota-guard threshold. Stopped before mmx image generate call. No model call. No image/video/music. No X publish / timer / digest / promote / C5N. 6D-5 final_status remains 'closed'.",
+    "next_required_human_decision": {
+      "decision_owner": "爸爸",
+      "options": [
+        "option_a_wait: Wait for MiniMax interval reset (~67 min) and retry Phase 6E-D",
+        "option_b_override: Explicitly approve quota-guard bypass (not recommended)",
+        "option_c_defer: Mark Phase 6E-D as deferred/blocked, resume after quota recovery"
+      ],
+      "default_if_no_response": "option_c_defer",
+      "blocked_until_human_decision": true
+    },
+    "recommended_next_phase": "Phase 6E-D-Retry (after quota recovery OR human override)",
+    "recommended_next_phase_status": "blocked_on_quota_and_human_decision",
+    "next_phase_after_run_1_execution": "Phase 6E-E (image asset review / quality score for Run 1 outputs) — BLOCKED until Phase 6E-D unblocks",
+    "auto_trigger_allowed": false,
+    "run_2_next_action": "wait_for_separate_human_approval_for_run_2",
+    "run_3_next_action": "wait_for_separate_human_approval_for_run_3",
+    "files_written": {
+      "manifest": "generated/phase-6e/run1/manifest.json",
+      "readme": "generated/phase-6e/run1/README.md",
+      "dashboard_assets": "dashboard/image-generation-run1.json (mirror in both repos)",
+      "report_assets": "reports/image-generation-run1.md",
+      "validator": "scripts/validate-image-generation-run1.ts",
+      "npm_script": "validate:image-generation-run1"
+    }
+  },
+  "updated_at": "2026-06-16T13:50:46+08:00"
 }

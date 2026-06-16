@@ -147,6 +147,7 @@
     "validate:x-manual-publishing-closeout": "tsx scripts/validate-x-manual-publishing-closeout.ts",
     "validate:image-generation-preflight": "tsx scripts/validate-image-generation-preflight.ts",
     "validate:image-generation-plan": "tsx scripts/validate-image-generation-plan.ts",
+    "validate:image-generation-run1": "tsx scripts/validate-image-generation-run1.ts",
     "validate:image-generation-gates": "tsx scripts/validate-image-generation-gates.ts"
   },
   "keywords": [

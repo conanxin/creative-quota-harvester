@@ -1,0 +1,182 @@
+{
+  "phase": "6E-D",
+  "mode": "image_generation_run1_execution_attempt_blocked",
+  "generated_at": "2026-06-16T13:50:46+08:00",
+  "generated_by": "Phase 6E-D Run 1 Controlled Image Generation (blocked at quota check)",
+  "execution_status": "blocked_pre_generation",
+  "block_reason": "minimax_quota_guard_failed",
+  "block_summary": "MiniMax general-model interval quota at 8% remaining (< 50% threshold). Run 1 STOPPED before mmx image generate call. No image generated.",
+  "human_decision_source": "Telegram directive from 爸爸 (Xin Conan, chat_id 1540208324) — Phase 6E-D Run 1 Controlled Image Generation",
+  "based_on_phase": "6E-C",
+  "based_on_assets_commit": "53a2c99ae2b23dc8b12b981490ee43b7db126d6b",
+  "based_on_harvester_commit": "5eaff4749cb5dfd865e79b345a35884208c7b8d1",
+  "preflight_verified": {
+    "run_1_approved": true,
+    "approved_image_count_limit": 2,
+    "run_2_pending": true,
+    "run_3_pending": true,
+    "generation_status_was_not_started": true,
+    "generated_assets_baseline_count": 5,
+    "six_d_five_closeout_final_status": "closed",
+    "image_generation_gates_validator": "pass"
+  },
+  "quota_check": {
+    "minimax_model_for_image_01": "general",
+    "general_interval_remaining_percent": 8,
+    "general_weekly_remaining_percent": 65,
+    "video_interval_remaining_percent": 100,
+    "video_weekly_remaining_percent": 100,
+    "interval_end_at": "2026-06-16T16:00:00+08:00",
+    "interval_remaining_seconds": 3997012,
+    "quota_guard_threshold_percent": 50,
+    "quota_guard_decision": "BLOCK",
+    "blocked_before_model_call": true,
+    "human_directive_in_force": "Hard limit #15: stop if quota fails, don't downgrade, don't fabricate"
+  },
+  "selected_items": [
+    {
+      "item_id": "Q-6E-B-001",
+      "pack_id": "brief-brief-mq8swsla-f-samuraigpt-generative-media-skills",
+      "title": "SamurAIGPT/Generative-Media-Skills",
+      "source_type": "code",
+      "risk_level": "low",
+      "aspect_ratio": "16:9",
+      "watermark": true,
+      "run_order": 1,
+      "prompt_hash": "d995605e31fa",
+      "intended_asset_id": "cqa-2026-06-16-run1-001",
+      "intended_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+      "status": "blocked_quota_check",
+      "image_generated": false
+    },
+    {
+      "item_id": "Q-6E-B-002",
+      "pack_id": "brief-brief-mq8tbqf4-j-flaws-in-the-llm-automation-narrative",
+      "title": "Flaws in the LLM Automation Narrative",
+      "source_type": "academic",
+      "risk_level": "low",
+      "aspect_ratio": "16:9",
+      "watermark": true,
+      "run_order": 2,
+      "prompt_hash": "6d7391a45431",
+      "intended_asset_id": "cqa-2026-06-16-run1-002",
+      "intended_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "status": "blocked_quota_check",
+      "image_generated": false
+    }
+  ],
+  "execution_outcome": {
+    "model_calls_made": 0,
+    "images_generated_this_run": 0,
+    "images_generated_this_phase": 0,
+    "images_generated_cumulative": 5,
+    "images_planned_cumulative_after_6ed_run1": 7,
+    "images_actually_generated_cumulative": 5,
+    "pending_images_remaining": 20,
+    "run_1_generated_count": 0,
+    "total_generated_images_unchanged": true,
+    "pending_images_unchanged": true,
+    "baseline_5_unchanged": true,
+    "no_run_2_items_generated": true,
+    "no_run_3_items_generated": true,
+    "no_river_ai_generated": true,
+    "no_stabilityai_run2_generated": true,
+    "no_penitence_run3_generated": true,
+    "no_video_generated": true,
+    "no_music_generated": true,
+    "no_x_publish_triggered": true,
+    "no_timer_triggered": true,
+    "no_digest_triggered": true,
+    "no_promote_triggered": true,
+    "no_c5n_change": true,
+    "six_d_five_final_status_unchanged": true,
+    "no_secrets_committed": true,
+    "no_env_committed": true,
+    "no_env_telegram_local_committed": true,
+    "no_control_local_committed": true,
+    "no_runtime_audit_log_committed": true,
+    "no_model_downgrade": true,
+    "no_image_fabrication": true,
+    "all_output_paths_remain_unique": true
+  },
+  "boundaries_enforced": {
+    "model_call_allowed": true,
+    "model_calls_made": 0,
+    "media_generation_allowed": true,
+    "media_generation_actually_executed": false,
+    "image_api_called": false,
+    "video_api_called": false,
+    "music_api_called": false,
+    "baoyu_post_to_x_called": false,
+    "platform_publish_executed": false,
+    "platform_publish_enabled": false,
+    "auto_publish": false,
+    "auto_decide_allowed": false,
+    "collect_allowed": false,
+    "digest_send_allowed": false,
+    "timer_allowed": false,
+    "c5n_promote_allowed": false,
+    "production_digest_overwrite": false,
+    "systemd_change": false,
+    "token_commit": false,
+    "secrets_printed": false,
+    "quota_bypassed": false,
+    "model_downgraded": false,
+    "image_fabricated": false,
+    "budget_extended_to_run2": false,
+    "budget_extended_to_run3": false
+  },
+  "files_written_this_phase": {
+    "assets_repo": [
+      "generated/phase-6e/run1/manifest.json",
+      "generated/phase-6e/run1/README.md",
+      "dashboard/image-generation-run1.json",
+      "reports/image-generation-run1.md"
+    ],
+    "images_added": [],
+    "metadata_modified": [],
+    "dashboard_modified": [
+      "image-generation-run1.json (new)"
+    ],
+    "dashboard_unchanged": [
+      "image-generation-gates.json",
+      "image-generation-plan.json",
+      "image-generation-preflight.json"
+    ]
+  },
+  "next_required_human_decision": {
+    "decision_owner": "爸爸",
+    "options": [
+      "option_a_wait: Wait for MiniMax interval reset (~67 min) and retry Phase 6E-D",
+      "option_b_override: Explicitly approve quota-guard bypass (not recommended)",
+      "option_c_defer: Mark Phase 6E-D as deferred/blocked, resume after quota recovery"
+    ],
+    "default_if_no_response": "option_c_defer",
+    "blocked_until_human_decision": true
+  },
+  "next_phase_proposal": {
+    "next_phase": "Phase 6E-D-Retry (after quota recovery)",
+    "next_phase_status": "blocked_on_quota_and_human_decision",
+    "next_phase_preconditions": [
+      "MiniMax general interval remaining >= 50% (or human override)",
+      "Run 1 gate stays approved (unchanged)",
+      "Run 1 budget cap stays approved (unchanged)",
+      "Run 2/3 budgets remain unapproved"
+    ]
+  },
+  "audit_trail": {
+    "phase_6ea_preflight_unchanged": true,
+    "phase_6eb_plan_unchanged": true,
+    "phase_6d5_closeout_unchanged": true,
+    "phase_6ec_gates_unchanged": true,
+    "phase_6ed_blocked_before_model_call": true,
+    "no_image_generated": true,
+    "no_x_publish": true,
+    "no_timer": true,
+    "no_digest": true,
+    "no_promote": true,
+    "no_c5n_change": true,
+    "no_secrets_committed": true,
+    "no_env_committed": true
+  }
+}

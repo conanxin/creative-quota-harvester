@@ -606,6 +606,47 @@
     </div>
   </div>
 
+  <div class="card" style="margin-bottom: 30px; background: #fef2f2; border: 1px solid #dc2626;">
+    <h2 style="color: #991b1b;"><span class="icon">⛔</span> 图像生成执行 · Run 1 Controlled Image Generation (Phase 6E-D) — BLOCKED</h2>
+    <p style="color:#991b1b; font-size:0.9rem; margin-bottom:12px;">
+      Phase 6E-D Run 1 execution was attempted with explicit human approval for <strong>2 images</strong> (Q-6E-B-001 + Q-6E-B-002).<br/>
+      <strong>execution_status=blocked_pre_generation</strong> · <strong>block_reason=minimax_quota_guard_failed</strong><br/>
+      <strong>model_calls_made=0</strong> · <strong>media_generated=false</strong> · <strong>images_generated_this_run=0</strong> · <strong>images_generated_cumulative=5</strong><br/>
+      <strong>no_x_publish=true</strong> · <strong>no_timer=true</strong> · <strong>no_promote=true</strong> · <strong>no_secrets=true</strong> · <strong>no_quota_bypass=true</strong> · <strong>no_model_downgrade=true</strong> · <strong>no_image_fabrication=true</strong>
+    </p>
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Title</th><th>Type</th><th>Risk</th><th>Aspect</th><th>Prompt Hash</th><th>Intended Asset</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>Q-6E-B-001</code></td><td>SamurAIGPT/Generative-Media-Skills</td><td>code</td><td>low</td><td>16:9</td><td><code>d995605e31fa</code></td><td><code>cqa-2026-06-16-run1-001</code></td><td><span style="background:#fecaca; color:#7f1d1d; padding:2px 6px; border-radius:4px;">blocked_quota_check</span></td></tr>
+        <tr><td><code>Q-6E-B-002</code></td><td>Flaws in the LLM Automation Narrative</td><td>academic</td><td>low</td><td>16:9</td><td><code>6d7391a45431</code></td><td><code>cqa-2026-06-16-run1-002</code></td><td><span style="background:#fecaca; color:#7f1d1d; padding:2px 6px; border-radius:4px;">blocked_quota_check</span></td></tr>
+      </tbody>
+    </table>
+    <table style="margin-top:10px;">
+      <thead>
+        <tr><th>Quota Metric</th><th>Value</th><th>Threshold</th><th>Decision</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>general</code> interval remaining</td><td>8 %</td><td>≥ 50 %</td><td><span style="background:#fecaca; color:#7f1d1d; padding:2px 6px; border-radius:4px;">BLOCK</span></td></tr>
+        <tr><td><code>general</code> weekly remaining</td><td>65 %</td><td>(info)</td><td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">OK</span></td></tr>
+        <tr><td>interval end</td><td>2026-06-16T16:00:00+08:00</td><td>—</td><td>~67 min from now</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px; padding:10px 14px; background:#fee2e2; border:1px solid #dc2626; border-radius:8px; font-size:0.8rem; color:#7f1d1d;">
+      <strong>⛔ Phase 6E-D Run 1 BLOCKED at pre-generation quota check:</strong> MiniMax general-model interval quota is at <strong>8% remaining</strong>, below the project's 50% safety threshold. Per Hard Limit #15, the run was <strong>STOPPED before any mmx image generate call</strong>.<br/>
+      <strong>📋 What was NOT done:</strong> No image generated (count remains 5) · No video/music generated · No Run 2 items (River AI / stabilityai) · No Run 3 items (Penitence) · No X publish / baoyu-post-to-x · No timer / digest / promote / C5N · No 6D-5 final_status modification · No model downgrade · No image fabrication · No quota bypass.<br/>
+      <strong>📋 Validator:</strong> <code>scripts/validate-image-generation-run1.ts</code> (new) · npm script <code>validate:image-generation-run1</code><br/>
+      <strong>📋 Files written:</strong> <code>generated/phase-6e/run1/manifest.json</code> · <code>generated/phase-6e/run1/README.md</code> · <code>dashboard/image-generation-run1.json</code> (both repos) · <code>reports/image-generation-run1.md</code><br/>
+      <strong>📋 Required human decision (3 options):</strong>
+      <ul style="margin:6px 0 0 20px;">
+        <li><strong>Option A (recommended):</strong> Wait for MiniMax interval reset (~67 min, 16:00 GMT+8) and re-issue Phase 6E-D.</li>
+        <li><strong>Option B (not recommended):</strong> Explicitly approve quota-guard bypass. Risk: call may exhaust remaining 8% or hit backend block.</li>
+        <li><strong>Option C:</strong> Mark Phase 6E-D as <code>blocked_quota_check</code> and resume after quota recovery.</li>
+      </ul>
+    </div>
+  </div>
+
   <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>
