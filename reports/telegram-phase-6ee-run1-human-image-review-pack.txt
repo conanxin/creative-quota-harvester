@@ -1,0 +1,60 @@
+PHASE-6EE-RUN1-HUMAN-IMAGE-REVIEW-PACK COMPLETE
+
+状态：PASS
+
+简要：
+• Phase 6E-E Run 1 human image review pack 创建完成（read-only）
+• 2 张 Run 1 图片均已纳入审图包，decision=pending
+• Run 2 / Run 3 仍 pending（未批准）
+• no_model_call=true · no_media_generation=true
+• total_generated_images 仍 7 · pending_images 仍 18
+• 6D-5 final_status=closed（未修改）
+• 全部 12 项 validation PASS
+
+两张 Run 1 图片路径：
+• images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg (SamurAIGPT, code, low, 217KB)
+• images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg (Flaws LLM, academic, low, 259KB)
+
+Review Board 路径：
+• assets-repo: publishing/review/image/phase-6e/run1/review-board.json
+• assets-repo: publishing/review/image/phase-6e/run1/review-board.md
+• harvester:   dashboard/image-generation-run1-review.json
+
+Scoring Sheet 路径：
+• assets-repo: publishing/review/image/phase-6e/run1/scoring-sheet.json
+• assets-repo: publishing/review/image/phase-6e/run1/scoring-sheet.md
+
+5 维评分（每图）：
+• prompt_alignment (0-10, 25%)
+• visual_quality (0-10, 25%)
+• usefulness_as_asset (0-10, 20%)
+• factual_safety (0-10, 15%)
+• brand_text_artifact_risk (0-10, 15%, 反向)
+
+Overall: 0-100 加权
+Decision: approve / needs_regen / reject
+
+当前状态：
+• review_status = pending_human_review
+• decision = pending
+• human_score = null
+• notes = null
+
+下一步必须由人类给出：
+1. 打开 2 张图片
+2. 按 5 维评分（0-10）
+3. 计算 overall_score (0-100)
+4. 给出 decision (approve / needs_regen / reject)
+5. 可选 notes
+
+未批准：
+• Run 2 (Q-6E-B-003 River AI + Q-6E-B-004 stabilityai)
+• Run 3 (Q-6E-B-005 Penitence of Saint Jerome)
+
+未触发：
+• no_x_publish / no_timer / no_digest / no_promote / no_c5n_change
+• no_secrets / no_env_committed
+• 6D-5 final_status 仍 closed
+
+报告路径：
+~/.openclaw/workspace/projects/creative-quota-harvester/reports/phase-6ee-run1-human-image-review-pack.md

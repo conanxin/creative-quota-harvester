@@ -1,0 +1,97 @@
+{
+  "phase": "6E-E",
+  "mode": "run1_human_image_review_pack",
+  "generated_at": "2026-06-16T15:30:00+08:00",
+  "updated_at": "2026-06-16T15:30:00+08:00",
+  "based_on_phase": "6E-D",
+  "based_on_assets_commit": "65d1333",
+  "based_on_harvester_commit": "af2d38b",
+  "review_status": "pending_human_review",
+  "decision": "pending",
+  "total_items": 2,
+  "reviewed": 0,
+  "approved": 0,
+  "needs_regen": 0,
+  "rejected": 0,
+  "pending": 2,
+  "human_scoring_complete": false,
+  "total_generated_images": 7,
+  "pending_images": 18,
+  "run_2_approved": false,
+  "run_3_approved": false,
+  "run_2_status": "pending",
+  "run_3_status": "pending",
+  "no_model_call": true,
+  "no_media_generation": true,
+  "no_image_fabrication": true,
+  "no_x_publish": true,
+  "no_timer": true,
+  "no_digest": true,
+  "no_promote": true,
+  "no_c5n_change": true,
+  "no_6d5_modify": true,
+  "no_secrets": true,
+  "no_run_2_approval": true,
+  "no_run_3_approval": true,
+  "no_existing_image_overwrite": true,
+  "review_pack_paths": {
+    "assets_repo_review_board_json": "publishing/review/image/phase-6e/run1/review-board.json",
+    "assets_repo_review_board_md": "publishing/review/image/phase-6e/run1/review-board.md",
+    "assets_repo_scoring_sheet_json": "publishing/review/image/phase-6e/run1/scoring-sheet.json",
+    "assets_repo_scoring_sheet_md": "publishing/review/image/phase-6e/run1/scoring-sheet.md",
+    "assets_repo_readme": "publishing/review/image/phase-6e/run1/README.md"
+  },
+  "validator": {
+    "script": "scripts/validate-image-generation-run1-review.ts",
+    "npm_script": "validate:image-generation-run1-review"
+  },
+  "items": [
+    {
+      "item_id": "Q-6E-B-001",
+      "asset_id": "cqa-2026-06-16-run1-001",
+      "title": "SamurAIGPT/Generative-Media-Skills",
+      "source_type": "code",
+      "risk_level": "low",
+      "image_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+      "image_url": "https://conanxin.github.io/creative-quota-assets/images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+      "prompt_hash": "d995605e31fa",
+      "output_hash": "d995605e31fa",
+      "generated_at": "2026-06-16T15:05:00+08:00",
+      "review_status": "pending_human_review",
+      "human_score": null,
+      "decision": "pending",
+      "notes": null
+    },
+    {
+      "item_id": "Q-6E-B-002",
+      "asset_id": "cqa-2026-06-16-run1-002",
+      "title": "Flaws in the LLM Automation Narrative",
+      "source_type": "academic",
+      "risk_level": "low",
+      "image_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "image_url": "https://conanxin.github.io/creative-quota-assets/images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+      "prompt_hash": "6d7391a45431",
+      "output_hash": "6d7391a45431",
+      "generated_at": "2026-06-16T15:06:00+08:00",
+      "review_status": "pending_human_review",
+      "human_score": null,
+      "decision": "pending",
+      "notes": null
+    }
+  ],
+  "next_required_human_decision": {
+    "decision_owner": "爸爸",
+    "options": [
+      "option_a_score_and_decide: Phase 6E-E — provide human_score + decision for both images (NOT auto-triggered)",
+      "option_b_idle: Do nothing, leave Run 1 review as pending"
+    ],
+    "default_if_no_response": "option_b_idle",
+    "blocked_until_human_decision": false
+  },
+  "next_phase_proposal": {
+    "next_phase_if_all_approved": "Phase 6E-F (Approve Run 2 Gate Only) — requires separate human command",
+    "next_phase_if_any_needs_regen": "Phase 6E-G (Regenerate within Run 1 budget) — requires separate human command",
+    "next_phase_if_any_rejected": "Mark as terminal; no automatic re-generation",
+    "auto_trigger": false
+  }
+}

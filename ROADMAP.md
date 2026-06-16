@@ -844,3 +844,109 @@ Assets repo:
 Harvester repo:
   Phase 6E-C: Approve Run 1 image generation gate
 ```
+---
+
+## Phase 6E-D — Run 1 Controlled Image Generation ✅
+
+**Mode:** controlled image generation · **Budget:** 2 images (Run 1 only)
+**Result:** 2/2 images generated within approved budget.
+
+**Key outcomes:**
+- First attempt (13:50:46) was blocked at quota check (8% < 50%)
+- Second attempt (15:05:00) succeeded after interval reset (99% ≥ 50%)
+- cumulative generated images: 5 → 7
+- pending images: 20 → 18
+- Hard Limit #15 was respected at every attempt
+
+**Files written:**
+- `assets-repo:generated/phase-6e/run1/manifest.json`
+- `assets-repo:generated/phase-6e/run1/README.md`
+- `assets-repo:images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg` (217KB)
+- `assets-repo:images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg` (259KB)
+- `assets-repo:metadata/generated-assets.json` (5 → 7)
+- `dashboard/image-generation-run1.json` (both repos)
+- `dashboard/image-generation-plan.json` (updated)
+- `dashboard/image-generation-preflight.json` (updated pending 20→18)
+- `scripts/validate-image-generation-run1.ts` (new)
+- `package.json` (added `validate:image-generation-run1`)
+
+**Validations:** `validate:image-generation-run1` 56/56 PASS · `validate:image-generation-gates` 161/161 · `validate:image-generation-plan` 125/125 · `validate:image-generation-preflight` 66/66 · `validate:x-manual-publishing-closeout` 89/89
+
+### Next Phase
+
+- **Phase 6E-E**: Run 1 Human Image Review — requires separate explicit human command
+  - 2 images pending human scoring on 5 dimensions
+  - **NOT auto-triggered** by Phase 6E-D completion
+
+### Commits
+
+```
+Assets repo:
+  Phase 6E-D: Generate Run 1 controlled images
+
+Harvester repo:
+  Phase 6E-D: Record Run 1 controlled image generation
+```
+
+---
+
+## Phase 6E-E — Run 1 Human Image Review Pack ✅
+
+**Mode:** read-only review pack creation · **No model call** · **No media generation**
+**Result:** review pack created; 2 images pending human scoring.
+
+**Key outcomes:**
+- 2 review artefacts created (review-board + scoring-sheet) in assets-repo
+- 1 README explains the workflow
+- 1 harvester dashboard mirrors the state
+- 1 validator (`validate:image-generation-run1-review`) with 98/98 PASS
+- `decision=pending` · `review_status=pending_human_review` · `human_score=null`
+- total_generated_images=7 (unchanged) · pending_images=18 (unchanged)
+- Run 2 / Run 3 still pending — NOT approved in this phase
+- 6D-5 final_status=closed preserved
+
+**Files written:**
+- `assets-repo:publishing/review/image/phase-6e/run1/README.md`
+- `assets-repo:publishing/review/image/phase-6e/run1/review-board.json`
+- `assets-repo:publishing/review/image/phase-6e/run1/review-board.md`
+- `assets-repo:publishing/review/image/phase-6e/run1/scoring-sheet.json`
+- `assets-repo:publishing/review/image/phase-6e/run1/scoring-sheet.md`
+- `dashboard/image-generation-run1-review.json`
+- `dashboard/mainline-production-queue.json` (added `run1_review` block)
+- `dashboard/index.html` (added Phase 6E-E card)
+- `scripts/validate-image-generation-run1-review.ts` (new)
+- `package.json` (added `validate:image-generation-run1-review`)
+- `reports/phase-6ee-run1-human-image-review-pack.md`
+- `reports/telegram-phase-6ee-run1-human-image-review-pack.txt`
+- `README.md` (modified — Phase 6E-E row added)
+- `ROADMAP.md` (modified — Phase 6E-D + 6E-E sections added)
+
+**Scoring dimensions (5 per image, 0-10 each):**
+1. `prompt_alignment` (25%) — prompt fidelity
+2. `visual_quality` (25%) — sharpness / lighting / no artifacts
+3. `usefulness_as_asset` (20%) — works for gallery / blog / X
+4. `factual_safety` (15%) — no fake citations / fake names / hallucinated logos
+5. `brand_text_artifact_risk` (15%, reversed) — garbled text / fake brand confusion
+
+**Overall score:** 0-100 weighted (with risk reversed)
+**Decision options:** `approve` / `needs_regen` / `reject`
+
+**Validations:** `validate:image-generation-run1-review` 98/98 PASS · `validate:image-generation-run1` 56/56 · `validate:image-generation-gates` 161/161 · `validate:image-generation-plan` 125/125 · `validate:image-generation-preflight` 66/66 · `validate:x-manual-publishing-closeout` 89/89 · `validate:dashboard-control-safety` PASS · `dashboard:control:validate` 17/17 · `validate:telegram-sanitizer` 43/43 · `validate:project-report-send` 11/11
+
+### Next Phase
+
+- **Human scoring**: 爸爸 provides 5-dimension scores + decision for both images (NOT auto-triggered)
+- **If all approved →** Phase 6E-F: Approve Run 2 Gate Only — requires separate human command
+- **If any needs_regen →** Phase 6E-G: Regenerate within Run 1 budget — requires separate human command
+- **If any rejected →** Mark as terminal; no automatic re-generation
+- **Idle:** leave decision=pending
+
+### Commits
+
+```
+Assets repo:
+  Phase 6E-E: Add Run 1 human image review pack
+
+Harvester repo:
+  Phase 6E-E: Add Run 1 human image review pack
+```

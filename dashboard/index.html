@@ -649,6 +649,35 @@
   </div>
 
   <div class="card" style="margin-bottom: 30px;">
+    <h2 style="color: #581c87;"><span class="icon">🖼️</span> 图像人工审图包 · Image Human Review Pack (Phase 6E-E)</h2>
+    <div style="font-size:0.85rem;color:#555;margin-bottom:12px;">
+      Phase 6E-E creates the <strong>Run 1 human image review pack</strong> for the 2 images generated in Phase 6E-D Run 1. Read-only review artefacts; no model call, no media generation, no X publish, no timer.
+    </div>
+    <table>
+      <thead>
+        <tr><th>#</th><th>item_id</th><th>title</th><th>source_type</th><th>risk</th><th>prompt_hash</th><th>image_path</th><th>review_status</th><th>decision</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><code>Q-6E-B-001</code></td><td>SamurAIGPT/Generative-Media-Skills</td><td>code</td><td>low</td><td><code>d995605e31fa</code></td><td><code>images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg</code></td><td><span style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px;">pending_human_review</span></td><td>pending</td></tr>
+        <tr><td>2</td><td><code>Q-6E-B-002</code></td><td>Flaws in the LLM Automation Narrative</td><td>academic</td><td>low</td><td><code>6d7391a45431</code></td><td><code>images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg</code></td><td><span style="background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:4px;">pending_human_review</span></td><td>pending</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px; padding:10px 14px; background:#ede9fe; border:1px solid #7c3aed; border-radius:8px; font-size:0.8rem; color:#3b0764;">
+      <strong>✅ Phase 6E-E Run 1 review pack CREATED:</strong> 2 review artefacts (review-board, scoring-sheet) + README. decision=pending · review_status=pending_human_review · total_generated_images=7 (unchanged) · pending_images=18 (unchanged).<br/>
+      <strong>📋 Files written:</strong> <code>publishing/review/image/phase-6e/run1/review-board.json</code> · <code>publishing/review/image/phase-6e/run1/review-board.md</code> · <code>publishing/review/image/phase-6e/run1/scoring-sheet.json</code> · <code>publishing/review/image/phase-6e/run1/scoring-sheet.md</code> · <code>publishing/review/image/phase-6e/run1/README.md</code> · <code>dashboard/image-generation-run1-review.json</code> · <code>scripts/validate-image-generation-run1-review.ts</code> · npm script <code>validate:image-generation-run1-review</code><br/>
+      <strong>📋 Boundaries enforced:</strong> No model call · No media generation · No image overwrite · No 6D-5 modification · No Run 2 / Run 3 approval · No X publish / baoyu-post-to-x · No timer / digest / promote / C5N · No secrets committed.<br/>
+      <strong>📋 Next phase (NOT auto-triggered):</strong>
+      <ul style="margin:6px 0 0 20px;">
+        <li><strong>Phase 6E-E-next:</strong> 爸爸 provides 5-dimension scores + decision for both images (approve / needs_regen / reject)</li>
+        <li><strong>If all approved →</strong> Phase 6E-F: Approve Run 2 Gate Only — requires separate human command</li>
+        <li><strong>If any needs_regen →</strong> Phase 6E-G: Regenerate within Run 1 budget — requires separate human command</li>
+        <li><strong>Idle:</strong> leave decision=pending</li>
+      </ul>
+      <strong>📋 Run 2 status: pending</strong> · <strong>📋 Run 3 status: pending</strong> · 两者均未批准。
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>
       <thead>

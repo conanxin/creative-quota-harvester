@@ -1,5 +1,7 @@
 {
   "phase": "6E-D",
+  "current_phase": "6E-E",
+  "current_phase_status": "run1_human_image_review_pack_created",
   "mode": "run1_controlled_image_generation_execution_completed",
   "generated_at": "2026-06-16T15:06:00+08:00",
   "total_queue_items": 23,
@@ -480,5 +482,82 @@
       "metadata_updated": "metadata/generated-assets.json (5 -> 7)"
     }
   },
-  "updated_at": "2026-06-16T15:06:00+08:00"
+  "run1_review": {
+    "phase": "6E-E",
+    "mode": "run1_human_image_review_pack",
+    "review_status": "pending_human_review",
+    "decision": "pending",
+    "total_items": 2,
+    "reviewed": 0,
+    "approved": 0,
+    "needs_regen": 0,
+    "rejected": 0,
+    "pending": 2,
+    "human_scoring_complete": false,
+    "total_generated_images": 7,
+    "pending_images": 18,
+    "run_2_approved": false,
+    "run_3_approved": false,
+    "no_model_call": true,
+    "no_media_generation": true,
+    "no_x_publish": true,
+    "no_timer": true,
+    "no_digest": true,
+    "no_promote": true,
+    "no_c5n_change": true,
+    "no_secrets": true,
+    "review_pack_paths": {
+      "assets_repo_review_board_json": "publishing/review/image/phase-6e/run1/review-board.json",
+      "assets_repo_review_board_md": "publishing/review/image/phase-6e/run1/review-board.md",
+      "assets_repo_scoring_sheet_json": "publishing/review/image/phase-6e/run1/scoring-sheet.json",
+      "assets_repo_scoring_sheet_md": "publishing/review/image/phase-6e/run1/scoring-sheet.md",
+      "assets_repo_readme": "publishing/review/image/phase-6e/run1/README.md",
+      "harvester_dashboard": "dashboard/image-generation-run1-review.json"
+    },
+    "validator": "scripts/validate-image-generation-run1-review.ts",
+    "npm_script": "validate:image-generation-run1-review",
+    "items": [
+      {
+        "item_id": "Q-6E-B-001",
+        "asset_id": "cqa-2026-06-16-run1-001",
+        "title": "SamurAIGPT/Generative-Media-Skills",
+        "source_type": "code",
+        "risk_level": "low",
+        "image_path": "images/2026/06/16/cqa-2026-06-16-run1-001_001.jpg",
+        "prompt_hash": "d995605e31fa",
+        "generated_at": "2026-06-16T15:05:00+08:00",
+        "review_status": "pending_human_review",
+        "human_score": null,
+        "decision": "pending"
+      },
+      {
+        "item_id": "Q-6E-B-002",
+        "asset_id": "cqa-2026-06-16-run1-002",
+        "title": "Flaws in the LLM Automation Narrative",
+        "source_type": "academic",
+        "risk_level": "low",
+        "image_path": "images/2026/06/16/cqa-2026-06-16-run1-002_001.jpg",
+        "prompt_hash": "6d7391a45431",
+        "generated_at": "2026-06-16T15:06:00+08:00",
+        "review_status": "pending_human_review",
+        "human_score": null,
+        "decision": "pending"
+      }
+    ],
+    "next_required_human_decision": {
+      "decision_owner": "爸爸",
+      "options": [
+        "option_a_score_and_decide: provide human_score + decision for both images (NOT auto-triggered)",
+        "option_b_idle: Do nothing, leave Run 1 review as pending"
+      ],
+      "default_if_no_response": "option_b_idle"
+    },
+    "next_phase_proposal": {
+      "next_phase_if_all_approved": "Phase 6E-F (Approve Run 2 Gate Only) — requires separate human command",
+      "next_phase_if_any_needs_regen": "Phase 6E-G (Regenerate within Run 1 budget) — requires separate human command",
+      "next_phase_if_any_rejected": "Mark as terminal; no automatic re-generation",
+      "auto_trigger": false
+    }
+  },
+  "updated_at": "2026-06-16T15:30:00+08:00"
 }
