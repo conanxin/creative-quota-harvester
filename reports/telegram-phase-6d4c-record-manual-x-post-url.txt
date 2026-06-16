@@ -1,0 +1,69 @@
+Phase 6D-4C: Record Second Manual X Post URL — Closeout Report
+
+Phase: 6D-4C
+Status: COMPLETE
+Mode: manual_post_logging_record
+Generated: 2026-06-16T08:05:00+08:00
+Based on: Phase 6D-4B (Harvester commit=c25aa24, Assets commit=fc09d1c)
+
+---
+
+POSTED_MANUALLY: 2/5
+
+Item #2 recorded (6D-4C):
+- item_id: Q-6B-X-brief-brief-mq8c663q-4-stabili
+- title: stabilityai/stable-video-diffusion-img2vid-xt
+- source_type: ai-ecosystem
+- risk_level: low
+- publish_status: manually_posted
+- posted_manually: true
+- x_post_url: https://x.com/porco7161/status/2066673108761853983?s=46
+- posted_at: 2026-06-16T08:05:00+08:00
+- posted_by: @Porco7161
+
+Item #1 preserved (6D-4B):
+- item_id: Q-6B-X-brief-brief-mq8c6kp5-u-flaws-i
+- x_post_url: https://x.com/porco7161/status/2066654295135822139?s=46
+
+AWAITING_MANUAL_POST: 3/5
+(samuraigpt, river-ai, the-penitence-of-saint-jerome)
+
+---
+
+BOUNDARY: all enforced
+
+no_x_api=true, no_baoyu_post_to_x=true, no_auto_publish=true,
+no_model_call=true, no_media_generation=true, platform_publish_enabled=false,
+manual_only=true, no_timer=true, no_telegram_digest=true (except final report).
+
+post_text / image_url / risk_level: UNCHANGED from 6D-3.
+
+---
+
+FILE_CHANGES
+
+Assets (creative-quota-assets, pending):
+- publishing/review/x/phase-6d/manual-post-log/index.json
+- publishing/review/x/phase-6d/manual-post-log/pending-posts.md
+- publishing/review/x/phase-6d/manual-post-log/phase-6d-4c-report.md
+
+Harvester (creative-quota-harvester, pending):
+- dashboard/x-manual-post-log.json
+- dashboard/mainline-publishing-status.json
+- scripts/validate-x-manual-post-log-record-4c.ts (71 checks PASS)
+- package.json (added validate:x-manual-post-log-record-4c script)
+- reports/phase-6d4c-record-manual-x-post-url.md
+- reports/telegram-phase-6d4c-record-manual-x-post-url.txt
+
+---
+
+NEXT_HUMAN_ACTION
+
+Post remaining 3 approved items manually in X UI.
+Then provide item_id + x_post_url + posted_at + posted_by + optional note.
+
+NO_TRIGGERS: does not auto-trigger 6D-4D, 6E, timer, digest, or C5N.
+
+---
+
+辛 🔮 — Phase 6D-4C closeout complete. 2/5 recorded.

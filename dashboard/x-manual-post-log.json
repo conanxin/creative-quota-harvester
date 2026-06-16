@@ -1,8 +1,8 @@
 {
-  "phase": "6D-4B",
+  "phase": "6D-4C",
   "mode": "manual_post_logging_record",
   "generated_at": "2026-06-15T23:00:00+08:00",
-  "updated_at": "2026-06-16T06:51:00+08:00",
+  "updated_at": "2026-06-16T08:05:00+08:00",
   "based_on_phase": "6D-3",
   "based_on_assets_commit": "10d740e",
   "based_on_harvester_commit": "1bcecb2",
@@ -19,9 +19,9 @@
   "manual_only": true,
   "log_status": "human_input_received",
   "approved_total": 5,
-  "awaiting_manual_post_total": 4,
-  "posted_manually_total": 1,
-  "missing_url_total": 4,
+  "awaiting_manual_post_total": 3,
+  "posted_manually_total": 2,
+  "missing_url_total": 3,
   "items": [
     {
       "item_id": "Q-6B-X-brief-brief-mq8c6kp5-u-flaws-i",
@@ -48,13 +48,13 @@
       "source_type": "ai-ecosystem",
       "risk_level": "low",
       "approved_status": "approved",
-      "publish_status": "not_published",
-      "manual_post_status": "awaiting_manual_post",
-      "posted_manually": false,
-      "x_post_url": null,
-      "posted_at": null,
-      "posted_by": null,
-      "notes": null,
+      "publish_status": "manually_posted",
+      "manual_post_status": "manually_posted",
+      "posted_manually": true,
+      "x_post_url": "https://x.com/porco7161/status/2066673108761853983?s=46",
+      "posted_at": "2026-06-16T08:05:00+08:00",
+      "posted_by": "@Porco7161",
+      "notes": "Second manual X UI post recorded.",
       "manual_only": true,
       "no_platform_publish": true,
       "approved_pack_file": "creative-quota-assets/publishing/review/x/phase-6d/approved/posts/stabilityai-stable-video-diffusion-img2vid-xt.md"
@@ -115,13 +115,13 @@
     }
   ],
   "passthrough_disclaimers": {
-    "post_text": "post_text UNCHANGED from 6D-3 (verbatim from 6D-2/6D-1/6B). Phase 6D-4A and 6D-4B did NOT modify any post text.",
-    "image_url": "image_url UNCHANGED from 6D-3. Phase 6D-4A and 6D-4B did NOT modify any image_url.",
+    "post_text": "post_text UNCHANGED from 6D-3 (verbatim from 6D-2/6D-1/6B). Phase 6D-4A/6D-4B/6D-4C did NOT modify any post text.",
+    "image_url": "image_url UNCHANGED from 6D-3. Phase 6D-4A/6D-4B/6D-4C did NOT modify any image_url.",
     "risk_level": "risk_level UNCHANGED from 6D-3. River AI and Penitence remain medium.",
-    "model_call": "Phase 6D-4B did NOT call any model.",
-    "publish_action": "Phase 6D-4B did NOT call X API, baoyu-post-to-x, or any platform publish. One item posted manually by human in X UI.",
-    "x_api_call": "Phase 6D-4B did NOT call X API. Human posted in X UI directly."
+    "model_call": "Phase 6D-4C did NOT call any model.",
+    "publish_action": "Phase 6D-4C did NOT call X API, baoyu-post-to-x, or any platform publish. Two items posted manually by human in X UI.",
+    "x_api_call": "Phase 6D-4C did NOT call X API. Human posted in X UI directly."
   },
-  "next_required_human_action": "Post remaining 4 approved items manually in X UI, then provide item_id + x_post_url + posted_at + posted_by + optional note to a future log JSON.",
-  "next_phase_proposal": "Phase 6D-4B remaining: Record 4 more Manual X Post URLs (as human provides real X post URLs)"
+  "next_required_human_action": "Post remaining 3 approved items manually in X UI, then provide item_id + x_post_url + posted_at + posted_by + optional note to a future log JSON.",
+  "next_phase_proposal": "Phase 6D-4D: Record 3rd Manual X Post URL (after human provides real X post URL)"
 }
