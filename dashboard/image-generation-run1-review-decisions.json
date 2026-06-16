@@ -1,9 +1,9 @@
 {
-  "phase": "6E-E",
-  "subphase": "human_review_decisions_recorded",
-  "mode": "run1_human_review_decisions",
+  "phase": "6E-H",
+  "subphase": "regen_human_review_decision_recorded",
+  "mode": "run1_regen_human_review_decision",
   "generated_at": "2026-06-16T16:10:00+08:00",
-  "updated_at": "2026-06-16T16:10:00+08:00",
+  "updated_at": "2026-06-16T16:55:32+08:00",
   "based_on_phase": "6E-E (review pack)",
   "based_on_assets_commit": "68aaa81",
   "based_on_harvester_commit": "0464ea1",
@@ -11,12 +11,12 @@
   "human_reviewer": "Xin Conan (chat_id 1540208324, message_id 50763)",
   "total_items": 2,
   "reviewed": 2,
-  "approved": 1,
-  "needs_regen": 1,
+  "approved": 2,
+  "needs_regen": 0,
   "rejected": 0,
   "pending": 0,
-  "run_1_outcome": "partial_pass",
-  "total_generated_images": 7,
+  "run_1_outcome": "approved_after_regen",
+  "total_generated_images": 8,
   "pending_images": 18,
   "run_2_approved": false,
   "run_3_approved": false,
@@ -58,7 +58,8 @@
       },
       "decision": "approve",
       "decision_reason": "Strong visual quality and good code/workflow alignment. Minor artifact risk from small pseudo-text/icons and AI-generated corner label.",
-      "decided_at": "2026-06-16T16:09:50+08:00"
+      "decided_at": "2026-06-16T16:09:50+08:00",
+      "decision_unaffected_by_regen": true
     },
     {
       "item_id": "Q-6E-B-002",
@@ -88,27 +89,51 @@
         "data_points": "3-4 clear points",
         "charts": "one simple chart only",
         "no_fake_badges": true
-      }
+      },
+      "parent_image_status": "superseded_by_regen",
+      "regen_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg",
+      "regen_prompt_hash": "83a4a9b43c1b",
+      "regen_output_hash": "4b66c35d3c78",
+      "regen_review": {
+        "review_status": "human_reviewed",
+        "decision": "approve",
+        "human_score": 76.6,
+        "scores": {
+          "prompt_alignment": 7.5,
+          "visual_quality": 8.0,
+          "usefulness_as_asset": 7.8,
+          "factual_safety": 8.0,
+          "brand_text_artifact_risk": 3.2
+        },
+        "notes": "Clean abstract academic cover. Much improved over parent image. Avoids fake badges and long unreadable text. Minor microtext artifact remains, but the image is usable as an abstract asset and does not need another regeneration.",
+        "decision_source": "human_reviewer (Xin Conan, message_id 50775)",
+        "decided_at": "2026-06-16T16:55:32+08:00"
+      },
+      "final_decision": "approved",
+      "final_human_score": 76.6,
+      "selected_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg",
+      "selected_image_source": "regen"
     }
   ],
   "run_1_summary": {
-    "status": "partial_pass",
-    "approved_items": 1,
-    "needs_regen_items": 1,
-    "recommendation": "approve image 1, regenerate image 2, do not treat Run 1 as fully approved yet"
+    "status": "approved_after_regen",
+    "approved_items": 2,
+    "needs_regen_items": 0,
+    "parent_superseded_items": 1,
+    "usable_run1_images": 2,
+    "recommendation": "Run 1 fully approved after regen. Q-6E-B-001 approved directly. Q-6E-B-002 regen candidate approved. Original failed image retained (not overwritten, not deleted) as historical artefact."
   },
   "next_required_human_decision": {
     "decision_owner": "爸爸",
     "options": [
-      "option_a_phase_6eg: Phase 6E-G — Regenerate Q-6E-B-002 (NOT auto-triggered, requires separate human command)",
-      "option_b_idle: leave needs_regen as pending; do not regenerate"
+      "option_a_run2_approval: Phase 6E-F Approve Run 2 Gate Only (NOT auto-triggered, still pending)",
+      "option_b_idle: Do nothing; Run 1 remains approved_after_regen; Run 2/3 still pending"
     ],
-    "default_if_no_response": "option_b_idle"
+    "default_if_no_response": "option_b_idle",
+    "blocked_until_human_decision": false
   },
   "next_phase_proposal": {
-    "next_phase_if_regen_approved": "Phase 6E-G (Regenerate Q-6E-B-002 within Run 1 budget) — requires separate human command",
-    "next_phase_if_regen_rejected": "Mark Q-6E-B-002 as terminal_rejected; Q-6E-B-001 remains approved",
-    "next_phase_idle": "Wait for separate decision on Run 2/3 and/or Phase 6E-G",
+    "next_phase": "Phase 6E-F (Approve Run 2 Gate Only) — if approved, then Phase 6E-I (Run 2 Controlled Image Generation)",
     "auto_trigger": false
   },
   "validator": {
@@ -123,5 +148,15 @@
     "assets_repo_decision_sheet_json": "publishing/review/image/phase-6e/run1/decision-sheet.json",
     "assets_repo_decision_sheet_md": "publishing/review/image/phase-6e/run1/decision-sheet.md",
     "assets_repo_readme": "publishing/review/image/phase-6e/run1/README.md"
-  }
+  },
+  "regen_human_review_recorded_at": "2026-06-16T16:55:32+08:00",
+  "regen_human_reviewer": "Xin Conan (chat_id 1540208324, message_id 50775)",
+  "regen_review_decision_message_id": "50775",
+  "regen_reviewed": 1,
+  "regen_approved": 1,
+  "parent_superseded": 1,
+  "run_1_final_outcome": "approved_after_regen",
+  "usable_run1_images": 2,
+  "usable_run1_total": 2,
+  "no_new_image_generated": true
 }

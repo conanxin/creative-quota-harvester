@@ -334,13 +334,12 @@
     "changing_6d5_closeout": "not allowed; 6D-5 final_status=closed must remain"
   },
   "next_phase_proposal": {
-    "next_phase": "Phase 6E-H (Regenerated Image Human Review)",
-    "next_phase_status": "awaiting_human_review",
+    "next_phase": "Phase 6E-F (Approve Run 2 Gate Only)",
+    "next_phase_status": "awaiting_human_decision",
     "auto_trigger": false,
     "preconditions": [
-      "Human reviews the 1 regenerated image for Q-6E-B-002",
-      "No auto-trigger — requires separate explicit human command",
-      "Run 2 / Run 3 still pending — must NOT auto-trigger"
+      "爸爸 explicitly approves Run 2 budget",
+      "No auto-trigger — requires separate explicit human command"
     ]
   },
   "recommended_next_action": "wait_for_human_approval_batch_1_2_3_and_spend",
@@ -396,7 +395,11 @@
         "cqa-2026-06-16-run1-001",
         "cqa-2026-06-16-run1-002"
       ],
-      "boundaries_respected": true
+      "boundaries_respected": true,
+      "final_outcome": "approved_after_regen",
+      "final_decision": "approved",
+      "usable_images": 2,
+      "parent_superseded_items": 1
     },
     "run_2": {
       "status": "pending_human_approval",
@@ -424,8 +427,17 @@
       "human_approval_message_id": "50769",
       "boundaries_respected": true,
       "no_run_2_trigger": true,
-      "no_run_3_trigger": true
+      "no_run_3_trigger": true,
+      "review_status": "human_reviewed_approved",
+      "review_decision": "approve",
+      "review_human_score": 76.6,
+      "review_decision_source": "human_reviewer (Xin Conan, message_id 50775)",
+      "review_decided_at": "2026-06-16T16:55:32+08:00",
+      "selected_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg",
+      "parent_image_status": "superseded_by_regen",
+      "run_1_final_outcome": "approved_after_regen",
+      "usable_run1_images": 2
     }
   },
-  "last_updated": "2026-06-16T16:33:00+08:00"
+  "last_updated": "2026-06-16T16:55:32+08:00"
 }

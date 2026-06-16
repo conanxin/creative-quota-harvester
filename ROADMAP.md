@@ -1122,3 +1122,102 @@ Assets repo:
 Harvester repo:
   Phase 6E-G: Record Flaws LLM image regeneration
 ```
+
+---
+
+## Phase 6E-H — Regenerated Image Human Review Decision ✅
+
+**Generated at:** 2026-06-16T16:55:32+08:00
+**Status:** ✅ Complete (Run 1 fully approved after regen)
+**Parent phase:** 6E-G (regen executed, assets `8c25944`, harvester `6419180`)
+**Decision message_id:** 50775 (Telegram direct, human review of regen candidate)
+
+### Regen Review
+
+- target: Q-6E-B-002 (Flaws in the LLM Automation Narrative)
+- regen image: `images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg` (87,634 B, 1280×720)
+- decision: **approve**
+- score: **76.6** (pa=7.5, vq=8.0, ua=7.8, fs=8.0, risk=3.2)
+- notes: "Clean abstract academic cover. Much improved over parent image. Avoids fake badges and long unreadable text. Minor microtext artifact remains, but the image is usable as an abstract asset and does not need another regeneration."
+
+### Run 1 Final Outcome
+
+| item_id | direct (6E-E) | regen (6E-H) | final state | selected image |
+|---------|----------------|--------------|-------------|----------------|
+| Q-6E-B-001 | approve (82.5) | — (unaffected) | approved | cqa-2026-06-16-run1-001_001.jpg |
+| Q-6E-B-002 | needs_regen (43.3) | approve (76.6) | approved_after_regen | cqa-2026-06-16-run1-002-regen1_001.jpg |
+
+- **run_1_final_outcome:** `approved_after_regen`
+- **usable_run1_images:** **2 / 2**
+
+### Boundaries (all respected)
+
+- No model call (in 6E-H)
+- No media generation
+- No new image generated
+- No regeneration executed in 6E-H (regen was in 6E-G, already done)
+- No original image overwritten
+- No original image deleted (parent image retained as historical artefact, marked `superseded_by_regen`)
+- No X publish, no timer, no digest, no promote, no C5N
+- 6D-5 final_status=closed (unchanged)
+- No secrets read or printed
+- No Run 2 / Run 3 approval
+- total_generated_image_files: 8 (unchanged from 6E-G)
+- pending_images: 18 (unchanged)
+
+### Validators (14/14 PASS)
+
+- `validate:image-generation-regen-review-decision` (new, 214/214)
+- `validate:image-generation-run1-regen` (203/203)
+- `validate:image-generation-run1-review-decisions` (95/95)
+- `validate:image-generation-run1-review` (98/98)
+- `validate:image-generation-run1` (56/56)
+- `validate:image-generation-gates` (161/161)
+- `validate:image-generation-plan` (125/125)
+- `validate:image-generation-preflight` (66/66)
+- `validate:x-manual-publishing-closeout` (89/89)
+- `validate:mainline-recovery` (PASS)
+- `validate:dashboard-control-safety` (PASS)
+- `dashboard:control:validate` (17/17)
+- `validate:telegram-sanitizer` (PASS)
+- `validate:project-report-send` (11/11)
+
+### Files
+
+Assets repo:
+- `publishing/review/image/phase-6e/run1/review-board.json` (updated to 6E-H)
+- `publishing/review/image/phase-6e/run1/review-board.md` (updated to 6E-H)
+- `publishing/review/image/phase-6e/run1/decision-sheet.json` (updated to 6E-H)
+- `publishing/review/image/phase-6e/run1/decision-sheet.md` (updated to 6E-H)
+- `generated/phase-6e/run1/regen/q-6e-b-002/manifest.json` (updated with review decision)
+- `dashboard/image-generation-run1-regen.json` (updated)
+- `dashboard/image-generation-run1-review-decisions.json` (updated)
+- `dashboard/image-generation-plan.json` (regen_1 review block added)
+
+Harvester repo:
+- `scripts/validate-image-generation-regen-review-decision.ts` (new, 214 checks)
+- `package.json` (new script `validate:image-generation-regen-review-decision`)
+- `dashboard/image-generation-run1-regen.json` (mirror)
+- `dashboard/image-generation-run1-review-decisions.json` (mirror)
+- `dashboard/image-generation-plan.json` (mirror)
+- `dashboard/mainline-production-queue.json` (run1_regen review block added)
+- `dashboard/index.html` (Phase 6E-H section added)
+- `README.md` (Phase 6E-H row added)
+- `ROADMAP.md` (this section)
+- `reports/phase-6eh-regenerated-image-human-review.md` (new)
+- `reports/telegram-phase-6eh-regenerated-image-human-review.txt` (new, sanitized)
+
+### Next Phase (NOT auto-triggered)
+
+- **Phase 6E-F (Approve Run 2 Gate Only)** — Run 2 (River AI, stabilityai) still pending, no auto-trigger
+- **Idle** — leave Run 1 as `approved_after_regen`; Run 2/3 not approved
+
+### Commits (planned)
+
+```
+Assets repo:
+  Phase 6E-H: Approve Flaws LLM regenerated image
+
+Harvester repo:
+  Phase 6E-H: Record regenerated image review decision
+```

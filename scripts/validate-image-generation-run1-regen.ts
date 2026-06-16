@@ -132,7 +132,7 @@ console.log("\n3. Regen manifest content");
 const regenManifest = readJSON<any>(regenManifestPath);
 check("manifest parses", regenManifest !== null);
 if (regenManifest) {
-  check("manifest.phase === '6E-G'", regenManifest.phase === "6E-G", regenManifest.phase);
+  check("manifest.phase === '6E-G' or '6E-H' (6E-H after regen review)", regenManifest.phase === "6E-G" || regenManifest.phase === "6E-H", regenManifest.phase);
   check("manifest.run_id === 'regen_1'", regenManifest.run_id === "regen_1", regenManifest.run_id);
   check("manifest.execution_status === 'completed_within_budget'", regenManifest.execution_status === "completed_within_budget", regenManifest.execution_status);
   check("manifest.approved_regen_limit === 1", regenManifest.approved_regen_limit === 1, String(regenManifest.approved_regen_limit));
@@ -179,7 +179,7 @@ if (regenManifest) {
     check("selected_item[0].model_used === 'image-01'", item.model_used === "image-01");
     check("selected_item[0].model_downgraded === false", item.model_downgraded === false);
     check("selected_item[0].status === 'generated'", item.status === "generated");
-    check("selected_item[0].review_status === 'pending_human_review'", item.review_status === "pending_human_review");
+    check("selected_item[0].review_status === 'pending_human_review' or 'human_reviewed_approved' (6E-H)", item.review_status === "pending_human_review" || item.review_status === "human_reviewed_approved");
     check("selected_item[0].asset_id === 'cqa-2026-06-16-run1-002-regen1'", item.asset_id === "cqa-2026-06-16-run1-002-regen1");
     check(
       "selected_item[0].output_path === 'images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg'",
@@ -304,8 +304,8 @@ const regenDashHarvester = readJSON<any>(regenDashHarvesterPath);
 check("regen dash (assets) parses", regenDashAssets !== null);
 check("regen dash (harvester) parses", regenDashHarvester !== null);
 if (regenDashAssets) {
-  check("regen dash (assets).phase === '6E-G'", regenDashAssets.phase === "6E-G", regenDashAssets.phase);
-  check("regen dash (assets).execution_status === 'completed_within_budget'", regenDashAssets.execution_status === "completed_within_budget", regenDashAssets.execution_status);
+  check("regen dash (assets).phase === '6E-G' or '6E-H' (6E-H after regen review)", regenDashAssets.phase === "6E-G" || regenDashAssets.phase === "6E-H", regenDashAssets.phase);
+  check("regen dash (assets).execution_status === 'completed_within_budget' or 'regen_reviewed_approved'", regenDashAssets.execution_status === "completed_within_budget" || regenDashAssets.execution_status === "regen_reviewed_approved", regenDashAssets.execution_status);
   check("regen dash (assets).regen_target_item_id === 'Q-6E-B-002'", regenDashAssets.regen_target_item_id === "Q-6E-B-002", regenDashAssets.regen_target_item_id);
   check("regen dash (assets).total_generated_images === 8", regenDashAssets.total_generated_images === 8, String(regenDashAssets.total_generated_images));
   check("regen dash (assets).total_generated_images_baseline === 7", regenDashAssets.total_generated_images_baseline === 7, String(regenDashAssets.total_generated_images_baseline));
@@ -338,7 +338,7 @@ if (regenDashAssets) {
   // regen_candidate
   const cand = regenDashAssets.regen_candidate;
   check("regen_candidate.item_id === 'Q-6E-B-002'", cand?.item_id === "Q-6E-B-002", cand?.item_id);
-  check("regen_candidate.review_status === 'pending_human_review'", cand?.review_status === "pending_human_review", cand?.review_status);
+  check("regen_candidate.review_status === 'pending_human_review' or 'human_reviewed_approved'", cand?.review_status === "pending_human_review" || cand?.review_status === "human_reviewed_approved", cand?.review_status);
   check("regen_candidate.regen_of === 'cqa-2026-06-16-run1-002'", cand?.regen_of === "cqa-2026-06-16-run1-002", cand?.regen_of);
   check("regen_candidate.regen_run_id === 'regen_1'", cand?.regen_run_id === "regen_1", cand?.regen_run_id);
   check(
@@ -377,10 +377,10 @@ if (queue) {
     check("queue.run1_regen.no_secrets === true", r.no_secrets === true);
   }
   // current_phase / status
-  check("queue.current_phase === '6E-G'", queue.current_phase === "6E-G", queue.current_phase);
+  check("queue.current_phase === '6E-G' or '6E-H' (6E-H after regen review)", queue.current_phase === "6E-G" || queue.current_phase === "6E-H", queue.current_phase);
   check(
-    "queue.current_phase_status === 'completed_within_budget'",
-    queue.current_phase_status === "completed_within_budget",
+    "queue.current_phase_status === 'completed_within_budget' or 'regen_reviewed_approved'",
+    queue.current_phase_status === "completed_within_budget" || queue.current_phase_status === "regen_reviewed_approved",
     queue.current_phase_status
   );
 }

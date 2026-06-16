@@ -103,15 +103,15 @@ console.log("\n4. Review board content (decisions recorded)");
 const board = readJSON<any>(reviewBoardJson);
 check("review-board.json parses", board !== null);
 if (board) {
-  check("board.phase === '6E-E'", board.phase === "6E-E");
+  check("board.phase === '6E-E' or '6E-H' (6E-H after regen review)", board.phase === "6E-E" || board.phase === "6E-H");
   check("board.total_items === 2", board.total_items === 2);
   check("board.reviewed === 2", board.reviewed === 2, String(board.reviewed));
-  check("board.approved === 1", board.approved === 1, String(board.approved));
-  check("board.needs_regen === 1", board.needs_regen === 1, String(board.needs_regen));
+  check("board.approved === 1 or 2 (1 in 6E-E; 2 after 6E-H regen approval)", board.approved === 1 || board.approved === 2, String(board.approved));
+  check("board.needs_regen === 1 or 0 (1 in 6E-E; 0 after 6E-H regen approval)", board.needs_regen === 1 || board.needs_regen === 0, String(board.needs_regen));
   check("board.rejected === 0", board.rejected === 0, String(board.rejected));
   check("board.pending === 0", board.pending === 0, String(board.pending));
   check("board.human_scoring_complete === true", board.human_scoring_complete === true);
-  check("board.run_1_outcome === 'partial_pass'", board.run_1_outcome === "partial_pass", board.run_1_outcome);
+  check("board.run_1_outcome === 'partial_pass' or 'approved_after_regen' (approved_after_regen after 6E-H)", board.run_1_outcome === "partial_pass" || board.run_1_outcome === "approved_after_regen", board.run_1_outcome);
   check("board.run_2_status === 'pending'", board.run_2_status === "pending");
   check("board.run_3_status === 'pending'", board.run_3_status === "pending");
 
@@ -128,7 +128,7 @@ if (board) {
     check("Q-6E-B-001 notes present", typeof itemQ1.notes === "string" && itemQ1.notes.length > 0);
   }
   if (itemQ2) {
-    check("Q-6E-B-002 review_status === 'needs_regen'", itemQ2.review_status === "needs_regen", itemQ2.review_status);
+    check("Q-6E-B-002 review_status === 'needs_regen' or 'superseded_by_regen' (parent superseded after 6E-H regen approval)", itemQ2.review_status === "needs_regen" || itemQ2.review_status === "superseded_by_regen", itemQ2.review_status);
     check("Q-6E-B-002 decision === 'needs_regen'", itemQ2.decision === "needs_regen", itemQ2.decision);
     check("Q-6E-B-002 human_score === 43.3", itemQ2.human_score === 43.3, String(itemQ2.human_score));
     check("Q-6E-B-002 notes present", typeof itemQ2.notes === "string" && itemQ2.notes.length > 0);
@@ -171,15 +171,15 @@ console.log("\n6. Decision sheet content (summary)");
 const decision = readJSON<any>(decisionSheetJson);
 check("decision-sheet.json parses", decision !== null);
 if (decision) {
-  check("decision.approved === 1", decision.approved === 1, String(decision.approved));
-  check("decision.needs_regen === 1", decision.needs_regen === 1, String(decision.needs_regen));
+  check("decision.approved === 1 or 2 (1 in 6E-E; 2 after 6E-H regen approval)", decision.approved === 1 || decision.approved === 2, String(decision.approved));
+  check("decision.needs_regen === 1 or 0 (1 in 6E-E; 0 after 6E-H regen approval)", decision.needs_regen === 1 || decision.needs_regen === 0, String(decision.needs_regen));
   check("decision.rejected === 0", decision.rejected === 0, String(decision.rejected));
   check("decision.pending === 0", decision.pending === 0, String(decision.pending));
-  check("decision.run_1_outcome === 'partial_pass'", decision.run_1_outcome === "partial_pass");
+  check("decision.run_1_outcome === 'partial_pass' or 'approved_after_regen'", decision.run_1_outcome === "partial_pass" || decision.run_1_outcome === "approved_after_regen");
   check("decision.run_2_status === 'pending'", decision.run_2_status === "pending");
   check("decision.run_3_status === 'pending'", decision.run_3_status === "pending");
-  check("decision.no_regeneration_executed === true", decision.no_regeneration_executed === true);
-  check("decision.regeneration_deferred_to_phase_6eg === true", decision.regeneration_deferred_to_phase_6eg === true);
+  check("decision.no_regeneration_executed === true (true in 6E-E; in 6E-H becomes no_new_image_generated)", decision.no_regeneration_executed === true || decision.no_new_image_generated === true);
+  check("decision.regeneration_deferred_to_phase_6eg === true (in 6E-E; in 6E-H regen is already executed)", decision.regeneration_deferred_to_phase_6eg === true || decision.regen_reviewed === 1);
   check("decision.decisions.length === 2", Array.isArray(decision.decisions) && decision.decisions.length === 2);
 }
 
@@ -189,10 +189,10 @@ const decDash = path.join(ROOT, "dashboard/image-generation-run1-review-decision
 check("image-generation-run1-review-decisions.json exists", fileExists(decDash));
 const decDashContent = readJSON<any>(decDash);
 if (decDashContent) {
-  check("dec dash.phase === '6E-E'", decDashContent.phase === "6E-E", decDashContent.phase);
-  check("dec dash.approved === 1", decDashContent.approved === 1);
-  check("dec dash.needs_regen === 1", decDashContent.needs_regen === 1);
-  check("dec dash.run_1_outcome === 'partial_pass'", decDashContent.run_1_outcome === "partial_pass");
+  check("dec dash.phase === '6E-E' or '6E-H'", decDashContent.phase === "6E-E" || decDashContent.phase === "6E-H", decDashContent.phase);
+  check("dec dash.approved === 1 or 2", decDashContent.approved === 1 || decDashContent.approved === 2);
+  check("dec dash.needs_regen === 1 or 0", decDashContent.needs_regen === 1 || decDashContent.needs_regen === 0);
+  check("dec dash.run_1_outcome === 'partial_pass' or 'approved_after_regen'", decDashContent.run_1_outcome === "partial_pass" || decDashContent.run_1_outcome === "approved_after_regen");
   check("dec dash.run_2_approved === false", decDashContent.run_2_approved === false);
   check("dec dash.run_3_approved === false", decDashContent.run_3_approved === false);
   check("dec dash.no_model_call === true", decDashContent.no_model_call === true);
@@ -201,8 +201,8 @@ if (decDashContent) {
   check("dec dash.no_timer === true", decDashContent.no_timer === true);
   check("dec dash.no_promote === true", decDashContent.no_promote === true);
   check("dec dash.no_c5n_change === true", decDashContent.no_c5n_change === true);
-  check("dec dash.no_regeneration_executed === true", decDashContent.no_regeneration_executed === true);
-  check("dec dash.total_generated_images === 7", decDashContent.total_generated_images === 7, String(decDashContent.total_generated_images));
+  check("dec dash.no_regeneration_executed === true (true in 6E-E; in 6E-H becomes no_new_image_generated)", decDashContent.no_regeneration_executed === true || decDashContent.no_new_image_generated === true);
+  check("dec dash.total_generated_images === 7 or 8 (7 in 6E-E; 8 after 6E-G regen)", decDashContent.total_generated_images === 7 || decDashContent.total_generated_images === 8, String(decDashContent.total_generated_images));
   check("dec dash.pending_images === 18", decDashContent.pending_images === 18, String(decDashContent.pending_images));
   check("dec dash.items.length === 2", Array.isArray(decDashContent.items) && decDashContent.items.length === 2);
 }

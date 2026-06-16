@@ -1,8 +1,8 @@
 {
   "phase": "6E-D",
-  "current_phase": "6E-G",
-  "current_phase_status": "completed_within_budget",
-  "current_phase_substatus": "regen_executed_awaiting_human_review",
+  "current_phase": "6E-H",
+  "current_phase_status": "regen_reviewed_approved",
+  "current_phase_substatus": "run1_approved_after_regen_awaiting_run2_decision",
   "mode": "run1_controlled_image_generation_execution_completed",
   "generated_at": "2026-06-16T15:06:00+08:00",
   "total_queue_items": 23,
@@ -648,9 +648,11 @@
       "harvester_dashboard": "dashboard/image-generation-run1-review-decisions.json"
     },
     "validator": "scripts/validate-image-generation-run1-review-decisions.ts",
-    "npm_script": "validate:image-generation-run1-review-decisions"
+    "npm_script": "validate:image-generation-run1-review-decisions",
+    "run_1_final_outcome": "approved_after_regen",
+    "usable_run1_images": 2
   },
-  "updated_at": "2026-06-16T16:33:00+08:00",
+  "updated_at": "2026-06-16T16:55:32+08:00",
   "run1_regen": {
     "phase": "6E-G",
     "mode": "controlled_regeneration_q6eb002",
@@ -687,7 +689,7 @@
     "output_hash": "4b66c35d3c78",
     "file_size_bytes": 87634,
     "dimensions": "1280x720",
-    "review_status": "pending_human_review",
+    "review_status": "human_reviewed_approved",
     "total_generated_images": 8,
     "total_generated_images_baseline": 7,
     "pending_images": 18,
@@ -714,6 +716,15 @@
     "no_video": true,
     "no_music": true,
     "no_existing_image_overwrite": true,
-    "no_existing_image_delete": true
+    "no_existing_image_delete": true,
+    "review_decision": "approve",
+    "review_human_score": 76.6,
+    "review_decision_source": "human_reviewer (Xin Conan, message_id 50775)",
+    "review_decided_at": "2026-06-16T16:55:32+08:00",
+    "selected_image_path": "images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg",
+    "parent_image_status": "superseded_by_regen",
+    "run_1_final_outcome": "approved_after_regen",
+    "usable_run1_images": 2,
+    "no_new_image_generated": true
   }
 }

@@ -140,7 +140,7 @@ console.log("\n4. Review board content");
 const board = readJSON<ReviewBoard>(reviewBoardJson);
 check("review-board.json parses", board !== null);
 if (board) {
-  check("board.phase === '6E-E'", board.phase === "6E-E", board.phase);
+  check("board.phase === '6E-E' or '6E-H' (6E-H after regen review)", board.phase === "6E-E" || board.phase === "6E-H", board.phase);
   check("board.total_items === 2", board.total_items === 2, String(board.total_items));
   // pending: 2 in pre-decision state, 0 in post-decision state
   check(
@@ -180,7 +180,7 @@ if (board) {
 
   for (const item of board.items) {
     // Allow either pre-decision (pending) or post-decision (approved/needs_regen/rejected) state
-    const allowedReviewStatus = ["pending_human_review", "approved", "needs_regen", "rejected"];
+    const allowedReviewStatus = ["pending_human_review", "approved", "needs_regen", "rejected", "superseded_by_regen"];
     check(
       `${item.item_id} review_status is valid (pending or decided)`,
       allowedReviewStatus.includes(item.review_status),
@@ -207,7 +207,7 @@ if (board) {
     );
     check(`${item.item_id} image_path present`, typeof item.image_path === "string" && item.image_path.length > 0);
     check(`${item.item_id} prompt_hash present`, typeof item.prompt_hash === "string" && item.prompt_hash.length === 12);
-    check(`${item.item_id} output_hash present`, typeof item.output_hash === "string" && item.output_hash.length === 12);
+    check(`${item.item_id} output_hash present (or regen output_hash present if parent superseded)`, typeof item.output_hash === "string" && item.output_hash.length === 12 || (typeof item.regen_output_hash === "string" && item.regen_output_hash.length === 12 && item.image_status === "superseded_by_regen"));
   }
 }
 

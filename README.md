@@ -98,6 +98,7 @@ Signal Collection → Scoring → Creative Brief → Content Pack → Asset Gene
 | **Phase 6E-E** | **✅ Complete** | **Run 1 Human Image Review Pack (read-only review pack; 2/2 images pending human scoring; 5-dimension scoring sheet; new validator `validate:image-generation-run1-review` 98/98 PASS; review_status=pending_human_review; Run 2/3 still pending)** |
 | **Phase 6E-E Decisions** | **✅ Complete** | **Run 1 Human Review Decisions Recorded (1 approved Q-6E-B-001 @82.5; 1 needs_regen Q-6E-B-002 @43.3; run_1_outcome=partial_pass; new validator `validate:image-generation-run1-review-decisions` 95/95 PASS; no regeneration executed; Run 2/3 still pending)** |
 | **Phase 6E-G** | **✅ Complete** | **Controlled Regeneration for Q-6E-B-002 only (1 image regenerated; parent cqa-2026-06-16-run1-002_001.jpg untouched; cumulative 7→8, pending 18 unchanged; prompt re-designed to avoid fake-badges/text-artifact failure modes; new validator `validate:image-generation-run1-regen` 203/203 PASS; Run 2/3 still pending; next phase 6E-H Human Review)** |
+| **Phase 6E-H** | **✅ Complete** | **Regenerated Image Human Review Decision (Q-6E-B-002 regen approved, score 76.6; Run 1 final outcome: approved_after_regen; usable_run1_images 2/2; parent image marked superseded_by_regen but still exists; no new image generated, no model call; new validator `validate:image-generation-regen-review-decision` 214/214 PASS; Run 2/3 still pending; next phase 6E-F Approve Run 2 Gate Only)** |
 
 See [ROADMAP.md](./ROADMAP.md) for full phase history.
 

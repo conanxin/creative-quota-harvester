@@ -1,0 +1,69 @@
+Phase 6E-H · Regenerated Image Human Review COMPLETE
+
+状态：PASS（regen_reviewed_approved）
+
+📌 Regen 决策
+- target: Q-6E-B-002 (Flaws in the LLM Automation Narrative)
+- regen_image: cqa-2026-06-16-run1-002-regen1_001.jpg (86KB)
+- decision: **approve**
+- score: **76.6**
+- notes: "Clean abstract academic cover. Much improved over parent image. Avoids fake badges and long unreadable text. Minor microtext artifact remains, but the image is usable as an abstract asset and does not need another regeneration."
+
+🎯 评分（0–10）
+- prompt_alignment: 7.5
+- visual_quality: 8.0
+- usefulness_as_asset: 7.8
+- factual_safety: 8.0
+- brand_text_artifact_risk: 3.2
+
+📊 Run 1 Final
+- run_1_final_outcome: **approved_after_regen**
+- usable_run1_images: **2 / 2**
+- Q-6E-B-001: approved (82.5, unchanged)
+- Q-6E-B-002 parent: superseded_by_regen (still exists, NOT overwritten, NOT deleted)
+- Q-6E-B-002 regen: approved (76.6)
+- selected_image_path: images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg
+
+🛡️ 边界（全部尊重）
+- 不调用 image model（仅记录决策）
+- 不生成任何新媒体
+- 6E-H 不重新生成（regen 已在 6E-G 完成）
+- 原图保留，未覆盖，未删除
+- Run 2 / Run 3 仍 pending（无自动触发）
+- 6D-5 final_status=closed（未变）
+- 无 X publish · 无 timer · 无 digest · 无 promote · 无 C5N
+- 无视频 · 无音乐 · 无 secrets
+- 无 model downgrade · 无 quota 绕过
+
+✅ 验证（14 项全 PASS）
+- validate:image-generation-regen-review-decision: 214/214 (新)
+- validate:image-generation-run1-regen: 203/203
+- validate:image-generation-run1-review-decisions: 95/95
+- validate:image-generation-run1-review: 98/98
+- validate:image-generation-run1: 56/56
+- validate:image-generation-gates: 161/161
+- validate:image-generation-plan: 125/125
+- validate:image-generation-preflight: 66/66
+- validate:x-manual-publishing-closeout: 89/89
+- validate:mainline-recovery: PASS
+- validate:dashboard-control-safety: PASS
+- dashboard:control:validate: 17/17
+- validate:telegram-sanitizer: PASS
+- validate:project-report-send: 11/11
+
+📁 关键文件
+- assets: publishing/review/image/phase-6e/run1/{review-board,decision-sheet}.{json,md} (updated)
+- assets: generated/phase-6e/run1/regen/q-6e-b-002/manifest.json (updated)
+- dashboards: image-generation-run1-regen.json, image-generation-run1-review-decisions.json, image-generation-plan.json (all updated)
+- harvester: scripts/validate-image-generation-regen-review-decision.ts (new, 214 checks)
+- harvester: dashboard/mainline-production-queue.json (updated)
+- harvester: dashboard/index.html (Phase 6E-H section added)
+- reports/phase-6eh-regenerated-image-human-review.md
+- reports/telegram-phase-6eh-regenerated-image-human-review.txt (本文件)
+
+➡️ 下一步
+- Phase 6E-F (Approve Run 2 Gate Only) — Run 2 (River AI, stabilityai) 仍 pending
+- Run 3 (Penitence) 仍 pending
+- 默认若爸爸无回应：Run 1 保持 approved_after_regen；Run 2/3 仍 pending
+
+报告路径：reports/phase-6eh-regenerated-image-human-review.md

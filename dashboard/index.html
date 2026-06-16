@@ -747,6 +747,63 @@
     </div>
   </div>
 
+  <div class="card" style="margin-bottom: 30px; background: #f0fdf4; border: 1px solid #166534;">
+    <h2 style="color: #14532d;"><span class="icon">✅</span> Regen 人工审核 · Regenerated Image Human Review (Phase 6E-H) — COMPLETED</h2>
+    <p style="color:#14532d; font-size:0.9rem; margin-bottom:12px;">
+      Phase 6E-H <strong>regenerated image human review decision</strong> recorded. 爸爸 reviewed the regen image (cqa-2026-06-16-run1-002-regen1_001.jpg) and provided 5-dimension scores + decision. <strong>decision=approve</strong> (overall 76.6). <strong>Run 1 final outcome: approved_after_regen</strong> · <strong>usable_run1_images: 2 / 2</strong>.<br/>
+      <strong>execution_status=regen_reviewed_approved</strong> · <strong>selected_image_path: images/2026/06/16/cqa-2026-06-16-run1-002-regen1_001.jpg</strong> · <strong>parent_image_status: superseded_by_regen</strong> (still exists, not overwritten, not deleted)<br/>
+      <strong>no_model_call=true</strong> · <strong>no_media_generation=true</strong> · <strong>no_new_image_generated=true</strong> · <strong>no_image_fabrication=true</strong> · <strong>quota_checked_before_call=true</strong> · <strong>quota_bypassed=false</strong> · <strong>model_downgraded=false</strong><br/>
+      <strong>no_x_publish=true</strong> · <strong>no_timer=true</strong> · <strong>no_promote=true</strong> · <strong>no_c5n_change=true</strong> · <strong>no_secrets=true</strong> · <strong>no_6d5_modify=true</strong>
+    </p>
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Parent Decision (6E-E)</th><th>Regen Decision (6E-H)</th><th>Final State</th><th>Selected Image</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>Q-6E-B-001</code></td>
+          <td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approve</span> (82.5)</td>
+          <td>— (unaffected by regen)</td>
+          <td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approved</span></td>
+          <td><code>cqa-2026-06-16-run1-001_001.jpg</code></td>
+        </tr>
+        <tr>
+          <td><code>Q-6E-B-002</code></td>
+          <td><span style="background:#fed7aa; color:#9a3412; padding:2px 6px; border-radius:4px;">needs_regen</span> (43.3)</td>
+          <td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approve</span> (76.6)</td>
+          <td><span style="background:#bbf7d0; color:#065f46; padding:2px 6px; border-radius:4px;">approved_after_regen</span></td>
+          <td><code>cqa-2026-06-16-run1-002-regen1_001.jpg</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <table style="margin-top:10px;">
+      <thead>
+        <tr><th>Dimension</th><th>Regen Score (0–10)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>prompt_alignment</td><td>7.5</td></tr>
+        <tr><td>visual_quality</td><td>8.0</td></tr>
+        <tr><td>usefulness_as_asset</td><td>7.8</td></tr>
+        <tr><td>factual_safety</td><td>8.0</td></tr>
+        <tr><td>brand_text_artifact_risk</td><td>3.2</td></tr>
+        <tr><td><strong>overall_score (0–100)</strong></td><td><strong>76.6</strong></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px; padding:10px 14px; background:#dcfce7; border:1px solid #166534; border-radius:8px; font-size:0.8rem; color:#14532d;">
+      <strong>✅ Phase 6E-H COMPLETED:</strong> Q-6E-B-002 regen approved. Run 1 final outcome: <strong>approved_after_regen</strong>. usable_run1_images: <strong>2 / 2</strong>. Parent image (cqa-2026-06-16-run1-002_001.jpg) marked <code>superseded_by_regen</code> but still exists as historical artefact (NOT overwritten, NOT deleted). Q-6E-B-001 unchanged.<br/>
+      <strong>📋 Boundaries enforced:</strong> No model call (in 6E-H) · No media generation · No new image generated · No regeneration executed in 6E-H (regen was in 6E-G) · No X publish / baoyu-post-to-x · No timer / digest / promote / C5N · No 6D-5 final_status modification · No model downgrade · No image fabrication · No quota bypass · No secrets committed · No original image overwritten or deleted · No Run 2 / Run 3 approval.<br/>
+      <strong>📋 Regen notes (human):</strong> "Clean abstract academic cover. Much improved over parent image. Avoids fake badges and long unreadable text. Minor microtext artifact remains, but the image is usable as an abstract asset and does not need another regeneration."<br/>
+      <strong>📋 Files written:</strong> assets-repo: <code>publishing/review/image/phase-6e/run1/review-board.json</code> (updated) · <code>publishing/review/image/phase-6e/run1/review-board.md</code> (updated) · <code>publishing/review/image/phase-6e/run1/decision-sheet.json</code> (updated) · <code>publishing/review/image/phase-6e/run1/decision-sheet.md</code> (updated) · <code>generated/phase-6e/run1/regen/q-6e-b-002/manifest.json</code> (updated) · <code>dashboard/image-generation-run1-regen.json</code> (updated) · <code>dashboard/image-generation-run1-review-decisions.json</code> (updated) · <code>dashboard/image-generation-plan.json</code> (updated). harvester-repo: <code>scripts/validate-image-generation-regen-review-decision.ts</code> (new, 214 checks) · <code>package.json</code> (new script) · dashboard mirrors · <code>dashboard/mainline-production-queue.json</code> (updated) · <code>reports/phase-6eh-regenerated-image-human-review.md</code> (new) · <code>reports/telegram-phase-6eh-regenerated-image-human-review.txt</code> (new).<br/>
+      <strong>📋 Validators (14/14 PASS):</strong> <code>validate:image-generation-regen-review-decision</code> 214/214 · <code>validate:image-generation-run1-regen</code> 203/203 · <code>validate:image-generation-run1-review-decisions</code> 95/95 · <code>validate:image-generation-run1-review</code> 98/98 · <code>validate:image-generation-run1</code> 56/56 · <code>validate:image-generation-gates</code> 161/161 · <code>validate:image-generation-plan</code> 125/125 · <code>validate:image-generation-preflight</code> 66/66 · <code>validate:x-manual-publishing-closeout</code> 89/89 · <code>validate:mainline-recovery</code> PASS · <code>validate:dashboard-control-safety</code> PASS · <code>dashboard:control:validate</code> 17/17 · <code>validate:telegram-sanitizer</code> PASS · <code>validate:project-report-send</code> 11/11.<br/>
+      <strong>📋 Next phase (NOT auto-triggered):</strong>
+      <ul style="margin:6px 0 0 20px;">
+        <li><strong>Phase 6E-F:</strong> Approve Run 2 Gate Only — Run 2 (River AI, stabilityai) still pending, no auto-trigger</li>
+        <li><strong>Idle:</strong> leave Phase 6E-H as completed; Run 1 remains approved_after_regen; Run 2/3 still pending</li>
+      </ul>
+      <strong>📋 Run 2 status: pending</strong> · <strong>📋 Run 3 status: pending</strong> · 两者均未批准 budget，需要单独人工批准。
+    </div>
+  </div>
+
   <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>
