@@ -481,5 +481,45 @@
       "timer_allowed": false,
       "generate_allowed": false
     }
+  },
+  "x_manual_post_log_record_4f": {
+    "phase": "6D-4F",
+    "added_at": "2026-06-16T10:04:00+08:00",
+    "added_by": "Phase 6D-4F manual post log record",
+    "no_platform_publish": true,
+    "platform_publish_enabled": false,
+    "no_model_call": true,
+    "no_media_generation": true,
+    "no_x_api": true,
+    "no_baoyu_post_to_x": true,
+    "no_timer": true,
+    "no_telegram_digest": true,
+    "manual_post_logging_record": true,
+    "approved_total": 5,
+    "approved_waiting_manual_post": 0,
+    "posted_manually": 5,
+    "auto_publish": false,
+    "x_api_used": false,
+    "log_status": "human_input_received",
+    "manual_post_log_path": "dashboard/x-manual-post-log.json",
+    "assets_manual_post_log_dir": "creative-quota-assets/publishing/review/x/phase-6d/manual-post-log",
+    "validator_script": "scripts/validate-x-manual-post-log-record-4f.ts",
+    "validator_command": "npm run validate:x-manual-post-log-record-4f",
+    "next_required_human_action": "All 5 approved items manually posted. Phase 6D-4 series complete.",
+    "next_phase_proposal": "Phase 6D-4 series COMPLETE. Next: Phase 6D-5 or Phase 6E (human decision required).",
+    "boundaries_enforced": {
+      "model_call_allowed": false,
+      "media_generation_allowed": false,
+      "x_api_called": false,
+      "baoyu_post_to_x_called": false,
+      "platform_publish_executed": false,
+      "platform_publish_enabled": false,
+      "auto_publish": false,
+      "auto_posted_manually": false,
+      "collect_allowed": false,
+      "digest_send_allowed": false,
+      "timer_allowed": false,
+      "generate_allowed": false
+    }
   }
 }

@@ -142,7 +142,8 @@
     "validate:x-manual-post-log-record": "tsx scripts/validate-x-manual-post-log-record.ts",
     "validate:x-manual-post-log-record-4c": "tsx scripts/validate-x-manual-post-log-record-4c.ts",
     "validate:x-manual-post-log-record-4d": "tsx scripts/validate-x-manual-post-log-record-4d.ts",
-    "validate:x-manual-post-log-record-4e": "tsx scripts/validate-x-manual-post-log-record-4e.ts"
+    "validate:x-manual-post-log-record-4e": "tsx scripts/validate-x-manual-post-log-record-4e.ts",
+    "validate:x-manual-post-log-record-4f": "tsx scripts/validate-x-manual-post-log-record-4f.ts"
   },
   "keywords": [
     "ai",
