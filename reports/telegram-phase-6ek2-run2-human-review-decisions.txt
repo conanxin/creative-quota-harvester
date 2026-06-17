@@ -8,33 +8,23 @@ Run 2 outcome:
   rejected: 0/2
 
 Image 1 — Q-6E-B-003 River AI (overall 45.5/100)
-  prompt_alignment: 5.5
-  visual_quality: 5.5
-  usefulness_as_asset: 4.5
-  factual_safety: 4.0
-  brand_text_artifact_risk: 8.0
+  prompt_alignment: 5.5  visual_quality: 5.5  usefulness_as_asset: 4.5
+  factual_safety: 4.0  brand_text_artifact_risk: 8.0
   decision: needs_regen
-  reason: severe text artifacts in title area ("Develoesin UncerPto"), fake footer/logo text, weak River AI semantic clarity. Developer workflow direction is usable but image not suitable as final asset.
-  regen guidance: regenerate with minimal or no text, no fake logos, cleaner personal-AI/developer-workflow visual.
+  reason: severe text artifacts in title area ("Develoesin UncerPto"), fake footer/logo text, weak River AI semantic clarity.
+  regen guidance: minimal or no text, no fake logos, cleaner personal-AI/developer-workflow visual.
 
 Image 2 — Q-6E-B-004 stabilityai/stable-video-diffusion-img2vid-xt (overall 50.0/100)
-  prompt_alignment: 6.0
-  visual_quality: 5.0
-  usefulness_as_asset: 4.5
-  factual_safety: 5.5
-  brand_text_artifact_risk: 6.5
+  prompt_alignment: 6.0  visual_quality: 5.0  usefulness_as_asset: 4.5
+  factual_safety: 5.5  brand_text_artifact_risk: 6.5
   decision: needs_regen
-  reason: reasonable abstract video-diffusion pipeline direction, but scene too dark, main subject too small, most labels unreadable pseudo-text.
-  regen guidance: regenerate with clearer video generation pipeline visual, stronger central composition, minimal readable labels, no fake UI metrics.
+  reason: scene too dark, main subject too small, most labels unreadable pseudo-text.
+  regen guidance: clearer pipeline visual, stronger central composition, minimal readable labels, no fake UI metrics.
 
 Boundaries enforced:
-  - no image model call
-  - no new media generation
-  - no regen executed
-  - no image overwrite / delete
-  - no Run 1 reopen / no Run 1 final closeout modification
-  - no Run 3 approval / no Run 3 trigger
-  - no X publish / no timer / no digest / no promote / no C5N
+  - no image model call / no new media generation / no regen executed
+  - no image overwrite/delete / no Run 1 reopen / no Run 1 final closeout modify
+  - no Run 3 approval/trigger / no X publish / no timer/digest/promote/C5N
   - 6D-5 final_status=closed unchanged
   - total_generated_image_files=10 (unchanged) / pending_images=16 (unchanged)
   - no secrets committed
@@ -51,39 +41,21 @@ Next phase options (not auto-triggered):
 Run 3 (Penitence Q-6E-B-005) decision is a separate command.
 
 Validators:
-  validate:image-generation-run2-review-decisions: PASS (204/204) [new]
-  validate:image-generation-run2-review: 1 expected fail (phase-aware, 6E-K2 update pending in separate task)
+  validate:image-generation-run2-review-decisions: PASS 204/204 [new]
+  validate:image-generation-run2-review: 1 expected fail (phase-aware)
   validate:image-generation-run2: 120/121 (1 expected fail)
-  validate:image-generation-plan: PASS (125/125)
-  validate:image-generation-preflight: PASS (66/66)
-  validate:x-manual-publishing-closeout: PASS (89/89)
+  validate:image-generation-plan: PASS 125/125
+  validate:image-generation-preflight: PASS 66/66
+  validate:x-manual-publishing-closeout: PASS 89/89
   validate:mainline-recovery: PASS
   validate:dashboard-control-safety: PASS
-  dashboard:control:validate: PASS (17/17)
-  validate:telegram-sanitizer: PASS (43/43)
-  validate:project-report-send: PASS (11/11)
+  dashboard:control:validate: PASS 17/17
+  validate:telegram-sanitizer: PASS 43/43
+  validate:project-report-send: PASS 11/11
 
-Files written (assets-repo):
-  publishing/review/image/phase-6e/run2/review-board.json (updated)
-  publishing/review/image/phase-6e/run2/review-board.md (updated)
-  publishing/review/image/phase-6e/run2/scoring-sheet.json (updated)
-  publishing/review/image/phase-6e/run2/scoring-sheet.md (updated)
-  publishing/review/image/phase-6e/run2/decision-sheet.json (new)
-  publishing/review/image/phase-6e/run2/decision-sheet.md (new)
+Files written (assets-repo): review-board.json/md, scoring-sheet.json/md, decision-sheet.json/md (new).
+Files written (harvester-repo): dashboard/image-generation-run2-review.json (updated), dashboard/image-generation-run2-review-decisions.json (new), dashboard/mainline-production-queue.json (current_phase=6E-K2), dashboard/index.html (Phase 6E-K2 section), scripts/validate-image-generation-run2-review-decisions.ts (new), package.json (new script), README.md/ROADMAP.md (updated), reports/phase-6ek2-run2-human-review-decisions.md (new).
 
-Files written (harvester-repo):
-  dashboard/image-generation-run2-review.json (updated with human scores)
-  dashboard/image-generation-run2-review-decisions.json (new)
-  dashboard/mainline-production-queue.json (current_phase=6E-K2)
-  dashboard/index.html (added Phase 6E-K2 section)
-  scripts/validate-image-generation-run2-review-decisions.ts (new)
-  package.json (new script validate:image-generation-run2-review-decisions)
-  README.md (added Phase 6E-K2 row)
-  ROADMAP.md (added Phase 6E-K2 section)
-  reports/phase-6ek2-run2-human-review-decisions.md (new)
-  reports/telegram-phase-6ek2-run2-human-review-decisions.txt (this file)
-
-Awaiting human action:
-  爸爸 must choose Phase 6E-M (Controlled Regeneration) or Idle. Run 3 decision is separate.
+Awaiting: 爸爸 chooses Phase 6E-M (Controlled Regeneration) or Idle.
 
 [End of Phase 6E-K2 report]
