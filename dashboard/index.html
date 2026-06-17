@@ -1049,6 +1049,69 @@
   </div>
 
   <div class="card" style="margin-bottom: 30px;">
+    <h2 style="color: #155e75;"><span class="icon">🗳️</span> Run 2 Human Image Review Decisions · Phase 6E-K2 — RECORDED (needs_regen_all)</h2>
+    <p style="color:#155e75; font-size:0.9rem; margin-bottom:12px;">
+      Phase 6E-K2 records the <strong>Run 2 human review decisions</strong>. 爸爸 scored both Run 2 images on the 5 dimensions and provided a decision for each. <strong>run_2_outcome=needs_regen_all</strong> · <strong>approved=0/2</strong> · <strong>needs_regen=2/2</strong> · <strong>rejected=0/2</strong>. <strong>no_model_call=true</strong> · <strong>no_media_generation=true</strong> · <strong>no regen executed</strong> · <strong>Run 1 final_status=closed</strong> (NOT modified) · <strong>Run 3 pending</strong> (NOT approved) · <strong>6D-5 final_status=closed</strong> (unchanged). total_generated_image_files=10 (unchanged) · pending_images=16 (unchanged).
+    </p>
+    <table style="width:100%; border-collapse: collapse; font-size:0.85rem;">
+      <thead>
+        <tr style="background:#fed7aa;">
+          <th style="padding:6px 8px; text-align:left;">item_id</th>
+          <th style="padding:6px 8px; text-align:left;">title</th>
+          <th style="padding:6px 8px; text-align:left;">prompt_alignment</th>
+          <th style="padding:6px 8px; text-align:left;">visual_quality</th>
+          <th style="padding:6px 8px; text-align:left;">usefulness</th>
+          <th style="padding:6px 8px; text-align:left;">factual_safety</th>
+          <th style="padding:6px 8px; text-align:left;">risk</th>
+          <th style="padding:6px 8px; text-align:left;">overall</th>
+          <th style="padding:6px 8px; text-align:left;">decision</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:5px 8px; border-bottom:1px solid #fed7aa;"><code>Q-6E-B-003</code></td>
+          <td style="padding:5px 8px; border-bottom:1px solid #fed7aa;">River AI</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #fed7aa;">5.5</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #fed7aa;">5.5</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #fed7aa;">4.5</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #fed7aa;">4.0</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #fed7aa;">8.0</td>
+          <td style="padding:5px 8px; border-bottom:1px solid #fed7aa;"><strong>45.5</strong></td>
+          <td style="padding:5px 8px; border-bottom:1px solid #fed7aa;"><span style="background:#fed7aa; color:#9a3412; padding:2px 6px; border-radius:4px;">needs_regen</span></td>
+        </tr>
+        <tr>
+          <td style="padding:5px 8px;"><code>Q-6E-B-004</code></td>
+          <td style="padding:5px 8px;">stabilityai/stable-video-diffusion-img2vid-xt</td>
+          <td style="padding:5px 8px;">6.0</td>
+          <td style="padding:5px 8px;">5.0</td>
+          <td style="padding:5px 8px;">4.5</td>
+          <td style="padding:5px 8px;">5.5</td>
+          <td style="padding:5px 8px;">6.5</td>
+          <td style="padding:5px 8px;"><strong>50.0</strong></td>
+          <td style="padding:5px 8px;"><span style="background:#fed7aa; color:#9a3412; padding:2px 6px; border-radius:4px;">needs_regen</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    <div style="background:#fff7ed; border-left:4px solid #f97316; padding:10px 14px; margin-top:8px;">
+      <strong>✅ Phase 6E-K2 Run 2 review decisions RECORDED:</strong> Both images marked <code>needs_regen</code> · run_2_outcome=<code>needs_regen_all</code> · approved=0/2 · needs_regen=2/2 · rejected=0/2 · total_generated_image_files=10 (unchanged) · pending_images=16 (unchanged).<br/>
+      <strong>📋 Q-6E-B-003 River AI reason:</strong> Severe text artifacts in title area (e.g. "Develoesin UncerPto"), fake footer/logo text, weak River AI semantic clarity. Regenerate with minimal/no text, no fake logos, cleaner personal-AI/developer-workflow visual.<br/>
+      <strong>📋 Q-6E-B-004 stabilityai reason:</strong> Reasonable abstract video-diffusion pipeline direction, but scene too dark, main subject too small, most labels unreadable pseudo-text. Regenerate with clearer pipeline visual, stronger central composition, minimal readable labels, no fake UI metrics.<br/>
+      <strong>📋 Boundaries enforced:</strong> No model call (in 6E-K2) · No media generation · No new image generated · No regeneration executed · No image overwrite · No image delete · No Run 1 reopen · No Run 1 final closeout modification · No Run 2 image overwrite · No Run 2 image delete · No Run 3 approval · No Run 3 trigger · No X publish / baoyu-post-to-x · No timer / digest / promote / C5N · No 6D-5 final_status modification · No model downgrade · No image fabrication · No quota bypass · No secrets committed.<br/>
+      <strong>📋 Files written (assets-repo):</strong> <code>publishing/review/image/phase-6e/run2/review-board.json</code> (updated) · <code>publishing/review/image/phase-6e/run2/review-board.md</code> (updated) · <code>publishing/review/image/phase-6e/run2/scoring-sheet.json</code> (updated) · <code>publishing/review/image/phase-6e/run2/scoring-sheet.md</code> (updated) · <code>publishing/review/image/phase-6e/run2/decision-sheet.json</code> (new) · <code>publishing/review/image/phase-6e/run2/decision-sheet.md</code> (new).<br/>
+      <strong>📋 Files written (harvester-repo):</strong> <code>dashboard/image-generation-run2-review.json</code> (updated with human scores) · <code>dashboard/image-generation-run2-review-decisions.json</code> (new) · <code>dashboard/mainline-production-queue.json</code> (current_phase=6E-K2) · <code>dashboard/index.html</code> (this section) · <code>scripts/validate-image-generation-run2-review-decisions.ts</code> (new) · <code>package.json</code> (new script <code>validate:image-generation-run2-review-decisions</code>) · <code>README.md</code> (updated) · <code>ROADMAP.md</code> (updated) · <code>reports/phase-6ek2-run2-human-review-decisions.md</code> (new) · <code>reports/telegram-phase-6ek2-run2-human-review-decisions.txt</code> (new).<br/>
+      <strong>📋 Validators:</strong> <code>scripts/validate-image-generation-run2-review-decisions.ts</code> (new) · npm script <code>validate:image-generation-run2-review-decisions</code>.<br/>
+      <strong>📋 Phase 6E-K2 read-only invariants verified:</strong> Exactly 2 Run 2 images reviewed · both human_score not null · both decisions=needs_regen · run_2_outcome=needs_regen_all · approved=0/2 · needs_regen=2/2 · rejected=0/2 · total_generated_image_files=10 (unchanged) · pending_images=16 (unchanged) · Run 1 final_status=closed (unchanged) · Run 3 pending (unchanged) · no new image generated · no_model_call=true · no_media_generation=true · no_x_publish=true · no_timer=true · no_digest=true · no_promote=true · no_c5n_change=true · 6D-5 final_status=closed (unchanged) · no secrets committed.<br/>
+      <strong>📋 Next phase (NOT auto-triggered):</strong>
+      <ul style="margin:6px 0 0 20px;">
+        <li><strong>Phase 6E-M:</strong> Controlled Regeneration for Run 2 — separate human command, only if 爸爸 chooses to regenerate</li>
+        <li><strong>Idle:</strong> Stop here. Phase 6E-K2 marked as decisions-recorded. Run 1 closed. Run 2 needs_regen_all (no regen executed). Run 3 still pending.</li>
+      </ul>
+      <strong>📋 Run 1 status: closed</strong> (frozen, not modified) · <strong>📋 Run 3 status: pending</strong> (not approved, not generated) · 6D-5 final_status=closed (unchanged) · total_generated_image_files=10 (unchanged) · pending_images=16 (unchanged).<br/>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 30px;">
     <h2><span class="icon">📋</span> 推荐生成队列</h2>
     <table>
       <thead>

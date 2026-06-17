@@ -1,20 +1,22 @@
 {
-  "phase": "6E-K",
-  "mode": "run2_human_image_review_pack",
+  "phase": "6E-K2",
+  "previous_phase": "6E-K",
+  "mode": "run2_human_image_review_decisions_recorded",
   "generated_at": "2026-06-17T06:46:00+08:00",
-  "updated_at": "2026-06-17T06:46:00+08:00",
-  "based_on_phase": "6E-J",
-  "based_on_assets_commit": "b03580e",
-  "based_on_harvester_commit": "52a69d6",
-  "review_status": "pending_human_review",
-  "decision": "pending",
+  "updated_at": "2026-06-17T08:41:00+08:00",
+  "based_on_phase": "6E-J (Run 2 Controlled Image Generation)",
+  "based_on_assets_commit": "43ac6fa",
+  "based_on_harvester_commit": "79c5271",
+  "review_status": "needs_regen_all",
+  "decision": "needs_regen_all",
+  "run_2_outcome": "needs_regen_all",
   "total_items": 2,
-  "reviewed": 0,
+  "reviewed": 2,
   "approved": 0,
-  "needs_regen": 0,
+  "needs_regen": 2,
   "rejected": 0,
-  "pending": 2,
-  "human_scoring_complete": false,
+  "pending": 0,
+  "human_scoring_complete": true,
   "total_generated_images": 10,
   "pending_images": 16,
   "run_1_final_status": "closed",
@@ -38,6 +40,7 @@
   "no_run_1_final_closeout_modify": true,
   "no_run_2_image_overwrite": true,
   "no_run_2_image_delete": true,
+  "no_run_2_regen_executed": true,
   "no_run_3_approval": true,
   "no_existing_image_overwrite": true,
   "review_pack_paths": {
@@ -45,11 +48,15 @@
     "assets_repo_review_board_md": "publishing/review/image/phase-6e/run2/review-board.md",
     "assets_repo_scoring_sheet_json": "publishing/review/image/phase-6e/run2/scoring-sheet.json",
     "assets_repo_scoring_sheet_md": "publishing/review/image/phase-6e/run2/scoring-sheet.md",
+    "assets_repo_decision_sheet_json": "publishing/review/image/phase-6e/run2/decision-sheet.json",
+    "assets_repo_decision_sheet_md": "publishing/review/image/phase-6e/run2/decision-sheet.md",
     "assets_repo_readme": "publishing/review/image/phase-6e/run2/README.md"
   },
   "validator": {
     "script": "scripts/validate-image-generation-run2-review.ts",
-    "npm_script": "validate:image-generation-run2-review"
+    "npm_script": "validate:image-generation-run2-review",
+    "decisions_validator": "scripts/validate-image-generation-run2-review-decisions.ts",
+    "decisions_npm_script": "validate:image-generation-run2-review-decisions"
   },
   "items": [
     {
@@ -63,10 +70,20 @@
       "prompt_hash": "713fa2351907",
       "output_hash": "0fa9609b9aff",
       "generated_at": "2026-06-16T20:59:22+08:00",
-      "review_status": "pending_human_review",
-      "human_score": null,
-      "decision": "pending",
-      "notes": null
+      "review_status": "needs_regen",
+      "human_score": 45.5,
+      "scoring_dimensions": {
+        "prompt_alignment": 5.5,
+        "visual_quality": 5.5,
+        "usefulness_as_asset": 4.5,
+        "factual_safety": 4.0,
+        "brand_text_artifact_risk": 8.0,
+        "overall_score": 45.5
+      },
+      "decision": "needs_regen",
+      "decision_source": "human",
+      "decided_at": "2026-06-17T08:41:00+08:00",
+      "notes": "Severe text artifacts in title area (e.g. \"Develoesin UncerPto\"), fake footer/logo text, weak River AI semantic clarity. Developer workflow direction is usable but image not suitable as final asset."
     },
     {
       "item_id": "Q-6E-B-004",
@@ -79,25 +96,34 @@
       "prompt_hash": "5b76a00ddcb7",
       "output_hash": "200ad2cff498",
       "generated_at": "2026-06-16T20:59:41+08:00",
-      "review_status": "pending_human_review",
-      "human_score": null,
-      "decision": "pending",
-      "notes": null
+      "review_status": "needs_regen",
+      "human_score": 50.0,
+      "scoring_dimensions": {
+        "prompt_alignment": 6.0,
+        "visual_quality": 5.0,
+        "usefulness_as_asset": 4.5,
+        "factual_safety": 5.5,
+        "brand_text_artifact_risk": 6.5,
+        "overall_score": 50.0
+      },
+      "decision": "needs_regen",
+      "decision_source": "human",
+      "decided_at": "2026-06-17T08:41:00+08:00",
+      "notes": "Reasonable abstract video-diffusion pipeline direction, but scene too dark, main subject too small, most labels unreadable pseudo-text."
     }
   ],
   "next_required_human_decision": {
     "decision_owner": "爸爸",
     "options": [
-      "option_a_score_and_decide: Phase 6E-K — provide human_score + decision for both Run 2 images (NOT auto-triggered)",
-      "option_b_idle: Do nothing, leave Run 2 review as pending"
+      "option_a_regen: Phase 6E-M — Controlled Regeneration for Run 2 (NOT auto-triggered, separate human command)",
+      "option_b_idle: Do nothing, leave Run 2 as needs_regen_all, Run 3 still pending"
     ],
     "default_if_no_response": "option_b_idle",
     "blocked_until_human_decision": true
   },
   "next_phase_proposal": {
-    "next_phase_if_both_approved": "Phase 6E-L (Run 2 Final Closeout) — requires separate human command",
-    "next_phase_if_any_needs_regen": "Phase 6E-K-regen (Run 2 Regeneration within Run 2 budget) — requires separate human command",
-    "next_phase_if_any_rejected": "Phase 6E-L-rejected (Run 2 Rejection Record) — terminal for Run 2",
+    "next_phase_if_regen_chosen": "Phase 6E-M (Run 2 Controlled Regeneration) — requires separate human command",
+    "next_phase_if_idle": "Idle — Run 2 stays needs_regen_all, Run 3 still pending",
     "auto_trigger": false
   }
 }

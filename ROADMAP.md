@@ -1449,3 +1449,68 @@ Historical validators (run1, run1-review, run1-review-decisions, run1-final, pre
 
 ### Awaiting human action
 爸爸 must score each Run 2 image (5 dimensions + overall 0-100) and provide decision (approve / needs_regen / reject) per image. Default if no action = decision=pending, Run 2 not approved, Run 3 not triggered.
+
+## Phase 6E-K2 — Run 2 Human Image Review Decisions Recorded 🔄
+
+**Date:** 2026-06-17T08:41:00+08:00
+**Phase:** 6E-K2
+**Previous phase:** 6E-K (Run 2 review pack created)
+**Mode:** Read-only decision recording. No model call. No media generation. No regen executed.
+**Based on assets commit:** `a0e2efa` · **Based on harvester commit:** `79c5271`
+
+### Decisions recorded by 爸爸
+
+| # | item_id | title | overall | decision | reason |
+|---|---------|-------|---------|----------|--------|
+| 1 | `Q-6E-B-003` | River AI | 45.5 | 🔄 needs_regen | Severe text artifacts in title area, fake footer/logo text, weak River AI semantic clarity |
+| 2 | `Q-6E-B-004` | stabilityai/stable-video-diffusion-img2vid-xt | 50.0 | 🔄 needs_regen | Scene too dark, main subject too small, most labels unreadable pseudo-text |
+
+| Outcome | Count |
+|---------|-------|
+| approved | 0 / 2 |
+| needs_regen | 2 / 2 |
+| rejected | 0 / 2 |
+| **Run 2 outcome** | **needs_regen_all** |
+
+### Boundaries enforced
+- No model call (in 6E-K2)
+- No media generation · No new image generated · No regeneration executed
+- No image overwrite · No image delete
+- No Run 1 reopen · No Run 1 final closeout modification
+- No Run 2 image overwrite · No Run 2 image delete
+- No Run 3 approval · No Run 3 trigger
+- No X publish / baoyu-post-to-x · No timer / digest / promote / C5N
+- No 6D-5 final_status modification
+- No model downgrade · No image fabrication · No quota bypass
+- No secrets committed
+- `total_generated_image_files=10` (unchanged) · `pending_images=16` (unchanged)
+
+### Files written (harvester-repo)
+- `dashboard/image-generation-run2-review.json` (updated with human scores)
+- `dashboard/image-generation-run2-review-decisions.json` (new)
+- `dashboard/mainline-production-queue.json` (current_phase=6E-K2)
+- `dashboard/index.html` (added Phase 6E-K2 section)
+- `scripts/validate-image-generation-run2-review-decisions.ts` (new)
+- `package.json` (new script `validate:image-generation-run2-review-decisions`)
+- `README.md` (added Phase 6E-K2 row)
+- `ROADMAP.md` (added this section)
+- `reports/phase-6ek2-run2-human-review-decisions.md` (new)
+- `reports/telegram-phase-6ek2-run2-human-review-decisions.txt` (new)
+
+### Files written (assets-repo)
+- `publishing/review/image/phase-6e/run2/review-board.json` (updated)
+- `publishing/review/image/phase-6e/run2/review-board.md` (updated)
+- `publishing/review/image/phase-6e/run2/scoring-sheet.json` (updated)
+- `publishing/review/image/phase-6e/run2/scoring-sheet.md` (updated)
+- `publishing/review/image/phase-6e/run2/decision-sheet.json` (new)
+- `publishing/review/image/phase-6e/run2/decision-sheet.md` (new)
+
+### Validators
+- `validate:image-generation-run2-review-decisions` (new) — Phase 6E-K2 authoritative validator
+
+### Next phase (NOT auto-triggered)
+- **Phase 6E-M:** Controlled Regeneration for Run 2 — separate human command, only if 爸爸 chooses to regenerate
+- **Idle:** Stop here. Phase 6E-K2 marked as decisions-recorded. Run 1 closed. Run 2 needs_regen_all (no regen executed). Run 3 still pending.
+
+### Awaiting human action
+爸爸 must choose between Phase 6E-M (Controlled Regeneration for Run 2) and Idle. Default if no action = Idle. Run 3 (Penitence) decision is a separate command.
