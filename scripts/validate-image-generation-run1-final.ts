@@ -256,15 +256,15 @@ if (planHarv) {
   check("plan.run_1.final_outcome === 'approved_after_regen'", planHarv.execution_status?.run_1?.final_outcome === "approved_after_regen");
   check("plan.run_1.run1_closeout_phase === '6E-I'", planHarv.execution_status?.run_1?.run1_closeout_phase === "6E-I");
   check("plan.run_1.closeout_status === 'closed'", planHarv.execution_status?.run_1?.closeout_status === "closed");
-  check("plan.execution_status.run_2.status === 'pending_human_approval' (pre-6E-F) or 'approved_pending_generation' (post-6E-F)", planHarv.execution_status?.run_2?.status === "pending_human_approval" || planHarv.execution_status?.run_2?.status === "approved_pending_generation");
+  check("plan.execution_status.run_2.status in [pending_human_approval, approved_pending_generation, generated_pending_review, completed_within_budget] (phase-aware: 6E-J Run 2 sets completed_within_budget)", ["pending_human_approval", "approved_pending_generation", "generated_pending_review", "completed_within_budget"].includes(planHarv.execution_status?.run_2?.status), planHarv.execution_status?.run_2?.status);
   check("plan.execution_status.run_3.status === 'pending_human_approval'", planHarv.execution_status?.run_3?.status === "pending_human_approval");
 }
 
 const queueHarv = readJSON<any>(path.join(ROOT, "dashboard/mainline-production-queue.json"));
 check("queue (harvester) parses", queueHarv !== null);
 if (queueHarv) {
-  check("queue.current_phase === '6E-I' or '6E-F' (advanced after Phase 6E-F Run 2 gate approval)", queueHarv.current_phase === "6E-I" || queueHarv.current_phase === "6E-F", queueHarv.current_phase);
-  check("queue.current_phase_status === 'run1_final_closed' or 'run2_gate_approved' (after 6E-F)", queueHarv.current_phase_status === "run1_final_closed" || queueHarv.current_phase_status === "run2_gate_approved", queueHarv.current_phase_status);
+  check("queue.current_phase in [6E-I, 6E-F, 6E-J, 6E-K] (phase-aware: advanced through 6E-J generation and 6E-K review pack)", ["6E-I", "6E-F", "6E-J", "6E-K"].includes(queueHarv.current_phase), queueHarv.current_phase);
+  check("queue.current_phase_status in [run1_final_closed, run2_gate_approved, run2_generation_completed, run2_review_pack_created] (phase-aware)", ["run1_final_closed", "run2_gate_approved", "run2_generation_completed", "run2_review_pack_created"].includes(queueHarv.current_phase_status), queueHarv.current_phase_status);
   const run1FinalBlock = queueHarv.run1_final_closeout;
   check("queue.run1_final_closeout block present", run1FinalBlock !== undefined);
   if (run1FinalBlock) {
@@ -305,7 +305,9 @@ if (gates) {
 console.log("\n8. generated-assets.json count (still 8, no new images)");
 const genAssets = readJSON<any[]>(path.join(ASSETS_ROOT, "metadata/generated-assets.json"));
 if (Array.isArray(genAssets)) {
-  check("count === 8 (unchanged)", genAssets.length === 8, String(genAssets.length));
+  // Phase-aware: 6E-I expected 8 (after 6E-G regen added 1); 6E-J Run 2 added 2 more (count=10).
+  // 6E-I validator now accepts current-state count without failing.
+  check("count in [8, 10] (6E-I: 8; +6E-J Run 2: 10)", [8, 10].includes(genAssets.length), String(genAssets.length));
   check("contains cqa-2026-06-16-run1-002-regen1 (regen)", genAssets.some((a) => a.asset_id === "cqa-2026-06-16-run1-002-regen1"));
   check("contains cqa-2026-06-16-run1-002 (parent)", genAssets.some((a) => a.asset_id === "cqa-2026-06-16-run1-002"));
 }

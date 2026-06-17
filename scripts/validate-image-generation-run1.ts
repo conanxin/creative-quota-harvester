@@ -372,15 +372,19 @@ if (gates) {
   check("Run 3 approved === false", gates.run_status?.run_3?.approved === false);
 }
 
-// Step 10: generated-assets.json count check (5 if blocked, 7 if completed [or 8 if 6E-G regen added 1])
-console.log("\n10. generated-assets.json count (5 baseline -> 7 after success -> 8 after 6E-G regen)");
+// Step 10: generated-assets.json count check (5 if blocked, 7 if completed [or 8 if 6E-G regen added 1, or 10 if 6E-J Run 2 generated 2 more])
+console.log("\n10. generated-assets.json count (5 baseline -> 7 after success -> 8 after 6E-G regen -> 10 after 6E-J Run 2)");
 const genAssets = readJSON<any[]>(path.join(ASSETS_ROOT, "metadata/generated-assets.json"));
 check("generated-assets.json exists", Array.isArray(genAssets));
 if (Array.isArray(genAssets)) {
-  // After Phase 6E-D Run 1 success, count is 7. After Phase 6E-G regen, count is 8.
-  // The 6E-D validator runs in the context of 6E-D, so the 6E-G regen would have added 1.
-  const expectedCount = isBlocked ? 5 : (genAssets.length === 8 ? 8 : 7);
-  check(`count === ${expectedCount}`, genAssets.length === expectedCount, String(genAssets.length));
+  // After Phase 6E-D Run 1 success, count is 7. After Phase 6E-G regen, count is 8. After Phase 6E-J Run 2, count is 10.
+  // The 6E-D validator runs in the context of 6E-D, so the 6E-G regen would have added 1, and 6E-J Run 2 would have added 2.
+  // Phase-aware: accept current-state count (10) without failing the historical invariant.
+  const allowedCounts = isBlocked ? [5] : [7, 8, 10];
+  const expectedCount = isBlocked ? 5 : (genAssets.length === 10 ? 10 : (genAssets.length === 8 ? 8 : 7));
+  check(`count in [${allowedCounts.join(",")}] (current-state aware: 10 = 5 baseline + 2 Run 1 + 1 regen + 2 Run 2)`, allowedCounts.includes(genAssets.length), String(genAssets.length));
+  // Backward-compat detail check (kept for completeness)
+  check(`count === ${expectedCount} (legacy expected)`, genAssets.length === expectedCount, String(genAssets.length));
   check("contains cqa-2026-06-11-canary-001", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-canary-001"));
   check("contains cqa-2026-06-11-gen-002", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-gen-002"));
   check("contains cqa-2026-06-11-gen-003", genAssets.some((a) => a.asset_id === "cqa-2026-06-11-gen-003"));

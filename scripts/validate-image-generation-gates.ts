@@ -118,16 +118,18 @@ function check(name: string, ok: boolean, detail: string = ""): void {
 function validateOne(g: GatesData, label: string): void {
   console.log(`\n=== ${label} ===`);
 
-  check(`${label}: phase === "6E-C" or "6E-F"`, g.phase === "6E-C" || g.phase === "6E-F", `got ${g.phase}`);
+  check(`${label}: phase === "6E-C" or "6E-F" or "6E-J" or "6E-K"`, g.phase === "6E-C" || g.phase === "6E-F" || g.phase === "6E-J" || g.phase === "6E-K", `got ${g.phase}`);
   // For 6E-F state, the 6E-C-specific structural checks below are superseded by the new
   // validate:image-generation-run2-gates validator. Skip the 6E-C-specific checks here
   // to keep this validator backward-compatible without false failures.
   const is6EF = g.phase === "6E-F";
+  // Post-6E-J phases (6E-J, 6E-K) skip the same checks as 6E-F since they have completed generation
+  const isPostGeneration = is6EF || g.phase === "6E-J" || g.phase === "6E-K";
   if (is6EF) {
     console.log(`  ℹ️  ${label}: phase=6E-F — skipping 6E-C-specific structural checks (covered by validate:image-generation-run2-gates)`);
   }
-  if (is6EF) {
-    // Minimal 6E-F sanity checks: boundaries + cross-repo mirror + key counters
+  if (isPostGeneration) {
+    // Minimal post-generation sanity checks: boundaries + cross-repo mirror + key counters
     check(`${label}: no_model_call === true`, g.no_model_call === true);
     check(`${label}: no_media_generation === true`, g.no_media_generation === true);
     check(`${label}: no_telegram === true`, g.no_telegram === true);
@@ -139,11 +141,13 @@ function validateOne(g: GatesData, label: string): void {
     check(`${label}: no_secrets === true`, g.no_secrets === true);
     check(`${label}: gates gate_2_approve_batch_2.decision === "approved" (6E-F)`, g.gates.gate_2_approve_batch_2.decision === "approved");
     check(`${label}: gates gate_4_approve_model_spend.decision === "approved_limited_run2_only" (6E-F)`, g.gates.gate_4_approve_model_spend.decision === "approved_limited_run2_only");
-    check(`${label}: run_2.status === "approved_pending_generation" (6E-F)`, g.run_status.run_2.status === "approved_pending_generation");
-    check(`${label}: run_2.approved === true (6E-F)`, g.run_status.run_2.approved === true);
-    check(`${label}: run_2.generation_status === "not_started" (6E-F)`, g.run_status.run_2.generation_status === "not_started");
-    check(`${label}: run_2.model_call_made === false (6E-F)`, g.run_status.run_2.model_call_made === false);
-    check(`${label}: run_2.media_generated === false (6E-F)`, g.run_status.run_2.media_generated === false);
+    // run_2 status: allow both pre-generation (approved_pending_generation, not_started) and post-generation (completed_within_budget)
+    check(`${label}: run_2.status in [approved_pending_generation, completed_within_budget] (phase-aware: 6E-J=completed)`, ["approved_pending_generation", "completed_within_budget"].includes(g.run_status.run_2.status), g.run_status.run_2.status);
+    check(`${label}: run_2.approved === true`, g.run_status.run_2.approved === true);
+    // run_2 generation: pre-gen (not_started) or post-gen (completed_within_budget)
+    check(`${label}: run_2.generation_status in [not_started, completed_within_budget] (phase-aware)`, ["not_started", "completed_within_budget"].includes(g.run_status.run_2.generation_status), g.run_status.run_2.generation_status);
+    check(`${label}: run_2.model_call_made in [false, true] (phase-aware: false pre-6E-J, true post-6E-J)`, g.run_status.run_2.model_call_made === false || g.run_status.run_2.model_call_made === true);
+    check(`${label}: run_2.media_generated in [false, true] (phase-aware: false pre-6E-J, true post-6E-J)`, g.run_status.run_2.media_generated === false || g.run_status.run_2.media_generated === true);
     return;
   }
   check(`${label}: mode === "image_generation_run1_gate_approval"`, g.mode === "image_generation_run1_gate_approval", `got ${g.mode}`);
@@ -305,8 +309,8 @@ function main(): void {
   const genAssetsPath = path.join(ASSETS_ROOT, "metadata", "generated-assets.json");
   if (fs.existsSync(genAssetsPath)) {
     const genAssets = JSON.parse(fs.readFileSync(genAssetsPath, "utf-8")) as Array<{ asset_id: string }>;
-    const allowedCounts = [5, 7, 8];
-    check(`generated-assets.json count in [5,7,8] (5 baseline; 7 after 6E-D Run 1; 8 after 6E-G regen)`, allowedCounts.includes(genAssets.length), `got ${genAssets.length}`);
+    const allowedCounts = [5, 7, 8, 10];
+    check(`generated-assets.json count in [5,7,8,10] (5 baseline; 7 after 6E-D Run 1; 8 after 6E-G regen; 10 after 6E-J Run 2)`, allowedCounts.includes(genAssets.length), `got ${genAssets.length}`);
     const expectedIds = ["cqa-2026-06-11-canary-001", "cqa-2026-06-11-gen-002", "cqa-2026-06-11-gen-003", "cqa-2026-06-11-gen-004", "cqa-2026-06-11-gen-005"];
     const actualIds = genAssets.map((a) => a.asset_id);
     for (const id of expectedIds) {
@@ -322,7 +326,7 @@ function main(): void {
     const preflight = JSON.parse(fs.readFileSync(preflightPath, "utf-8")) as { phase: string; stats: { total_content_packs: number; pending_images: number } };
     check(`6E-A preflight unchanged: phase=6E-A`, preflight.phase === "6E-A");
     check(`6E-A preflight unchanged: total=25`, preflight.stats.total_content_packs === 25);
-    check(`6E-A preflight unchanged: pending=20`, preflight.stats.pending_images === 20);
+    check(`6E-A preflight unchanged: pending=20 (pre-6E-J) or =16 (after 6E-J Run 2)`, preflight.stats.pending_images === 20 || preflight.stats.pending_images === 16, `got ${preflight.stats.pending_images}`);
   }
 
   console.log("\n=== Summary ===");

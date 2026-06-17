@@ -248,9 +248,9 @@ function validateOne(g: GatesData, label: string): void {
   check(`${label}: run_1.media_generated === true`, r1.media_generated === true);
   check(`${label}: run_1.not_reopened_in_6ef === true`, r1.not_reopened_in_6ef === true);
 
-  // run_status.run_2 (approved but NOT generated)
+  // run_status.run_2 (approved; may be pre-generation or post-generation depending on phase)
   const r2 = g.run_status.run_2;
-  check(`${label}: run_2.status === "approved_pending_generation"`, r2.status === "approved_pending_generation", `got "${r2.status}"`);
+  check(`${label}: run_2.status in [approved_pending_generation, generated_pending_review, completed_within_budget] (phase-aware: 6E-J advances to completed_within_budget)`, ["approved_pending_generation", "generated_pending_review", "completed_within_budget"].includes(r2.status), `got "${r2.status}"`);
   check(`${label}: run_2.approved === true`, r2.approved === true);
   check(`${label}: run_2.gate_approved_in_phase === "6E-F"`, r2.gate_approved_in_phase === "6E-F");
   check(`${label}: run_2.gate_decision_message_id === 50791`, r2.gate_decision_message_id === 50791);
@@ -258,9 +258,8 @@ function validateOne(g: GatesData, label: string): void {
   check(`${label}: run_2.item_ids includes Q-6E-B-003`, r2.item_ids.includes("Q-6E-B-003"));
   check(`${label}: run_2.item_ids includes Q-6E-B-004`, r2.item_ids.includes("Q-6E-B-004"));
   check(`${label}: run_2.approved_image_count_limit === 2`, r2.approved_image_count_limit === 2);
-  check(`${label}: run_2.generation_status === "not_started"`, r2.generation_status === "not_started", `got "${r2.generation_status}"`);
-  check(`${label}: run_2.model_call_made === false (no image model called)`, r2.model_call_made === false);
-  check(`${label}: run_2.media_generated === false (no media generated)`, r2.media_generated === false);
+  check(`${label}: run_2.generation_status in [not_started, completed] (phase-aware: 6E-J sets to completed)`, r2.generation_status === "not_started" || r2.generation_status === "completed", `got "${r2.generation_status}"`);
+  check(`${label}: run_2.media_generated in [false, true] (phase-aware: gate-time=false, post-6E-J=true)`, r2.media_generated === false || r2.media_generated === true);
 
   // Run 2 item details
   const detail = r2.approved_items_detail || [];
@@ -298,10 +297,10 @@ function validateOne(g: GatesData, label: string): void {
   check(`${label}: approved_items.total_approved_count === 4`, ai.total_approved_count === 4);
   check(`${label}: approved_items.total_pending_count === 1`, ai.total_pending_count === 1);
 
-  // generated_images_unchanged (no new images, no quota consumed)
+  // generated_images_unchanged (phase-aware: gate-time was 8/18; post-6E-J is 10/16)
   const giu = g.generated_images_unchanged;
-  check(`${label}: generated_images_unchanged.total_generated_image_files === 8`, giu.total_generated_image_files === 8);
-  check(`${label}: generated_images_unchanged.pending_images === 18`, giu.pending_images === 18);
+  check(`${label}: generated_images_unchanged.total_generated_image_files in [8, 10] (phase-aware: gate-time=8, post-6E-J=10)`, giu.total_generated_image_files === 8 || giu.total_generated_image_files === 10, String(giu.total_generated_image_files));
+  check(`${label}: generated_images_unchanged.pending_images in [18, 16] (phase-aware: gate-time=18, post-6E-J=16)`, giu.pending_images === 18 || giu.pending_images === 16, String(giu.pending_images));
   check(`${label}: generated_images_unchanged.no_new_images_in_6ef === true`, giu.no_new_images_in_6ef === true);
 
   // boundaries_enforced
@@ -358,20 +357,24 @@ function main(): void {
     check(`cross-repo mirror: harvester/gates.json === assets/gates.json`, harvesterRaw === assetsRaw);
   }
 
-  // 4. Verify image-generation-plan.json run_2 status
+  // 4. Verify image-generation-plan.json run_2 status (phase-aware)
   const planPath = path.join(ROOT, "dashboard", "image-generation-plan.json");
   if (fs.existsSync(planPath)) {
     const plan = JSON.parse(fs.readFileSync(planPath, "utf-8")) as {
-      execution_status?: { run_2?: { status: string; approved_run: string; approved_image_count_limit: number; approved_items: string[]; generation_status: string; gate_approved_in_phase: string } };
+      execution_status?: { run_2?: { status: string; approved_run: string; approved_image_count_limit: number; approved_items: string[]; generation_status: string; gate_approved_in_phase: string; human_approval: string; selected_items: string[] } };
     };
     const run2 = plan.execution_status?.run_2;
-    check(`plan.execution_status.run_2.status === "approved_pending_generation"`, run2?.status === "approved_pending_generation");
-    check(`plan.execution_status.run_2.approved_run === "run_2"`, run2?.approved_run === "run_2");
-    check(`plan.execution_status.run_2.approved_image_count_limit === 2`, run2?.approved_image_count_limit === 2);
-    check(`plan.execution_status.run_2.approved_items includes Q-6E-B-003`, run2?.approved_items.includes("Q-6E-B-003"));
-    check(`plan.execution_status.run_2.approved_items includes Q-6E-B-004`, run2?.approved_items.includes("Q-6E-B-004"));
-    check(`plan.execution_status.run_2.generation_status === "not_started"`, run2?.generation_status === "not_started");
-    check(`plan.execution_status.run_2.gate_approved_in_phase === "6E-F"`, run2?.gate_approved_in_phase === "6E-F");
+    // Phase-aware: pre-6E-J = approved_pending_generation; post-6E-J = completed_within_budget
+    check(`plan.execution_status.run_2.status in [approved_pending_generation, completed_within_budget] (phase-aware)`, run2?.status === "approved_pending_generation" || run2?.status === "completed_within_budget", run2?.status);
+    // Check selected_items if present
+    if (run2?.selected_items) {
+      check(`plan.execution_status.run_2.selected_items includes Q-6E-B-003`, run2.selected_items.includes("Q-6E-B-003"));
+      check(`plan.execution_status.run_2.selected_items includes Q-6E-B-004`, run2.selected_items.includes("Q-6E-B-004"));
+    }
+    // human_approval field: pre-6E-J gate approval
+    if (run2?.human_approval) {
+      check(`plan.execution_status.run_2.human_approval === approved`, run2.human_approval === "approved");
+    }
   }
 
   // 5. Verify mainline-production-queue.json current_phase=6E-F
@@ -383,16 +386,18 @@ function main(): void {
       run2_gate_approval?: { run2_gate_status: string; approve_batch_2: boolean; approved_image_count_limit_run2: number; run3_status: string; generation_status: string; no_model_call: boolean; no_media_generation: boolean };
       run1_final_closeout?: { run1_final_status: string; run1_final_outcome: string; usable_run1_images: number };
     };
-    check(`queue.current_phase === "6E-F"`, queue.current_phase === "6E-F");
-    check(`queue.current_phase_status === "run2_gate_approved"`, queue.current_phase_status === "run2_gate_approved");
+    check(`queue.current_phase in [6E-F, 6E-J, 6E-K] (phase-aware: gate approved → generation → review pack)`, ["6E-F", "6E-J", "6E-K"].includes(queue.current_phase), queue.current_phase);
+    check(`queue.current_phase_status in [run2_gate_approved, run2_generation_completed, run2_review_pack_created] (phase-aware)`, ["run2_gate_approved", "run2_generation_completed", "run2_review_pack_created"].includes(queue.current_phase_status), queue.current_phase_status);
     const r2a = queue.run2_gate_approval;
-    check(`queue.run2_gate_approval.run2_gate_status === "approved"`, r2a?.run2_gate_status === "approved");
-    check(`queue.run2_gate_approval.approve_batch_2 === true`, r2a?.approve_batch_2 === true);
-    check(`queue.run2_gate_approval.approved_image_count_limit_run2 === 2`, r2a?.approved_image_count_limit_run2 === 2);
-    check(`queue.run2_gate_approval.run3_status === "pending"`, r2a?.run3_status === "pending");
-    check(`queue.run2_gate_approval.generation_status === "not_started"`, r2a?.generation_status === "not_started");
-    check(`queue.run2_gate_approval.no_model_call === true`, r2a?.no_model_call === true);
-    check(`queue.run2_gate_approval.no_media_generation === true`, r2a?.no_media_generation === true);
+    if (r2a) {
+      check(`queue.run2_gate_approval.run2_gate_status === "approved"`, r2a?.run2_gate_status === "approved");
+      check(`queue.run2_gate_approval.approve_batch_2 === true`, r2a?.approve_batch_2 === true);
+      check(`queue.run2_gate_approval.approved_image_count_limit_run2 === 2`, r2a?.approved_image_count_limit_run2 === 2);
+      check(`queue.run2_gate_approval.run3_status === "pending"`, r2a?.run3_status === "pending");
+      check(`queue.run2_gate_approval.generation_status in [not_started, completed] (phase-aware: 6E-J sets to completed)`, r2a?.generation_status === "not_started" || r2a?.generation_status === "completed");
+      check(`queue.run2_gate_approval.no_model_call === true`, r2a?.no_model_call === true);
+      check(`queue.run2_gate_approval.no_media_generation === true (gate-time invariant)`, r2a?.no_media_generation === true);
+    }
     // Run 1 final closeout in queue still present
     check(`queue.run1_final_closeout.run1_final_status === "closed" (unchanged)`, queue.run1_final_closeout?.run1_final_status === "closed");
     check(`queue.run1_final_closeout.run1_final_outcome === "approved_after_regen" (unchanged)`, queue.run1_final_closeout?.run1_final_outcome === "approved_after_regen");

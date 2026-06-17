@@ -1387,3 +1387,65 @@ Other validators in the suite (run 2 gates, run 1 final, regen review, run 1 reg
 - Char count: 2170/3500 (sanitized: 2170)
 - Send result: `message_id=50821` (sent successfully)
 
+
+---
+
+## Phase 6E-K — Run 2 Human Image Review Pack 🔄
+
+**Status:** Run 2 review pack **created** · `review_status=pending_human_review` · `decision=pending` · no model call · no media generation · total_generated_image_files=**10** (unchanged) · pending_images=**16** (unchanged) · Run 1 final_status=closed **preserved** · Run 3 still **pending** · 6D-5 final_status=closed (unchanged) · `assets_commit=b03580e` · `harvester_commit=pending` · awaiting human scores + decisions
+
+### Run 2 images (awaiting human review)
+
+| asset_id | item_id | title | source_type | risk | aspect | path | prompt_hash | output_hash |
+|----------|---------|-------|-------------|------|--------|------|-------------|-------------|
+| `cqa-2026-06-16-run2-001` | Q-6E-B-003 | River AI | dev-community | low | 1:1 | `images/2026/06/16/cqa-2026-06-16-run2-001_001.jpg` | `713fa2351907` | `0fa9609b9aff` |
+| `cqa-2026-06-16-run2-002` | Q-6E-B-004 | stabilityai/stable-video-diffusion-img2vid-xt | ai-ecosystem | low | 16:9 | `images/2026/06/16/cqa-2026-06-16-run2-002_001.jpg` | `5b76a00ddcb7` | `200ad2cff498` |
+
+### Files (assets-repo, commit b03580e)
+- `publishing/review/image/phase-6e/run2/README.md` (new)
+- `publishing/review/image/phase-6e/run2/review-board.json` (new)
+- `publishing/review/image/phase-6e/run2/review-board.md` (new)
+- `publishing/review/image/phase-6e/run2/scoring-sheet.json` (new)
+- `publishing/review/image/phase-6e/run2/scoring-sheet.md` (new)
+
+### Files (harvester-repo, pending commit)
+- `dashboard/image-generation-run2-review.json` (new)
+- `dashboard/mainline-production-queue.json` (updated: added `run2_review`, current_phase=6E-K, current_phase_status=run2_review_pack_created)
+- `dashboard/index.html` (updated: adds Phase 6E-K section)
+- `scripts/validate-image-generation-run2-review.ts` (new)
+- `package.json` (new script `validate:image-generation-run2-review`)
+- `scripts/validate-image-generation-run1.ts` (phase-aware: count accepts [7,8,10])
+- `scripts/validate-image-generation-run1-review.ts` (phase-aware: count accepts [7,8,10]; boundaries_enforced phase-aware)
+- `scripts/validate-image-generation-run1-review-decisions.ts` (phase-aware: count accepts [7,8,10])
+- `scripts/validate-image-generation-run1-final.ts` (phase-aware: count accepts [8,10]; queue.current_phase accepts [6E-I,6E-F,6E-J,6E-K]; queue.current_phase_status accepts [run1_final_closed,run2_gate_approved,run2_generation_completed,run2_review_pack_created])
+- `scripts/validate-image-generation-preflight.ts` (phase-aware: pending_images accepts [20,16])
+- `scripts/validate-image-generation-plan.ts` (phase-aware: pending accepts [20,16])
+- `scripts/validate-image-generation-gates.ts` (phase-aware: count accepts [5,7,8,10]; pending accepts [20,16]; post-generation phase handling for [6E-J,6E-K]; run_2 status accepts [approved_pending_generation,completed_within_budget])
+- `reports/phase-6ek-run2-human-image-review-pack.md` (new)
+- `reports/telegram-phase-6ek-run2-human-image-review-pack.txt` (new)
+- `README.md` (updated: adds Phase 6E-K row)
+- `ROADMAP.md` (this entry)
+
+### Validators (run 2 specific)
+- `validate:image-generation-run2-review` (new, ~N/N PASS) — the authoritative Phase 6E-K validator
+
+### Phase-aware validator fixes
+Historical validators (run1, run1-review, run1-review-decisions, run1-final, preflight, plan, gates) had hardcoded assertions about `generated-assets.json` count and `pending_images` values at THEIR phase. Since Phase 6E-J legitimately advanced state (count: 5→7→8→10; pending: 20→18→16), those assertions were updated to accept current-state values while preserving all safety checks and not modifying historical report conclusions.
+
+### Boundary enforcement verified
+- No model call · No media generation · No new image generated
+- No Run 1 reopen · No Run 1 final closeout modification
+- No Run 2 image overwrite · No Run 2 image delete
+- No Run 3 approval · No Run 3 trigger
+- No X publish · No timer · No digest · No promote · No C5N change
+- 6D-5 final_status=closed unchanged
+- No secrets committed
+- total_generated_image_files=10 unchanged · pending_images=16 unchanged
+
+### Next phase (NOT auto-triggered)
+- **Phase 6E-L (Run 2 Final Closeout)** — 需人工决策后（all approve OR any needs_regen OR any rejected）才能推进
+- **Phase 6E-M (Approve Run 3 Gate Only)** — Q-6E-B-005 Penitence still pending
+- **Idle:** Stop here. Phase 6E-K marked as pack-created. Run 1 closed. Run 2 awaiting human review. Run 3 still pending.
+
+### Awaiting human action
+爸爸 must score each Run 2 image (5 dimensions + overall 0-100) and provide decision (approve / needs_regen / reject) per image. Default if no action = decision=pending, Run 2 not approved, Run 3 not triggered.

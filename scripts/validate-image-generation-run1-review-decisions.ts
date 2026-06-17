@@ -95,7 +95,8 @@ console.log("\n3. generated-assets.json count unchanged (still 7, no new images)
 const genAssets = readJSON<any[]>(path.join(ASSETS_ROOT, "metadata/generated-assets.json"));
 check("generated-assets.json exists", Array.isArray(genAssets));
 if (Array.isArray(genAssets)) {
-  check("count === 7 or 8 (no new images from 6E-E; 8 if 6E-G regen)", genAssets.length === 7 || genAssets.length === 8, String(genAssets.length));
+  // Phase-aware: 6E-E expected 7 (no new images from 6E-E decisions); 6E-G added 1 (count=8); 6E-J Run 2 added 2 (count=10).
+  check("count in [7, 8, 10] (6E-E: 7; +6E-G regen: 8; +6E-J Run 2: 10)", [7, 8, 10].includes(genAssets.length), String(genAssets.length));
 }
 
 // Step 4: Review board content

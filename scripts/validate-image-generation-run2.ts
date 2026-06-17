@@ -333,7 +333,7 @@ if (harvesterPreflight) {
 
 const harvesterMainline = readJSON<any>(harvesterMainlinePath);
 if (harvesterMainline) {
-  check("harvester mainline current_phase = 6E-J", harvesterMainline.current_phase === "6E-J");
+  check("harvester mainline current_phase in [6E-J, 6E-K] (phase-aware: 6E-J Run 2 generated; 6E-K review pack created)", harvesterMainline.current_phase === "6E-J" || harvesterMainline.current_phase === "6E-K");
   check("harvester mainline has run2_execution block", harvesterMainline.run2_execution !== undefined);
   if (harvesterMainline.run2_execution) {
     check("harvester mainline run2_execution.status = completed_within_budget", harvesterMainline.run2_execution.status === "completed_within_budget");
